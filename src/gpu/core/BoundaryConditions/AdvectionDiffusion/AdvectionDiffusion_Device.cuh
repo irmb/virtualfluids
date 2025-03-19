@@ -35,6 +35,7 @@
 #define AdvectionDiffusion_Device_H
 
 #include "Calculation/Calculation.h"
+#include "BoundaryConditions/BoundaryConditionFactory.h"
 
 //////////////////////////////////////////////////////////////////////////
 //! \brief \ref AD_SlipVelDeviceComp : device function for the slip-AD boundary condition
@@ -54,20 +55,13 @@ __global__ void AdvectionDiffusionSlipVelocityCompressible_Device(
     unsigned long long numberOfLBnodes,
     bool isEvenTimestep);
 
-__global__ void AdvectionDiffusionDirichlet_Device(
-    real* DD,
-    real* DD27,
-    real* temp,
-    real diffusivity,
-    int* k_Q,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+template <BoundaryConditionFactory::AdvectionDiffusionDirichletBC bcType>
+__global__ void AdvectionDiffusionDirichlet_Device(real* distributionsConcentration,
+                                                   AdvectionDiffusionDirichletBoundaryConditions bcParameters,
+                                                   uint* neighborX, uint* neighborY, uint* neighborZ, const real* density,
+                                                   const real* velocityX, const real* velocityY, const real* velocityZ,
+                                                   unsigned long long numberOfLBnodes, real relaxationFrequency,
+                                                   bool isEvenTimestep);
 
 __global__ void AdvectionDiffusionBounceBack_Device(
     real* distributions, AdvectionDiffusionNoSlipBoundaryConditions bcParameters, const uint* neighborX, const uint* neighborY,

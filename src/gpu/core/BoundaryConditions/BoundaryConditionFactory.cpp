@@ -44,6 +44,7 @@
 #include "BoundaryConditions/Slip/Slip.h"
 #include "BoundaryConditions/Stress/Stress.h"
 #include "BoundaryConditions/Velocity/Velocity.h"
+#include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h"
 #include "Parameter/Parameter.h"
 
 void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryConditionType)
@@ -212,6 +213,51 @@ BoundaryConditionKernel BoundaryConditionFactory::getGeometryBoundaryConditionPo
         return this->getNoSlipBoundaryConditionPost(true);
     if (std::holds_alternative<SlipBC>(this->geometryBoundaryCondition))
         return this->getSlipBoundaryConditionPost(true);
+    return nullptr;
+}
+
+AdvectionDiffusionDirichletBoundaryConditionKernel BoundaryConditionFactory::getAdvectionDiffusionDirichletBoundaryConditionPost() const
+{
+    switch(this->advectionDiffusionDirichletBoundaryCondition)
+    {
+        case AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip:
+            return AdvectionDiffusionDirichletAntiBounceBackNoSlip;
+        case AdvectionDiffusionDirichletBC::DirichletInterpolatedNoSlip:
+            return AdvectionDiffusionDirichletInterpolatedNoSlip;
+        case AdvectionDiffusionDirichletBC::DirichletAntiBounceBackSlip:
+            return AdvectionDiffusionDirichletAntiBounceBackSlip;
+        case AdvectionDiffusionDirichletBC::DirichletInterpolatedSlip:
+            return AdvectionDiffusionDirichletInterpolatedSlip;
+        default:
+            return nullptr;
+    };
+}
+
+AdvectionDiffusionNeumannBoundaryConditionKernel BoundaryConditionFactory::getAdvectionDiffusionNeumannBoundaryConditionPost() const
+{
+    switch(this->advectionDiffusionNeumannBoundaryCondition)
+    {
+        case AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip:
+            return AdvectionDiffusionNeumannAntiBounceBackNoSlip;
+        case AdvectionDiffusionNeumannBC::NeumannInterpolatedNoSlip:
+            return AdvectionDiffusionNeumannInterpolatedNoSlip;
+        case AdvectionDiffusionNeumannBC::NeumannAntiBounceBackSlip:
+            return AdvectionDiffusionNeumannAntiBounceBackSlip;
+        case AdvectionDiffusionNeumannBC::NeumannInterpolatedSlip:
+            return AdvectionDiffusionNeumannInterpolatedSlip;
+        default:
+            return nullptr;
+    };
+}
+
+AdvectionDiffusionSlipVelocityBoundaryConditionKernel BoundaryConditionFactory::getAdvectionDiffusionSlipVelocityBoundaryConditionPost() const
+{
+    if(this->advectionDiffusionSlipVelocityBoundaryCondition == AdvectionDiffusionSlipVelocityBC::SlipVelocityBounceBack)
+        return AdvectionDiffusionSlipVelocityBounceBack;
+    if(this->advectionDiffusionSlipVelocityBoundaryCondition == AdvectionDiffusionSlipVelocityBC::SlipVelocityCompressible)
+        return AdvectionDiffusionSlipVelocityCompressible;
+    if(this->advectionDiffusionSlipVelocityBoundaryCondition == AdvectionDiffusionSlipVelocityBC::SlipVelocityTurbulentViscosityCompressible)
+        return AdvectionDiffusionSlipVelocityTurbulentViscosityCompressible;
     return nullptr;
 }
 
