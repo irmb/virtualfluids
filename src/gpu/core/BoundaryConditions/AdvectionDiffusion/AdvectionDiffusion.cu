@@ -116,7 +116,7 @@ void AdvectionDiffusionDirichlet(
 }
 
 void AdvectionDiffusionBounceBack(LBMSimulationParameter* parameterDevice,
-    AdvectionDiffusionBounceBackBoundaryConditions bcParameters)
+    AdvectionDiffusionNoSlipBoundaryConditions bcParameters)
 {
 const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads, bcParameters.numberOfBCnodes);
 

@@ -146,7 +146,7 @@ struct QforPrecursorBoundaryConditions
    real velocityX, velocityY, velocityZ;
 };
 
-struct AdvectionDiffusionBounceBackBoundaryConditions
+struct AdvectionDiffusionNoSlipBoundaryConditions
 {
    int* BCNodeIndices;
    real* q27[27];

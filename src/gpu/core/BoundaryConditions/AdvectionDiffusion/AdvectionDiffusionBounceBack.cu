@@ -54,7 +54,7 @@ constexpr void setDistributions(uint nodeIndex, const SubgridDistances27& subgri
     (distributionReferences.f[inverseDir])[writeIndex] = populations[direction];
 }
 
-__global__ void AdvectionDiffusionBounceBack_Device(real* distributions, AdvectionDiffusionBounceBackBoundaryConditions bcParameters, const uint* neighborX, const uint* neighborY,
+__global__ void AdvectionDiffusionBounceBack_Device(real* distributions, AdvectionDiffusionNoSlipBoundaryConditions bcParameters, const uint* neighborX, const uint* neighborY,
                                                     const uint* neighborZ, unsigned long long numberOfLBnodes,
                                                     bool isEvenTimestep)
 {
