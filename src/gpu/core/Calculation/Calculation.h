@@ -165,11 +165,12 @@ struct AdvectionDiffusionDirichletBoundaryConditions
 struct AdvectionDiffusionNeumannBoundaryConditions
 {
    int* BCNodeIndices;
-   real* gradients;
+   real* gradient;
    real* q27[27];
    real *vx, *vy, *vz;
    int numberOfBCnodes=0;
 };
+
 struct AdvectionDiffusionSlipVelocityBoundaryConditions
 {
    int* BCNodeIndices;

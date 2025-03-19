@@ -67,7 +67,7 @@ AdvectionDiffusionNeumann_Device(real* distributionsConcentration, AdvectionDiff
     real distributions[27];
     vf::gpu::getPostCollisionDistribution(distributions, distributionReferences, listIndices);
     const real concentrationNode = vf::lbm::getDensity(distributions);
-    const real gradient = bcParameters.gradients[nodeIndex];
+    const real gradient = bcParameters.gradient[nodeIndex];
     const real concentrationWall = concentrationNode + c1o2 * gradient;
 
     vf::gpu::getPointersToDistributions(distributionReferences, distributionsConcentration, numberOfLBnodes,
