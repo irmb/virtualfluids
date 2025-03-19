@@ -224,9 +224,9 @@ constexpr bool isValidFluidNode(uint nodeType)
 
 struct ListIndices
 {
-    __device__ ListIndices() {};
-    __device__ ListIndices(unsigned int index, const unsigned int* neighborX, const unsigned int* neighborY,
-                           const unsigned int* neighborZ)
+    constexpr ListIndices() = default;
+    constexpr ListIndices(uint index, const uint* neighborX, const uint* neighborY,
+                           const uint* neighborZ)
     {
         k_000 = index;
         k_M00 = neighborX[k_000];
@@ -238,14 +238,78 @@ struct ListIndices
         k_MMM = neighborZ[k_MM0];
     }
 
-    unsigned int k_000 { 0 };
-    unsigned int k_M00 { 0 };
-    unsigned int k_0M0 { 0 };
-    unsigned int k_00M { 0 };
-    unsigned int k_MM0 { 0 };
-    unsigned int k_M0M { 0 };
-    unsigned int k_0MM { 0 };
-    unsigned int k_MMM { 0 };
+    uint k_000 { 0 };
+    uint k_M00 { 0 };
+    uint k_0M0 { 0 };
+    uint k_00M { 0 };
+    uint k_MM0 { 0 };
+    uint k_M0M { 0 };
+    uint k_0MM { 0 };
+    uint k_MMM { 0 };
+
+    constexpr uint k000() const {return k_000;}
+    constexpr uint kP00() const {return k_000;}
+    constexpr uint k0P0() const {return k_000;}
+    constexpr uint k00P() const {return k_000;}
+    constexpr uint kPP0() const {return k_000;}
+    constexpr uint k0PP() const {return k_000;}
+    constexpr uint kP0P() const {return k_000;}
+    constexpr uint kPPP() const {return k_000;}
+    constexpr uint kM00() const {return k_M00;}
+    constexpr uint kMP0() const {return k_M00;}
+    constexpr uint kM0P() const {return k_M00;}
+    constexpr uint kMPP() const {return k_M00;}
+    constexpr uint k0M0() const {return k_0M0;}
+    constexpr uint kPM0() const {return k_0M0;}
+    constexpr uint k0MP() const {return k_0M0;}
+    constexpr uint kPMP() const {return k_0M0;}
+    constexpr uint k00M() const {return k_00M;}
+    constexpr uint kP0M() const {return k_00M;}
+    constexpr uint k0PM() const {return k_00M;}
+    constexpr uint kPPM() const {return k_00M;}
+    constexpr uint kMM0() const {return k_MM0;}
+    constexpr uint kMMP() const {return k_MM0;}
+    constexpr uint kM0M() const {return k_M0M;}
+    constexpr uint kMPM() const {return k_M0M;}
+    constexpr uint k0MM() const {return k_0MM;}
+    constexpr uint kPMM() const {return k_0MM;}
+    constexpr uint kMMM() const {return k_MMM;}
+
+    template<size_t direction> constexpr uint getIndex() const
+    {
+        using namespace vf::lbm::dir;
+
+        switch(direction)
+        {
+            case dP00: return kP00();
+            case dM00: return kM00();
+            case d0P0: return k0P0();
+            case d0M0: return k0M0();
+            case d00P: return k00P();
+            case d00M: return k00M();
+            case dPP0: return kPP0();
+            case dMM0: return kMM0();
+            case dPM0: return kPM0();
+            case dMP0: return kMP0();
+            case dP0P: return kP0P();
+            case dM0M: return kM0M();
+            case dP0M: return kP0M();
+            case dM0P: return kM0P();
+            case d0PP: return k0PP();
+            case d0MM: return k0MM();
+            case d0PM: return k0PM();
+            case d0MP: return k0MP();
+            case dPPP: return kPPP();
+            case dMPP: return kMPP();
+            case dPMP: return kPMP();
+            case dMMP: return kMMP();
+            case dPPM: return kPPM();
+            case dMPM: return kMPM();
+            case dPMM: return kPMM();
+            case dMMM: return kMMM();
+        }
+        return k_000;
+    }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////

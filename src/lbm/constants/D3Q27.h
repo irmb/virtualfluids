@@ -36,6 +36,7 @@
 #include <map>
 
 #include <basics/DataTypes.h>
+#include <basics/constants/NumericConstants.h>
 
 namespace vf::lbm::dir
 {
@@ -82,6 +83,7 @@ static const std::map<size_t, std::string> directionNames {
     { dMPM, NAME_OF(dMPM) }, { dPMM, NAME_OF(dPMM) }, { dMMM, NAME_OF(dMMM) },
 };
 
+static constexpr size_t i000 = d000;
 static constexpr size_t iP00 = dM00;
 static constexpr size_t iM00 = dP00;
 static constexpr size_t i0P0 = d0M0;
@@ -164,6 +166,114 @@ static constexpr unsigned long int etMPM = 16777216;
 static constexpr unsigned long int etPMM = 33554432;
 static constexpr unsigned long int etMMM = 67108864;
 
+template<size_t direction>
+constexpr size_t inverseDir()
+{
+    switch(direction)
+    {
+        case d000: return i000;
+        case dP00: return iP00;
+        case dM00: return iM00;
+        case d0P0: return i0P0;
+        case d0M0: return i0M0;
+        case d00P: return i00P;
+        case d00M: return i00M;
+        case dPP0: return iPP0;
+        case dMM0: return iMM0;
+        case dPM0: return iPM0;
+        case dMP0: return iMP0;
+        case dP0P: return iP0P;
+        case dM0M: return iM0M;
+        case dP0M: return iP0M;
+        case dM0P: return iM0P;
+        case d0PP: return i0PP;
+        case d0MM: return i0MM;
+        case d0PM: return i0PM;
+        case d0MP: return i0MP;
+        case dPPP: return iPPP;
+        case dMMM: return iMMM;
+        case dPPM: return iPPM;
+        case dMMP: return iMMP;
+        case dPMP: return iPMP;
+        case dMPM: return iMPM;
+        case dPMM: return iPMM;
+        case dMPP: return iMPP;
+    }
+    return d000;
+}
+
+
+template<size_t direction>
+constexpr real getVelocity(real velocityX, real velocityY, real velocityZ)
+{
+    switch(direction)
+    {
+        case d000: return basics::constant::c0o1;
+        case dP00: return  velocityX;
+        case dM00: return -velocityX;
+        case d0P0: return velocityY;
+        case d0M0: return -velocityY;
+        case d00P: return velocityZ;
+        case d00M: return -velocityZ;
+        case dPP0: return velocityX + velocityY;
+        case dMM0: return -velocityX - velocityY;
+        case dPM0: return velocityX - velocityY;
+        case dMP0: return -velocityX + velocityY;
+        case dP0P: return velocityX + velocityZ;
+        case dM0M: return -velocityX - velocityZ;
+        case dP0M: return velocityX - velocityZ;
+        case dM0P: return -velocityX + velocityZ;
+        case d0PP: return velocityY + velocityZ;
+        case d0MM: return -velocityY - velocityZ;
+        case d0PM: return velocityY - velocityZ;
+        case d0MP: return -velocityY + velocityZ;
+        case dPPP: return velocityX + velocityY + velocityZ;
+        case dMMM: return -velocityX - velocityY - velocityZ;
+        case dPPM: return velocityX + velocityY - velocityZ;
+        case dMMP: return -velocityX - velocityY + velocityZ;
+        case dPMP: return velocityX - velocityY + velocityZ;
+        case dMPM: return -velocityX + velocityY - velocityZ;
+        case dPMM: return velocityX - velocityY - velocityZ;
+        case dMPP: return -velocityX + velocityY + velocityZ;
+    }
+    return basics::constant::c0o1;
+}
+
+template<size_t direction>
+constexpr real getWeight()
+{
+    switch(direction)
+    {
+        case d000: return basics::constant::c8o27;
+        case dP00: return basics::constant::c2o27;
+        case dM00: return basics::constant::c2o27;
+        case d0P0: return basics::constant::c2o27;
+        case d0M0: return basics::constant::c2o27;
+        case d00P: return basics::constant::c2o27;
+        case d00M: return basics::constant::c2o27;
+        case dPP0: return basics::constant::c1o54;
+        case dMM0: return basics::constant::c1o54;
+        case dPM0: return basics::constant::c1o54;
+        case dMP0: return basics::constant::c1o54;
+        case dP0P: return basics::constant::c1o54;
+        case dM0M: return basics::constant::c1o54;
+        case dP0M: return basics::constant::c1o54;
+        case dM0P: return basics::constant::c1o54;
+        case d0PP: return basics::constant::c1o54;
+        case d0MM: return basics::constant::c1o54;
+        case d0PM: return basics::constant::c1o54;
+        case d0MP: return basics::constant::c1o54;
+        case dPPP: return basics::constant::c1o216;
+        case dMMM: return basics::constant::c1o216;
+        case dPPM: return basics::constant::c1o216;
+        case dMMP: return basics::constant::c1o216;
+        case dPMP: return basics::constant::c1o216;
+        case dMPM: return basics::constant::c1o216;
+        case dPMM: return basics::constant::c1o216;
+        case dMPP: return basics::constant::c1o216;
+    }
+    return basics::constant::c8o27;
+}
 } // namespace vf::lbm::dir
 #endif
 
