@@ -781,22 +781,6 @@ void Parameter::setMaxCoordZ(std::vector<real> MaxCoordZ)
 {
     this->maxCoordZ = MaxCoordZ;
 }
-void Parameter::setConcentrationNoSlipBCHost(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost)
-{
-    this->concentrationNoSlipBCHost = concentrationNoSlipBCHost;
-}
-void Parameter::setConcentrationNoSlipBCDevice(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCDevice)
-{
-    this->concentrationNoSlipBCDevice = concentrationNoSlipBCDevice;
-}
-void Parameter::setConcentrationDirichletBCHost(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost)
-{
-    this->concentrationDirichletBCHost = concentrationDirichletBCHost;
-}
-void Parameter::setConcentrationDirichletBCDevice(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCDevice)
-{
-    this->concentrationDirichletBCDevice = concentrationDirichletBCDevice;
-}
 void Parameter::setgeoVec(std::string geoVec)
 {
     this->geoVec = geoVec;
@@ -1527,22 +1511,6 @@ std::vector<real> Parameter::getMaxCoordY()
 std::vector<real> Parameter::getMaxCoordZ()
 {
     return this->maxCoordZ;
-}
-AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCHost()
-{
-    return this->concentrationNoSlipBCHost;
-}
-AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCDevice()
-{
-    return this->concentrationNoSlipBCDevice;
-}
-AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCHost()
-{
-    return this->concentrationDirichletBCHost;
-}
-AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCDevice()
-{
-    return this->concentrationDirichletBCDevice;
 }
 std::string Parameter::getgeoVec()
 {

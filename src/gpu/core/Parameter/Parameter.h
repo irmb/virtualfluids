@@ -144,6 +144,12 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the advection diffusion Dirichlet boundary condition data
     AdvectionDiffusionDirichletBoundaryConditions AdvectionDiffusionDirichletBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the advection diffusion Dirichlet boundary condition data
+    AdvectionDiffusionNeumannBoundaryConditions AdvectionDiffusionNeumannBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the advection diffusion Dirichlet boundary condition data
+    AdvectionDiffusionSlipVelocityBoundaryConditions AdvectionDiffusionSlipVelocityBC;
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -674,10 +680,6 @@ public:
     std::vector<real> getMaxCoordX();
     std::vector<real> getMaxCoordY();
     std::vector<real> getMaxCoordZ();
-    AdvectionDiffusionNoSlipBoundaryConditions *getConcentrationNoSlipBCHost();
-    AdvectionDiffusionNoSlipBoundaryConditions *getConcentrationNoSlipBCDevice();
-    AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCHost();
-    AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCDevice();
     std::vector<SPtr<PreCollisionInteractor>> getInteractors();
     std::vector<SPtr<Sampler>> getSamplers();
     unsigned int getTimeDoCheckPoint();
@@ -858,11 +860,6 @@ private:
     std::vector<std::string> multiKernel;
     bool kernelNeedsFluidNodeIndicesToRun = false;
     std::string adKernel;
-
-    // Concentration No Slip BC
-    AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost, *concentrationNoSlipBCDevice;
-    // Concentration Dirichlet BC
-    AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost, *concentrationDirichletBCDevice;
 
     std::vector<SPtr<PreCollisionInteractor>> interactors;
     std::vector<SPtr<Sampler>> samplers;
