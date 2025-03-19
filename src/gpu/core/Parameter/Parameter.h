@@ -140,7 +140,7 @@ struct LBMSimulationParameter {
     std::vector<QforDirectionalBoundaryCondition> pressureBCDirectional;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the advection diffusion noSlip boundary condition data
-    AdvectionDiffusionNoSlipBoundaryConditions AdvectionDiffusionNoSlipBC;
+    AdvectionDiffusionBounceBackBoundaryConditions AdvectionDiffusionNoSlipBC;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the advection diffusion Dirichlet boundary condition data
     AdvectionDiffusionDirichletBoundaryConditions AdvectionDiffusionDirichletBC;
@@ -483,8 +483,8 @@ public:
     void setMaxCoordX(std::vector<real> MaxCoordX);
     void setMaxCoordY(std::vector<real> MaxCoordY);
     void setMaxCoordZ(std::vector<real> MaxCoordZ);
-    void setConcentrationNoSlipBCHost(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost);
-    void setConcentrationNoSlipBCDevice(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCDevice);
+    void setConcentrationNoSlipBCHost(AdvectionDiffusionBounceBackBoundaryConditions *concentrationNoSlipBCHost);
+    void setConcentrationNoSlipBCDevice(AdvectionDiffusionBounceBackBoundaryConditions *concentrationNoSlipBCDevice);
     void setConcentrationDirichletBCHost(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost);
     void setConcentrationDirichletBCDevice(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCDevice);
     void setTimeDoCheckPoint(unsigned int tDoCheckPoint);
@@ -674,8 +674,8 @@ public:
     std::vector<real> getMaxCoordX();
     std::vector<real> getMaxCoordY();
     std::vector<real> getMaxCoordZ();
-    AdvectionDiffusionNoSlipBoundaryConditions *getConcentrationNoSlipBCHost();
-    AdvectionDiffusionNoSlipBoundaryConditions *getConcentrationNoSlipBCDevice();
+    AdvectionDiffusionBounceBackBoundaryConditions *getConcentrationNoSlipBCHost();
+    AdvectionDiffusionBounceBackBoundaryConditions *getConcentrationNoSlipBCDevice();
     AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCHost();
     AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCDevice();
     std::vector<SPtr<PreCollisionInteractor>> getInteractors();
@@ -860,7 +860,7 @@ private:
     std::string adKernel;
 
     // Concentration No Slip BC
-    AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost, *concentrationNoSlipBCDevice;
+    AdvectionDiffusionBounceBackBoundaryConditions *concentrationNoSlipBCHost, *concentrationNoSlipBCDevice;
     // Concentration Dirichlet BC
     AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost, *concentrationDirichletBCDevice;
 

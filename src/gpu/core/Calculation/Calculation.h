@@ -146,19 +146,37 @@ struct QforPrecursorBoundaryConditions
    real velocityX, velocityY, velocityZ;
 };
 
-struct AdvectionDiffusionNoSlipBoundaryConditions
+struct AdvectionDiffusionBounceBackBoundaryConditions
 {
-   int* k;
-   real* concentration;
-   int numberOfBcNodes=0;
+   int* BCNodeIndices;
+   real* q27[27];
+   int numberOfBCnodes=0;
 };
 
 struct AdvectionDiffusionDirichletBoundaryConditions
 {
-   int* k;
+   int* BCNodeIndices;
+   real* q27[27];
    real* concentration;
-   real* concentrationBC;
-   int numberOfBcNodes=0;
+   real *vx, *vy, *vz;
+   int numberOfBCnodes=0;
+};
+
+struct AdvectionDiffusionNeumannBoundaryConditions
+{
+   int* BCNodeIndices;
+   real* gradients;
+   real* q27[27];
+   real *vx, *vy, *vz;
+   int numberOfBCnodes=0;
+};
+struct AdvectionDiffusionSlipVelocityBoundaryConditions
+{
+   int* BCNodeIndices;
+   real* q27[27];
+   real* normalX, *normalY, *normalZ;
+   real* gradient;
+   int numberOfBCnodes=0;
 };
 
 // Settings for wall model used in StressBC

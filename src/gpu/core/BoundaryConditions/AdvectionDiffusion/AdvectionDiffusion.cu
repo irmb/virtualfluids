@@ -115,39 +115,15 @@ void AdvectionDiffusionDirichlet(
     getLastCudaError("AdvectionDiffusionDirichlet_Device execution failed");
 }
 
-void AdvectionDiffusionBounceBack(
-    unsigned int numberOfThreads,
-    real* DD,
-    real* DD27,
-    real* temp,
-    real diffusivity,
-    int* k_Q,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep)
+void AdvectionDiffusionBounceBack(LBMSimulationParameter* parameterDevice,
+    AdvectionDiffusionBounceBackBoundaryConditions bcParameters)
 {
-    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfBCnodes);
+const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads, bcParameters.numberOfBCnodes);
 
-    AdvectionDiffusionBounceBack_Device<<< grid.grid, grid.threads >>> (
-        DD,
-        DD27,
-        temp,
-        diffusivity,
-        k_Q,
-        QQ,
-        numberOfBCnodes,
-        om1,
-        neighborX,
-        neighborY,
-        neighborZ,
-        numberOfLBnodes,
-        isEvenTimestep);
-    getLastCudaError("AdvectionDiffusionBounceBack_Device execution failed");
+AdvectionDiffusionBounceBack_Device<<<grid.grid, grid.threads>>>(
+parameterDevice->distributionsAD.f[0], bcParameters,  parameterDevice->neighborX, parameterDevice->neighborY,
+parameterDevice->neighborZ, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
+getLastCudaError("AdvectionDiffusionBounceBack_Device execution failed");
 }
 
 //! \}

@@ -70,18 +70,8 @@ __global__ void AdvectionDiffusionDirichlet_Device(
     bool isEvenTimestep);
 
 __global__ void AdvectionDiffusionBounceBack_Device(
-    real* DD,
-    real* DD27,
-    real* temp,
-    real diffusivity,
-    int* k_Q,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
+    real* distributions, AdvectionDiffusionBounceBackBoundaryConditions bcParameters, const uint* neighborX, const uint* neighborY,
+    const uint* neighborZ, unsigned long long numberOfLBnodes,
     bool isEvenTimestep);
 
 #endif
