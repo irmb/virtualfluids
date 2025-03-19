@@ -34,6 +34,7 @@
 #define LBM_ADVECTION_DIFFUSION_EQUILIBRIUM_H
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
+#include <lbm/constants/D3Q27.h>
 
 namespace vf::lbm::advection_diffusion
 {
@@ -42,6 +43,17 @@ constexpr real equilibrium(real weight, real concentration, real velocity, real 
 {
     using namespace vf::basics::constant;
     return weight * concentration * (c1o1 + c3o1 * velocity + c9o2 * velocity * velocity - cu_sq);
+}
+
+template <size_t direction>
+constexpr real computeEquilibrium(real concentration, real velocityX, real velocityY, real velocityZ)
+{
+    using namespace vf::lbm::dir;
+    using namespace vf::basics::constant;
+    const real weight = getWeight<direction>();
+    const real cu_sq = velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ;
+    const real velocity = getVelocity<direction>(velocityX, velocityY, velocityZ);
+    return weight * concentration * (c1o1 + c3o1 * velocity + c9o2 * velocity * velocity - c3o2 * cu_sq);
 }
 } // namespace vf::lbm::advection_diffusion
 #endif
