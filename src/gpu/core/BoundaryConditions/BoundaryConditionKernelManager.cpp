@@ -382,4 +382,35 @@ void BoundaryConditionKernelManager::runPrecursorBCKernelPost(int level, uint t,
     precursorBoundaryConditionPost(para->getParD(level).get(), &para->getParD(level)->precursorBC, tRatio, para->getVelocityRatio());
 }
 
+void BoundaryConditionKernelManager::runADSlipVelocityBCKernel(int level) const
+{
+    auto* parD = para->getParD(level).get();
+    if (parD->AdvectionDiffusionSlipVelocityBC.numberOfBCnodes == 0)
+        return;
+    ADSlipVelocityBoundaryConditionPost(parD, parD->AdvectionDiffusionSlipVelocityBC);
+}
+
+void BoundaryConditionKernelManager::runADNoSlipBCKernel(int level) const
+{
+    auto* parD = para->getParD(level).get();
+    if (parD->AdvectionDiffusionNoSlipBC.numberOfBCnodes == 0)
+        return;
+    ADNoSlipBoundaryConditionPost(parD, parD->AdvectionDiffusionNoSlipBC);
+}
+
+void BoundaryConditionKernelManager::runADDirichletBCKernel(int level) const
+{
+    auto* parD = &para->getParDeviceAsReference(level);
+    if (parD->AdvectionDiffusionDirichletBC.numberOfBCnodes == 0)
+        return;
+    ADDirichletBoundaryConditionPost(parD, parD->AdvectionDiffusionDirichletBC);
+}
+void BoundaryConditionKernelManager::runADNeumannBCKernel(int level) const
+{
+    auto* parD = &para->getParDeviceAsReference(level);
+    if (parD->AdvectionDiffusionNeumannBC.numberOfBCnodes == 0)
+        return;
+    ADNeumannBoundaryConditionPost(parD, parD->AdvectionDiffusionNeumannBC);
+}
+
 //! \}

@@ -35,78 +35,19 @@
 #include "Cuda/CudaMemoryManager.h"
 
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h"
-#include "Parameter/Parameter.h"
 #include "Kernel/AdvectionDiffusionKernel.h"
+#include "Parameter/Parameter.h"
 
-ADKernelManager::ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels): para(std::move(parameter)), adkernels(adkernels){}
+ADKernelManager::ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels)
+    : para(std::move(parameter)), adkernels(adkernels)
+{
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-void ADKernelManager::runADcollisionKernel(int level)const
+void ADKernelManager::runADcollisionKernel(int level) const
 {
     adkernels[level]->run();
 }
 
-void ADKernelManager::runADslipBCKernel(int level) const{
-    if (para->getParD(level)->slipBC.numberOfBCnodes > 1) {
-        AdvectionDiffusionSlipVelocityCompressible(
-            para->getParD(level)->numberofthreads,
-            para->getParD(level)->slipBC.normalX,
-            para->getParD(level)->slipBC.normalY,
-            para->getParD(level)->slipBC.normalZ,
-            para->getParD(level)->distributions.f[0],
-            para->getParD(level)->distributionsAD.f[0],
-            para->getParD(level)->slipBC.k,
-            para->getParD(level)->slipBC.q27[0],
-            para->getParD(level)->slipBC.numberOfBCnodes,
-            para->getParD(level)->omegaDiffusivity,
-            para->getParD(level)->neighborX,
-            para->getParD(level)->neighborY,
-            para->getParD(level)->neighborZ,
-            para->getParD(level)->numberOfNodes,
-            para->getParD(level)->isEvenTimestep);
-    }
-}
-
-void ADKernelManager::runADgeometryBCKernel(int level) const
-{
-    if (para->getParD(level)->geometryBC.numberOfBCnodes > 0) {
-            AdvectionDiffusionBounceBack(
-                para->getParD(level)->numberofthreads,
-                para->getParD(level)->distributions.f[0],
-                para->getParD(level)->distributionsAD.f[0],
-                para->getParD(level)->AdvectionDiffusionNoSlipBC.concentration,
-                para->getParD(level)->diffusivity,
-                para->getParD(level)->AdvectionDiffusionNoSlipBC.k,
-                para->getParD(level)->geometryBC.q27[0],
-                para->getParD(level)->AdvectionDiffusionNoSlipBC.numberOfBcNodes,
-                para->getParD(level)->omega,
-                para->getParD(level)->neighborX,
-                para->getParD(level)->neighborY,
-                para->getParD(level)->neighborZ,
-                para->getParD(level)->numberOfNodes,
-                para->getParD(level)->isEvenTimestep);
-    }
-}
-
-void ADKernelManager::runADDirichletBCKernel(int level) const{
-    if (para->getParD(level)->AdvectionDiffusionDirichletBC.numberOfBcNodes > 0){
-            AdvectionDiffusionDirichlet(
-                para->getParD(level)->numberofthreads,
-                para->getParD(level)->distributions.f[0],
-                para->getParD(level)->distributionsAD.f[0],
-                para->getParD(level)->AdvectionDiffusionDirichletBC.concentrationBC,
-                para->getParD(level)->diffusivity,
-                para->getParD(level)->velocityBC.k,
-                para->getParD(level)->velocityBC.q27[0],
-                para->getParD(level)->velocityBC.numberOfBCnodes,
-                para->getParD(level)->omega,
-                para->getParD(level)->neighborX,
-                para->getParD(level)->neighborY,
-                para->getParD(level)->neighborZ,
-                para->getParD(level)->numberOfNodes,
-                para->getParD(level)->isEvenTimestep);
-
-    }
-}
 
 //! \}
