@@ -365,50 +365,15 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
         const auto numberOfVelocityValues = int(builder->getVelocitySize(level));
         VF_LOG_INFO("size velocity level {}: {}", level, numberOfVelocityValues);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        para->getParH(level)->velocityBC.numberOfBCnodes = 0;
-
+        para->getParH(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
+        para->getParD(level)->velocityBC.numberOfBCnodes = para->getParH(level)->velocityBC.numberOfBCnodes;
         if (numberOfVelocityValues > 1)
         {
-            para->getParH(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaAllocVeloBC(level);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
             builder->getVelocityValues(para->getParH(level)->velocityBC.Vx, para->getParH(level)->velocityBC.Vy,
                                        para->getParH(level)->velocityBC.Vz, para->getParH(level)->velocityBC.k, level);
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
             cudaMemoryManager->cudaCopyVeloBC(level);
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // advection - diffusion stuff
-            if (para->getDiffOn()){
-                //////////////////////////////////////////////////////////////////////////
-                para->getParH(level)->AdvectionDiffusionDirichletBC.numberOfBcNodes = para->getParH(level)->velocityBC.numberOfBCnodes;
-                //cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
-                VF_LOG_INFO("getTemperatureInit = {}", para->getConcentrationInit());
-                VF_LOG_INFO("getTemperatureBC = {}", para->getConcentrationBC());
-                //////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaAllocConcentrationDirichletBC(level);
-                //cout << "nach alloc " << endl;
-                //////////////////////////////////////////////////////////////////////////
-                for (uint m = 0; m < para->getParH(level)->velocityBC.numberOfBCnodes; m++)
-                {
-                    para->getParH(level)->AdvectionDiffusionDirichletBC.concentration[m]   = para->getConcentrationInit();
-                    para->getParH(level)->AdvectionDiffusionDirichletBC.concentrationBC[m] = para->getConcentrationBC();
-                    para->getParH(level)->AdvectionDiffusionDirichletBC.k[m]               = para->getParH(level)->velocityBC.k[m];
-                }
-                //////////////////////////////////////////////////////////////////////////
-                //cout << "vor copy " << endl;
-                cudaMemoryManager->cudaCopyConcentrationDirichletBCHostToDevice(level);
-                //cout << "nach copy " << endl;
-                //////////////////////////////////////////////////////////////////////////
-            }
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
-        para->getParD(level)->velocityBC.numberOfBCnodes = para->getParH(level)->velocityBC.numberOfBCnodes;
     }
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
@@ -555,6 +520,72 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
 
         }
     }//ende geo
+
+    if (para->getDiffOn()) {
+        for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
+        {
+            const int numberOfADDirichletValues = int(builder->getADDirichletSize(level));
+            para->getParH(level)->AdvectionDiffusionDirichletBC.numberOfBCnodes = numberOfADDirichletValues;
+            para->getParD(level)->AdvectionDiffusionDirichletBC.numberOfBCnodes = numberOfADDirichletValues;
+            if (numberOfADDirichletValues < 1)
+                continue;
+            VF_LOG_INFO("size Dirichlet AD level {}: {}", level, numberOfADDirichletValues);
+            cudaMemoryManager->cudaAllocConcentrationDirichletBC(level);
+            builder->getADDirichletValues(para->getParH(level)->AdvectionDiffusionDirichletBC.concentration,
+                                          para->getParH(level)->AdvectionDiffusionDirichletBC.vx,
+                                          para->getParH(level)->AdvectionDiffusionDirichletBC.vy,
+                                          para->getParH(level)->AdvectionDiffusionDirichletBC.vz,
+                                          para->getParH(level)->AdvectionDiffusionDirichletBC.BCNodeIndices, level);
+            cudaMemoryManager->cudaCopyConcentrationDirichletBCHostToDevice(level);
+        }
+
+        for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
+        {
+            const int numberOfNeumannADValues = int(builder->getADNeumannSize(level));
+            para->getParH(level)->AdvectionDiffusionNeumannBC.numberOfBCnodes = numberOfNeumannADValues;
+            para->getParD(level)->AdvectionDiffusionNeumannBC.numberOfBCnodes = numberOfNeumannADValues;
+            if (numberOfNeumannADValues < 1)
+                continue;
+            VF_LOG_INFO("size Neumann AD level {}: {}", level, numberOfNeumannADValues);
+
+            cudaMemoryManager->cudaAllocConcentrationNeumannBC(level);
+            builder->getADNeumannValues(para->getParH(level)->AdvectionDiffusionNeumannBC.gradient,
+                                        para->getParH(level)->AdvectionDiffusionNeumannBC.vx,
+                                        para->getParH(level)->AdvectionDiffusionNeumannBC.vy,
+                                        para->getParH(level)->AdvectionDiffusionNeumannBC.vz,
+                                        para->getParH(level)->AdvectionDiffusionNeumannBC.BCNodeIndices, level);
+            cudaMemoryManager->cudaCopyConcentrationNeumannBCHostToDevice(level);
+        }
+        for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
+        {
+            const int numberOfADSlipVelocityValues = int(builder->getADSlipVelocitySize(level));
+            para->getParH(level)->AdvectionDiffusionSlipVelocityBC.numberOfBCnodes = numberOfADSlipVelocityValues;
+            para->getParD(level)->AdvectionDiffusionSlipVelocityBC.numberOfBCnodes = numberOfADSlipVelocityValues;
+            
+            if(numberOfADSlipVelocityValues < 1) continue;
+            VF_LOG_INFO("size Slip Velocity AD level {}: {}", level, numberOfADSlipVelocityValues);
+
+            cudaMemoryManager->cudaAllocConcentrationSlipVelocityBC(level);
+            builder->getADSlipVelocityValues(para->getParH(level)->AdvectionDiffusionSlipVelocityBC.normalX,
+                                             para->getParH(level)->AdvectionDiffusionSlipVelocityBC.normalY,
+                                             para->getParH(level)->AdvectionDiffusionSlipVelocityBC.normalZ,
+                                             para->getParH(level)->AdvectionDiffusionSlipVelocityBC.gradient,
+                                             para->getParH(level)->AdvectionDiffusionSlipVelocityBC.BCNodeIndices, level);
+            cudaMemoryManager->cudaCopyConcentrationSlipVelocityBCHostToDevice(level);
+        }
+        for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
+        {
+            const int numberOfADNoSlipValues = int(builder->getADNoSlipSize(level));
+            para->getParH(level)->AdvectionDiffusionNoSlipBC.numberOfBCnodes = numberOfADNoSlipValues;
+            para->getParD(level)->AdvectionDiffusionNoSlipBC.numberOfBCnodes = numberOfADNoSlipValues;
+            if(numberOfADNoSlipValues < 1) continue;
+            VF_LOG_INFO("size No Slip AD level {}: {}", level, numberOfADNoSlipValues);
+
+            cudaMemoryManager->cudaAllocConcentrationNoSlipBC(level);
+            builder->getADNoSlipValues(para->getParH(level)->AdvectionDiffusionNoSlipBC.BCNodeIndices, level);
+            cudaMemoryManager->cudaCopyConcentrationNoSlipBCHostToDevice(level);
+        }
+    }
 
     initalValuesDomainDecompostion();
 }
@@ -871,25 +902,6 @@ void GridGenerator::allocArrays_BoundaryQs()
             QforBoundaryConditions &Q = para->getParH(i)->velocityBC;
             initPointersToSubgridDistances(Q);
             builder->getVelocityQs(Q.q27, i);
-
-            if (para->getDiffOn()) {
-                //////////////////////////////////////////////////////////////////////////
-                para->getParH(i)->AdvectionDiffusionDirichletBC.numberOfBcNodes = numberOfVelocityNodes;
-                para->getParD(i)->AdvectionDiffusionDirichletBC.numberOfBcNodes = numberOfVelocityNodes;
-                VF_LOG_INFO("size TempVel.kTemp: {}",  para->getParH(i)->AdvectionDiffusionDirichletBC.numberOfBcNodes);
-                VF_LOG_INFO("getTemperatureInit: {}",  para->getConcentrationInit());
-                VF_LOG_INFO("getTemperatureBC: {}",  para->getConcentrationBC());
-                //////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaAllocConcentrationDirichletBC(i);
-                //////////////////////////////////////////////////////////////////////////
-                for (int m = 0; m < numberOfVelocityNodes; m++)
-                {
-                    para->getParH(i)->AdvectionDiffusionDirichletBC.concentration[m] = para->getConcentrationInit();
-                    para->getParH(i)->AdvectionDiffusionDirichletBC.concentrationBC[m] = para->getConcentrationBC();
-                    para->getParH(i)->AdvectionDiffusionDirichletBC.k[m] = para->getParH(i)->velocityBC.k[m];
-                }
-                cudaMemoryManager->cudaCopyConcentrationDirichletBCHostToDevice(i);
-            }
             cudaMemoryManager->cudaCopyVeloBC(i);
         }
     }
@@ -910,28 +922,6 @@ void GridGenerator::allocArrays_BoundaryQs()
 
             if (para->getDiffOn()) {
                 throw std::runtime_error("Advection diffusion not implemented for Precursor!");
-                //////////////////////////////////////////////////////////////////////////
-                // para->getParH(i)->TempVel.kTemp = numberOfVelocityNodes;
-                // para->getParD(i)->TempVel.kTemp = numberOfVelocityNodes;
-                // std::cout << "Groesse TempVel.kTemp = " << para->getParH(i)->TempPress.kTemp << std::endl;
-                // std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
-                // std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
-                // //////////////////////////////////////////////////////////////////////////
-                // cudaMemoryManager->cudaAllocTempVeloBC(i);
-                // //cout << "nach alloc " << std::endl;
-                // //////////////////////////////////////////////////////////////////////////
-                // for (int m = 0; m < numberOfVelocityNodes; m++)
-                // {
-                //     para->getParH(i)->TempVel.temp[m] = para->getTemperatureInit();
-                //     para->getParH(i)->TempVel.tempPulse[m] = para->getTemperatureBC();
-                //     para->getParH(i)->TempVel.velo[m] = para->getVelocity();
-                //     para->getParH(i)->TempVel.k[m] = para->getParH(i)->Qinflow.k[m];
-                // }
-                // //////////////////////////////////////////////////////////////////////////
-                // //cout << "vor copy " << std::endl;
-                // cudaMemoryManager->cudaCopyTempVeloBCHD(i);
-                // //cout << "nach copy " << std::endl;
-                //////////////////////////////////////////////////////////////////////////
             }
             cudaMemoryManager->cudaCopyPrecursorBC(i);
         }
@@ -971,36 +961,58 @@ void GridGenerator::allocArrays_BoundaryQs()
             {
                 Q.q27[d000][node_i] = 0.0f;
             }
-            //for(int test = 0; test < 3; test++)
-            //{
-            //    for (int tmp = 0; tmp < 27; tmp++)
-            //    {
-            //        cout <<"Kuhs: " << Q.q27[tmp][test]  << "\n";
-            //    }
-            //}
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // advection - diffusion stuff
-            if (para->getDiffOn() == true) {
-                    //////////////////////////////////////////////////////////////////////////
-                    para->getParH(i)->AdvectionDiffusionNoSlipBC.numberOfBcNodes = numberOfGeometryNodes;
-                    para->getParD(i)->AdvectionDiffusionNoSlipBC.numberOfBcNodes = numberOfGeometryNodes;
-                    std::cout << "Groesse Temp.kTemp = " << para->getParH(i)->AdvectionDiffusionNoSlipBC.numberOfBcNodes << std::endl;
-                    //////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaAllocConcentrationNoSlipBC(i);
-                    //////////////////////////////////////////////////////////////////////////
-                    for (int m = 0; m < numberOfGeometryNodes; m++)
-                    {
-                        para->getParH(i)->AdvectionDiffusionNoSlipBC.concentration[m] = para->getConcentrationInit();
-                        para->getParH(i)->AdvectionDiffusionNoSlipBC.k[m] = para->getParH(i)->geometryBC.k[m];
-                    }
-                    //////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaCopyConcentrationNoSlipBCHD(i);
-                    //////////////////////////////////////////////////////////////////////////
-                }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 cudaMemoryManager->cudaCopyGeomBC(i);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+    }
+
+    if(para->getDiffOn())
+    {
+        for(uint level=0; level<builder->getNumberOfGridLevels(); level++)
+        {
+            const uint numberOfBoundaryNodes = builder->getADDirichletSize(level);
+            if(numberOfBoundaryNodes == 0) continue;
+            VF_LOG_INFO("size DirichletQs, Level {}: {}", level, numberOfBoundaryNodes);
+            real* QQ = para->getParH(level)->AdvectionDiffusionDirichletBC.q27[0];
+            getPointersToBoundaryConditions(para->getParH(level)->AdvectionDiffusionDirichletBC.q27, QQ, numberOfBoundaryNodes);
+            builder->getADDirichletQs(para->getParH(level)->AdvectionDiffusionDirichletBC.q27, level);
+            cudaMemoryManager->cudaCopyConcentrationDirichletBCHostToDevice(level); 
+        }
+
+        for(uint level=0; level<builder->getNumberOfGridLevels(); level++)
+        {
+            const uint numberOfBoundaryNodes = builder->getADNeumannSize(level);
+            if(numberOfBoundaryNodes == 0) continue;
+            VF_LOG_INFO("size NeumannQs, Level {}: {}", level, numberOfBoundaryNodes);
+            
+            real* QQ = para->getParH(level)->AdvectionDiffusionNeumannBC.q27[0];
+            getPointersToBoundaryConditions(para->getParH(level)->AdvectionDiffusionNeumannBC.q27, QQ, numberOfBoundaryNodes);
+            builder->getADNeumannQs(para->getParH(level)->AdvectionDiffusionNeumannBC.q27, level);
+            cudaMemoryManager->cudaCopyConcentrationNeumannBCHostToDevice(level); 
+        }
+
+        for(uint level=0; level<builder->getNumberOfGridLevels(); level++)
+        {
+            const uint numberOfBoundaryNodes = builder->getADSlipVelocitySize(level);
+            if(numberOfBoundaryNodes == 0) continue;
+            VF_LOG_INFO("size SlipVelocityQs, Level {}: {}", level, numberOfBoundaryNodes);
+            
+            real* QQ = para->getParH(level)->AdvectionDiffusionSlipVelocityBC.q27[0];
+            getPointersToBoundaryConditions(para->getParH(level)->AdvectionDiffusionSlipVelocityBC.q27, QQ, numberOfBoundaryNodes);
+            builder->getADSlipVelocityQs(para->getParH(level)->AdvectionDiffusionSlipVelocityBC.q27, level);
+            cudaMemoryManager->cudaCopyConcentrationSlipVelocityBCHostToDevice(level); 
+        }
+        for(uint level=0; level<builder->getNumberOfGridLevels(); level++)
+        {
+            const uint numberOfBoundaryNodes = builder->getADNoSlipSize(level);
+            if(numberOfBoundaryNodes == 0) continue;
+            VF_LOG_INFO("size NoSlipQs, Level {}: {}", level, numberOfBoundaryNodes);
+
+            real* QQ = para->getParH(level)->AdvectionDiffusionNoSlipBC.q27[0];
+            getPointersToBoundaryConditions(para->getParH(level)->AdvectionDiffusionNoSlipBC.q27, QQ, numberOfBoundaryNodes);
+            builder->getADNoSlipQs(para->getParH(level)->AdvectionDiffusionNoSlipBC.q27, level);
+            cudaMemoryManager->cudaCopyConcentrationNoSlipBCHostToDevice(level); 
         }
     }
 
