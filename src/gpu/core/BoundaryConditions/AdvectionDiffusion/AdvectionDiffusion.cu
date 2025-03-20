@@ -39,7 +39,10 @@
 #include "Calculation/Calculation.h"
 #include <cuda_helper/CudaGrid.h>
 
-#include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion_Device.cuh"
+#include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionBounceBack.cuh"
+#include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionDirichlet.cuh"
+#include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionNeumann.cuh"
+#include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionSlipVelocity.cuh"
 #include "Parameter/Parameter.h"
 
 void AdvectionDiffusionSlipVelocityTurbulentViscosityCompressible(
