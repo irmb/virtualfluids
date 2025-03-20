@@ -417,11 +417,11 @@ public:
         return SPtr<ADNeumannBoundaryCondition>(new ADNeumannBoundaryCondition(BCvalue, vx, vy, vz));
     }
 
-    real BCgradient, vx, vy, vz;
-    std::vector<real> BCgradientList, vxList, vyList, vzList;
+    real gradient, vx, vy, vz;
+    std::vector<real> gradientList, vxList, vyList, vzList;
 
 protected:
-    ADNeumannBoundaryCondition(real gradient, real vx, real vy, real vz) : BCgradient(gradient), vx(vx), vy(vy), vz(vz) 
+    ADNeumannBoundaryCondition(real gradient, real vx, real vy, real vz) : gradient(gradient), vx(vx), vy(vy), vz(vz) 
     {
 
     }
@@ -432,14 +432,14 @@ public:
         return vf::gpu::BC_AD;
     }
 
-    void fillBoundaryGradientLists();
+    void fillBoundaryValueLists();
 
-    real getBCgradient() const { return this->BCgradient; }
+    real getBCgradient() const { return this->gradient; }
     real getVx() const { return this->vx; }
     real getVy() const { return this->vy; }
     real getVz() const { return this->vz; }
 
-    real getBCgradient(uint index) { return this->BCgradientList[index]; }
+    real getBCgradient(uint index) { return this->gradientList[index]; }
     real getVx(uint index)  { return this->vxList[index]; }
     real getVy(uint index)  { return this->vyList[index]; }
     real getVz(uint index)  { return this->vzList[index]; }
@@ -467,13 +467,7 @@ public:
         return vf::gpu::BC_AD;
     }
 
-    void fillBoundaryValueLists()
-    {
-        std::fill_n(std::back_inserter(this->normalXList), this->indices.size(), normalX);
-        std::fill_n(std::back_inserter(this->normalYList), this->indices.size(), normalY);
-        std::fill_n(std::back_inserter(this->normalZList), this->indices.size(), normalZ);
-        std::fill_n(std::back_inserter(this->gradientList), this->indices.size(), gradient);
-    }
+    void fillBoundaryValueLists();
 
     real getNormalX(uint index) {return this->normalXList[index];}
     real getNormalY(uint index) {return this->normalYList[index];}

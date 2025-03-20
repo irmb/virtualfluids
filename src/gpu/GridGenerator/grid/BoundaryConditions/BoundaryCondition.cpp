@@ -111,18 +111,35 @@ void GeometryBoundaryCondition::setTangentialVelocityForPatch(SPtr<Grid> grid, u
 
 void StressBoundaryCondition::fillSamplingIndices(std::vector<SPtr<Grid> > grid, uint level, uint samplingOffset)
 {
-
     for( uint i = 0; i < this->indices.size(); i++ )
     {
         real x, y, z;
         grid[level]->transIndexToCoords(this->indices[i], x, y, z);
 
-        real x_sampling = x + this->getNormalx(i)*samplingOffset*grid[level]->getDelta();
-        real y_sampling = y + this->getNormaly(i)*samplingOffset*grid[level]->getDelta();
-        real z_sampling = z + this->getNormalz(i)*samplingOffset*grid[level]->getDelta();
+        const real xSampling = x + this->getNormalx(i)*samplingOffset*grid[level]->getDelta();
+        const real ySampling = y + this->getNormaly(i)*samplingOffset*grid[level]->getDelta();
+        const real zSampling = z + this->getNormalz(i)*samplingOffset*grid[level]->getDelta();
 
-        this->velocitySamplingIndices.push_back( grid[level]->transCoordToIndex(x_sampling, y_sampling, z_sampling) );
+        this->velocitySamplingIndices.push_back( grid[level]->transCoordToIndex(xSampling, ySampling, zSampling) );
     }
     
+}
+
+void ADNeumannBoundaryCondition::fillBoundaryValueLists()
+{
+    const real gradient = static_cast<real>(side->getDirection()) * this->gradient;
+    std::fill_n(std::back_inserter(this->vxList), this->indices.size(), vx);
+    std::fill_n(std::back_inserter(this->vyList), this->indices.size(), vy);
+    std::fill_n(std::back_inserter(this->vzList), this->indices.size(), vz);
+    std::fill_n(std::back_inserter(this->gradientList), this->indices.size(), gradient);
+}
+
+void ADSlipVelocityBoundaryCondition::fillBoundaryValueLists()
+{
+    const real gradient = static_cast<real>(side->getDirection()) * this->gradient;
+    std::fill_n(std::back_inserter(this->normalXList), this->indices.size(), normalX);
+    std::fill_n(std::back_inserter(this->normalYList), this->indices.size(), normalY);
+    std::fill_n(std::back_inserter(this->normalZList), this->indices.size(), normalZ);
+    std::fill_n(std::back_inserter(this->gradientList), this->indices.size(), gradient);
 }
 //! \}
