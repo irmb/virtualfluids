@@ -45,6 +45,17 @@
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionSlipVelocity.cuh"
 #include "Parameter/Parameter.h"
 
+void AdvectionDiffusionBounceBack(LBMSimulationParameter* parameterDevice,
+                                  AdvectionDiffusionNoSlipBoundaryConditions bcParameters)
+{
+    const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads, bcParameters.numberOfBCnodes);
+
+    AdvectionDiffusionBounceBack_Device<<<grid.grid, grid.threads>>>(
+        parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->neighborX, parameterDevice->neighborY,
+        parameterDevice->neighborZ, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
+    getLastCudaError("AdvectionDiffusionBounceBack_Device execution failed");
+}
+
 void AdvectionDiffusionSlipVelocityTurbulentViscosityCompressible(
     LBMSimulationParameter* parameterDevice, AdvectionDiffusionSlipVelocityBoundaryConditions bcParameters)
 {
@@ -143,15 +154,56 @@ void AdvectionDiffusionDirichletInterpolatedNoSlip(LBMSimulationParameter* param
     getLastCudaError("AdvectionDiffusionDirichlet_Device execution failed");
 }
 
-void AdvectionDiffusionBounceBack(LBMSimulationParameter* parameterDevice,
-                                  AdvectionDiffusionNoSlipBoundaryConditions bcParameters)
+void AdvectionDiffusionNeumannAntiBounceBackSlip(LBMSimulationParameter* parameterDevice,
+                                                 AdvectionDiffusionNeumannBoundaryConditions bcParameters)
 {
     const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads, bcParameters.numberOfBCnodes);
 
-    AdvectionDiffusionBounceBack_Device<<<grid.grid, grid.threads>>>(
-        parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->neighborX, parameterDevice->neighborY,
-        parameterDevice->neighborZ, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
-    getLastCudaError("AdvectionDiffusionBounceBack_Device execution failed");
+    AdvectionDiffusionNeumann_Device<BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackSlip>
+        <<<grid.grid, grid.threads>>>(parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->neighborX,
+                                      parameterDevice->neighborY, parameterDevice->neighborZ, parameterDevice->velocityX,
+                                      parameterDevice->velocityY, parameterDevice->velocityZ, parameterDevice->numberOfNodes,
+                                      parameterDevice->omegaDiffusivity, parameterDevice->isEvenTimestep);
+    getLastCudaError("AdvectionDiffusionNeumann_Device execution failed");
+}
+
+void AdvectionDiffusionNeumannInterpolatedSlip(LBMSimulationParameter* parameterDevice,
+                                               AdvectionDiffusionNeumannBoundaryConditions bcParameters)
+{
+    const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads, bcParameters.numberOfBCnodes);
+
+    AdvectionDiffusionNeumann_Device<BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackSlip>
+        <<<grid.grid, grid.threads>>>(parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->neighborX,
+                                      parameterDevice->neighborY, parameterDevice->neighborZ, parameterDevice->velocityX,
+                                      parameterDevice->velocityY, parameterDevice->velocityZ, parameterDevice->numberOfNodes,
+                                      parameterDevice->omegaDiffusivity, parameterDevice->isEvenTimestep);
+    getLastCudaError("AdvectionDiffusionNeumann_Device execution failed");
+}
+
+void AdvectionDiffusionNeumannAntiBounceBackNoSlip(LBMSimulationParameter* parameterDevice,
+                                                   AdvectionDiffusionNeumannBoundaryConditions bcParameters)
+{
+    const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads, bcParameters.numberOfBCnodes);
+
+    AdvectionDiffusionNeumann_Device<BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip>
+        <<<grid.grid, grid.threads>>>(parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->neighborX,
+                                      parameterDevice->neighborY, parameterDevice->neighborZ, parameterDevice->velocityX,
+                                      parameterDevice->velocityY, parameterDevice->velocityZ, parameterDevice->numberOfNodes,
+                                      parameterDevice->omegaDiffusivity, parameterDevice->isEvenTimestep);
+    getLastCudaError("AdvectionDiffusionNeumann_Device execution failed");
+}
+
+void AdvectionDiffusionNeumannInterpolatedNoSlip(LBMSimulationParameter* parameterDevice,
+                                                 AdvectionDiffusionNeumannBoundaryConditions bcParameters)
+{
+    const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads, bcParameters.numberOfBCnodes);
+
+    AdvectionDiffusionNeumann_Device<BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip>
+        <<<grid.grid, grid.threads>>>(parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->neighborX,
+                                      parameterDevice->neighborY, parameterDevice->neighborZ, parameterDevice->velocityX,
+                                      parameterDevice->velocityY, parameterDevice->velocityZ, parameterDevice->numberOfNodes,
+                                      parameterDevice->omegaDiffusivity, parameterDevice->isEvenTimestep);
+    getLastCudaError("AdvectionDiffusionNeumann_Device execution failed");
 }
 
 //! \}
