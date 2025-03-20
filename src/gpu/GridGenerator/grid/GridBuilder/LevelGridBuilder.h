@@ -64,6 +64,10 @@ class StressBoundaryCondition;
 class PressureBoundaryCondition;
 class GeometryBoundaryCondition;
 class PrecursorBoundaryCondition;
+class ADDirichletBoundaryCondition;
+class ADNeumannBoundaryCondition;
+class ADSlipVelocityBoundaryCondition;
+class ADNoSlipBoundaryCondition;
 enum class SideType;
 
 class TransientBCInputFileReader;
@@ -98,7 +102,11 @@ public:
                                                                     int timeStepsBetweenReads, real velocityX = c0o1,
                                                                     real velocityY = c0o1, real velocityZ = c0o1,
                                                                     std::vector<uint> fileLevelToGridLevelMap = {});
-
+    void setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz);
+    void setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx);
+    void setADSlipVelocityBoundaryCondition(SideType sideType,real normalX, real normalY, real normalZ, real gradient, real deltaX);
+    void setADNoSlipBoundaryCondition(SideType sideType);
+                                                                    
     void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall);
 
     virtual void setCommunicationProcess(int direction, uint process);
@@ -154,6 +162,22 @@ public:
                                                     real& velocityX, real& velocityY, real& velocityZ, int level) const override;
     virtual void getPrecursorQs(real* qs[27], int level) const override;
 
+    uint getADDirichletSize(int level) const override;
+    void getADDirichletValues(real* values, real* vx, real* vy, real* vz, int* indices, int level) const override;
+    void getADDirichletQs(real* qs[27], int level) const override;
+
+    uint getADNeumannSize(int level) const override;
+    void getADNeumannValues(real* gradients, real* vx, real* vy, real* vz, int* indices, int level) const override;
+    void getADNeumannQs(real* qs[27], int level) const override;
+
+    uint getADSlipVelocitySize(int level) const override;
+    void getADSlipVelocityValues(real* normalX, real* normalY, real* normalZ, real* gradient, int* indices, int level) const override;
+    void getADSlipVelocityQs(real* qs[27], int level) const override;
+
+    uint getADNoSlipSize(int level) const override;
+    void getADNoSlipValues(int* indices, int level) const override;
+    void getADNoSlipQs(real* qs[27], int level) const override;
+
     virtual void getGeometryQs(real *qs[27], int level) const override;
     virtual uint getGeometrySize(int level) const override;
     virtual void getGeometryIndices(int *indices, int level) const override;
@@ -183,6 +207,11 @@ protected:
         std::vector<SPtr<VelocityBoundaryCondition>> noSlipBoundaryConditions;
 
         std::vector<SPtr<PrecursorBoundaryCondition>> precursorBoundaryConditions;
+
+        std::vector<SPtr<ADDirichletBoundaryCondition>> adDirichletBoundaryConditions;
+        std::vector<SPtr<ADNeumannBoundaryCondition>> adNeumannBoundaryConditions;
+        std::vector<SPtr<ADSlipVelocityBoundaryCondition>> adSlipVelocityBoundaryConditions;
+        std::vector<SPtr<ADNoSlipBoundaryCondition>> adNoSlipBoundaryConditions;
 
         SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
     };
