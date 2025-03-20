@@ -169,8 +169,10 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
             qNode[dir] = -1.0;
         }
 
-        // reset diagonals in case they were set by another bc
-        resetDiagonalsInCaseOfOtherBC(grid.get(), qNode, dir, coords);
+        //! \todo fix for AD
+        if(boundaryCondition->getType() != vf::gpu::BC_AD) 
+            // reset diagonals in case they were set by another bc
+            resetDiagonalsInCaseOfOtherBC(grid.get(), qNode, dir, coords);
     }
 
     boundaryCondition->qs.push_back(qNode);
