@@ -137,7 +137,16 @@ public:
         NotSpecified
     };
 
-    enum class AdvectionDiffusionDirichletBC{
+    enum class AdvectionDiffusionNoSlipBC { NoSlipBounceBack, NotSpecified };
+
+    enum class AdvectionDiffusionSlipVelocityBC {
+        SlipVelocityTurbulentViscosityCompressible,
+        SlipVelocityCompressible,
+        SlipVelocityBounceBack,
+        NotSpecified
+    };
+
+    enum class AdvectionDiffusionDirichletBC {
         //! - Interpolated Dirichlet boundary condition, uses subgrid distances
         DirichletInterpolatedSlip,
         DirichletAntiBounceBackSlip,
@@ -146,19 +155,12 @@ public:
         NotSpecified
     };
 
-    enum class AdvectionDiffusionNeumannBC{
+    enum class AdvectionDiffusionNeumannBC {
         //! - Interpolated Neumann boundary condition, uses subgrid distances
         NeumannInterpolatedSlip,
         NeumannAntiBounceBackSlip,
         NeumannInterpolatedNoSlip,
         NeumannAntiBounceBackNoSlip,
-        NotSpecified
-    };
-
-    enum class AdvectionDiffusionSlipVelocityBC{
-        SlipVelocityTurbulentViscosityCompressible,
-        SlipVelocityCompressible,
-        SlipVelocityBounceBack,
         NotSpecified
     };
 
@@ -178,9 +180,10 @@ public:
     //!
     //! - slip: only use a slip boundary condition which sets the normals
     void setGeometryBoundaryCondition(std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType);
+    void setAdvectionDiffusionNoSlipBoundaryCondition(AdvectionDiffusionSlipVelocityBC boundaryConditionType);
+    void setAdvectionDiffusionSlipVelocityBoundaryCondition(AdvectionDiffusionSlipVelocityBC boundaryConditionType);
     void setAdvectionDiffusionDirichletBoundaryCondition(AdvectionDiffusionDirichletBC boundaryConditionType);
     void setAdvectionDiffusionNeumannBoundaryCondition(AdvectionDiffusionNeumannBC boundaryConditionType);
-    void setAdvectionDiffusionSlipVelocityBoundaryCondition(AdvectionDiffusionSlipVelocityBC boundaryConditionType);
     // void setOutflowBoundaryCondition(...); // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
@@ -192,9 +195,9 @@ public:
     [[nodiscard]] BoundaryConditionWithParameterKernel getStressBoundaryConditionPost() const;
     [[nodiscard]] PrecursorBoundaryConditionKernel getPrecursorBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionNoSlipBoundaryConditionKernel getAdvectionDiffusionNoSlipBoundaryConditionPost() const;
+    [[nodiscard]] AdvectionDiffusionSlipVelocityBoundaryConditionKernel getAdvectionDiffusionSlipVelocityBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionDirichletBoundaryConditionKernel getAdvectionDiffusionDirichletBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionNeumannBoundaryConditionKernel getAdvectionDiffusionNeumannBoundaryConditionPost() const;
-    [[nodiscard]] AdvectionDiffusionSlipVelocityBoundaryConditionKernel getAdvectionDiffusionSlipVelocityBoundaryConditionPost() const;
     [[nodiscard]] virtual bool hasDirectionalPressureBoundaryCondition() const;
 
 private:
@@ -205,9 +208,10 @@ private:
     std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition = NoSlipBC::NoSlipDelayBounceBack;
     StressBC stressBoundaryCondition = StressBC::NotSpecified;
     PrecursorBC precursorBoundaryCondition = PrecursorBC::NotSpecified;
+    AdvectionDiffusionNoSlipBC advectionDiffusionNoSlipBoundaryCondition = AdvectionDiffusionNoSlipBC::NotSpecified;
+    AdvectionDiffusionSlipVelocityBC advectionDiffusionSlipVelocityBoundaryCondition = AdvectionDiffusionSlipVelocityBC::NotSpecified;
     AdvectionDiffusionDirichletBC advectionDiffusionDirichletBoundaryCondition = AdvectionDiffusionDirichletBC::NotSpecified;
     AdvectionDiffusionNeumannBC advectionDiffusionNeumannBoundaryCondition = AdvectionDiffusionNeumannBC::NotSpecified;
-    AdvectionDiffusionSlipVelocityBC advectionDiffusionSlipVelocityBoundaryCondition = AdvectionDiffusionSlipVelocityBC::NotSpecified;
 
     // OutflowBoundaryConditon outflowBC // TODO: https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 };

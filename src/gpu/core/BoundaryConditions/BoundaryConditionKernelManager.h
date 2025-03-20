@@ -95,9 +95,9 @@ public:
     //! \brief calls the device function of the stress wall model (post-collision)
     void runStressWallModelKernelPost(int level) const;
 
+    void runADNoSlipBCKernel(int level) const ;
     void runADSlipVelocityBCKernel(int level) const ;
     void runADDirichletBCKernel(int level) const ;
-    void runADNoSlipBCKernel(int level) const ;
     void runADNeumannBCKernel(int level) const ;
 private:
     //! \brief check if a directional boundary condition was set
@@ -138,10 +138,10 @@ private:
     PrecursorBoundaryConditionKernel precursorBoundaryConditionPost = nullptr;
     BoundaryConditionKernel pressureBoundaryConditionPre = nullptr;
     DirectionalBoundaryConditionKernel directionalPressureBoundaryConditionPre = nullptr;
+    ADNoSlipBoundaryConditionKernel ADNoSlipBoundaryConditionPost = nullptr;
     ADSlipVelocityBoundaryConditionKernel ADSlipVelocityBoundaryConditionPost = nullptr;
     ADDirichletBoundaryConditionKernel ADDirichletBoundaryConditionPost = nullptr;
     ADNeumannBoundaryConditionKernel ADNeumannBoundaryConditionPost = nullptr;
-    ADNoSlipBoundaryConditionKernel ADNoSlipBoundaryConditionPost = nullptr;
 };
 #endif
 

@@ -216,6 +216,24 @@ BoundaryConditionKernel BoundaryConditionFactory::getGeometryBoundaryConditionPo
     return nullptr;
 }
 
+AdvectionDiffusionNoSlipBoundaryConditionKernel BoundaryConditionFactory::getAdvectionDiffusionNoSlipBoundaryConditionPost() const
+{
+    if(this->advectionDiffusionNoSlipBoundaryCondition == AdvectionDiffusionNoSlipBC::NoSlipBounceBack)
+        return AdvectionDiffusionBounceBack;
+    return nullptr;
+}
+
+AdvectionDiffusionSlipVelocityBoundaryConditionKernel BoundaryConditionFactory::getAdvectionDiffusionSlipVelocityBoundaryConditionPost() const
+{
+    if(this->advectionDiffusionSlipVelocityBoundaryCondition == AdvectionDiffusionSlipVelocityBC::SlipVelocityBounceBack)
+        return AdvectionDiffusionSlipVelocityBounceBack;
+    if(this->advectionDiffusionSlipVelocityBoundaryCondition == AdvectionDiffusionSlipVelocityBC::SlipVelocityCompressible)
+        return AdvectionDiffusionSlipVelocityCompressible;
+    if(this->advectionDiffusionSlipVelocityBoundaryCondition == AdvectionDiffusionSlipVelocityBC::SlipVelocityTurbulentViscosityCompressible)
+        return AdvectionDiffusionSlipVelocityTurbulentViscosityCompressible;
+    return nullptr;
+}
+
 AdvectionDiffusionDirichletBoundaryConditionKernel BoundaryConditionFactory::getAdvectionDiffusionDirichletBoundaryConditionPost() const
 {
     switch(this->advectionDiffusionDirichletBoundaryCondition)
@@ -250,15 +268,6 @@ AdvectionDiffusionNeumannBoundaryConditionKernel BoundaryConditionFactory::getAd
     };
 }
 
-AdvectionDiffusionSlipVelocityBoundaryConditionKernel BoundaryConditionFactory::getAdvectionDiffusionSlipVelocityBoundaryConditionPost() const
-{
-    if(this->advectionDiffusionSlipVelocityBoundaryCondition == AdvectionDiffusionSlipVelocityBC::SlipVelocityBounceBack)
-        return AdvectionDiffusionSlipVelocityBounceBack;
-    if(this->advectionDiffusionSlipVelocityBoundaryCondition == AdvectionDiffusionSlipVelocityBC::SlipVelocityCompressible)
-        return AdvectionDiffusionSlipVelocityCompressible;
-    if(this->advectionDiffusionSlipVelocityBoundaryCondition == AdvectionDiffusionSlipVelocityBC::SlipVelocityTurbulentViscosityCompressible)
-        return AdvectionDiffusionSlipVelocityTurbulentViscosityCompressible;
-    return nullptr;
-}
+
 
 //! \}
