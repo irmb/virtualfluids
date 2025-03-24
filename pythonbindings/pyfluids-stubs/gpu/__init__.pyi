@@ -411,33 +411,68 @@ class SideType:
 class Simulation:
     @overload
     def __init__(
+        self, para: Parameter, grid_builder: grid_generator.GridBuilder, bc_factory: BoundaryConditionFactory
+    ) -> None: ...
+    @overload
+    def __init__(
+        self,
+        para: Parameter,
+        grid_builder: grid_generator.GridBuilder,
+        bc_factory: BoundaryConditionFactory,
+        grid_scaling_factory: GridScalingFactory,
+    ) -> None: ...
+    @overload
+    def __init__(
         self,
         parameter: Parameter,
-        memoryManager: CudaMemoryManager,
-        communicator,
-        gridProvider: GridProvider,
-        bcFactory: BoundaryConditionFactory,
+        memory_manager: CudaMemoryManager,
+        grid_builder: grid_generator.GridBuilder,
+        bc_factory: BoundaryConditionFactory,
+    ) -> None: ...
+    @overload
+    def __init__(
+        self,
+        parameter: Parameter,
+        memory_manager: CudaMemoryManager,
+        grid_builder: grid_generator.GridBuilder,
+        bc_factory: BoundaryConditionFactory,
         gridScalingFactory: GridScalingFactory,
     ) -> None: ...
     @overload
     def __init__(
         self,
         parameter: Parameter,
-        memoryManager: CudaMemoryManager,
-        communicator,
-        gridProvider: GridProvider,
-        bcFactory: BoundaryConditionFactory,
+        grid_builder: grid_generator.GridBuilder,
+        bc_factory: BoundaryConditionFactory,
+        tm_factory: TurbulenceModelFactory,
     ) -> None: ...
     @overload
     def __init__(
         self,
         parameter: Parameter,
-        memoryManager: CudaMemoryManager,
-        communicator,
-        gridProvider: GridProvider,
-        bcFactory: BoundaryConditionFactory,
-        tmFactory: TurbulenceModelFactory,
-        gridScalingFactory: GridScalingFactory,
+        grid_builder: grid_generator.GridBuilder,
+        bc_factory: BoundaryConditionFactory,
+        tm_factory: TurbulenceModelFactory,
+        grid_scaling_factory: GridScalingFactory,
+    ) -> None: ...
+    @overload
+    def __init__(
+        self,
+        parameter: Parameter,
+        memory_manager: CudaMemoryManager,
+        grid_builder: grid_generator.GridBuilder,
+        bc_factory: BoundaryConditionFactory,
+        tm_factory: TurbulenceModelFactory,
+    ) -> None: ...
+    @overload
+    def __init__(
+        self,
+        parameter: Parameter,
+        memory_manager: CudaMemoryManager,
+        grid_builder: grid_generator.GridBuilder,
+        bc_factory: BoundaryConditionFactory,
+        tm_factory: TurbulenceModelFactory,
+        grid_scaling_factory: GridScalingFactory,
     ) -> None: ...
     def addEnstrophyAnalyzer(self, t_analyse: int) -> None: ...
     def addKineticEnergyAnalyzer(self, t_analyse: int) -> None: ...
