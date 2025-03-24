@@ -71,23 +71,23 @@ void run(const vf::basics::ConfigurationFile& config)
 
     const std::string simulationName("ActuatorLine");
 
-    const real viscosity = 1.56e-5;
-    const real machNumber = 0.1;
+    const real viscosity = 1.56e-5F;
+    const real machNumber = c1o10;
     const uint timeStepAverageTimeSeriesProbe = 1;
 
     const real rotorDiameter = config.getValue<real>("RotorDiameter");
     const uint nodesPerDiameter = config.getValue<uint>("NodesPerDiameter");
     const real velocity = config.getValue<real>("Velocity");
 
-    const float timeStartOut = config.getValue<real>("tStartOut");
-    const float timeOut = config.getValue<real>("tOut");
-    const float timeEnd = config.getValue<real>("tEnd");
+    const real timeStartOut = config.getValue<real>("tStartOut");
+    const real timeOut = config.getValue<real>("tOut");
+    const real timeEnd = config.getValue<real>("tEnd");
 
-    // const float timeStartAveraging = config.getValue<real>("tStartAveraging");
-    const float timeStartTemporalAveraging = config.getValue<real>("tStartTmpAveraging");
-    const float timeAveraging = config.getValue<real>("tAveraging");
-    const float timeStartOutProbe = config.getValue<real>("tStartOutProbe");
-    const float timeOutProbe = config.getValue<real>("tOutProbe");
+    // const real timeStartAveraging = config.getValue<real>("tStartAveraging");
+    const real timeStartTemporalAveraging = config.getValue<real>("tStartTmpAveraging");
+    const real timeAveraging = config.getValue<real>("tAveraging");
+    const real timeStartOutProbe = config.getValue<real>("tStartOutProbe");
+    const real timeOutProbe = config.getValue<real>("tOutProbe");
 
     const real lengthX = config.getValue<real>("LengthXinDiameter") * rotorDiameter;
     const real lengthY = config.getValue<real>("LengthYinDiameter") * rotorDiameter;
@@ -109,7 +109,7 @@ void run(const vf::basics::ConfigurationFile& config)
     //////////////////////////////////////////////////////////////////////////
 
     const real deltaX = rotorDiameter / real(nodesPerDiameter);
-    const real deltaT = deltaX * machNumber / (sqrt(3) * velocity);
+    const real deltaT = deltaX * machNumber / (std::sqrt(c3o1) * velocity);
     const real velocityLB = velocity * deltaT / deltaX;              // LB units
     const real viscosityLB = viscosity * deltaT / (deltaX * deltaX); // LB units
 
@@ -119,7 +119,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     const uint timeStepStartOutProbe = timeStartOutProbe / deltaT;
     const uint timeStepStartTemporalAveraging = timeStartTemporalAveraging / deltaT;
-    const uint numberOfAvergingTimeSteps = timeAveraging / deltaT;
+    const uint numberOfAveragingTimeSteps = timeAveraging / deltaT;
     const uint timeStepOutProbe = timeOutProbe / deltaT;
 
     //////////////////////////////////////////////////////////////////////////
@@ -128,7 +128,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     auto gridBuilder = std::make_shared<MultipleGridBuilder>();
 
-    gridBuilder->addCoarseGrid(0.0, -0.5 * lengthY, -0.5 * lengthZ, lengthX, 0.5 * lengthY, 0.5 * lengthZ, deltaX);
+    gridBuilder->addCoarseGrid(c0o1, -c1o2 * lengthY, -c1o2 * lengthZ, lengthX, c1o2 * lengthY, c1o2 * lengthZ, deltaX);
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     gridBuilder->buildGrids(false);
 
@@ -150,11 +150,11 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setViscosityRatio(deltaX * deltaX / deltaT);
     para->configureMainKernel(vf::collision_kernel::compressible::K17CompressibleNavierStokes);
 
-    para->setInitialCondition([&](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) {
-        rho = (real)0.0;
+    para->setInitialCondition([&](real, real, real, real& rho, real& vx, real& vy, real& vz) {
+        rho = c0o1;
         vx = velocityLB;
-        vy = (real)0.0;
-        vz = (real)0.0;
+        vy = c0o1;
+        vz = c0o1;
     });
 
     para->setTimestepStartOut(timeStepStartOut);
@@ -168,19 +168,19 @@ void run(const vf::basics::ConfigurationFile& config)
     // set boundary conditions
     //////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MY, velocityLB, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PY, velocityLB, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, velocityLB, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, velocityLB, 0.0, 0.0);
-    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX, velocityLB, c0o1, c0o1);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MY, velocityLB, c0o1, c0o1);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PY, velocityLB, c0o1, c0o1);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, velocityLB, c0o1, c0o1);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, velocityLB, c0o1, c0o1);
+    gridBuilder->setPressureBoundaryCondition(SideType::PX, c0o1);
 
-    BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
+    BoundaryConditionFactory bcFactory;
     bcFactory.setVelocityBoundaryCondition(
         BoundaryConditionFactory::VelocityBC::VelocityWithPressureInterpolatedCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
 
-    SPtr<TurbulenceModelFactory> tmFactory = std::make_shared<TurbulenceModelFactory>(para);
+    auto tmFactory = std::make_shared<TurbulenceModelFactory>(para);
     tmFactory->readConfigFile(config);
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
@@ -190,13 +190,13 @@ void run(const vf::basics::ConfigurationFile& config)
     //////////////////////////////////////////////////////////////////////////
 
     const int level = 0; // grid level at which the turbine samples velocities and distributes forces
-    const real smearingWidth = deltaX * exp2(-level) * 2; // width of gaussian smearing
-    const real density = 1.225f;
+    const real smearingWidth = deltaX * std::exp2(-level) * c2o1; // width of gaussian smearing
+    const real density = 1.225F;
     const uint actuatorNodesPerBlade = 32;
-    const real tipSpeedRatio = 7.5f; // tipspeed ratio = angular vel * radius / inflow vel
-    const std::vector<real> rotorSpeeds { 2 * tipSpeedRatio * velocity / rotorDiameter };
+    const real tipSpeedRatio = 7.5F; // tipspeed ratio = angular vel * radius / inflow vel
+    const std::vector<real> rotorSpeeds { c2o1 * tipSpeedRatio * velocity / rotorDiameter };
 
-    SPtr<ActuatorFarmStandalone> actuatorFarm = std::make_shared<ActuatorFarmStandalone>(
+    auto actuatorFarm = std::make_shared<ActuatorFarmStandalone>(
         para, cudaMemoryManager, rotorDiameter, actuatorNodesPerBlade, turbinePositionsX, turbinePositionsY,
         turbinePositionsZ, rotorSpeeds, density, smearingWidth, level, deltaT, deltaX);
     para->addInteractor(actuatorFarm);
@@ -207,15 +207,15 @@ void run(const vf::basics::ConfigurationFile& config)
     // add probes
     //////////////////////////////////////////////////////////////////////////
 
-    std::vector<real> planePositions = { -1 * rotorDiameter, 1 * rotorDiameter, 3 * rotorDiameter };
+    std::vector<real> planePositions = { -c1o1 * rotorDiameter, c1o1 * rotorDiameter, c3o1 * rotorDiameter };
 
     for (size_t i = 0; i < planePositions.size(); i++) {
         const std::string name = "planeProbe_" + std::to_string(i);
         auto planeProbe =
             std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), name, timeStepStartTemporalAveraging,
-                                    numberOfAvergingTimeSteps, timeStepStartOutProbe, timeStepOutProbe, false, false);
-        planeProbe->addProbePlane(turbinePositionsX[0] + planePositions[i], -0.5 * lengthY, -0.5 * lengthZ, deltaX, lengthY,
-                                  lengthZ);
+                                    numberOfAveragingTimeSteps, timeStepStartOutProbe, timeStepOutProbe, false, false);
+        planeProbe->addProbePlane(turbinePositionsX[0] + planePositions[i], -c1o2 * lengthY, -c1o2 * lengthZ, deltaX,
+                                  lengthY, lengthZ);
         planeProbe->addStatistic(Probe::Statistic::Means);
         planeProbe->addStatistic(Probe::Statistic::Variances);
         planeProbe->addStatistic(Probe::Statistic::Instantaneous);
@@ -223,9 +223,9 @@ void run(const vf::basics::ConfigurationFile& config)
     }
 
     auto planeProbeVertical = std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), "planeProbeVertical",
-                                                      timeStepStartTemporalAveraging, numberOfAvergingTimeSteps,
+                                                      timeStepStartTemporalAveraging, numberOfAveragingTimeSteps,
                                                       timeStepStartOutProbe, timeStepOutProbe, false, false);
-    planeProbeVertical->addProbePlane(0, turbinePositionsY[0], -0.5 * lengthZ, lengthX, deltaX, lengthZ);
+    planeProbeVertical->addProbePlane(c0o1, turbinePositionsY[0], -c1o2 * lengthZ, lengthX, deltaX, lengthZ);
     planeProbeVertical->addStatistic(Probe::Statistic::Means);
     planeProbeVertical->addStatistic(Probe::Statistic::Variances);
     planeProbeVertical->addStatistic(Probe::Statistic::Instantaneous);
@@ -233,8 +233,8 @@ void run(const vf::basics::ConfigurationFile& config)
 
     auto planeProbeHorizontal = std::make_shared<Probe>(
         para, cudaMemoryManager, para->getOutputPath(), "planeProbeHorizontal", timeStepStartTemporalAveraging,
-        numberOfAvergingTimeSteps, timeStepStartOutProbe, timeStepOutProbe, false, false);
-    planeProbeHorizontal->addProbePlane(0, -0.5 * lengthY, turbinePositionsZ[0], lengthX, lengthY, deltaX);
+        numberOfAveragingTimeSteps, timeStepStartOutProbe, timeStepOutProbe, false, false);
+    planeProbeHorizontal->addProbePlane(c0o1, -c1o2 * lengthY, turbinePositionsZ[0], lengthX, lengthY, deltaX);
     planeProbeHorizontal->addStatistic(Probe::Statistic::Means);
     planeProbeHorizontal->addStatistic(Probe::Statistic::Variances);
     planeProbeHorizontal->addStatistic(Probe::Statistic::Instantaneous);
@@ -272,7 +272,7 @@ int main(int argc, char* argv[])
 {
     try {
         vf::logging::Logger::initializeLogger();
-        auto config = vf::basics::loadConfig(argc, argv, defaultConfigFile);
+        const auto config = vf::basics::loadConfig(argc, argv, defaultConfigFile);
         run(config);
     } catch (const std::exception& e) {
         VF_LOG_WARNING("{}", e.what());
