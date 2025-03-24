@@ -40,9 +40,9 @@ namespace precursor_writer
 
     void makeModule(py::module_ &parentModule)
     {
-        py::enum_<OutputVariable>(parentModule, "OutputVariable")
-        .value("Velocities", OutputVariable::Velocities)
-        .value("Distributions", OutputVariable::Distributions);
+        py::enum_<PrecursorWriter::OutputVariable>(parentModule, "OutputVariable")
+        .value("Velocities", PrecursorWriter::OutputVariable::Velocities)
+        .value("Distributions", PrecursorWriter::OutputVariable::Distributions);
 
         py::class_<PrecursorWriter, Sampler, std::shared_ptr<PrecursorWriter>>(parentModule, "PrecursorWriter")
         .def(py::init < SPtr<Parameter>,
@@ -53,7 +53,7 @@ namespace precursor_writer
                         real, real,
                         real, real,
                         uint, uint, 
-                        OutputVariable, 
+                        PrecursorWriter::OutputVariable, 
                         uint>(),
                         py::arg("para"),
                         py::arg("cuda_memory_manager"),
