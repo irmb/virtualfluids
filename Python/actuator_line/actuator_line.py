@@ -38,7 +38,7 @@ from pyfluids import basics, gpu, logger, parallel
 
 # %%
 sim_name = "ABL"
-config_file = Path(__file__).parent / "configActuatorLine.txt"
+config_file = Path(__file__).parent / "configActuatorLine.cfg"
 output_path = Path(__file__).parent / Path("output")
 output_path.mkdir(exist_ok=True)
 
