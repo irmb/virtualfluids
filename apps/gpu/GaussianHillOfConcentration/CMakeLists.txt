@@ -29,21 +29,7 @@
 #  SPDX-License-Identifier: GPL-3.0-or-later
 #  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 #
-#! \author Soeren Peters
 #=======================================================================================
-project(gpu_coreTests LANGUAGES CXX)
+PROJECT(GaussianHillOfConcentration)
 
-vf_add_tests(NAME gpu_coreTests PRIVATE_LINK gpu_core project_options project_warnings)
-
-if(VF_ENABLE_UNIT_TESTS)
-    # set_target_properties(gpu_coreTests PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-    target_include_directories(gpu_coreTests PRIVATE "${VF_THIRD_DIR}/cuda_samples/")
-    target_include_directories(gpu_coreTests PRIVATE "${VF_ROOT_DIR}/src/gpu/GridGenerator/")
-    set_source_files_properties(Communication/ExchangeData27Test.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(BoundaryConditions/BoundaryConditionFactoryTest.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(DataStructureInitializer/GridReaderGenerator/GridGeneratorTest.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreamsTest.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(Kernel/Kernels/BasicKernels/FluidFlow/Compressible/CumulantK17/CumulantK17Test.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(TurbulenceModels/TurbulenceModelFactoryTest.cpp PROPERTIES LANGUAGE CUDA)
-    set_source_files_properties(Parameter/ParameterTest.cpp PROPERTIES LANGUAGE CUDA)
-endif()
+vf_add_executable(PRIVATE_LINK gpu_core)

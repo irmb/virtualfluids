@@ -32,6 +32,8 @@
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "Parameter.h"
+#include "lbm/MacroscopicQuantities.h"
+#include "lbm/advectionDiffusion/TurbulentDiffusivity.h"
 
 #include <cmath>
 #include <cstdio>
@@ -402,8 +404,9 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->gridNY           = getGridY().at(i);
         parH[i]->gridNZ           = getGridZ().at(i);
         parH[i]->viscosity        = this->vis * pow((real)2.0, i);
-        parH[i]->diffusivity      = this->Diffusivity * pow((real)2.0, i);
+        parH[i]->diffusivity      = this->Diffusivity * std::exp2((real)i);
         parH[i]->omega            = (real)1.0 / (real(3.0) * parH[i]->viscosity + real(0.5)); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
+        parH[i]->omegaDiffusivity = vf::lbm::computeRelaxationFrequency(parH[i]->diffusivity);
     }
 
     // device
@@ -416,6 +419,7 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->viscosity        = parH[i]->viscosity;
         parD[i]->diffusivity      = parH[i]->diffusivity;
         parD[i]->omega            = parH[i]->omega;
+        parD[i]->omegaDiffusivity = parH[i]->omegaDiffusivity;
     }
 }
 
@@ -455,6 +459,10 @@ void Parameter::setStepEnsight(unsigned int step)
 void Parameter::setDiffOn(bool isDiff)
 {
     diffOn = isDiff;
+}
+void Parameter::setBuoyancyEnabled(bool buoyancyEnabled)
+{
+    this->buoyancyEnabled = buoyancyEnabled;
 }
 void Parameter::setD3Qxx(int d3qxx)
 {
@@ -574,7 +582,7 @@ void Parameter::setPressRatio(real PressRatio)
 {
     this->delta_press = PressRatio;
 }
-real Parameter::getViscosityRatio()
+real Parameter::getViscosityRatio() const
 {
     return this->vis_ratio;
 }
@@ -582,58 +590,63 @@ real Parameter::getVelocityRatio() const
 {
     return this->u0_ratio;
 }
-real Parameter::getDensityRatio()
+real Parameter::getDensityRatio() const
 {
     return this->delta_rho;
 }
-real Parameter::getPressureRatio()
+real Parameter::getPressureRatio() const
 {
     return this->delta_press;
 }
-real Parameter::getTimeRatio()
+real Parameter::getTimeRatio() const
 {
     return this->getViscosityRatio() * pow(this->getVelocityRatio(), -2);
 }
-real Parameter::getLengthRatio()
+real Parameter::getLengthRatio() const
 {
     return this->getViscosityRatio() / this->getVelocityRatio();
 }
-real Parameter::getForceRatio()
+real Parameter::getForceRatio() const
 {
-    return (this->getDensityRatio()+1.0) * this->getVelocityRatio()/this->getTimeRatio();
+    return (this->getDensityRatio()+c1o1) * this->getVelocityRatio()/this->getTimeRatio();
 }
-real Parameter::getScaledViscosityRatio(int level)
+real Parameter::getScaledViscosityRatio(int level) const
 {
-    return this->getViscosityRatio()/(level+1);
+    return this->getViscosityRatio() * std::exp2(level);
 }
-real Parameter::getScaledVelocityRatio(int level)
+real Parameter::getScaledVelocityRatio(int /*level*/) const
 {
     return this->getVelocityRatio();
 }
-real Parameter::getScaledDensityRatio(int level)
+real Parameter::getScaledDensityRatio(int /*level*/) const
 {
     return this->getDensityRatio();
 }
-real Parameter::getScaledPressureRatio(int level)
+real Parameter::getScaledPressureRatio(int /*level*/) const
 {
     return this->getPressureRatio();
 }
-real Parameter::getScaledTimeRatio(int level)
+real Parameter::getScaledTimeRatio(int level) const
 {
-    return this->getTimeRatio()/(level+1);
+    return this->getTimeRatio() * std::exp2(-level);
 }
-real Parameter::getScaledLengthRatio(int level)
+real Parameter::getScaledLengthRatio(int level) const
 {
-    return this->getLengthRatio()/(level+1);
+    return this->getLengthRatio() * std::exp2(-level);
 }
-real Parameter::getScaledForceRatio(int level)
+real Parameter::getScaledForceRatio(int level) const
 {
-    return this->getForceRatio()*(level+1);
+    return this->getForceRatio() * std::exp2(-level);
 }
-real Parameter::getScaledStressRatio(int level)
+real Parameter::getScaledStressRatio(int /*level*/) const
 {
     return this->getVelocityRatio()*this->getVelocityRatio();
 }
+real Parameter::getScaledBuoyancyFactor(int level) const
+{
+    return this->getBuoyancyFactor() * std::exp2(-level);
+}
+
 void Parameter::setRealX(real RealX)
 {
     this->RealX = RealX;
@@ -666,6 +679,14 @@ void Parameter::setRe(real Re)
 {
     this->Re = Re;
 }
+void Parameter::setTurbulentPrandtlNumber(real turbulentPrandtlNumber)
+{
+    this->turbulentPrandtlNumber = turbulentPrandtlNumber;
+}
+void Parameter::setBuoyancyFactor(real buoyancyFactor)
+{
+    this->buoyancyFactor = buoyancyFactor;
+}
 void Parameter::setFactorPressBC(real factorPressBC)
 {
     this->factorPressBC = factorPressBC;
@@ -688,11 +709,19 @@ void Parameter::setUseInitNeq(bool useInitNeq)
 }
 void Parameter::setUseTurbulentViscosity(bool useTurbulentViscosity)
 {
-    this->isTurbulentViscosity = useTurbulentViscosity;
+    this->turbulentViscosityEnabled = useTurbulentViscosity;
 }
 void Parameter::setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel)
 {
     this->turbulenceModel = turbulenceModel;
+}
+void Parameter::setUseTurbulentDiffusivity(bool useTurbulentDiffusivity)
+{
+    this->turbulentDiffusivityEnabled = useTurbulentDiffusivity;
+}
+void Parameter::setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel)
+{
+    this->advectionDiffusionTurbulenceModel = turbulenceModel;
 }
 void Parameter::setSGSConstant(real SGSConstant)
 {
@@ -1299,6 +1328,10 @@ bool Parameter::getDiffOn()
 {
     return diffOn;
 }
+bool Parameter::getBuoyancyEnabled() const
+{
+    return buoyancyEnabled;
+}
 int Parameter::getFactorNZ()
 {
     return factor_gridNZ;
@@ -1438,6 +1471,14 @@ std::vector<uint> Parameter::getDevices() const
 real Parameter::getRe() const
 {
     return this->Re;
+}
+real Parameter::getTurbulentPrandtlNumber() const 
+{
+    return this->turbulentPrandtlNumber;
+}
+real Parameter::getBuoyancyFactor() const
+{
+    return this->buoyancyFactor;
 }
 real Parameter::getFactorPressBC()
 {
@@ -1767,9 +1808,17 @@ vf::lbm::TurbulenceModel Parameter::getTurbulenceModel()
 {
     return this->turbulenceModel;
 }
+vf::lbm::advection_diffusion::TurbulenceModel Parameter::getADTurbulenceModel()
+{
+    return this->advectionDiffusionTurbulenceModel;
+}
 bool Parameter::getUseTurbulentViscosity()
 {
-    return this->isTurbulentViscosity;
+    return this->turbulentViscosityEnabled;
+}
+bool Parameter::getUseTurbulentDiffusivity()
+{
+    return this->turbulentDiffusivityEnabled;
 }
 real Parameter::getSGSConstant()
 {
@@ -1932,14 +1981,23 @@ std::function<void(real, real, real, real &, real &, real &, real &)> &Parameter
 }
 
 // initial condition concentration
-void Parameter::setInitialConditionAD(std::function<void(real, real, real, real&)> initialConditionAD)
+void Parameter::setInitialConditionAD(std::function<real(real, real, real)> initialConditionAD)
 {
-    this->initialConditionAD = initialConditionAD;
+    this->initialConditionAD = std::move(initialConditionAD);
 }
 
-std::function<void(real, real, real, real&)>& Parameter::getInitialConditionAD()
+std::function<real(real, real, real)>& Parameter::getInitialConditionAD()
 {
     return this->initialConditionAD;
+}
+
+void Parameter::setInitialLocalReferenceTemperature(std::function<real(real, real, real)> initialReferenceTemperature)
+{
+    this->initialLocalReferenceTemperature = std::move(initialReferenceTemperature);
+}
+std::function<real(real, real, real)>& Parameter::getInitialLocalReferenceTemperature()
+{
+    return initialLocalReferenceTemperature;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

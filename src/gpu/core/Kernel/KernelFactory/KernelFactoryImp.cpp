@@ -33,6 +33,7 @@
 
 #include <logger/Logger.h>
 
+#include "Kernel/AdvectionDiffusionKernel.h"
 #include "Parameter/Parameter.h"
 
 #include "Kernel/KernelTypes.h"
@@ -71,11 +72,11 @@ std::vector<std::shared_ptr<Kernel>> KernelFactoryImp::makeKernels(std::shared_p
     return kernels;
 }
 
-std::vector<std::shared_ptr<AdvectionDiffusionKernel>> KernelFactoryImp::makeAdvDifKernels(std::shared_ptr<Parameter> para)
+std::vector<std::shared_ptr<AdvectionDiffusionKernel>> KernelFactoryImp::makeAdvectionDiffusionKernels(std::shared_ptr<Parameter> para)
 {
     std::vector< std::shared_ptr< AdvectionDiffusionKernel>> aDKernels;
     for (int level = 0; level <= para->getMaxLevel(); level++)
-        aDKernels.push_back(makeAdvDifKernel(para, para->getADKernel(), level));
+        aDKernels.push_back(makeAdvectionDiffusionKernel(para, para->getADKernel(), level));
     return aDKernels;
 }
 
@@ -134,19 +135,35 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
     return newKernel;
 }
 
-std::shared_ptr<AdvectionDiffusionKernel> KernelFactoryImp::makeAdvDifKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)
+std::shared_ptr<AdvectionDiffusionKernel> KernelFactoryImp::makeAdvectionDiffusionKernel(std::shared_ptr<Parameter> para, std::string kernel, int level)
 {
-    std::shared_ptr<AdvectionDiffusionKernel> newKernel;
+    VF_LOG_INFO("Instantiating Advection Diffusion Kernel: {}", kernel);
 
-    if (kernel == "ADComp27") {
-        newKernel     = F16CompressibleAdvectionDiffusion::getNewInstance(para, level);
-    } else if (kernel == "ADIncomp27") {
-        newKernel     = F16IncompressibleAdvectionDiffusion::getNewInstance(para, level);
-    } else {
-        throw std::runtime_error("KernelFactory does not know the KernelType.");
+    if (kernel == advectionDiffusionKernel::compressible::F16)
+    {
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::None)
+            return F16CompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::None>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::Default)
+            return F16CompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::Default>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::Moeng)
+            return F16CompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::Moeng>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified)
+            return F16CompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified>::getNewInstance(para, level);
+    }
+    if (kernel == advectionDiffusionKernel::incompressible::F16)
+    {
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::None)
+            return F16IncompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::None>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::Default)
+            return F16IncompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::Default>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::Moeng)
+            return F16IncompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::Moeng>::getNewInstance(para, level);
+        if(para->getADTurbulenceModel() == vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified)
+            return F16IncompressibleAdvectionDiffusion<vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified>::getNewInstance(para, level);
     }
 
-    return newKernel;
+    
+    throw std::runtime_error("KernelFactory does not know the  AD KernelType.");
 }
 
 //! \}

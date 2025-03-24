@@ -54,6 +54,7 @@
 #include "Calculation/Calculation.h"
 #include "Calculation/UpdateGrid27.h"
 #include "Communication/ExchangeData27.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "Cuda/CudaStreamManager.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GridScaling/GridScalingFactory.h"
@@ -75,7 +76,6 @@
 #include "PostProcessor/Calc2ndMoments.h"
 #include "PostProcessor/CalcMean.h"
 #include "PostProcessor/CalcTurbulenceIntensity.h"
-#include "PostProcessor/Concentration.cuh"
 #include "PostProcessor/Cp.h"
 #include "PostProcessor/DragLift.h"
 #include "PostProcessor/EnstrophyAnalyzer.h"
@@ -204,7 +204,7 @@ void Simulation::init(GridProvider &gridProvider, const BoundaryConditionFactory
 
     if (para->getDiffOn()) {
         VF_LOG_TRACE("make AD Kernels");
-        adKernels = kernelFactory->makeAdvDifKernels(para);
+        adKernels = kernelFactory->makeAdvectionDiffusionKernels(para);
         std::vector<PreProcessorType> preProADTypes = adKernels.at(0)->getPreProcessorTypes();
         preProcessorAD = preProcessorFactory->makePreProcessor(preProADTypes, para);
     }
@@ -663,20 +663,8 @@ void Simulation::readAndWriteFiles(uint timestep)
         if (this->enstrophyAnalyzer)
             this->enstrophyAnalyzer->writeToFile(fname);
         //////////////////////////////////////////////////////////////////////////
-        if (para->getDiffOn()) {
-               CalcConcentration27(
-                              para->getParD(lev)->numberofthreads,
-                              para->getParD(lev)->concentration,
-                              para->getParD(lev)->typeOfGridNode,
-                              para->getParD(lev)->neighborX,
-                              para->getParD(lev)->neighborY,
-                              para->getParD(lev)->neighborZ,
-                              para->getParD(lev)->numberOfNodes,
-                              para->getParD(lev)->distributionsAD.f[0],
-                              para->getParD(lev)->isEvenTimestep);
+        if (para->getDiffOn())
             cudaMemoryManager->cudaCopyConcentrationDeviceToHost(lev);
-            //cudaMemoryCopy(para->getParH(lev)->Conc, para->getParD(lev)->Conc,  para->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost);
-        }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////print cp
         //if ((para->getParH(lev)->cpTop.size() > 0) && (t > para->getTStartOut()))
@@ -771,11 +759,13 @@ Simulation::~Simulation()
     // Temp
     if (para->getDiffOn()) {
         for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->concentration));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.k));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionDirichletBC.concentration));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionDirichletBC.k));
+            cudaMemoryManager->cudaFreeConcentration(lev);
+            cudaMemoryManager->cudaFreeConcentrationNoSlipBC(lev);
+            cudaMemoryManager->cudaFreeConcentrationDirichletBC(lev);
+            if(para->getUseTurbulentDiffusivity())
+                cudaMemoryManager->cudaFreeTurbulentDiffusivity(lev);
+            if(para->getBuoyancyEnabled())
+                cudaMemoryManager->cudaFreeLocalReferenceTemperature(lev);
         }
     }
 

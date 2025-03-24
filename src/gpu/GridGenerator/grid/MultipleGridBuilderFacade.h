@@ -121,11 +121,17 @@ public:
     void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz) const;
     void setPressureBoundaryCondition(SideType sideType, real rho) const;
     void setNoSlipBoundaryCondition(SideType sideType) const;
-    void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z) const;
-    void setPeriodicBoundaryCondition(const std::array<bool, 3>& periodicity) const;
+    void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
+    void setPeriodicBoundaryCondition(const std::array<bool, 3>& periodicity);
     void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads,
-                                       real velocityX = c0o1, real velocityY = c0o1, real velocityZ = c0o1,
+                                       real velocityX = c0o1, real velocityY = c0o1, real velocityZ = c0o1, 
                                        std::vector<uint> fileLevelToGridLevelMap = {}) const;
+    void setPeriodicShiftOnXBoundaryInYDirection(real shift);
+    void setPeriodicShiftOnXBoundaryInZDirection(real shift);
+    void setPeriodicShiftOnYBoundaryInXDirection(real shift);
+    void setPeriodicShiftOnYBoundaryInZDirection(real shift);
+    void setPeriodicShiftOnZBoundaryInXDirection(real shift);
+    void setPeriodicShiftOnZBoundaryInYDirection(real shift);
 
     SPtr<MultipleGridBuilder> getGridBuilder() const;
 
@@ -139,6 +145,8 @@ protected:
     uint getIndex1D(const std::array<uint, 3>& index3D) const;
 
 private:
+    void setGlobalPeriodicity();
+    void setLocalPeriodicity(bool periodicX, bool periodicY, bool periodicZ);
     //! \brief calculate the number of subdomains in all coordinate directions
     void calculateNumberOfSubdomains();
 
@@ -209,6 +217,7 @@ private:
 
     //! \brief index of the current subdomains in relation to all subdomains (computed)
     std::array<uint, 3> index;
+    std::array<bool, 3> periodicity {false, false, false};
 
     //! \brief hasNeighbors, indicates if the current subdomains has a neighbor in a specific direction (computed)
     //! \details use the enum CommunciationDirection to access the data
@@ -225,6 +234,7 @@ private:
     std::vector<std::shared_ptr<Object>> geometries;
 
     bool createGridsHasBeenCalled = false;
+    real shiftOnXInY{}, shiftOnXInZ{}, shiftOnYInX{}, shiftOnYInZ{}, shiftOnZInX{}, shiftOnZInY{};
 };
 
 #endif

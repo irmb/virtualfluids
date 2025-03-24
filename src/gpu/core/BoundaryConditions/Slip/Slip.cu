@@ -75,7 +75,7 @@ void SlipTurbulentViscosityCompressible(LBMSimulationParameter* parameterDevice,
         parameterDevice->neighborX,
         parameterDevice->neighborY,
         parameterDevice->neighborZ,
-        parameterDevice->turbViscosity,
+        parameterDevice->turbulentViscosity,
         parameterDevice->numberOfNodes,
         parameterDevice->isEvenTimestep);
     getLastCudaError("SlipTurbulentViscosityCompressible_Device execution failed");

@@ -26,26 +26,38 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup gpu_Kernel Kernel
+//! \addtogroup gpu_TurbulenceModels TurbulenceModels
 //! \ingroup gpu_core core
 //! \{
-#ifndef F16CompressibleAdvectionDiffusion_Device_H
-#define F16CompressibleAdvectionDiffusion_Device_H
+//! \author Henry Korb
+//=======================================================================================
+#ifndef TurbulenceModelManager_H
+#define TurbulenceModelManager_H
+#include <functional>
+#include <optional>
+#include <memory>
+#include "TurbulenceModelFactory.h"
 
-#include <DataTypes.h>
-#include <curand.h>
+class Parameter;
+class TurbulenceModelFactory;
 
-__global__ void F16CompressibleAdvectionDiffusion_Device(
-    real omegaDiffusivity,
-    uint* typeOfGridNode,
-    uint* neighborX,
-    uint* neighborY,
-    uint* neighborZ,
-    real* distributions,
-    real* distributionsAD,
-    unsigned long long numberOfLBnodes,
-    real* forces,
-    bool isEvenTimestep);
+class TurbulenceModelManager
+{
+public:
+    TurbulenceModelManager(std::shared_ptr<Parameter> para, const std::shared_ptr<TurbulenceModelFactory>& factory) : para(std::move(para))
+    {
+        turbulenceModelKernel = factory->getTurbulenceModelKernel();
+        turbulenceModelADKernel = factory->getTurbulenceModelADKernel();
 
+    };
+
+    void runTurbulenceModelKernel(int level) const;
+    void runTurbulenceModelADKernel(int level) const;
+
+private:
+    std::shared_ptr<Parameter> para;
+    std::optional<std::function<void(Parameter*, int)>> turbulenceModelKernel;
+    std::optional<std::function<void(Parameter*, int)>> turbulenceModelADKernel;
+};
 #endif
 //! \}

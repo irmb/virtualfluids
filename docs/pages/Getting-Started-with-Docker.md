@@ -66,7 +66,7 @@ Also: Currently, it is not possible to access the Git server with an SSH key out
 5. Build VirtualFluids in the terminal. The option "-DCMAKE_CUDA_ARCHITECTURE" is only necessary when the GPU version is used (CMAKE_CUDA_ARCHITECTURE should correspond to the [compute capability](https://en.wikipedia.org/wiki/CUDA#GPUs_supported) of your GPU):
 ```
    mkdir build && cd build
-   cmake --preset=all_make -DCMAKE_CUDA_ARCHITECTURE=70 ..
+   cmake --preset=make_all -DCMAKE_CUDA_ARCHITECTURE=70 ..
    make -j 8
 ```
 6. Run the examples, e.g. LidDrivenCavity:

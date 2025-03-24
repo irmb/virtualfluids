@@ -45,7 +45,6 @@ std::shared_ptr<PreProcessorStrategy> InitAdvectionDiffusionCompressible::getNew
 void InitAdvectionDiffusionCompressible::init(int level)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
-
     InitAdvectionDiffusionCompressible_Device <<< grid.grid, grid.threads >>>(
         para->getParD(level)->neighborX,
         para->getParD(level)->neighborY,

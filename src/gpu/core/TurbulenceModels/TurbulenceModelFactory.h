@@ -35,40 +35,48 @@
 #define TurbulenceModelFactory_H
 
 #include <functional>
-#include <map>
 #include <memory>
+#include <optional>
 #include <string>
-#include <variant>
-
-#include "Calculation/Calculation.h"
 
 namespace vf::basics
 {
 class ConfigurationFile;
 }
 
+#include <lbm/advectionDiffusion/TurbulentDiffusivity.h>
 #include <lbm/collision/TurbulentViscosity.h>
 
 class Parameter;
 
-using TurbulenceModelKernel = std::function<void(Parameter *, int )>;
-
 class TurbulenceModelFactory
 {
 public:
-    TurbulenceModelFactory(std::shared_ptr<Parameter> parameter): para(parameter) {}
+    TurbulenceModelFactory(std::shared_ptr<Parameter> parameter) : para(std::move(parameter))
+    {
+    }
 
-    void setTurbulenceModel(vf::lbm::TurbulenceModel _turbulenceModel);
+    void setTurbulenceModel(std::string turbulenceModel);
+    void setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel);
+
+    void setAdvectionDiffusionTurbulenceModel(std::string turbulenceModel);
+    void setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel);
 
     void setModelConstant(real modelConstant);
 
-    void readConfigFile(const vf::basics::ConfigurationFile &configData);
-
-    void runTurbulenceModelKernel(const int level) const;
+    void readConfigFile(const vf::basics::ConfigurationFile& configData);
+    std::optional<std::function<void(Parameter*, int)>> getTurbulenceModelKernel()
+    {
+        return turbulenceModelKernel;
+    }
+    std::optional<std::function<void(Parameter*, int)>> getTurbulenceModelADKernel()
+    {
+        return turbulenceModelADKernel;
+    }
 
 private:
-    vf::lbm::TurbulenceModel turbulenceModel = vf::lbm::TurbulenceModel::None;
-    TurbulenceModelKernel turbulenceModelKernel = nullptr;
+    std::optional<std::function<void(Parameter*, int)>> turbulenceModelKernel = std::nullopt;
+    std::optional<std::function<void(Parameter*, int)>> turbulenceModelADKernel = std::nullopt;
     std::shared_ptr<Parameter> para;
 };
 
