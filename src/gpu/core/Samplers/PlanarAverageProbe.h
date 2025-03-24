@@ -79,7 +79,7 @@ public:
 
     void init() override;
     void sample(int level, uint t) override;
-    void getTaggedFluidNodes(GridProvider* gridProvider) override {};
+    void getTaggedFluidNodes(GridProvider* /**/) override {};
     LevelData* getLevelData(int level)
     {
         return &levelData[level];
