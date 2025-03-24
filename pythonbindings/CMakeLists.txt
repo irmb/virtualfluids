@@ -87,15 +87,17 @@ target_link_libraries(lbm_bindings PRIVATE project_options)
 target_link_libraries(parallel_bindings PRIVATE project_options)
 
 IF(VF_ENABLE_GPU)
-    pybind11_add_module(gpu_bindings MODULE src/gpu/gpu.cpp)
+   # cant use pybind11_add_module for CUDA
+    # pybind11_add_module(gpu_bindings MODULE src/gpu/gpu.cpp)
+    add_library(gpu_bindings MODULE src/gpu/gpu.cpp )
     set_target_properties(  gpu_bindings PROPERTIES
                             LIBRARY_OUTPUT_DIRECTORY ${PYFLUIDS_DIR}
                             OUTPUT_NAME "gpu")
+    pybind11_extension(gpu_bindings)
     set_source_files_properties(src/gpu/gpu.cpp PROPERTIES LANGUAGE CUDA)
 
     target_include_directories(gpu_bindings PRIVATE ${VF_THIRD_DIR}/cuda_samples/)
-
-    target_link_libraries(gpu_bindings PRIVATE basics GridGenerator gpu_core parallel)
+    target_link_libraries(gpu_bindings PRIVATE basics GridGenerator gpu_core parallel pybind11::module)
 
     target_include_directories(gpu_bindings PRIVATE ${CMAKE_SOURCE_DIR}/src/)
     target_include_directories(gpu_bindings PRIVATE ${CMAKE_BINARY_DIR})
