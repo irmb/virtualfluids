@@ -240,8 +240,8 @@ para.add_sampler(planar_average_probe)
 wall_model_probe = gpu.probes.wall_model_probe.WallModelProbe(
     para,
     cuda_memory_manager,
-    "wallModelProbe",
     para.get_output_path(),
+    "wallModelProbe",
     0,
     int(t_start_tmp_averaging / dt),
     int(t_averaging / dt / 4),
@@ -268,7 +268,6 @@ for n_probe, probe_pos in enumerate(plane_locs):
         f"planeProbe_{n_probe + 1}",
         para.get_output_path(),
         int(t_start_averaging / dt),
-        int(t_start_tmp_averaging / dt),
         10,
         int(t_start_out_probe / dt),
         int(t_out_probe / dt),
