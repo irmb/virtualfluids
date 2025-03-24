@@ -34,3 +34,4 @@ r"""
 from __future__ import annotations
 from . import probe as probe
 from . import planar_average_probe as planar_average_probe
+from . import wall_model_probe as wall_model_probe
