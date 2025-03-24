@@ -84,7 +84,6 @@ IF(VF_ENABLE_GPU)
                             LIBRARY_OUTPUT_DIRECTORY ${PYFLUIDS_DIR}
                             OUTPUT_NAME "gpu")
     pybind11_extension(gpu_bindings)
-    set_source_files_properties(src/gpu/gpu.cpp PROPERTIES LANGUAGE CUDA)
     target_include_directories(gpu_bindings PRIVATE ${VF_THIRD_DIR}/cuda_samples/ ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR})
     target_link_libraries(gpu_bindings PRIVATE basics GridGenerator gpu_core parallel pybind11::module project_options)
     add_dependencies(python_bindings gpu_bindings)
