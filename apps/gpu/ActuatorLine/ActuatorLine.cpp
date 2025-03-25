@@ -72,7 +72,7 @@ void run(const vf::basics::ConfigurationFile& config)
     const std::string simulationName("ActuatorLine");
 
     const real viscosity = 1.56e-5F;
-    const real machNumber = 0.1;
+    const real machNumber = c1o10;
     const uint timeStepAverageTimeSeriesProbe = 1;
 
     const real rotorDiameter = config.getValue<real>("RotorDiameter");
@@ -109,7 +109,7 @@ void run(const vf::basics::ConfigurationFile& config)
     //////////////////////////////////////////////////////////////////////////
 
     const real deltaX = rotorDiameter / real(nodesPerDiameter);
-    const real deltaT = deltaX * machNumber / (std::sqrt(c3o1) * velocity);
+    const real deltaT = deltaX * machNumber / (sqrt(3) * velocity);
     const real velocityLB = velocity * deltaT / deltaX;              // LB units
     const real viscosityLB = viscosity * deltaT / (deltaX * deltaX); // LB units
 
