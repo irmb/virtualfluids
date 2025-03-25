@@ -285,7 +285,8 @@ void PrecursorWriter::write(int level, uint numberOfTimeStepsBuffered)
                                      val<3>(precursorStructs[level].extent), val<4>(precursorStructs[level].extent),
                                      startTime, startTime + (int)numberOfTimeStepsBuffered - 1);
 
-    UbTupleFloat3 origin = makeUbTuple(val<1>(precursorStructs[level].origin), val<2>(precursorStructs[level].origin), c0o1);
+    UbTupleFloat3 origin = makeUbTuple(static_cast<real>(val<1>(precursorStructs[level].origin)),
+                                       static_cast<real>(val<2>(precursorStructs[level].origin)), 0.F);
 
     std::vector<std::vector<double>> nodeData;
 
