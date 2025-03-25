@@ -294,7 +294,7 @@ void PrecursorWriter::write(int level, uint numberOfTimeStepsBuffered)
         std::vector<double> doubleArr(numberOfPointsInData * numberOfTimeStepsBuffered, NAN);
         for (uint timeStep = 0; timeStep < numberOfTimeStepsBuffered; timeStep++) {
             for (uint pos = 0; pos < precursorStructs[level].numberOfPointsInBC; pos++) {
-                const int indexOnPlane = precursorStructs[level].indicesOnPlane[pos] + timeStep * numberOfPointsInData;
+                const std::size_t indexOnPlane = precursorStructs[level].indicesOnPlane[pos] + timeStep * numberOfPointsInData;
                 doubleArr[indexOnPlane] = double(
                     precursorStructs[level].dataH[linearIdx(quant, pos, timeStep, precursorStructs[level].numberOfQuantities,
                                                             precursorStructs[level].numberOfPointsInBC)]);
