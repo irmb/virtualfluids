@@ -109,7 +109,7 @@ void run(const vf::basics::ConfigurationFile& config)
     //////////////////////////////////////////////////////////////////////////
 
     const real deltaX = rotorDiameter / real(nodesPerDiameter);
-    const real deltaT = deltaX * machNumber / (sqrt(3) * velocity);
+    const real deltaT = deltaX * machNumber / (std::sqrt(c3o1) * velocity);
     const real velocityLB = velocity * deltaT / deltaX;              // LB units
     const real viscosityLB = viscosity * deltaT / (deltaX * deltaX); // LB units
 
