@@ -240,7 +240,7 @@ void run(const vf::basics::ConfigurationFile& config)
     planeProbeHorizontal->addStatistic(Probe::Statistic::Instantaneous);
     para->addSampler(planeProbeHorizontal);
 
-    if (probePositionsX.size() > 0) {
+    if (!probePositionsX.empty()) {
         auto timeseriesProbe = std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), "timeProbe",
                                                        timeStepStartTemporalAveraging, timeStepAverageTimeSeriesProbe,
                                                        timeStepStartOutProbe, timeStepOutProbe, true, false);
