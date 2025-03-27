@@ -28,6 +28,8 @@
 //
 //! \author Henry Korb
 //=======================================================================================
+#include <cmath>
+
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -52,7 +54,7 @@ void makeModule(py::module_& parentModule)
         .def("set_forcing", &Parameter::setForcing, py::arg("forcing_x"), py::arg("forcing_y"), py::arg("forcing_z"))
         .def("set_quadric_limiters", &Parameter::setQuadricLimiters, py::arg("quadric_limiter_p"), py::arg("quadric_limiter_m"), py::arg("quadric_limiter_d"))
         .def("set_diff_on", &Parameter::setDiffOn, py::arg("is_diff"))
-        .def("set_bouyancy_enabled", &Parameter::setBuoyancyEnabled, py::arg("buoyancy_enabled"))
+        .def("set_buoyancy_enabled", &Parameter::setBuoyancyEnabled, py::arg("buoyancy_enabled"))
         .def("set_turbulent_prandtl_number", &Parameter::setTurbulentPrandtlNumber, py::arg("turbulent_prandtl_number"))
         .def("set_max_level", &Parameter::setMaxLevel, py::arg("number_of_levels"))
         .def("set_timestep_end", &Parameter::setTimestepEnd, py::arg("tend"))
@@ -93,23 +95,23 @@ void makeModule(py::module_& parentModule)
         .def(
             "set_initial_condition_uniform",
             [](Parameter& para, real velocity_x, real velocity_y, real velocity_z) {
-                para.setInitialCondition([velocity_x, velocity_y, velocity_z](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) // must capture values explicitly!
-                                         {
-                                             rho = c0o1;
-                                             vx = velocity_x;
-                                             vy = velocity_y;
-                                             vz = velocity_z;
-                                         });
+                para.setInitialCondition(
+                    [velocity_x, velocity_y, velocity_z](real, real, real, real& rho, real& vx, real& vy, real& vz) // must capture values explicitly!
+                        {
+                            rho = c0o1;
+                            vx = velocity_x;
+                            vy = velocity_y;
+                            vz = velocity_z;
+                        });
             },
             py::arg("velocity_x"), py::arg("velocity_y"), py::arg("velocity_z"))
         .def(
             "set_initial_condition_log_law",
             [](Parameter& para, real u_star, real z0, real velocityRatio) {
-                para.setInitialCondition([u_star, z0, velocityRatio](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) {
-                    coordZ = coordZ > c0o1 ? coordZ : c0o1;
-
+                para.setInitialCondition([u_star, z0, velocityRatio](real, real, real coordZ, real& rho, real& vx, real& vy, real& vz) {
+                    coordZ = std::max(coordZ, c0o1);
                     rho = c0o1;
-                    vx = u_star / c4o10 * log(coordZ / z0 + c1o1) / velocityRatio;
+                    vx = u_star / c4o10 * std::log1p(coordZ / z0) / velocityRatio;
                     vy = c0o1;
                     vz = c0o1;
                 });
@@ -119,11 +121,11 @@ void makeModule(py::module_& parentModule)
             "set_initial_condition_perturbed_log_law",
             [](Parameter& para, real u_star, real z0, real L_x, real L_z, real H, real velocityRatio) {
                 para.setInitialCondition([u_star, z0, L_x, L_z, H, velocityRatio](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) {
-                    coordZ = coordZ > c0o1 ? coordZ : c0o1;
+                    coordZ = std::max(coordZ, c0o1);
                     rho = c0o1;
-                    vx = (u_star / c4o10 * log(coordZ / z0 + c1o1) + c2o1 * sin(cPi * c16o1 * coordX / L_x) * sin(cPi * c8o1 * coordZ / H) / (pow(coordZ / H, c2o1) + c1o1)) / velocityRatio;
-                    vy = c2o1 * sin(cPi * c16o1 * coordX / L_x) * sin(cPi * c8o1 * coordZ / H) / (pow(coordZ / H, c2o1) + c1o1) / velocityRatio;
-                    vz = c8o1 * u_star / c4o10 * (sin(cPi * c8o1 * coordY / H) * sin(cPi * c8o1 * coordZ / H) + sin(cPi * c8o1 * coordX / L_x)) / (pow(c1o2 * L_z - coordZ, c2o1) + c1o1) / velocityRatio;
+                    vx = (u_star / c4o10 * std::log1p(coordZ / z0) + c2o1 * std::sin(cPi * c16o1 * coordX / L_x) * std::sin(cPi * c8o1 * coordZ / H) / (std::pow(coordZ / H, c2o1) + c1o1)) / velocityRatio;
+                    vy = c2o1 * std::sin(cPi * c16o1 * coordX / L_x) * std::sin(cPi * c8o1 * coordZ / H) / (std::pow(coordZ / H, c2o1) + c1o1) / velocityRatio;
+                    vz = c8o1 * u_star / c4o10 * (std::sin(cPi * c8o1 * coordY / H) * std::sin(cPi * c8o1 * coordZ / H) + std::sin(cPi * c8o1 * coordX / L_x)) / (std::pow(c1o2 * L_z - coordZ, c2o1) + c1o1) / velocityRatio;
                 });
             },
             py::arg("u_star"), py::arg("z0"), py::arg("length_x"), py::arg("length_z"), py::arg("height"), py::arg("velocity_ratio"))
