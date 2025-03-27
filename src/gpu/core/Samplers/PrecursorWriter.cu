@@ -73,8 +73,13 @@ constexpr uint linearIdx(const uint component, const uint node, const uint numbe
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void fillArrayVelocities(uint numberOfPrecursorNodes, const uint* indices, real* precursorData, const real* vx,
-                                    const real* vy, const real* vz, real velocityRatio)
+__global__ void fillArrayVelocities(uint numberOfPrecursorNodes,
+                                    const uint* indices,
+                                    real* precursorData,
+                                    const real* vx,
+                                    const real* vy,
+                                    const real* vz,
+                                    real velocityRatio)
 
 {
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
@@ -88,9 +93,15 @@ __global__ void fillArrayVelocities(uint numberOfPrecursorNodes, const uint* ind
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void fillArrayDistributions(uint numberOfPrecursorNodes, const uint* indices, real* precursorData,
-                                       real* distributions, const uint* neighborX, const uint* neighborY,
-                                       const uint* neighborZ, bool isEvenTimeStep, unsigned long numberOfLBnodes)
+__global__ void fillArrayDistributions(uint numberOfPrecursorNodes,
+                                       const uint* indices,
+                                       real* precursorData,
+                                       real* distributions,
+                                       const uint* neighborX,
+                                       const uint* neighborY,
+                                       const uint* neighborZ,
+                                       bool isEvenTimeStep,
+                                       unsigned long numberOfLBnodes)
 {
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
 
