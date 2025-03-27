@@ -35,7 +35,6 @@
 #include <gpu/core/DataStructureInitializer/GridProvider.h>
 #include <gpu/core/Parameter/Parameter.h>
 #include <gpu/core/Cuda/CudaMemoryManager.h>
-#include <gpu/core/DataStructureInitializer/GridProvider.h>
 #include <gpu/core/Output/DataWriter.h>
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
@@ -50,34 +49,55 @@ namespace simulation
     {
         // missing setFactories and setDataWriter, not possible to wrap these functions as long as they take unique ptr arguments
         py::class_<Simulation>(parentModule, "Simulation")
-        .def(py::init<std::shared_ptr<Parameter>, std::shared_ptr<GridBuilder>, BoundaryConditionFactory*>(),
+        .def(py::init<std::shared_ptr<Parameter>,
+                      std::shared_ptr<GridBuilder>,
+                      BoundaryConditionFactory*>(),
              py::arg("parameter"), py::arg("grid_builder"), py::arg("bc_factory"))
-        .def(py::init<std::shared_ptr<Parameter>, std::shared_ptr<GridBuilder>, BoundaryConditionFactory*,
+        .def(py::init<std::shared_ptr<Parameter>,
+                      std::shared_ptr<GridBuilder>,
+                      BoundaryConditionFactory*,
                       GridScalingFactory*>(),
              py::arg("parameter"), py::arg("grid_builder"), py::arg("bc_factory"), py::arg("grid_scaling_factory"))
 
-        .def(py::init<std::shared_ptr<Parameter>, std::shared_ptr<CudaMemoryManager>, std::shared_ptr<GridBuilder>,
+        .def(py::init<std::shared_ptr<Parameter>,
+                      std::shared_ptr<CudaMemoryManager>,
+                      std::shared_ptr<GridBuilder>,
                       BoundaryConditionFactory*>(),
              py::arg("parameter"), py::arg("memory_manager"), py::arg("grid_builder"), py::arg("bc_factory"))
-        .def(py::init<std::shared_ptr<Parameter>, std::shared_ptr<CudaMemoryManager>, std::shared_ptr<GridBuilder>,
-                      BoundaryConditionFactory*, GridScalingFactory*>(),
+        .def(py::init<std::shared_ptr<Parameter>,
+                      std::shared_ptr<CudaMemoryManager>,
+                      std::shared_ptr<GridBuilder>,
+                      BoundaryConditionFactory*,
+                      GridScalingFactory*>(),
              py::arg("parameter"), py::arg("memory_manager"), py::arg("grid_builder"), py::arg("bc_factory"),
              py::arg("scaling_factory"))
 
-        .def(py::init<std::shared_ptr<Parameter>, std::shared_ptr<GridBuilder>, BoundaryConditionFactory*,
+        .def(py::init<std::shared_ptr<Parameter>,
+                      std::shared_ptr<GridBuilder>,
+                      BoundaryConditionFactory*,
                       std::shared_ptr<TurbulenceModelFactory>>(),
              py::arg("parameter"), py::arg("grid_builder"), py::arg("bc_factory"), py::arg("tm_factory"))
-        .def(py::init<std::shared_ptr<Parameter>, std::shared_ptr<GridBuilder>, BoundaryConditionFactory*,
-                      std::shared_ptr<TurbulenceModelFactory>, GridScalingFactory*>(),
+        .def(py::init<std::shared_ptr<Parameter>,
+                      std::shared_ptr<GridBuilder>,
+                      BoundaryConditionFactory*,
+                      std::shared_ptr<TurbulenceModelFactory>,
+                      GridScalingFactory*>(),
              py::arg("parameter"), py::arg("grid_builder"), py::arg("bc_factory"), py::arg("tm_factory"),
              py::arg("grid_scaling_factory"))
 
         
-        .def(py::init<std::shared_ptr<Parameter>, std::shared_ptr<CudaMemoryManager>, std::shared_ptr<GridBuilder>, BoundaryConditionFactory*,
+        .def(py::init<std::shared_ptr<Parameter>,
+                      std::shared_ptr<CudaMemoryManager>,
+                      std::shared_ptr<GridBuilder>,
+                      BoundaryConditionFactory*,
                       std::shared_ptr<TurbulenceModelFactory>>(),
              py::arg("parameter"), py::arg("memory_manager"), py::arg("grid_builder"), py::arg("bc_factory"), py::arg("tm_factory"))
-        .def(py::init<std::shared_ptr<Parameter>, std::shared_ptr<CudaMemoryManager>, std::shared_ptr<GridBuilder>, BoundaryConditionFactory*,
-                      std::shared_ptr<TurbulenceModelFactory>, GridScalingFactory*>(),
+        .def(py::init<std::shared_ptr<Parameter>,
+                      std::shared_ptr<CudaMemoryManager>,
+                      std::shared_ptr<GridBuilder>,
+                      BoundaryConditionFactory*,
+                      std::shared_ptr<TurbulenceModelFactory>,
+                      GridScalingFactory*>(),
              py::arg("parameter"), py::arg("memory_manager"), py::arg("grid_builder"), py::arg("bc_factory"), py::arg("tm_factory"),
              py::arg("grid_scaling_factory"))
         .def("run", &Simulation::run)
