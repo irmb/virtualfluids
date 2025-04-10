@@ -54,3 +54,6 @@ stl/
 
 # User Settings
 CMakeUserPresets.json
+
+# nohup output
+nohup.out

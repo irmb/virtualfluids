@@ -194,7 +194,8 @@ void run(const vf::basics::ConfigurationFile& config)
     const real density = 1.225F;
     const uint actuatorNodesPerBlade = 32;
     const real tipSpeedRatio = 7.5F; // tipspeed ratio = angular vel * radius / inflow vel
-    const std::vector<real> rotorSpeeds { c2o1 * tipSpeedRatio * velocity / rotorDiameter };
+    const real rotorSpeed = 2 * tipSpeedRatio * velocity / rotorDiameter;
+    const std::vector<real> rotorSpeeds = std::vector<real>(turbinePositionsX.size(), rotorSpeed);
 
     auto actuatorFarm = std::make_shared<ActuatorFarmStandalone>(
         para, cudaMemoryManager, rotorDiameter, actuatorNodesPerBlade, turbinePositionsX, turbinePositionsY,
@@ -222,7 +223,7 @@ void run(const vf::basics::ConfigurationFile& config)
         para->addSampler(planeProbe);
     }
 
-    auto planeProbeVertical = std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), "planeProbeVertical",
+auto planeProbeVertical = std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), "planeProbeVertical",
                                                       timeStepStartTemporalAveraging, numberOfAveragingTimeSteps,
                                                       timeStepStartOutProbe, timeStepOutProbe, false, false);
     planeProbeVertical->addProbePlane(c0o1, turbinePositionsY[0], -c1o2 * lengthZ, lengthX, deltaX, lengthZ);
