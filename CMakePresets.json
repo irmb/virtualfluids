@@ -216,15 +216,11 @@
             "targets": [
                 "ActuatorLine",
                 "AtmosphericBoundaryLayer",
-                "ADGaussianHill",
-                "Basel",
-                "ChannelFlow",
                 "DrivenCavity",
-                "gridGeneratorTest",
-                "HeatedCube",
+                "DrivenCavityMultiGPU",
+                "GaussianHillOfConcentration",
                 "SphereInChannel",
-                "StratifiedBoundaryLayer",
-                "RayleighBenard",
+                "SphereMultiGPU",
                 "AllApps"
             ],
             "configurePreset": "gpu",
