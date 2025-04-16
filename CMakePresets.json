@@ -219,8 +219,10 @@
                 "DrivenCavity",
                 "DrivenCavityMultiGPU",
                 "GaussianHillOfConcentration",
+                "LaminarPipeFlowGPU",
                 "SphereInChannel",
                 "SphereMultiGPU",
+                "TaylorGreenVortex",
                 "AllApps"
             ],
             "configurePreset": "gpu",
