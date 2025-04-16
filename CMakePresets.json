@@ -237,7 +237,7 @@
                 "LaminarPipeFlow",
                 "LaminarPlaneFlow",
                 "LidDrivenCavity",
-                "AllApps"
+                "all"
             ],
             "configurePreset": "cpu",
             "inherits": [
