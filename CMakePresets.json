@@ -57,7 +57,8 @@
             "name": "enable_all_apps",
             "cacheVariables": {
                 "VF_ENABLE_ALL_APPS": "ON"
-            }
+            },
+            "hidden": true
         },
         {
             "name": "cpu",
@@ -66,7 +67,8 @@
             "cacheVariables": {
                 "VF_ENABLE_CPU": "ON",
                 "VF_ENABLE_DOUBLE_ACCURACY": "ON"
-            }
+            },
+            "hidden": true
         },
         {
             "name": "gpu",
@@ -75,7 +77,8 @@
             "cacheVariables": {
                 "VF_ENABLE_GPU": "ON",
                 "VF_ENABLE_DOUBLE_ACCURACY": "OFF"
-            }
+            },
+            "hidden": true
         },
         {
             "name": "python_bindings",
@@ -83,7 +86,8 @@
             "description": "python bindings of VirtualFluids",
             "cacheVariables": {
                 "VF_ENABLE_PYTHON_BINDINGS": "ON"
-            }
+            },
+            "hidden": true
         },
         {
             "name": "gpu_numerical_tests",
@@ -105,12 +109,10 @@
                 "gpu",
                 "python_bindings",
                 "unit_tests",
+                "enable_all_apps",
                 "make"
             ],
-            "displayName": "all make configuration",
-            "cacheVariables": {
-                "VF_ENABLE_ALL_APPS": "ON"
-            }
+            "displayName": "all make configuration"
         },
         
         {
