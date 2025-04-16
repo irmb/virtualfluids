@@ -223,7 +223,7 @@
                 "SphereInChannel",
                 "SphereMultiGPU",
                 "TaylorGreenVortex",
-                "AllApps"
+                "all"
             ],
             "configurePreset": "gpu",
             "inherits": [
