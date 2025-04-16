@@ -8,7 +8,7 @@ source ./tests/regression-tests/__regression_test_executer.sh
 REFERENCE_DATA_DIR=regression_tests/cpu/LidDrivenCavity
 
 # 2. set cmake flags for the build of VirtualFluids
-CMAKE_FLAGS="--preset=make_cpu -DCMAKE_BUILD_TYPE=Release"
+CMAKE_FLAGS="--preset=make_cpu_release"
 
 # 3. define the application to be executed
 APPLICATION="./build/bin/LidDrivenCavityCPU ./apps/cpu/LidDrivenCavity/LidDrivenCavity_regression_test.cfg"
