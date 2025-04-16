@@ -83,6 +83,8 @@ add_subdirectory(src/basics)
 add_subdirectory(src/parallel)
 add_subdirectory(src/lbm)
 
+add_custom_target(AllApps)
+
 if(VF_ENABLE_CPU)
     include(cpu.cmake)
 endif()
