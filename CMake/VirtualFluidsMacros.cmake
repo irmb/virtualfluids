@@ -81,7 +81,7 @@ function(vf_add_executable)
     cmake_parse_arguments( ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     vf_add_target(NAME ${ARG_NAME} BUILDTYPE binary PUBLIC_LINK ${ARG_PUBLIC_LINK} PRIVATE_LINK ${ARG_PRIVATE_LINK} FILES ${ARG_FILES} FOLDER ${ARG_FOLDER} EXCLUDE ${ARG_EXCLUDE} MODULEFOLDER ${ARG_MODULEFOLDER})
-   
+
     status("Executable: ${library_name} configured.")
 endfunction()
 
