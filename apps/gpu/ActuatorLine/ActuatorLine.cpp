@@ -194,7 +194,7 @@ void run(const vf::basics::ConfigurationFile& config)
     const real density = 1.225F;
     const uint actuatorNodesPerBlade = 32;
     const real tipSpeedRatio = 7.5F; // tipspeed ratio = angular vel * radius / inflow vel
-    const real rotorSpeed = 2 * tipSpeedRatio * velocity / rotorDiameter;
+    const real rotorSpeed = c2o1 * tipSpeedRatio * velocity / rotorDiameter;
     const std::vector<real> rotorSpeeds = std::vector<real>(turbinePositionsX.size(), rotorSpeed);
 
     auto actuatorFarm = std::make_shared<ActuatorFarmStandalone>(
