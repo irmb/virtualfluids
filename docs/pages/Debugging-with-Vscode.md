@@ -7,10 +7,11 @@ We can debug our VirtualFluids application within the docker container in VS Cod
 
 1. Most important: VirtualFluids default build is __Release__. For debugging, the build type must be changed during the cmake process:
     ```
-   cmake --preset=all_make -DCMAKE_BUILD_TYPE=Debug ..
+   cmake --preset=all_make_debug -DCMAKE_BUILD_TYPE=Debug ..
     ```
-    The variable ```CMAKE_BUILD_TYPE``` is a native cmake variable and used to specifiy the build type. The available options are: Debug, Release, RelWithDebInfo, MinSizeRel ([cmake-doc](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html)).
-
+    The variable ```CMAKE_BUILD_TYPE``` is a native cmake variable and used to specify the build type. The available options are: Debug, Release, RelWithDebInfo, MinSizeRel ([cmake-doc](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html)).
+    For each preset, there is also a debug preset: all_make --> all_make_debug, etc.
+    
 2. In VS Code we can now add a debug configuration file to our project. The debugging configuration information is stored in the file ```.vscode/launch.json```. To add the first debug configuration, we need to create this file manually.
 
     Then one possible configuration for gdb may look like this:

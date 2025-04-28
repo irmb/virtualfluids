@@ -39,14 +39,24 @@ VirtualFluids cmake provides the following presets:
 - all_make: build all targets with Make
 - cpu_make: build only the CPU targets with Make
 - gpu_make: build only the GPU targets with Make
+- cpu_make_debug: build only the CPU targets with Make in debug mode
+- gpu_make_debug: build only the GPU targets with Make in debug mode
 - all_msvc: build all targets with MSVC
 - cpu_msvc: build only the CPU targets with MSVC
+- cpu_msvc_debug: build only the CPU targets with MSVC in debug mode
 - gpu_msvc: build only the GPU targets with MSVC
+- gpu_msvc_debug: build only the GPU targets with MSVC in debug mode
 
 Additionaly, the following options can be passed to cmake:
 - -DVF_ENABLE_UNIT_TESTS=ON: enable unit tests (included in all_make and all_msvc)
 - -DVF_ENABLE_DOUBLE_ACCURACY=ON: enable double precision (included in all_make, all_msvc, cpu_make and cpu_msvc)
 - -DVF_ENABLE_PYTHON_BINDINGS=ON: enable python bindings (included in all_make and all_msvc)
+
+VirtualFluids also provides CMake Build Presets and targets to facilitate the build process
+````
+   cmake --preset=make_gpu -DCMAKE_CUDA_ARCHITECTURE=70
+   cmake --build --preset=make_gpu --target=LaminarPipeFlowGPU
+```
 
 ## Run the examples
 
