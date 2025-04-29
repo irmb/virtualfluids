@@ -4,7 +4,7 @@
 # Getting Started Not Using Docker
 
 VirtualFluids is supported on Linux and Windows.
-We recommend using VirtualFludis with Docker. If, for whatever reason, Docker cannot be used, VirtualFluids can also be installed manually. The following packages are necessary for this:
+We recommend using VirtualFluids with Docker. If, for whatever reason, Docker cannot be used, VirtualFluids can also be installed manually. The following packages are necessary for this:
 
 - [Git](https://git-scm.com/) is necessary to get access to VirtualFluids. Therefore at least some basic knowledge in Git is required. If you are new to Git, this [free book](https://git-scm.com/book/en/v2) is a good starting point
 - [CMake](https://cmake.org/) (minimum version 3.20)
@@ -25,5 +25,5 @@ We recommend using VirtualFludis with Docker. If, for whatever reason, Docker ca
     * or [Clion](https://www.jetbrains.com/de-de/clion/)
     * or [VS Code](https://code.visualstudio.com/)
 
-After the installation of the necessary software, the VirtualFluids project folder can be either either directly opend in vscode or clion or a Visual Studio solution can be generated with cmake.
+After the installation of the necessary software, the VirtualFluids project folder can be either either directly opened in vscode or clion or a Visual Studio solution can be generated with cmake.
 

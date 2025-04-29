@@ -21,7 +21,7 @@ Then we can clone the repository onto the machine:
    git clone https://git.rz.tu-bs.de/irmb/virtualfluids.git
 ```
 
-Naviagting to the project folder:
+Navigating to the project folder:
 ```
    cd virtualfluids
 ```
@@ -47,7 +47,7 @@ VirtualFluids cmake provides the following presets:
 - gpu_msvc: build only the GPU targets with MSVC
 - gpu_msvc_debug: build only the GPU targets with MSVC in debug mode
 
-Additionaly, the following options can be passed to cmake:
+Additionally, the following options can be passed to cmake:
 - -DVF_ENABLE_UNIT_TESTS=ON: enable unit tests (included in all_make and all_msvc)
 - -DVF_ENABLE_DOUBLE_ACCURACY=ON: enable double precision (included in all_make, all_msvc, cpu_make and cpu_msvc)
 - -DVF_ENABLE_PYTHON_BINDINGS=ON: enable python bindings (included in all_make and all_msvc)

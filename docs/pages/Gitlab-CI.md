@@ -5,7 +5,7 @@
 
 VirtualFluids is using Gitlab CI to automate the build, test and deployment process. The Gitlab CI is configured in the file `.gitlab-ci.yml` in the root folder of the repository. The configuration is based on the [Gitlab CI/CD Documentation](https://docs.gitlab.com/ee/ci/).
 
-Most Gitlab CI jobs are running whith each push to the repository. Additionally, some jobs are running on a schedule. The schedule is defined [here](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/pipeline_schedules).
+Most Gitlab CI jobs are running with each push to the repository. Additionally, some jobs are running on a schedule. The schedule is defined [here](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/pipeline_schedules).
 
 Almost all jobs are based on the Docker image from the Gitlab CI Docker Registry.
 
