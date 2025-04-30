@@ -55,6 +55,7 @@ build-dir = "build"
 strict-config = true
 logging.level = "INFO"
 build.tool-args = ["-j12"]
+build.targets = ["python_bindings"]
 
 [tool.scikit-build.wheel]
 packages = ["pythonbindings/pyfluids", "pythonbindings/pyfluids-stubs", "pythonbindings/pymuparser"]
