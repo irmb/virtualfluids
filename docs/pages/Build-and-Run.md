@@ -53,10 +53,19 @@ Additionally, the following options can be passed to cmake:
 - -DVF_ENABLE_PYTHON_BINDINGS=ON: enable python bindings (included in all_make and all_msvc)
 
 VirtualFluids also provides CMake Build Presets and targets to facilitate the build process
-````
+```
    cmake --preset=make_gpu -DCMAKE_CUDA_ARCHITECTURE=70
    cmake --build --preset=make_gpu --target=LaminarPipeFlowGPU
 ```
+
+### Python bindings
+VirtualFluids can also be used from Python. To compile and install the VirtualFluids Python library called pyfluids, run
+```
+   pip install . -v -C cmake.define.VF_ENABLE_GPU=ON -C cmake.define.CMAKE_CUDA_ARCHITECTURE=70
+```
+VirtualFluids uses [skbuild_core](https://scikit-build-core.readthedocs.io/en/latest/guide/getting_started.html) and [pybind11](https://pybind11.readthedocs.io/en/stable/) to build the python bindings. All flags available in cmake can be passed with ``-C cmake.define.OPTION=ON``. This requires pip>=23.1.
+
+
 
 ## Run the examples
 
