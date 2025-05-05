@@ -51,7 +51,7 @@ void run(string configname)
    {
       vf::basics::ConfigurationFile   config;
       config.load(configname);
-      string        stlFile = config.getValue<string>("stlFile");
+
       string        pathOut = config.getValue<string>("pathOut");
       real          uLB = config.getValue<real>("uLB");
       real          restartStep = config.getValue<real>("restartStep");
@@ -143,21 +143,10 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////
 
       ////cylinder
-      // generate cylinder
-      //SPtr<GbObject3D> cylinder(new GbCylinder3D(0.5, 0.2, -0.1, 0.5, 0.2, L3+0.1, radius));
-      
-      // read cylinder from stl file
-      SPtr<GbTriFaceMesh3D> cylinder = std::make_shared<GbTriFaceMesh3D>();
-      cylinder->readMeshFromSTLFileBinary(stlFile, false);
-      
-      // write cylinder to VTK-file     
+      SPtr<GbObject3D> cylinder(new GbCylinder3D(0.5, 0.2, -0.1, 0.5, 0.2, L3+0.1, radius));
       gb_system_3d::writeGeoObject(cylinder.get(), pathOut+"/geo/cylinder", WbWriterVtkXmlBinary::getInstance());
       
-      // create interactor for generated cylinder
-      //SPtr<D3Q27Interactor> cylinderInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder, grid, noSlipAdapter, Interactor3D::SOLID));
-
-      // create interactor for cylinder from stl file
-      SPtr<D3Q27Interactor> cylinderInt = std::make_shared<D3Q27TriFaceMeshInteractor>(cylinder, grid, noSlipAdapter, Interactor3D::SOLID, Interactor3D::POINTS);
+      SPtr<D3Q27Interactor> cylinderInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder, grid, noSlipAdapter, Interactor3D::SOLID));
 
       if (newStart)
       {
@@ -181,9 +170,6 @@ void run(string configname)
             UBLOG(logINFO, "Preprozess - start");
          }
 
-         SPtr<GbObject3D> refCylinder(new GbCylinder3D(0.5, 0.2, -0.1, 0.5, 0.2, L3+0.1, radius+7.0*dx/(1<<refineLevel)));
-         gb_system_3d::writeGeoObject(refCylinder.get(), pathOut+"/geo/refCylinder", WbWriterVtkXmlBinary::getInstance());
-
          //bounding box
          real g_minX1 = 0.0;
          real g_minX2 = 0.0;
@@ -191,7 +177,11 @@ void run(string configname)
 
          real g_maxX1 = L1;
          real g_maxX2 = L2;
-         real g_maxX3 = L3;
+         real g_maxX3 = L3;         
+
+         //SPtr<GbObject3D> refCylinder(new GbCylinder3D(0.5, 0.2, -0.1, 0.5, 0.2, L3+0.1, radius+7.0*dx/(1<<refineLevel)));
+         SPtr<GbObject3D> refCylinder(new GbCuboid3D(0.4, g_minX2-0.1, g_minX3-0.1, 0.6, g_maxX2+0.1, g_maxX3+0.1));
+         gb_system_3d::writeGeoObject(refCylinder.get(), pathOut+"/geo/refCylinder", WbWriterVtkXmlBinary::getInstance());
 
          SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
          if (myid==0) gb_system_3d::writeGeoObject(gridCube.get(), pathOut+"/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
@@ -299,6 +289,9 @@ void run(string configname)
       {
          restart->restart((int)restartStep);
          grid->setTimeStep(restartStep);
+         SetBcBlocksBlockVisitor v(cylinderInt);
+         grid->accept(v);
+         cylinderInt->initInteractor();
       }
 
       grid->accept(bcVisitor);
