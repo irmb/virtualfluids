@@ -136,8 +136,8 @@ void run(string configname)
       SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, d00M));
       //restart
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
-      SPtr<MPIIOMigrationSimulationObserver> restart(new MPIIOMigrationSimulationObserver(grid, mSch, metisVisitor, pathOut, comm));
-      //SPtr<MPIIORestartSimulationObserver> restart = make_shared<MPIIORestartSimulationObserver>(grid, mSch, pathOut, comm);
+      //SPtr<MPIIOMigrationSimulationObserver> restart(new MPIIOMigrationSimulationObserver(grid, mSch, metisVisitor, pathOut, comm));
+      SPtr<MPIIORestartSimulationObserver> restart = make_shared<MPIIORestartSimulationObserver>(grid, mSch, pathOut, comm);
       restart->setLBMKernel(kernel);
       restart->setBCSet(bcProc);
       //////////////////////////////////////////////////////////////////////////
@@ -147,6 +147,60 @@ void run(string configname)
       gb_system_3d::writeGeoObject(cylinder.get(), pathOut+"/geo/cylinder", WbWriterVtkXmlBinary::getInstance());
       
       SPtr<D3Q27Interactor> cylinderInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder, grid, noSlipAdapter, Interactor3D::SOLID));
+
+      // bounding box
+      real g_minX1 = 0.0;
+      real g_minX2 = 0.0;
+      real g_minX3 = 0.0;
+
+      real g_maxX1 = L1;
+      real g_maxX2 = L2;
+      real g_maxX3 = L3;
+
+      const int blocknx1 = blockNx[0];
+      const int blocknx2 = blockNx[1];
+      const int blocknx3 = blockNx[2];
+
+      real blockLength = blocknx1 * dx;
+
+      // walls
+      GbCuboid3DPtr addWallYmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_minX2, g_maxX3 + blockLength));
+      if (myid == 0)
+          gb_system_3d::writeGeoObject(addWallYmin.get(), pathOut + "/geo/addWallYmin", WbWriterVtkXmlASCII::getInstance());
+
+      GbCuboid3DPtr addWallYmax(new GbCuboid3D(g_minX1 - blockLength, g_maxX2, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
+      if (myid == 0)
+          gb_system_3d::writeGeoObject(addWallYmax.get(), pathOut + "/geo/addWallYmax", WbWriterVtkXmlASCII::getInstance());
+
+      GbCuboid3DPtr addWallZmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_minX3));
+      if (myid == 0)
+          gb_system_3d::writeGeoObject(addWallZmin.get(), pathOut + "/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
+
+      GbCuboid3DPtr addWallZmax(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_maxX3, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
+      if (myid == 0)
+          gb_system_3d::writeGeoObject(addWallZmax.get(), pathOut + "/geo/addWallZmax", WbWriterVtkXmlASCII::getInstance());
+
+      // inflow
+      GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_minX1, g_maxX2 + blockLength, g_maxX3 + blockLength));
+      if (myid == 0)
+          gb_system_3d::writeGeoObject(geoInflow.get(), pathOut + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
+
+      // outflow
+      GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
+      if (myid == 0)
+          gb_system_3d::writeGeoObject(geoOutflow.get(), pathOut + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
+
+         // walls
+      SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipAdapter, Interactor3D::SOLID));
+
+      // inflow
+      SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBC, Interactor3D::SOLID));
+
+      // outflow
+      SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBC, Interactor3D::SOLID));
 
       if (newStart)
       {
@@ -170,27 +224,15 @@ void run(string configname)
             UBLOG(logINFO, "Preprozess - start");
          }
 
-         //bounding box
-         real g_minX1 = 0.0;
-         real g_minX2 = 0.0;
-         real g_minX3 = 0.0;
-
-         real g_maxX1 = L1;
-         real g_maxX2 = L2;
-         real g_maxX3 = L3;         
-
-         //SPtr<GbObject3D> refCylinder(new GbCylinder3D(0.5, 0.2, -0.1, 0.5, 0.2, L3+0.1, radius+7.0*dx/(1<<refineLevel)));
-         SPtr<GbObject3D> refCylinder(new GbCuboid3D(0.4, g_minX2-0.1, g_minX3-0.1, 0.6, g_maxX2+0.1, g_maxX3+0.1));
+         SPtr<GbObject3D> refCylinder(new GbCylinder3D(0.5, 0.2, -0.1, 0.5, 0.2, L3+0.1, radius+7.0*dx/(1<<refineLevel)));
          gb_system_3d::writeGeoObject(refCylinder.get(), pathOut+"/geo/refCylinder", WbWriterVtkXmlBinary::getInstance());
+
+
 
          SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
          if (myid==0) gb_system_3d::writeGeoObject(gridCube.get(), pathOut+"/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
-         const int blocknx1 = blockNx[0];
-         const int blocknx2 = blockNx[1];
-         const int blocknx3 = blockNx[2];
 
-         real blockLength = blocknx1*dx;
 
          grid->setDeltaX(dx);
          grid->setBlockNX(blocknx1, blocknx2, blocknx3);
@@ -198,26 +240,7 @@ void run(string configname)
          GenBlocksGridVisitor genBlocks(gridCube);
          grid->accept(genBlocks);
 
-         //walls
-         GbCuboid3DPtr addWallYmin(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_minX2, g_maxX3+blockLength));
-         if (myid==0) gb_system_3d::writeGeoObject(addWallYmin.get(), pathOut+"/geo/addWallYmin", WbWriterVtkXmlASCII::getInstance());
 
-         GbCuboid3DPtr addWallYmax(new GbCuboid3D(g_minX1-blockLength, g_maxX2, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         if (myid==0) gb_system_3d::writeGeoObject(addWallYmax.get(), pathOut+"/geo/addWallYmax", WbWriterVtkXmlASCII::getInstance());
-
-         GbCuboid3DPtr addWallZmin(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3));
-         if (myid==0) gb_system_3d::writeGeoObject(addWallZmin.get(), pathOut+"/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
-
-         GbCuboid3DPtr addWallZmax(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_maxX3, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         if (myid==0) gb_system_3d::writeGeoObject(addWallZmax.get(), pathOut+"/geo/addWallZmax", WbWriterVtkXmlASCII::getInstance());
-
-         //inflow
-         GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1, g_maxX2+blockLength, g_maxX3+blockLength));
-         if (myid==0) gb_system_3d::writeGeoObject(geoInflow.get(), pathOut+"/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
-
-         //outflow
-         GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         if (myid==0) gb_system_3d::writeGeoObject(geoOutflow.get(), pathOut+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
          SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
 
@@ -230,17 +253,7 @@ void run(string configname)
             if (myid==0) UBLOG(logINFO, "Refinement - end");
          }
 
-         //walls
-         SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipAdapter, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipAdapter, Interactor3D::SOLID));
 
-         //inflow
-         SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBC, Interactor3D::SOLID));
-
-         //outflow
-         SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBC, Interactor3D::SOLID));
 
          
          SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, d00M));
@@ -288,10 +301,34 @@ void run(string configname)
       else
       {
          restart->restart((int)restartStep);
-         grid->setTimeStep(restartStep);
-         SetBcBlocksBlockVisitor v(cylinderInt);
-         grid->accept(v);
+
+         SetBcBlocksBlockVisitor v1(cylinderInt);
+         grid->accept(v1);
          cylinderInt->initInteractor();
+
+         SetBcBlocksBlockVisitor v2(addWallYminInt);
+         grid->accept(v2);
+         addWallYminInt->initInteractor();
+
+         SetBcBlocksBlockVisitor v3(addWallYmaxInt);
+         grid->accept(v3);
+         addWallYmaxInt->initInteractor();
+
+         SetBcBlocksBlockVisitor v4(addWallZminInt);
+         grid->accept(v4);
+         addWallZminInt->initInteractor();
+
+         SetBcBlocksBlockVisitor v5(addWallZmaxInt);
+         grid->accept(v5);
+         addWallZmaxInt->initInteractor();
+
+         SetBcBlocksBlockVisitor v6(inflowInt);
+         grid->accept(v6);
+         inflowInt->initInteractor();
+
+         SetBcBlocksBlockVisitor v7(outflowInt);
+         grid->accept(v7);
+         outflowInt->initInteractor();
       }
 
       grid->accept(bcVisitor);
