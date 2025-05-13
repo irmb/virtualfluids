@@ -2227,6 +2227,14 @@ void GridImp::addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndices
     std::copy(_fluidNodeIndicesAllFeatures.begin(), _fluidNodeIndicesAllFeatures.end(), std::back_inserter(this->fluidNodeIndicesAllFeatures));
 }
 
+void GridImp::addAllFluidNodeIndicesToAllFeatures()
+{
+    this->fluidNodeIndicesAllFeatures.clear();
+    this->fluidNodeIndicesApplyBodyForce.clear();
+    this->fluidNodeIndicesMacroVars.clear();
+    this->fluidNodeIndicesAllFeatures.swap(this->fluidNodeIndices);
+}
+
 void GridImp::sortFluidNodeIndicesMacroVars()
 {
     if(this->fluidNodeIndicesMacroVars.size()>0)
