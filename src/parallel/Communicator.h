@@ -84,6 +84,7 @@ public:
     virtual void allGather(std::vector<float> &svalues, std::vector<float> &rvalues)                           = 0;
     virtual void allGather(std::vector<double> &svalues, std::vector<double> &rvalues)                         = 0;
     virtual void allGather(std::vector<unsigned long long> &svalues, std::vector<unsigned long long> &rvalues) = 0;
+    virtual void allGather(std::vector<uint> &svalues, std::vector<uint> &rvalues) = 0;
 
     virtual void broadcast(int &value)                    = 0;
     virtual void broadcast(float &value)                  = 0;

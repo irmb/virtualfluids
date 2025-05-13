@@ -30,6 +30,7 @@
 //! \{
 //! \author Konstantin Kutscher
 //=======================================================================================
+#include "metis.h"
 #if defined VF_MPI
 #if defined (_WIN32) || defined (_WIN64)
    #include <Winsock2.h>
@@ -195,6 +196,7 @@ void MPICommunicator::allGather(std::vector<unsigned long long> &svalues, std::v
 {
     allGather<unsigned long long>(svalues, rvalues);
 }
+void MPICommunicator::allGather(std::vector<uint>& svalues, std::vector<uint>& rvalues){ allGather<uint>(svalues, rvalues); }
 //////////////////////////////////////////////////////////////////////////
 void MPICommunicator::broadcast(std::vector<int> &values) { broadcast<int>(values); }
 //////////////////////////////////////////////////////////////////////////

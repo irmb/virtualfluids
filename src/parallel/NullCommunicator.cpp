@@ -155,7 +155,9 @@ void NullCommunicator::allGather(std::vector<double> &svalues, std::vector<doubl
 void NullCommunicator::allGather(std::vector<unsigned long long> &svalues, std::vector<unsigned long long> &rvalues)
 {
 }
-
+void NullCommunicator::allGather(std::vector<uint> &svalues, std::vector<uint> &rvalues)
+{
+}
 void NullCommunicator::broadcast(int &value)
 {
 }

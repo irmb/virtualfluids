@@ -94,6 +94,7 @@ public:
     void allGather(std::vector<float> &svalues, std::vector<float> &rvalues) override;
     void allGather(std::vector<double> &svalues, std::vector<double> &rvalues) override;
     void allGather(std::vector<unsigned long long> &svalues, std::vector<unsigned long long> &rvalues) override;
+    void allGather(std::vector<uint> &svalues, std::vector<uint> &rvalues) override;
 
     void broadcast(int &value) override;
     void broadcast(float &value) override;
