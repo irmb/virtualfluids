@@ -39,6 +39,7 @@
 #include <vector>
 
 #include "Calculation/Calculation.h"
+#include "PreCollisionInteractor/BuoyancyProvider/BuoyancyProvider.h"
 
 class Parameter;
 class ActuatorFarm;
@@ -46,6 +47,8 @@ class Probe;
 class PlanarAverageProbe;
 class VelocitySetter;
 class PrecursorWriter;
+struct ReductionParameters;
+struct ProfileParameters;
 
 class CudaMemoryManager
 {
@@ -323,6 +326,17 @@ public:
     void cudaAllocSphereIndices(ActuatorFarm* actuatorFarm);
     void cudaCopySphereIndicesHtoD(ActuatorFarm* actuatorFarm);
     void cudaFreeSphereIndices(ActuatorFarm* actuatorFarm);
+
+    // BuoyancyProvider
+    void cudaAllocBuoyancyProviderProfileParameters(ProfileParameters* profileParams);
+    void cudaCopyBuoyancyProviderProfileParametersHtoD(ProfileParameters* profileParams);
+    void cudaCopyBuoyancyProviderProfileParametersDtoH(ProfileParameters* profileParams);
+    void cudaFreeBuoyancyProviderProfileParameters(ProfileParameters* profileParams);
+
+    void cudaAllocBuoyancyProviderReductionParameters(ReductionParameters* reductionParams);
+    void cudaCopyBuoyancyProviderReductionParametersHtoD(ReductionParameters* reductionParams);
+    void cudaCopyBuoyancyProviderReductionParametersDtoH(ReductionParameters* reductionParams);
+    void cudaFreeBuoyancyProviderReductionParameters(ReductionParameters* reductionParams);
     // Probes
     void cudaAllocProbeData(Probe* probe, int level);
     void cudaCopyProbeDataHtoD(Probe* probe, int level);

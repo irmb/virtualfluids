@@ -45,6 +45,7 @@
 #include "Parameter/Parameter.h"
 #include "CudaStreamManager.h"
 #include "PreCollisionInteractor/Actuator/ActuatorFarm.h"
+#include "PreCollisionInteractor/BuoyancyProvider/BuoyancyProvider.h"
 #include "Samplers/Probe.h"
 #include "Samplers/PlanarAverageProbe.h"
 #include "Samplers/PrecursorWriter.h"
@@ -2360,7 +2361,53 @@ void CudaMemoryManager::cudaFreeSphereIndices(ActuatorFarm* actuatorFarm)
     checkCudaErrors( cudaFreeHost(actuatorFarm->boundingSphereIndicesH) );
     checkCudaErrors( cudaFree(actuatorFarm->boundingSphereIndicesD) );
 }
+void CudaMemoryManager::cudaAllocBuoyancyProviderProfileParameters(ProfileParameters* profileParams)
+{
+    const size_t memSizeIndices = sizeof(size_t)*(profileParams->numberOfPlanes+1);
+    const size_t memSizeTemperature = sizeof(real)*profileParams->numberOfPlanes;
 
+    checkCudaErrors( cudaMalloc(&profileParams->indicesDevice, memSizeIndices));
+    checkCudaErrors( cudaMallocHost(&profileParams->indicesHost, memSizeIndices));
+    checkCudaErrors( cudaMalloc(&profileParams->referenceTemperaturesDevice, memSizeTemperature) );
+    checkCudaErrors( cudaMallocHost(&profileParams->referenceTemperaturesHost, memSizeTemperature) );
+    setMemsizeGPU(memSizeIndices + memSizeTemperature, false);
+}
+
+void CudaMemoryManager::cudaCopyBuoyancyProviderProfileParametersHtoD(ProfileParameters* profileParams)
+{
+    checkCudaErrors( cudaMemcpy(profileParams->indicesDevice, profileParams->indicesHost, sizeof(size_t)*(profileParams->numberOfPlanes+1), cudaMemcpyHostToDevice) );
+}
+
+void CudaMemoryManager::cudaFreeBuoyancyProviderProfileParameters(ProfileParameters* profileParams)
+{
+    checkCudaErrors( cudaFree(profileParams->referenceTemperaturesDevice) );
+    checkCudaErrors( cudaFreeHost(profileParams->referenceTemperaturesHost) );
+    checkCudaErrors( cudaFree(profileParams->indicesDevice) );
+    checkCudaErrors( cudaFreeHost(profileParams->indicesHost) );
+}
+
+void CudaMemoryManager::cudaAllocBuoyancyProviderReductionParameters(ReductionParameters* reductionParams)
+{
+    const size_t memSize = sizeof(int)*reductionParams->numberOfPlanes;
+
+    checkCudaErrors( cudaMalloc(&reductionParams->numberOfNodesPerPlaneDevice, memSize) );
+    checkCudaErrors( cudaMallocHost(&reductionParams->numberOfNodesPerPlaneHost, memSize) );
+    checkCudaErrors( cudaMalloc(&reductionParams->temporaryMemory, reductionParams->sizeOfTemporaryMemory) );
+
+    setMemsizeGPU(reductionParams->sizeOfTemporaryMemory + memSize, false);
+}
+
+void CudaMemoryManager::cudaCopyBuoyancyProviderReductionParametersHtoD(ReductionParameters* reductionParams)
+{
+    checkCudaErrors( cudaMemcpy(reductionParams->numberOfNodesPerPlaneDevice, reductionParams->numberOfNodesPerPlaneHost, sizeof(int)*reductionParams->numberOfPlanes, cudaMemcpyHostToDevice) );
+}
+
+void CudaMemoryManager::cudaFreeBuoyancyProviderReductionParameters(ReductionParameters* reductionParams)
+{
+    checkCudaErrors( cudaFree(reductionParams->temporaryMemory) );
+    checkCudaErrors( cudaFree(reductionParams->numberOfNodesPerPlaneDevice) );
+    checkCudaErrors( cudaFreeHost(reductionParams->numberOfNodesPerPlaneHost) );
+}
 ////////////////////////////////////////////////////////////////////////////////////
 //  Probe
 ///////////////////////////////////////////////////////////////////////////////
