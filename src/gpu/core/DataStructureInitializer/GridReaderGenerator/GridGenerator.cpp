@@ -168,7 +168,7 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
     {
         for ( CollisionTemplate tag: all_CollisionTemplate )
-        {   //TODO: Need to add CollisionTemplate to GridBuilder to allow as argument and get rid of indivual get funtions for fluid node indices... and clean up this mess
+        {   //TODO: Need to add CollisionTemplate to GridBuilder to allow as argument and get rid of individual get functions for fluid node indices... and clean up this mess
             switch(tag)
             {
                 case CollisionTemplate::Default:
@@ -250,6 +250,8 @@ void GridGenerator::sortFluidNodeTags() {
     VF_LOG_INFO("Start sorting tagged fluid nodes...");
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
     {
+        if(para->getBuoyancyEnabled())
+            builder->addAllFluidNodeIndicesToAllFeatures(level);
         builder->sortFluidNodeIndicesAllFeatures(level); //has to be called first!
         builder->sortFluidNodeIndicesMacroVars(level);
         builder->sortFluidNodeIndicesApplyBodyForce(level);
