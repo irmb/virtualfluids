@@ -37,19 +37,19 @@ from enum import Enum
 from ... import gpu
 
 class Statistic(Enum):
-    Instantaneous: int
-    Means: int
-    Variances: int
+    _value_: int
+    Instantaneous = ...
+    Means = ...
+    Variances = ...
 
 class Probe(gpu.Sampler):
     def __init__(
         self,
         para: gpu.Parameter,
         cuda_memory_manager: gpu.CudaMemoryManager,
-        probe_name: str,
         output_path: str,
+        probe_name: str,
         t_start_avg: int,
-        t_start_tmp_avg: int,
         t_avg: int,
         t_start_out: int,
         t_out: int,

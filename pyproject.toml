@@ -28,7 +28,7 @@
 #
 #=======================================================================================
 [build-system]
-requires = ["scikit-build-core"]
+requires = ["scikit-build-core", "cmake<4.0"]
 build-backend = "scikit_build_core.build"
 
 [project]
@@ -50,13 +50,11 @@ classifiers = [
 [project.urls]
 url = "https://git.rz.tu-bs.de/irmb/virtualfluids"
 
-[tool.cmake]
-jobs = 8
-
 [tool.scikit-build]
 build-dir = "build"
 strict-config = true
 logging.level = "INFO"
+build.tool-args = ["-j12"]
 
 [tool.scikit-build.wheel]
 packages = ["pythonbindings/pyfluids", "pythonbindings/pyfluids-stubs", "pythonbindings/pymuparser"]
@@ -70,6 +68,6 @@ build-type = "Release"
 VF_ENABLE_PYTHON_BINDINGS = "ON"
 
 
-[mypy]
+[tool.mypy]
 plugins = "numpy.typing.mypy_plugin"
 

@@ -100,7 +100,7 @@ if(VF_ENABLE_BOOST)
 endif()
 
 if(VF_ENABLE_PYTHON_BINDINGS)
-    set(pybind_version "v2.10.4")
+    set(pybind_version "v2.13.6")
     set(pybind_url "https://github.com/pybind/pybind11")
     message(STATUS "Fetching pybind: ${pybind_version}")
     FetchContent_Declare(

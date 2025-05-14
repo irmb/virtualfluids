@@ -48,6 +48,8 @@ public:
                        turbinePositionsX, turbinePositionsY, turbinePositionsZ, density, smearingWidth, level, deltaT,
                        deltaX, true)
     {
+        if(numberOfTurbines != rotorSpeeds.size())
+            throw std::runtime_error("ActuatorFarmStandalone::ActuatorFarmStandalone: rotor speeds need to have same length as turbine positions!");
     }
 
     ~ActuatorFarmStandalone() = default;

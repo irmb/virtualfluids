@@ -36,6 +36,7 @@
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
 #include <stdexcept>
+#include <vector>
 
 class GridProvider;
 using namespace vf::basics::constant;
