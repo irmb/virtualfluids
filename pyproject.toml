@@ -28,7 +28,7 @@
 #
 #=======================================================================================
 [build-system]
-requires = ["scikit-build-core", "cmake<4.0"]
+requires = ["scikit-build-core"]
 build-backend = "scikit_build_core.build"
 
 [project]
@@ -55,6 +55,7 @@ build-dir = "build"
 strict-config = true
 logging.level = "INFO"
 build.tool-args = ["-j12"]
+build.targets = ["python_bindings"]
 
 [tool.scikit-build.wheel]
 packages = ["pythonbindings/pyfluids", "pythonbindings/pyfluids-stubs", "pythonbindings/pymuparser"]
@@ -66,6 +67,11 @@ build-type = "Release"
 
 [tool.scikit-build.cmake.define]
 VF_ENABLE_PYTHON_BINDINGS = "ON"
+
+[[tool.scikit-build.overrides]]
+if.platform-system = "^linux"
+inherit.cmake.args = "append"
+cmake.args = ["-G=Unix Makefiles"]
 
 
 [tool.mypy]
