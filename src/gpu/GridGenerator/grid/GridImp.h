@@ -370,9 +370,9 @@ public:
     uint getNumberOfFluidNodesBorder() const override;
     void getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const override;
 
-    void addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars) override;
-    void addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce) override;
-    void addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) override;
+    void addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars) override;
+    void addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce) override;
+    void addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures) override;
     void addAllFluidNodeIndicesToAllFeatures() override;
 
     void sortFluidNodeIndicesMacroVars() override;
