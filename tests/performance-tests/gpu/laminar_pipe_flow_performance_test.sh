@@ -7,7 +7,7 @@ source ./tests/performance-tests/__performance_test_executer.sh
 REFERENCE_DATA_DIR=performance_tests/gpu
 
 # 2. set cmake flags for the build of VirtualFluids
-CMAKE_FLAGS="--preset=make_gpu -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=75"
+CMAKE_FLAGS="--preset=make_gpu -DCMAKE_CUDA_ARCHITECTURES=75"
 
 # 3. define the application to be executed
 APPLICATION="./build/bin/LaminarPipeFlowGPU ./apps/gpu/LaminarPipeFlowGPU/laminarpipeflow_performance_test.cfg"

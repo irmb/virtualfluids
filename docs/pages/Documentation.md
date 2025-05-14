@@ -7,10 +7,10 @@ Welcome to the VirtualFluids Documentation!
 
 ## Getting Started
 
-We recommend using VirtualFludis with Docker
+We recommend using VirtualFluids with Docker
 - <!-- DOXYGEN_MAKE_REF -->[Getting Started with Docker](Getting-Started-with-Docker.md)
 
-If Docker cannot be used, the dependecies for VirtualFluids can also be installed manually directly on your machine:
+If Docker cannot be used, the dependencies for VirtualFluids can also be installed manually directly on your machine:
 - <!-- DOXYGEN_MAKE_REF -->[Installing the Dependencies manually](Getting-Started-Not-Using-Docker.md)
 
  After the installation VirtualFluids can be compiled and executed:
