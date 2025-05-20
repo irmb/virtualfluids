@@ -63,7 +63,7 @@ void AdvectionDiffusionSlipVelocityTurbulentViscosityCompressible(
 
     AdvectionDiffusionSlipVelocity_Device<
         BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityTurbulentViscosityCompressible>
-        <<<grid.grid, grid.threads>>>(parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->rho,
+        <<<grid.grid, grid.threads>>>(parameterDevice->distributionsAD.f[0], bcParameters,
                                       parameterDevice->velocityX, parameterDevice->velocityY, parameterDevice->velocityZ,
                                       parameterDevice->turbulentDiffusivity, parameterDevice->diffusivity,
                                       parameterDevice->omegaDiffusivity, parameterDevice->neighborX,
@@ -79,7 +79,7 @@ void AdvectionDiffusionSlipVelocityCompressible(LBMSimulationParameter* paramete
 
     AdvectionDiffusionSlipVelocity_Device<
         BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityCompressible><<<grid.grid, grid.threads>>>(
-        parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->rho, parameterDevice->velocityX,
+        parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->velocityX,
         parameterDevice->velocityY, parameterDevice->velocityZ, parameterDevice->turbulentDiffusivity,
         parameterDevice->diffusivity, parameterDevice->omegaDiffusivity, parameterDevice->neighborX,
         parameterDevice->neighborY, parameterDevice->neighborZ, parameterDevice->numberOfNodes,
@@ -93,7 +93,7 @@ void AdvectionDiffusionSlipVelocityBounceBack(LBMSimulationParameter* parameterD
     const vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, bcParameters.numberOfBCnodes);
 
     AdvectionDiffusionSlipVelocity_Device<BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityBounceBack>
-        <<<grid.grid, grid.threads>>>(parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->rho,
+        <<<grid.grid, grid.threads>>>(parameterDevice->distributionsAD.f[0], bcParameters,
                                       parameterDevice->velocityX, parameterDevice->velocityY, parameterDevice->velocityZ,
                                       parameterDevice->turbulentDiffusivity, parameterDevice->diffusivity,
                                       parameterDevice->omegaDiffusivity, parameterDevice->neighborX,

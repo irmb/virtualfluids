@@ -50,9 +50,9 @@ using SlipBC = BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC;
 template <SlipBC slipBCType>
 __global__ void AdvectionDiffusionSlipVelocity_Device(real* populationsArray,
                                                       const AdvectionDiffusionSlipVelocityBoundaryConditions bcParameters,
-                                                      const real* density, const real* velocityX, const real* velocityY,
-                                                      const real* velocityZ, const real* turbulentDiffusivity,
-                                                      real diffusivity, const real omegaDiffusivity, const uint* neighborX,
+                                                      const real* velocityX, const real* velocityY, const real* velocityZ,
+                                                      const real* turbulentDiffusivity, real diffusivity,
+                                                      const real omegaDiffusivity, const uint* neighborX,
                                                       const uint* neighborY, const uint* neighborZ,
                                                       const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
 {
@@ -104,10 +104,9 @@ __global__ void AdvectionDiffusionSlipVelocity_Device(real* populationsArray,
         writePopulationsBounceBackWithFlux(nodeIndex, subgridDistances, listIndices, populationReferences, populations,
                                            fluxX, fluxY, fluxZ);
     } else {
-        const real drho = density[indexOfBCnode];
         const real relaxationFrequency = vf::lbm::calculateOmegaWithTurbulentViscosity(omegaDiffusivity, addedDiffusivity);
         writePopulationsInterpolatedWithFlux(nodeIndex, subgridDistances, listIndices, populationReferences, populations,
-                                             vx1, vx2, vx3, drho, relaxationFrequency, concentration, fluxX, fluxY, fluxZ);
+                                             vx1, vx2, vx3, relaxationFrequency, concentration, fluxX, fluxY, fluxZ);
     }
 }
 
