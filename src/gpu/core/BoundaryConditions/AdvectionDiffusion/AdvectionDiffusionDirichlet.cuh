@@ -68,27 +68,26 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
     vf::gpu::getPostCollisionDistribution(populations, populationReferences, listIndices);
     const real concentrationWall = bcParameters.concentration[nodeIndex];
 
-    vf::gpu::getPointersToDistributions(populationReferences, populationsArray, numberOfLBnodes,
-                                        !isEvenTimestep);
+    vf::gpu::getPointersToDistributions(populationReferences, populationsArray, numberOfLBnodes, !isEvenTimestep);
+
     switch (bcType) {
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackSlip:
-            writePopulationsSimpleAntiBounceBack(nodeIndex, subgridDistances, populationReferences,
-                                                              listIndices, populations, velocityX[k_000], velocityY[k_000],
-                                                              velocityZ[k_000], concentrationWall);
+            writePopulationsSimpleAntiBounceBack(nodeIndex, subgridDistances, populationReferences, listIndices, populations,
+                                                 velocityX[k_000], velocityY[k_000], velocityZ[k_000], concentrationWall);
             break;
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip:
-            writePopulationsSimpleAntiBounceBack(
-                nodeIndex, subgridDistances, populationReferences, listIndices, populations, bcParameters.vx[nodeIndex],
-                bcParameters.vy[nodeIndex], bcParameters.vz[nodeIndex], concentrationWall);
+            writePopulationsSimpleAntiBounceBack(nodeIndex, subgridDistances, populationReferences, listIndices, populations,
+                                                 bcParameters.vx[nodeIndex], bcParameters.vy[nodeIndex],
+                                                 bcParameters.vz[nodeIndex], concentrationWall);
             break;
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedSlip: {
             const real concentrationNode = vf::lbm::getDensity(populations);
             const real vx1 = velocityX[k_000];
             const real vx2 = velocityY[k_000];
             const real vx3 = velocityZ[k_000];
-            writePopulationsInterpolatedAntiBounceBack(
-                nodeIndex, subgridDistances, populationReferences, listIndices, populations, relaxationFrequency, vx1,
-                vx2, vx3, vx1, vx2, vx3, concentrationNode, concentrationWall);
+            writePopulationsInterpolatedAntiBounceBack(nodeIndex, subgridDistances, populationReferences, listIndices,
+                                                       populations, relaxationFrequency, vx1, vx2, vx3, vx1, vx2, vx3,
+                                                       concentrationNode, concentrationWall);
         } break;
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedNoSlip: {
             const real concentrationNode = vf::lbm::getDensity(populations);

@@ -44,9 +44,9 @@
 template <BoundaryConditionFactory::AdvectionDiffusionNeumannBC bcType>
 __global__ void
 AdvectionDiffusionNeumann_Device(real* populationArray, const AdvectionDiffusionNeumannBoundaryConditions bcParameters,
-                                 const uint* neighborX, const uint* neighborY, const uint* neighborZ,
-                                 const real* velocityX, const real* velocityY, const real* velocityZ,
-                                 unsigned long long numberOfLBnodes, const real relaxationFrequency, const bool isEvenTimestep)
+                                 const uint* neighborX, const uint* neighborY, const uint* neighborZ, const real* velocityX,
+                                 const real* velocityY, const real* velocityZ, unsigned long long numberOfLBnodes,
+                                 const real relaxationFrequency, const bool isEvenTimestep)
 {
     using namespace vf::basics::constant;
     using namespace vf::lbm::dir;
@@ -70,32 +70,31 @@ AdvectionDiffusionNeumann_Device(real* populationArray, const AdvectionDiffusion
     const real gradient = bcParameters.gradient[nodeIndex];
     const real concentrationWall = concentrationNode - c1o2 * gradient; // wall normal points into the fluid domain
 
-    vf::gpu::getPointersToDistributions(populationReferences, populationArray, numberOfLBnodes,
-                                        !isEvenTimestep);
+    vf::gpu::getPointersToDistributions(populationReferences, populationArray, numberOfLBnodes, !isEvenTimestep);
+
     switch (bcType) {
         case BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackSlip:
-            writePopulationsSimpleAntiBounceBack(nodeIndex, subgridDistances, populationReferences,
-                                                              listIndices, populations, velocityX[k_000], velocityY[k_000],
-                                                              velocityZ[k_000], concentrationWall);
+            writePopulationsSimpleAntiBounceBack(nodeIndex, subgridDistances, populationReferences, listIndices, populations,
+                                                 velocityX[k_000], velocityY[k_000], velocityZ[k_000], concentrationWall);
             break;
         case BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip:
-            writePopulationsSimpleAntiBounceBack(
-                nodeIndex, subgridDistances, populationReferences, listIndices, populations, bcParameters.vx[nodeIndex],
-                bcParameters.vy[nodeIndex], bcParameters.vz[nodeIndex], concentrationWall);
+            writePopulationsSimpleAntiBounceBack(nodeIndex, subgridDistances, populationReferences, listIndices, populations,
+                                                 bcParameters.vx[nodeIndex], bcParameters.vy[nodeIndex],
+                                                 bcParameters.vz[nodeIndex], concentrationWall);
             break;
         case BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannInterpolatedSlip: {
             const real vx1 = velocityX[k_000];
             const real vx2 = velocityY[k_000];
             const real vx3 = velocityZ[k_000];
-            writePopulationsInterpolatedAntiBounceBack(
-                nodeIndex, subgridDistances, populationReferences, listIndices, populations, relaxationFrequency, vx1,
-                vx2, vx3, vx1, vx2, vx3, concentrationNode, concentrationWall);
+            writePopulationsInterpolatedAntiBounceBack(nodeIndex, subgridDistances, populationReferences, listIndices,
+                                                       populations, relaxationFrequency, vx1, vx2, vx3, vx1, vx2, vx3,
+                                                       concentrationNode, concentrationWall);
         } break;
         case BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannInterpolatedNoSlip: {
             writePopulationsInterpolatedAntiBounceBack(
                 nodeIndex, subgridDistances, populationReferences, listIndices, populations, relaxationFrequency,
-                velocityX[k_000], velocityY[k_000], velocityZ[k_000], bcParameters.vx[nodeIndex],
-                bcParameters.vy[nodeIndex], bcParameters.vz[nodeIndex], concentrationNode, concentrationWall);
+                velocityX[k_000], velocityY[k_000], velocityZ[k_000], bcParameters.vx[nodeIndex], bcParameters.vy[nodeIndex],
+                bcParameters.vz[nodeIndex], concentrationNode, concentrationWall);
         } break;
     }
 }

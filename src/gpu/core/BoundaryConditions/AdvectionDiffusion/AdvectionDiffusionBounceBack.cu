@@ -42,8 +42,8 @@ using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
 template <size_t direction>
-constexpr void setDistributions(uint nodeIndex, const SubgridDistances27& subgridDistanceReferences,
-                                Distributions27& distributionReferences, const vf::gpu::ListIndices& listIndices,
+constexpr void setDistributions(const uint nodeIndex, const SubgridDistances27& subgridDistanceReferences,
+                                const Distributions27& distributionReferences, const vf::gpu::ListIndices& listIndices,
                                 const real* populations)
 {
     const real subgridDistance = (subgridDistanceReferences.q[direction])[nodeIndex];
@@ -54,9 +54,10 @@ constexpr void setDistributions(uint nodeIndex, const SubgridDistances27& subgri
     (distributionReferences.f[inverseDir])[writeIndex] = populations[direction];
 }
 
-__global__ void AdvectionDiffusionBounceBack_Device(real* distributions, AdvectionDiffusionNoSlipBoundaryConditions bcParameters, const uint* neighborX, const uint* neighborY,
-                                                    const uint* neighborZ, unsigned long long numberOfLBnodes,
-                                                    bool isEvenTimestep)
+__global__ void AdvectionDiffusionBounceBack_Device(real* distributions,
+                                                    AdvectionDiffusionNoSlipBoundaryConditions bcParameters,
+                                                    const uint* neighborX, const uint* neighborY, const uint* neighborZ,
+                                                    unsigned long long numberOfLBnodes, bool isEvenTimestep)
 {
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
     if (nodeIndex >= bcParameters.numberOfBCnodes)
@@ -69,10 +70,10 @@ __global__ void AdvectionDiffusionBounceBack_Device(real* distributions, Advecti
 
     SubgridDistances27 subgridDistanceReferences;
     vf::gpu::getPointersToSubgridDistances(subgridDistanceReferences, bcParameters.q27[0], bcParameters.numberOfBCnodes);
-    
+
     real populations[27];
     vf::gpu::getPostCollisionDistribution(populations, distributionReferences, listIndices);
-    
+
     vf::gpu::getPointersToDistributions(distributionReferences, distributions, numberOfLBnodes, !isEvenTimestep);
 
     setDistributions<dM00>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
