@@ -96,7 +96,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = k_base_0MM;
     indices.k_MMM = k_base_MMM;
 
-    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithTurbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     real f_fine[27];
 
@@ -116,7 +116,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = neighborZ[indices.k_0MM];
     indices.k_MMM = neighborZ[indices.k_MMM];
 
-    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithTurbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculateMMP(f_fine, omega_);
@@ -134,7 +134,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = indices.k_MMM;
     indices.k_MMM = neighborX[indices.k_MMM];
 
-    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithTurbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculatePMP(f_fine, omega_);
@@ -152,7 +152,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0M0 = k_base_MM0;
     indices.k_MM0 = neighborX[k_base_MM0];
 
-    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithTurbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculatePMM(f_fine, omega_);
@@ -180,7 +180,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = k_base_0MM;
     indices.k_MMM = k_base_MMM;
 
-    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithTurbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculateMPM(f_fine, omega_);
@@ -198,7 +198,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = neighborZ[indices.k_0MM];
     indices.k_MMM = neighborZ[indices.k_MMM];
 
-    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithTurbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculateMPP(f_fine, omega_);
@@ -216,7 +216,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0MM = indices.k_MMM;
     indices.k_MMM = neighborX[indices.k_MMM];
 
-    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithTurbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculatePPP(f_fine, omega_);
@@ -234,7 +234,7 @@ template<bool hasTurbulentViscosity> __device__ void calculateMomentSet(
     indices.k_0M0 = k_base_MM0;
     indices.k_MM0 = neighborX[k_base_MM0];
     
-    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithturbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
+    omega_ = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithTurbulentViscosity(omega, turbulentViscosity[indices.k_000]) : omega;
 
     getPreCollisionDistribution(f_fine, distFine, indices);
     momentsSet.calculatePPM(f_fine, omega_);

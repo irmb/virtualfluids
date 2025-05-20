@@ -116,12 +116,12 @@ __global__ void runCollisionAdvectionDiffusion(CollisionFunctor collision, GPUCo
             const real turbulentDiffusivity = calcTurbulentDiffusivityDefault(
                 collisionParameter.turbulentViscosity[k_000], collisionParameter.turbulentPrandtlNumber);
             para.omega =
-                vf::lbm::calculateOmegaWithturbulentViscosity(collisionParameter.relaxationFrequency, turbulentDiffusivity);
+                vf::lbm::calculateOmegaWithTurbulentViscosity(collisionParameter.relaxationFrequency, turbulentDiffusivity);
             collisionParameter.turbulentDiffusivity[k_000] = turbulentDiffusivity;
         } break;
         case TurbulenceModel::Moeng:
         case TurbulenceModel::AMDStratified:
-            para.omega = vf::lbm::calculateOmegaWithturbulentViscosity(collisionParameter.relaxationFrequency,
+            para.omega = vf::lbm::calculateOmegaWithTurbulentViscosity(collisionParameter.relaxationFrequency,
                                                                        collisionParameter.turbulentDiffusivity[k_000]);
             break;
     }
