@@ -1,4 +1,4 @@
-# #######################################################################################
+#=======================================================================================
 # ____          ____    __    ______     __________   __      __       __        __
 # \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
 #  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
@@ -23,53 +23,13 @@
 #  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 #  for more details.
 #
+#  You should have received a copy of the GNU General Public License along
+#  with VirtualFluids (see COPYING.txt). If not, see <http://www.gnu.org/licenses/>.
+#
 #  SPDX-License-Identifier: GPL-3.0-or-later
 #  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 #
-# #################################################################################
+#=======================================================================================
+PROJECT(HeatedCube)
 
-#############################################################
-###                  Options                              ###
-#############################################################
-
-option(VF_GPU_ENABLE_NUMERIC_TESTS "Build numeric tests" OFF)
-
-#############################################################
-###                  Libraries                            ###
-#############################################################
-
-add_subdirectory(src/gpu/cuda_helper)
-add_subdirectory(src/gpu/GridGenerator)
-add_subdirectory(src/gpu/core)
-
-#############################################################
-###                      Apps                             ###
-#############################################################
-
-if(VF_ENABLE_ALL_APPS)
-    list(APPEND USER_APPS
-    "apps/gpu/ActuatorLine"
-    "apps/gpu/AtmosphericBoundaryLayer"
-    "apps/gpu/DrivenCavityMultiGPU"
-    "apps/gpu/GaussianHillOfConcentration"
-    "apps/gpu/HeatedCube"
-    "apps/gpu/SphereMultiGPU" 
-    "apps/gpu/TaylorGreenVortex"
-    )
-endif()
-
-add_subdirectory(apps/gpu/DrivenCavity)
-add_subdirectory(apps/gpu/SphereInChannel)
-add_subdirectory(apps/gpu/LaminarPipeFlowGPU)
-
-#############################################################
-###                   Numeric Tests                       ###
-#############################################################
-
-if(VF_GPU_ENABLE_NUMERIC_TESTS)
-    if(NOT VF_ENABLE_UNIT_TESTS) # in this case googletest is already included.
-        add_subdirectory(${VF_THIRD_DIR}/googletest)
-    endif()
-
-    add_subdirectory(tests/numerical-tests/gpu/)
-endif()
+vf_add_executable(PRIVATE_LINK gpu_core)
