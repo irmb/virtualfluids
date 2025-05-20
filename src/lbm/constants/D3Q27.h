@@ -166,114 +166,95 @@ static constexpr unsigned long int etMPM = 16777216;
 static constexpr unsigned long int etPMM = 33554432;
 static constexpr unsigned long int etMMM = 67108864;
 
-template<size_t direction>
-constexpr size_t inverseDir()
-{
-    switch(direction)
-    {
-        case d000: return i000;
-        case dP00: return iP00;
-        case dM00: return iM00;
-        case d0P0: return i0P0;
-        case d0M0: return i0M0;
-        case d00P: return i00P;
-        case d00M: return i00M;
-        case dPP0: return iPP0;
-        case dMM0: return iMM0;
-        case dPM0: return iPM0;
-        case dMP0: return iMP0;
-        case dP0P: return iP0P;
-        case dM0M: return iM0M;
-        case dP0M: return iP0M;
-        case dM0P: return iM0P;
-        case d0PP: return i0PP;
-        case d0MM: return i0MM;
-        case d0PM: return i0PM;
-        case d0MP: return i0MP;
-        case dPPP: return iPPP;
-        case dMMM: return iMMM;
-        case dPPM: return iPPM;
-        case dMMP: return iMMP;
-        case dPMP: return iPMP;
-        case dMPM: return iMPM;
-        case dPMM: return iPMM;
-        case dMPP: return iMPP;
-    }
-    return d000;
-}
+template<size_t direction> constexpr size_t inverseDir();
+template<> constexpr size_t inverseDir<d000>(){ return i000; };
+template<> constexpr size_t inverseDir<dP00>(){ return iP00;};
+template<> constexpr size_t inverseDir<dM00>(){ return iM00;};
+template<> constexpr size_t inverseDir<d0P0>(){ return i0P0;};
+template<> constexpr size_t inverseDir<d0M0>(){ return i0M0;};
+template<> constexpr size_t inverseDir<d00P>(){ return i00P;};
+template<> constexpr size_t inverseDir<d00M>(){ return i00M;};
+template<> constexpr size_t inverseDir<dPP0>(){ return iPP0;};
+template<> constexpr size_t inverseDir<dMM0>(){ return iMM0;};
+template<> constexpr size_t inverseDir<dPM0>(){ return iPM0;};
+template<> constexpr size_t inverseDir<dMP0>(){ return iMP0;};
+template<> constexpr size_t inverseDir<dP0P>(){ return iP0P;};
+template<> constexpr size_t inverseDir<dM0M>(){ return iM0M;};
+template<> constexpr size_t inverseDir<dP0M>(){ return iP0M;};
+template<> constexpr size_t inverseDir<dM0P>(){ return iM0P;};
+template<> constexpr size_t inverseDir<d0PP>(){ return i0PP;};
+template<> constexpr size_t inverseDir<d0MM>(){ return i0MM;};
+template<> constexpr size_t inverseDir<d0PM>(){ return i0PM;};
+template<> constexpr size_t inverseDir<d0MP>(){ return i0MP;};
+template<> constexpr size_t inverseDir<dPPP>(){ return iPPP;};
+template<> constexpr size_t inverseDir<dMMM>(){ return iMMM;};
+template<> constexpr size_t inverseDir<dPPM>(){ return iPPM;};
+template<> constexpr size_t inverseDir<dMMP>(){ return iMMP;};
+template<> constexpr size_t inverseDir<dPMP>(){ return iPMP;};
+template<> constexpr size_t inverseDir<dMPM>(){ return iMPM;};
+template<> constexpr size_t inverseDir<dPMM>(){ return iPMM;};
+template<> constexpr size_t inverseDir<dMPP>(){ return iMPP;};
 
 
-template<size_t direction>
-constexpr real getVelocity(real velocityX, real velocityY, real velocityZ)
-{
-    switch(direction)
-    {
-        case d000: return basics::constant::c0o1;
-        case dP00: return  velocityX;
-        case dM00: return -velocityX;
-        case d0P0: return velocityY;
-        case d0M0: return -velocityY;
-        case d00P: return velocityZ;
-        case d00M: return -velocityZ;
-        case dPP0: return velocityX + velocityY;
-        case dMM0: return -velocityX - velocityY;
-        case dPM0: return velocityX - velocityY;
-        case dMP0: return -velocityX + velocityY;
-        case dP0P: return velocityX + velocityZ;
-        case dM0M: return -velocityX - velocityZ;
-        case dP0M: return velocityX - velocityZ;
-        case dM0P: return -velocityX + velocityZ;
-        case d0PP: return velocityY + velocityZ;
-        case d0MM: return -velocityY - velocityZ;
-        case d0PM: return velocityY - velocityZ;
-        case d0MP: return -velocityY + velocityZ;
-        case dPPP: return velocityX + velocityY + velocityZ;
-        case dMMM: return -velocityX - velocityY - velocityZ;
-        case dPPM: return velocityX + velocityY - velocityZ;
-        case dMMP: return -velocityX - velocityY + velocityZ;
-        case dPMP: return velocityX - velocityY + velocityZ;
-        case dMPM: return -velocityX + velocityY - velocityZ;
-        case dPMM: return velocityX - velocityY - velocityZ;
-        case dMPP: return -velocityX + velocityY + velocityZ;
-    }
-    return basics::constant::c0o1;
-}
+template<size_t direction> constexpr real getVelocity(real velocityX, real velocityY, real velocityZ);
+template<> constexpr real getVelocity<d000>(real  /*velocityX*/, real  /*velocityY*/, real  /*velocityZ*/){ return basics::constant::c0o1;}
+template<> constexpr real getVelocity<dP00>(real velocityX, real  /*velocityY*/, real  /*velocityZ*/){ return  velocityX;}
+template<> constexpr real getVelocity<dM00>(real velocityX, real  /*velocityY*/, real  /*velocityZ*/){ return -velocityX;}
+template<> constexpr real getVelocity<d0P0>(real  /*velocityX*/, real velocityY, real /*velocityZ*/){ return velocityY;}
+template<> constexpr real getVelocity<d0M0>(real  /*velocityX*/, real velocityY, real /*velocityZ*/){ return -velocityY;}
+template<> constexpr real getVelocity<d00P>(real  /*velocityX*/, real /*velocityY*/, real velocityZ){ return velocityZ;}
+template<> constexpr real getVelocity<d00M>(real  /*velocityX*/, real /*velocityY*/, real velocityZ){ return -velocityZ;}
+template<> constexpr real getVelocity<dPP0>(real velocityX, real velocityY, real /*velocityZ*/){ return velocityX + velocityY;}
+template<> constexpr real getVelocity<dMM0>(real velocityX, real velocityY, real /*velocityZ*/){ return -velocityX - velocityY;}
+template<> constexpr real getVelocity<dPM0>(real velocityX, real velocityY, real /*velocityZ*/){ return velocityX - velocityY;}
+template<> constexpr real getVelocity<dMP0>(real velocityX, real velocityY, real /*velocityZ*/){ return -velocityX + velocityY;}
+template<> constexpr real getVelocity<dP0P>(real velocityX, real /*velocityY*/, real velocityZ){ return velocityX + velocityZ;}
+template<> constexpr real getVelocity<dM0M>(real velocityX, real /*velocityY*/, real velocityZ){ return -velocityX - velocityZ;}
+template<> constexpr real getVelocity<dP0M>(real velocityX, real /*velocityY*/, real velocityZ){ return velocityX - velocityZ;}
+template<> constexpr real getVelocity<dM0P>(real velocityX, real /*velocityY*/, real velocityZ){ return -velocityX + velocityZ;}
+template<> constexpr real getVelocity<d0PP>(real /*velocityX*/, real velocityY, real velocityZ){ return velocityY + velocityZ;}
+template<> constexpr real getVelocity<d0MM>(real /*velocityX*/, real velocityY, real velocityZ){ return -velocityY - velocityZ;}
+template<> constexpr real getVelocity<d0PM>(real /*velocityX*/, real velocityY, real velocityZ){ return velocityY - velocityZ;}
+template<> constexpr real getVelocity<d0MP>(real /*velocityX*/, real velocityY, real velocityZ){ return -velocityY + velocityZ;}
+template<> constexpr real getVelocity<dPPP>(real velocityX, real velocityY, real velocityZ){ return velocityX + velocityY + velocityZ;}
+template<> constexpr real getVelocity<dMMM>(real velocityX, real velocityY, real velocityZ){ return -velocityX - velocityY - velocityZ;}
+template<> constexpr real getVelocity<dPPM>(real velocityX, real velocityY, real velocityZ){ return velocityX + velocityY - velocityZ;}
+template<> constexpr real getVelocity<dMMP>(real velocityX, real velocityY, real velocityZ){ return -velocityX - velocityY + velocityZ;}
+template<> constexpr real getVelocity<dPMP>(real velocityX, real velocityY, real velocityZ){ return velocityX - velocityY + velocityZ;}
+template<> constexpr real getVelocity<dMPM>(real velocityX, real velocityY, real velocityZ){ return -velocityX + velocityY - velocityZ;}
+template<> constexpr real getVelocity<dPMM>(real velocityX, real velocityY, real velocityZ){ return velocityX - velocityY - velocityZ;}
+template<> constexpr real getVelocity<dMPP>(real velocityX, real velocityY, real velocityZ){ return -velocityX + velocityY + velocityZ;}
 
-template<size_t direction>
-constexpr real getWeight()
-{
-    switch(direction)
-    {
-        case d000: return basics::constant::c8o27;
-        case dP00: return basics::constant::c2o27;
-        case dM00: return basics::constant::c2o27;
-        case d0P0: return basics::constant::c2o27;
-        case d0M0: return basics::constant::c2o27;
-        case d00P: return basics::constant::c2o27;
-        case d00M: return basics::constant::c2o27;
-        case dPP0: return basics::constant::c1o54;
-        case dMM0: return basics::constant::c1o54;
-        case dPM0: return basics::constant::c1o54;
-        case dMP0: return basics::constant::c1o54;
-        case dP0P: return basics::constant::c1o54;
-        case dM0M: return basics::constant::c1o54;
-        case dP0M: return basics::constant::c1o54;
-        case dM0P: return basics::constant::c1o54;
-        case d0PP: return basics::constant::c1o54;
-        case d0MM: return basics::constant::c1o54;
-        case d0PM: return basics::constant::c1o54;
-        case d0MP: return basics::constant::c1o54;
-        case dPPP: return basics::constant::c1o216;
-        case dMMM: return basics::constant::c1o216;
-        case dPPM: return basics::constant::c1o216;
-        case dMMP: return basics::constant::c1o216;
-        case dPMP: return basics::constant::c1o216;
-        case dMPM: return basics::constant::c1o216;
-        case dPMM: return basics::constant::c1o216;
-        case dMPP: return basics::constant::c1o216;
-    }
-    return basics::constant::c8o27;
-}
+
+template<size_t direction> constexpr real getWeight();
+template<> constexpr real getWeight<d000>(){ return basics::constant::c8o27;}
+template<> constexpr real getWeight<dP00>(){ return basics::constant::c2o27;}
+template<> constexpr real getWeight<dM00>(){ return basics::constant::c2o27;}
+template<> constexpr real getWeight<d0P0>(){ return basics::constant::c2o27;}
+template<> constexpr real getWeight<d0M0>(){ return basics::constant::c2o27;}
+template<> constexpr real getWeight<d00P>(){ return basics::constant::c2o27;}
+template<> constexpr real getWeight<d00M>(){ return basics::constant::c2o27;}
+template<> constexpr real getWeight<dPP0>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<dMM0>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<dPM0>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<dMP0>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<dP0P>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<dM0M>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<dP0M>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<dM0P>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<d0PP>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<d0MM>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<d0PM>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<d0MP>(){ return basics::constant::c1o54;}
+template<> constexpr real getWeight<dPPP>(){ return basics::constant::c1o216;}
+template<> constexpr real getWeight<dMMM>(){ return basics::constant::c1o216;}
+template<> constexpr real getWeight<dPPM>(){ return basics::constant::c1o216;}
+template<> constexpr real getWeight<dMMP>(){ return basics::constant::c1o216;}
+template<> constexpr real getWeight<dPMP>(){ return basics::constant::c1o216;}
+template<> constexpr real getWeight<dMPM>(){ return basics::constant::c1o216;}
+template<> constexpr real getWeight<dPMM>(){ return basics::constant::c1o216;}
+template<> constexpr real getWeight<dMPP>(){ return basics::constant::c1o216;}
+
 } // namespace vf::lbm::dir
 #endif
 
