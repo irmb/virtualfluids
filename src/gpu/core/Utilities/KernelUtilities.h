@@ -247,69 +247,63 @@ struct ListIndices
     uint k_0MM { 0 };
     uint k_MMM { 0 };
 
-    constexpr uint k000() const {return k_000;}
-    constexpr uint kP00() const {return k_000;}
-    constexpr uint k0P0() const {return k_000;}
-    constexpr uint k00P() const {return k_000;}
-    constexpr uint kPP0() const {return k_000;}
-    constexpr uint k0PP() const {return k_000;}
-    constexpr uint kP0P() const {return k_000;}
-    constexpr uint kPPP() const {return k_000;}
-    constexpr uint kM00() const {return k_M00;}
-    constexpr uint kMP0() const {return k_M00;}
-    constexpr uint kM0P() const {return k_M00;}
-    constexpr uint kMPP() const {return k_M00;}
-    constexpr uint k0M0() const {return k_0M0;}
-    constexpr uint kPM0() const {return k_0M0;}
-    constexpr uint k0MP() const {return k_0M0;}
-    constexpr uint kPMP() const {return k_0M0;}
-    constexpr uint k00M() const {return k_00M;}
-    constexpr uint kP0M() const {return k_00M;}
-    constexpr uint k0PM() const {return k_00M;}
-    constexpr uint kPPM() const {return k_00M;}
-    constexpr uint kMM0() const {return k_MM0;}
-    constexpr uint kMMP() const {return k_MM0;}
-    constexpr uint kM0M() const {return k_M0M;}
-    constexpr uint kMPM() const {return k_M0M;}
-    constexpr uint k0MM() const {return k_0MM;}
-    constexpr uint kPMM() const {return k_0MM;}
-    constexpr uint kMMM() const {return k_MMM;}
+    constexpr uint k000() const { return k_000; }
+    constexpr uint kP00() const { return k_000; }
+    constexpr uint k0P0() const { return k_000; }
+    constexpr uint k00P() const { return k_000; }
+    constexpr uint kPP0() const { return k_000; }
+    constexpr uint k0PP() const { return k_000; }
+    constexpr uint kP0P() const { return k_000; }
+    constexpr uint kPPP() const { return k_000; }
+    constexpr uint kM00() const { return k_M00; }
+    constexpr uint kMP0() const { return k_M00; }
+    constexpr uint kM0P() const { return k_M00; }
+    constexpr uint kMPP() const { return k_M00; }
+    constexpr uint k0M0() const { return k_0M0; }
+    constexpr uint kPM0() const { return k_0M0; }
+    constexpr uint k0MP() const { return k_0M0; }
+    constexpr uint kPMP() const { return k_0M0; }
+    constexpr uint k00M() const { return k_00M; }
+    constexpr uint kP0M() const { return k_00M; }
+    constexpr uint k0PM() const { return k_00M; }
+    constexpr uint kPPM() const { return k_00M; }
+    constexpr uint kMM0() const { return k_MM0; }
+    constexpr uint kMMP() const { return k_MM0; }
+    constexpr uint kM0M() const { return k_M0M; }
+    constexpr uint kMPM() const { return k_M0M; }
+    constexpr uint k0MM() const { return k_0MM; }
+    constexpr uint kPMM() const { return k_0MM; }
+    constexpr uint kMMM() const { return k_MMM; }
 
-    template<size_t direction> constexpr uint getIndex() const
-    {
-        using namespace vf::lbm::dir;
+    template<size_t direction> constexpr uint getIndex() const;
+    template <> constexpr uint getIndex<d000>() const { return k000(); }
+    template <> constexpr uint getIndex<dP00>() const { return kP00(); }
+    template <> constexpr uint getIndex<dM00>() const { return kM00(); }
+    template <> constexpr uint getIndex<d0P0>() const { return k0P0(); }
+    template <> constexpr uint getIndex<d0M0>() const { return k0M0(); }
+    template <> constexpr uint getIndex<d00P>() const { return k00P(); }
+    template <> constexpr uint getIndex<d00M>() const { return k00M(); }
+    template <> constexpr uint getIndex<dPP0>() const { return kPP0(); }
+    template <> constexpr uint getIndex<dMM0>() const { return kMM0(); }
+    template <> constexpr uint getIndex<dPM0>() const { return kPM0(); }
+    template <> constexpr uint getIndex<dMP0>() const { return kMP0(); }
+    template <> constexpr uint getIndex<dP0P>() const { return kP0P(); }
+    template <> constexpr uint getIndex<dM0M>() const { return kM0M(); }
+    template <> constexpr uint getIndex<dP0M>() const { return kP0M(); }
+    template <> constexpr uint getIndex<dM0P>() const { return kM0P(); }
+    template <> constexpr uint getIndex<d0PP>() const { return k0PP(); }
+    template <> constexpr uint getIndex<d0MM>() const { return k0MM(); }
+    template <> constexpr uint getIndex<d0PM>() const { return k0PM(); }
+    template <> constexpr uint getIndex<d0MP>() const { return k0MP(); }
+    template <> constexpr uint getIndex<dPPP>() const { return kPPP(); }
+    template <> constexpr uint getIndex<dMPP>() const { return kMPP(); }
+    template <> constexpr uint getIndex<dPMP>() const { return kPMP(); }
+    template <> constexpr uint getIndex<dMMP>() const { return kMMP(); }
+    template <> constexpr uint getIndex<dPPM>() const { return kPPM(); }
+    template <> constexpr uint getIndex<dMPM>() const { return kMPM(); }
+    template <> constexpr uint getIndex<dPMM>() const { return kPMM(); }
+    template <> constexpr uint getIndex<dMMM>() const { return kMMM(); }
 
-        switch(direction)
-        {
-            case dP00: return kP00();
-            case dM00: return kM00();
-            case d0P0: return k0P0();
-            case d0M0: return k0M0();
-            case d00P: return k00P();
-            case d00M: return k00M();
-            case dPP0: return kPP0();
-            case dMM0: return kMM0();
-            case dPM0: return kPM0();
-            case dMP0: return kMP0();
-            case dP0P: return kP0P();
-            case dM0M: return kM0M();
-            case dP0M: return kP0M();
-            case dM0P: return kM0P();
-            case d0PP: return k0PP();
-            case d0MM: return k0MM();
-            case d0PM: return k0PM();
-            case d0MP: return k0MP();
-            case dPPP: return kPPP();
-            case dMPP: return kMPP();
-            case dPMP: return kPMP();
-            case dMMP: return kMMP();
-            case dPPM: return kPPM();
-            case dMPM: return kMPM();
-            case dPMM: return kPMM();
-            case dMMM: return kMMM();
-        }
-        return k_000;
-    }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
