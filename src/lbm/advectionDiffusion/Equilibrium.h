@@ -50,7 +50,7 @@ constexpr real computeEquilibrium(real concentration, real velocityX, real veloc
 {
     using namespace vf::lbm::dir;
     using namespace vf::basics::constant;
-    const real cu_sq = c3o2* (velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
+    const real cu_sq = c3o2 * (velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
     const real velocity = getVelocity<direction>(velocityX, velocityY, velocityZ);
     return equilibrium(getWeight<direction>(), concentration, velocity, cu_sq);
 }
