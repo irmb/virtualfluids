@@ -1922,11 +1922,17 @@ void CudaMemoryManager::cudaAllocConcentrationDirichletBC(int lev)
 
     // Host Memory
     checkCudaErrors(cudaMallocHost((void**)&bcParamsH->concentration, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vx, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vy, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vz, memSizeReal));
     checkCudaErrors(cudaMallocHost((void**)&bcParamsH->BCNodeIndices, memSizeInt));
     checkCudaErrors(cudaMallocHost((void**)&bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal));
 
     // Device Memory
     checkCudaErrors(cudaMalloc((void**)&bcParamsD->concentration, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vx, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vy, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vz, memSizeReal));
     checkCudaErrors(cudaMalloc((void**)&bcParamsD->BCNodeIndices, memSizeInt));
     checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
 
@@ -1942,6 +1948,9 @@ void CudaMemoryManager::cudaCopyConcentrationDirichletBCHostToDevice(int lev)
     const size_t memSizeReal = sizeof(real) * bcParamsH->numberOfBCnodes;
 
     checkCudaErrors(cudaMemcpy(bcParamsD->concentration, bcParamsH->concentration, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vx, bcParamsH->vx, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vy, bcParamsH->vy, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vz, bcParamsH->vz, memSizeInt, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(bcParamsD->q27[0], bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(bcParamsD->BCNodeIndices, bcParamsH->BCNodeIndices, memSizeReal, cudaMemcpyHostToDevice));
 }
@@ -1951,10 +1960,16 @@ void CudaMemoryManager::cudaFreeConcentrationDirichletBC(int lev)
     auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionDirichletBC;
 
     checkCudaErrors(cudaFreeHost(bcParamsH->concentration));
-    checkCudaErrors(cudaFreeHost(bcParamsH->concentration));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vx));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vy));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vz));
+    checkCudaErrors(cudaFreeHost(bcParamsH->q27[0]));
     checkCudaErrors(cudaFreeHost(bcParamsH->BCNodeIndices));
     
     checkCudaErrors(cudaFree(bcParamsD->concentration));
+    checkCudaErrors(cudaFree(bcParamsD->vx));
+    checkCudaErrors(cudaFree(bcParamsD->vy));
+    checkCudaErrors(cudaFree(bcParamsD->vz));
     checkCudaErrors(cudaFree(bcParamsD->q27[0]));
     checkCudaErrors(cudaFree(bcParamsD->BCNodeIndices));
 }
@@ -1969,11 +1984,17 @@ void CudaMemoryManager::cudaAllocConcentrationNeumannBC(int lev)
 
     // Host Memory
     checkCudaErrors(cudaMallocHost((void**)&bcParamsH->gradient, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vx, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vy, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vz, memSizeReal));
     checkCudaErrors(cudaMallocHost((void**)&bcParamsH->BCNodeIndices, memSizeInt));
     checkCudaErrors(cudaMallocHost((void**)&bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal));
 
     // Device Memory
     checkCudaErrors(cudaMalloc((void**)&bcParamsD->gradient, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vx, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vy, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vz, memSizeReal));
     checkCudaErrors(cudaMalloc((void**)&bcParamsD->BCNodeIndices, memSizeInt));
     checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
 
@@ -1989,6 +2010,9 @@ void CudaMemoryManager::cudaCopyConcentrationNeumannBCHostToDevice(int lev)
     const size_t memSizeReal = sizeof(real) * bcParamsH->numberOfBCnodes;
 
     checkCudaErrors(cudaMemcpy(bcParamsD->gradient, bcParamsH->gradient, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vx, bcParamsH->vx, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vy, bcParamsH->vy, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vz, bcParamsH->vz, memSizeInt, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(bcParamsD->q27[0], bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(bcParamsD->BCNodeIndices, bcParamsH->BCNodeIndices, memSizeReal, cudaMemcpyHostToDevice));
 }
@@ -1998,10 +2022,16 @@ void CudaMemoryManager::cudaFreeConcentrationNeumannBC(int lev)
     const auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNeumannBC;
 
     checkCudaErrors(cudaFreeHost(bcParamsH->gradient));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vx));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vy));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vz));
     checkCudaErrors(cudaFreeHost(bcParamsH->q27[0]));
     checkCudaErrors(cudaFreeHost(bcParamsH->BCNodeIndices));
     
     checkCudaErrors(cudaFree(bcParamsD->gradient));
+    checkCudaErrors(cudaFree(bcParamsD->vx));
+    checkCudaErrors(cudaFree(bcParamsD->vy));
+    checkCudaErrors(cudaFree(bcParamsD->vz));
     checkCudaErrors(cudaFree(bcParamsD->q27[0]));
     checkCudaErrors(cudaFree(bcParamsD->BCNodeIndices));
 }
