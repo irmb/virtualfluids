@@ -42,6 +42,18 @@
 #include "Utilities/KernelUtilities.h"
 
 template <size_t direction>
+constexpr real computeInterpolatedDistribution(const real* populations, const real concentration, const real velocityX, const real velocityY, const real velocityZ, const real subgridDistance,
+                                               const real relaxationFrequency)
+{
+    const size_t inverseDirection = inverseDir<direction>();
+    const real population = populations[direction];
+    const real populationInverseDirection = populations[inverseDirection];
+    const real equilibrium = vf::lbm::advection_diffusion::computeEquilibrium<direction>(concentration, velocityX, velocityY, velocityZ);
+    return (c1o1 - subgridDistance) * ((population - equilibrium * relaxationFrequency) / (c1o1 - relaxationFrequency)) +
+           subgridDistance * (population + populationInverseDirection);
+}
+
+template <size_t direction>
 constexpr void writePopulationBounceBackWithFlux(const uint nodeIndex, const SubgridDistances27& subgridDistances,
                                                  const vf::gpu::ListIndices& listIndices,
                                                  const DistributionReferences27 populationReferences,
@@ -58,25 +70,13 @@ constexpr void writePopulationBounceBackWithFlux(const uint nodeIndex, const Sub
     (populationReferences.f[inverseDirection])[writeIndex] = populations[direction] - c6o1 * getWeight<direction>() * flux;
 }
 
-constexpr real computePopulationBounceBackInterpolatedWithFlux(const real subgridDistance, const real weight,
-                                                               const real velocity, const real v_sq, const real population,
-                                                               const real populationInverseDir,
-                                                               const real relaxationFrequency, const real flux,
-                                                               const real concentration)
-{
-    const real feq = weight * concentration *
-                     (c1o1 + c3o1 * velocity + c9o2 * velocity * velocity * concentration - v_sq * concentration);
-    return (c1o1 - subgridDistance) / (c1o1 + subgridDistance) *
-               ((population - feq * relaxationFrequency) / (c1o1 - relaxationFrequency)) +
-           (subgridDistance * (population + populationInverseDir) - c6o1 * weight * (flux)) / (c1o1 + subgridDistance);
-}
-
 template <size_t direction>
-constexpr void writePopulationBounceBackInterpolatedWithFlux(
-    const uint nodeIndex, const SubgridDistances27& subgridDistances, const vf::gpu::ListIndices& listIndices,
-    const DistributionReferences27 populationReferences, const real* populations, const real velocityX, const real velocityY,
-    const real velocityZ, const real relaxationFrequency, const real cu_sq, const real concentration, const real fluxX,
-    const real fluxY, const real fluxZ)
+constexpr void
+writePopulationBounceBackInterpolatedWithFlux(const uint nodeIndex, const SubgridDistances27& subgridDistances,
+                                              const vf::gpu::ListIndices& listIndices,
+                                              const DistributionReferences27 populationReferences, const real* populations,
+                                              const real vx1, const real vx2, const real vx3, const real relaxationFrequency,
+                                              const real concentration, const real fluxX, const real fluxY, const real fluxZ)
 {
     using namespace vf::lbm::dir;
     const real subgridDistance = subgridDistances.q[direction][nodeIndex];
@@ -84,27 +84,12 @@ constexpr void writePopulationBounceBackInterpolatedWithFlux(
         return;
     const size_t inverseDirection = inverseDir<direction>();
     const real weight = getWeight<direction>();
-    const real flux = getVelocity<direction>(fluxX, fluxY, fluxZ);
     const uint writeIndex = listIndices.getIndex<inverseDirection>();
-    const real population = populations[direction];
-    const real populationInverseDir = populations[inverseDirection];
-    const real velocity = getVelocity<direction>(velocityX, velocityY, velocityZ);
+    const real flux = getVelocity<direction>(fluxX, fluxY, fluxZ);
+    const real interpolated =
+        computeInterpolatedDistribution<direction>(populations, concentration, vx1, vx2, vx3, subgridDistance, relaxationFrequency);
     (populationReferences.f[inverseDirection])[writeIndex] =
-        computePopulationBounceBackInterpolatedWithFlux(subgridDistance, weight, velocity, cu_sq, population,
-                                                        populationInverseDir, relaxationFrequency, flux, concentration);
-}
-
-constexpr real computePopulationAntiBounceBackInterpolated(const real subgridDistance, const real relaxationFrequency,
-                                                           const real population, const real equilibrium,
-                                                           const real inversePopulation, const real equilibriumInverseWall)
-{
-    using namespace vf::basics::constant;
-
-    const real interpolated = (population * (subgridDistance * relaxationFrequency - c1o1) -
-                               equilibrium * relaxationFrequency * (subgridDistance - c1o1)) /
-                                  (relaxationFrequency - c1o1) +
-                              inversePopulation * subgridDistance;
-    return (c2o1 * equilibriumInverseWall - interpolated) / (subgridDistance + c1o1);
+        (interpolated - c6o1 * weight * flux) / (subgridDistance + c1o1);
 }
 
 template <size_t direction>
@@ -123,15 +108,13 @@ constexpr void writePopulationAntiBounceBackInterpolated(const SubgridDistances2
         return;
 
     const size_t inverseDirection = vf::lbm::dir::inverseDir<direction>();
-    const real population = populations[direction];
-    const real inversePopulation = populations[inverseDirection];
     const uint writeNode = listIndices.getIndex<inverseDirection>();
-    const real equilibrium = computeEquilibrium<direction>(concentrationNode, vx1, vx2, vx3);
     const real equilibriumInverseWall =
         computeEquilibrium<inverseDirection>(concentrationWall, velocityWallX, velocityWallY, velocityWallZ);
-
-    (populationReferences.f[inverseDirection])[writeNode] = computePopulationAntiBounceBackInterpolated(
-        subgridDistance, relaxationFrequency, population, equilibrium, inversePopulation, equilibriumInverseWall);
+    const real interpolated =
+        computeInterpolatedDistribution<direction>(populations, concentrationNode, vx1, vx2, vx3, subgridDistance, relaxationFrequency);
+    (populationReferences.f[inverseDirection])[writeNode] =
+        (c2o1 * equilibriumInverseWall - interpolated) / (subgridDistance + c1o1);
 }
 
 template <size_t direction>
@@ -218,93 +201,92 @@ constexpr void writePopulationsBounceBackWithFlux(const uint nodeIndex, const Su
 
 constexpr void writePopulationsInterpolatedWithFlux(const uint nodeIndex, const SubgridDistances27& subgridDistances,
                                                     const vf::gpu::ListIndices& listIndices,
-                                                    const Distributions27& populationReferences, real* populations, real vx1,
-                                                    real vx2, real vx3, const real drho, real relaxationFrequency,
-                                                    real concentration, const real fluxX, const real fluxY, const real fluxZ)
+                                                    const Distributions27& populationReferences, real* populations,
+                                                    const real vx1, const real vx2, const real vx3,
+                                                    const real relaxationFrequency, const real concentration,
+                                                    const real fluxX, const real fluxY, const real fluxZ)
 {
-    const real cu_sq = c3o2 * (vx1 * vx1 + vx2 * vx2 + vx3 * vx3) * (c1o1 + drho);
-
     writePopulationBounceBackInterpolatedWithFlux<dP00>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dM00>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<d0P0>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<d0M0>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<d00P>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<d00M>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dPP0>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dMM0>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dPM0>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dMP0>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dP0P>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dM0M>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dP0M>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dM0P>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<d0PP>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<d0MM>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<d0PM>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<d0MP>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dPPP>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dMPP>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dPMP>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dMMP>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dPPM>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dMPM>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dPMM>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
     writePopulationBounceBackInterpolatedWithFlux<dMMM>(nodeIndex, subgridDistances, listIndices, populationReferences,
-                                                        populations, vx1, vx2, vx3, relaxationFrequency, cu_sq,
-                                                        concentration, fluxX, fluxY, fluxZ);
+                                                        populations, vx1, vx2, vx3, relaxationFrequency, concentration,
+                                                        fluxX, fluxY, fluxZ);
 }
 
-constexpr void writePopulationsInterpolatedAntiBounceBack(uint nodeIndex, const SubgridDistances27& subgridDistances,
+constexpr void writePopulationsInterpolatedAntiBounceBack(const uint nodeIndex, const SubgridDistances27& subgridDistances,
                                                           const Distributions27& populationReferences,
                                                           const vf::gpu::ListIndices& listIndices, const real* populations,
                                                           const real relaxationFrequency, const real vx1, const real vx2,
