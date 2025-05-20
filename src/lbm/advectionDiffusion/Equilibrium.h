@@ -50,10 +50,9 @@ constexpr real computeEquilibrium(real concentration, real velocityX, real veloc
 {
     using namespace vf::lbm::dir;
     using namespace vf::basics::constant;
-    const real weight = getWeight<direction>();
-    const real cu_sq = velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ;
+    const real cu_sq = c3o2* (velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
     const real velocity = getVelocity<direction>(velocityX, velocityY, velocityZ);
-    return weight * concentration * (c1o1 + c3o1 * velocity + c9o2 * velocity * velocity - c3o2 * cu_sq);
+    return equilibrium(getWeight<direction>(), concentration, velocity, cu_sq);
 }
 } // namespace vf::lbm::advection_diffusion
 #endif
