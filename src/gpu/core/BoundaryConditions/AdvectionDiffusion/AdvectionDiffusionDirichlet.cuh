@@ -1,28 +1,17 @@
 //=======================================================================================
-// ____          ____    __    ______     __________   __      __       __ __ \
-// \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
-//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    / \     |
-//  |
-//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /
-//   /\  \    |  |
-//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____
-//    \   |  |____
-//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/
-//     \__\  |_______|
-//      \    \  |    |
-//      ________________________________________________________________
-//       \    \ |    |  |
-//       ______________________________________________________________|
-//        \    \|    |  |  |         __          __     __     __     ______
-//        _______
-//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _
-//         \    /  _____)
-//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  |
-//          \  \   \_______
-//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /
-//           _____  |
-//            \ _____|  |__|        |________|   \_______/    |__|   |______/
-//            (_______/
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
 //
 //  This file is part of VirtualFluids. VirtualFluids is free software: you can
 //  redistribute it and/or modify it under the terms of the GNU General Public
@@ -35,8 +24,7 @@
 //  for more details.
 //
 //  SPDX-License-Identifier: GPL-3.0-or-later
-//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see
-//  AUTHORS.md in root folder
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
 //! \addtogroup gpu_BoundaryConditions BoundaryConditions
 //! \ingroup gpu_core core
@@ -53,12 +41,12 @@
 #include "Utilities/KernelUtilities.h"
 
 template <BoundaryConditionFactory::AdvectionDiffusionDirichletBC bcType>
-__global__ void AdvectionDiffusionDirichlet_Device(real* distributionsConcentration,
-                                                   AdvectionDiffusionDirichletBoundaryConditions bcParameters,
+__global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
+                                                   const AdvectionDiffusionDirichletBoundaryConditions bcParameters,
                                                    const uint* neighborX, const uint* neighborY, const uint* neighborZ,
                                                    const real* velocityX, const real* velocityY, const real* velocityZ,
-                                                   unsigned long long numberOfLBnodes, real relaxationFrequency,
-                                                   bool isEvenTimestep)
+                                                   unsigned long long numberOfLBnodes, const real relaxationFrequency,
+                                                   const bool isEvenTimestep)
 {
     using namespace vf::basics::constant;
     using namespace vf::lbm::dir;
@@ -73,39 +61,39 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* distributionsConcentrat
     const uint k_000 = bcParameters.BCNodeIndices[nodeIndex];
     const vf::gpu::ListIndices listIndices(k_000, neighborX, neighborY, neighborZ);
 
-    Distributions27 distributionReferences =
-        vf::gpu::getDistributionReferences27(distributionsConcentration, numberOfLBnodes, isEvenTimestep);
+    Distributions27 populationReferences =
+        vf::gpu::getDistributionReferences27(populationsArray, numberOfLBnodes, isEvenTimestep);
 
-    real distributions[27];
-    vf::gpu::getPostCollisionDistribution(distributions, distributionReferences, listIndices);
+    real populations[27];
+    vf::gpu::getPostCollisionDistribution(populations, populationReferences, listIndices);
     const real concentrationWall = bcParameters.concentration[nodeIndex];
 
-    vf::gpu::getPointersToDistributions(distributionReferences, distributionsConcentration, numberOfLBnodes,
+    vf::gpu::getPointersToDistributions(populationReferences, populationsArray, numberOfLBnodes,
                                         !isEvenTimestep);
     switch (bcType) {
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackSlip:
-            writeTemperatureDistributionsSimpleAntiBounceBack(nodeIndex, subgridDistances, distributionReferences,
-                                                              listIndices, distributions, velocityX[k_000], velocityY[k_000],
+            writePopulationsSimpleAntiBounceBack(nodeIndex, subgridDistances, populationReferences,
+                                                              listIndices, populations, velocityX[k_000], velocityY[k_000],
                                                               velocityZ[k_000], concentrationWall);
             break;
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip:
-            writeTemperatureDistributionsSimpleAntiBounceBack(
-                nodeIndex, subgridDistances, distributionReferences, listIndices, distributions, bcParameters.vx[nodeIndex],
+            writePopulationsSimpleAntiBounceBack(
+                nodeIndex, subgridDistances, populationReferences, listIndices, populations, bcParameters.vx[nodeIndex],
                 bcParameters.vy[nodeIndex], bcParameters.vz[nodeIndex], concentrationWall);
             break;
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedSlip: {
-            const real concentrationNode = vf::lbm::getDensity(distributions);
+            const real concentrationNode = vf::lbm::getDensity(populations);
             const real vx1 = velocityX[k_000];
             const real vx2 = velocityY[k_000];
             const real vx3 = velocityZ[k_000];
-            writeTemperatureDistributionsInterpolatedAntiBounceBack(
-                nodeIndex, subgridDistances, distributionReferences, listIndices, distributions, relaxationFrequency, vx1,
+            writePopulationsInterpolatedAntiBounceBack(
+                nodeIndex, subgridDistances, populationReferences, listIndices, populations, relaxationFrequency, vx1,
                 vx2, vx3, vx1, vx2, vx3, concentrationNode, concentrationWall);
         } break;
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedNoSlip: {
-            const real concentrationNode = vf::lbm::getDensity(distributions);
-            writeTemperatureDistributionsInterpolatedAntiBounceBack(
-                nodeIndex, subgridDistances, distributionReferences, listIndices, distributions, relaxationFrequency,
+            const real concentrationNode = vf::lbm::getDensity(populations);
+            writePopulationsInterpolatedAntiBounceBack(
+                nodeIndex, subgridDistances, populationReferences, listIndices, populations, relaxationFrequency,
                 velocityX[k_000], velocityY[k_000], velocityZ[k_000], bcParameters.vx[nodeIndex], bcParameters.vy[nodeIndex],
                 bcParameters.vz[nodeIndex], concentrationNode, concentrationWall);
         } break;
