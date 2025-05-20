@@ -180,7 +180,7 @@ public:
     //!
     //! - slip: only use a slip boundary condition which sets the normals
     void setGeometryBoundaryCondition(std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType);
-    void setAdvectionDiffusionNoSlipBoundaryCondition(AdvectionDiffusionSlipVelocityBC boundaryConditionType);
+    void setAdvectionDiffusionNoSlipBoundaryCondition(AdvectionDiffusionNoSlipBC boundaryConditionType);
     void setAdvectionDiffusionSlipVelocityBoundaryCondition(AdvectionDiffusionSlipVelocityBC boundaryConditionType);
     void setAdvectionDiffusionDirichletBoundaryCondition(AdvectionDiffusionDirichletBC boundaryConditionType);
     void setAdvectionDiffusionNeumannBoundaryCondition(AdvectionDiffusionNeumannBC boundaryConditionType);

@@ -81,7 +81,22 @@ void BoundaryConditionFactory::setPrecursorBoundaryCondition(PrecursorBC boundar
 {
     this->precursorBoundaryCondition = boundaryConditionType;
 }
-
+void BoundaryConditionFactory::setAdvectionDiffusionNoSlipBoundaryCondition(AdvectionDiffusionNoSlipBC boundaryConditionType)
+{
+    this->advectionDiffusionNoSlipBoundaryCondition = boundaryConditionType;
+}
+void BoundaryConditionFactory::setAdvectionDiffusionSlipVelocityBoundaryCondition(AdvectionDiffusionSlipVelocityBC boundaryConditionType)
+{
+    this->advectionDiffusionSlipVelocityBoundaryCondition = boundaryConditionType;
+}
+void BoundaryConditionFactory::setAdvectionDiffusionDirichletBoundaryCondition(AdvectionDiffusionDirichletBC boundaryConditionType)
+{
+    this->advectionDiffusionDirichletBoundaryCondition = boundaryConditionType;
+}
+void BoundaryConditionFactory::setAdvectionDiffusionNeumannBoundaryCondition(AdvectionDiffusionNeumannBC boundaryConditionType)
+{
+    this->advectionDiffusionNeumannBoundaryCondition = boundaryConditionType;
+}
 BoundaryConditionKernel BoundaryConditionFactory::getVelocityBoundaryConditionPost(bool isGeometryBC) const
 {
     const VelocityBC& boundaryCondition =
