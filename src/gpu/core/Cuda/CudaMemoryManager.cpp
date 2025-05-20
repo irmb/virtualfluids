@@ -1878,7 +1878,7 @@ void CudaMemoryManager::cudaAllocConcentrationSlipVelocityBC(int lev)
     checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
     
     //////////////////////////////////////////////////////////////////////////
-    double tmp = static_cast<double>((parameter->getD3Qxx()+4)*memSizeReal+memSizeInt);
+    double tmp = double((parameter->getD3Qxx()+4)*memSizeReal+memSizeInt);
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyConcentrationSlipVelocityBCHostToDevice(int lev)
@@ -1937,7 +1937,7 @@ void CudaMemoryManager::cudaAllocConcentrationDirichletBC(int lev)
     checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
 
     //////////////////////////////////////////////////////////////////////////
-    double tmp = static_cast<double>((parameter->getD3Qxx()+1)*memSizeReal + memSizeInt);
+    double tmp = double((parameter->getD3Qxx()+4)*memSizeReal + memSizeInt);
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyConcentrationDirichletBCHostToDevice(int lev)
@@ -1999,7 +1999,7 @@ void CudaMemoryManager::cudaAllocConcentrationNeumannBC(int lev)
     checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
 
     //////////////////////////////////////////////////////////////////////////
-    double tmp = static_cast<double>((parameter->getD3Qxx()+1)*memSizeReal + memSizeInt);
+    double tmp = double((parameter->getD3Qxx()+4)*memSizeReal + memSizeInt);
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyConcentrationNeumannBCHostToDevice(int lev)
@@ -2052,7 +2052,7 @@ void CudaMemoryManager::cudaAllocConcentrationNoSlipBC(int lev)
     checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
     
     //////////////////////////////////////////////////////////////////////////
-    double tmp = static_cast<double>(parameter->getD3Qxx()*memSizeReal+memSizeInt);
+    double tmp = double(parameter->getD3Qxx()*memSizeReal+memSizeInt);
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyConcentrationNoSlipBCHostToDevice(int lev)
