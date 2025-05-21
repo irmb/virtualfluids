@@ -183,6 +183,9 @@ public:
 
     virtual std::vector<SideType> getBCAlreadySet() = 0;
     virtual void addBCalreadySet(SideType side) = 0;
+    virtual std::vector<SideType> getADBCAlreadySet() = 0;
+    virtual void addADBCalreadySet(SideType side) = 0;
+
 
     // needed for CUDA Streams 
     virtual void findFluidNodeIndices(bool onlyBulk) = 0;
