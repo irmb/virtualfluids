@@ -463,6 +463,8 @@ void Parameter::setDiffOn(bool isDiff)
 void Parameter::setBuoyancyEnabled(bool buoyancyEnabled)
 {
     this->buoyancyEnabled = buoyancyEnabled;
+    if(!this->isBodyForce)
+        VF_LOG_WARNING("Need to enable body force for buoyancy!");
 }
 void Parameter::setD3Qxx(int d3qxx)
 {
