@@ -59,6 +59,7 @@
 #include "gpu/core/Samplers/Probe.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
 #include "gpu/core/Cuda/CudaMemoryManager.h"
+#include "gpu/core/PreCollisionInteractor/BuoyancyProvider/BuoyancyProvider.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const std::string simulationName("HeatedCube");
@@ -189,7 +190,8 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setADKernel(vf::advectionDiffusionKernel::compressible::F16);
     para->setDiffusivity(diffusivityLB);
     para->setBuoyancyFactor(thermalExpansion * gravity * (deltaT * deltaT / deltaX));
-
+    auto buyoancyProvider = std::make_shared<BuoyancyProviderConstantValue>(para, memoryManager);
+    para->addInteractor(buyoancyProvider);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto midPlane =
