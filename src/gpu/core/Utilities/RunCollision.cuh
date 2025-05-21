@@ -42,6 +42,7 @@
 #include <lbm/collision/TurbulentViscosity.h>
 
 #include "cuda_helper/CudaIndexCalculation.h"
+#include "KernelUtilities.h"
 
 namespace vf::gpu
 {

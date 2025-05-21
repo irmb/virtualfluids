@@ -114,7 +114,7 @@ constexpr void writePopulationAntiBounceBackInterpolated(const SubgridDistances2
     const real interpolated =
         computeInterpolatedDistribution<direction>(populations, concentrationNode, vx1, vx2, vx3, subgridDistance, relaxationFrequency);
     (populationReferences.f[inverseDirection])[writeNode] =
-        (c2o1 * equilibriumInverseWall - interpolated) / (subgridDistance + c1o1);
+        (-interpolated + c2o1 * equilibriumInverseWall ) / (subgridDistance + c1o1);
 }
 
 template <size_t direction>
