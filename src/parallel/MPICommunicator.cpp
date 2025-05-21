@@ -198,6 +198,9 @@ void MPICommunicator::allGather(std::vector<unsigned long long> &svalues, std::v
 }
 void MPICommunicator::allGather(std::vector<uint>& svalues, std::vector<uint>& rvalues){ allGather<uint>(svalues, rvalues); }
 //////////////////////////////////////////////////////////////////////////
+void MPICommunicator::allReduceSum(std::vector<float>& svalues){ allReduceSum<float>(svalues); };
+void MPICommunicator::allReduceSum(std::vector<double>& svalues){ allReduceSum<double>(svalues); };
+//////////////////////////////////////////////////////////////////////////
 void MPICommunicator::broadcast(std::vector<int> &values) { broadcast<int>(values); }
 //////////////////////////////////////////////////////////////////////////
 void MPICommunicator::broadcast(std::vector<float> &values) { broadcast<float>(values); }

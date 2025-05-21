@@ -86,6 +86,9 @@ public:
     virtual void allGather(std::vector<unsigned long long> &svalues, std::vector<unsigned long long> &rvalues) = 0;
     virtual void allGather(std::vector<uint> &svalues, std::vector<uint> &rvalues) = 0;
 
+    virtual void allReduceSum(std::vector<float>& svalues) = 0;
+    virtual void allReduceSum(std::vector<double>& svalues) = 0;
+
     virtual void broadcast(int &value)                    = 0;
     virtual void broadcast(float &value)                  = 0;
     virtual void broadcast(double &value)                 = 0;

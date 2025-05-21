@@ -158,6 +158,8 @@ void NullCommunicator::allGather(std::vector<unsigned long long> &svalues, std::
 void NullCommunicator::allGather(std::vector<uint> &svalues, std::vector<uint> &rvalues)
 {
 }
+void NullCommunicator::allReduceSum(std::vector<float>& svalues) {};
+void NullCommunicator::allReduceSum(std::vector<double>& svalues) {};
 void NullCommunicator::broadcast(int &value)
 {
 }

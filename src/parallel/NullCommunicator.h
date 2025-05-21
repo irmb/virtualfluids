@@ -77,6 +77,9 @@ public:
     void allGather(std::vector<unsigned long long> &svalues, std::vector<unsigned long long> &rvalues) override;
     void allGather(std::vector<uint> &svalues, std::vector<uint> &rvalues) override;
 
+    void allReduceSum(std::vector<float>& values) override;
+    void allReduceSum(std::vector<double>& values) override;
+
     void broadcast(int &value) override;
     void broadcast(float &value) override;
     void broadcast(double &value) override;
