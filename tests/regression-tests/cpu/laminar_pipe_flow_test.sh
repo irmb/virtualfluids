@@ -8,7 +8,7 @@ source ./tests/regression-tests/__regression_test_executer.sh
 REFERENCE_DATA_DIR=regression_tests/cpu/LaminarPipeFlow
 
 # 2. set cmake flags for the build of VirtualFluids
-CMAKE_FLAGS="--preset=make_cpu -DCMAKE_BUILD_TYPE=Release"
+CMAKE_FLAGS="--preset=make_cpu"
 
 # 3. define the application to be executed
 APPLICATION="mpiexec -np 8 --allow-run-as-root ./build/bin/LaminarPipeFlow ./apps/cpu/LaminarPipeFlow/LaminarPipeFlow_regression_test.cfg"

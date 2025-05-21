@@ -44,7 +44,8 @@ enum class CudaStreamIndex
         Bulk,
         SubDomainBorder,
         Precursor,
-        ActuatorFarm
+        ActuatorFarm,
+        PrecursorWriter
     };
 
 class CudaStreamManager

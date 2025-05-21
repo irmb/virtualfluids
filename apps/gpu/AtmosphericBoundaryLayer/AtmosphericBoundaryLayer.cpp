@@ -380,7 +380,7 @@ void run(const vf::basics::ConfigurationFile& config)
     if (writePrecursor) {
         const std::string fullPrecursorDirectory = para->getOutputPath() + precursorDirectory;
         const auto outputVariable =
-            useDistributionsForPrecursor ? OutputVariable::Distributions : OutputVariable::Velocities;
+            useDistributionsForPrecursor ? PrecursorWriter::OutputVariable::Distributions : PrecursorWriter::OutputVariable::Velocities;
         auto precursorWriter = std::make_shared<PrecursorWriter>(
             para, cudaMemoryManager, fullPrecursorDirectory, "precursor", positionXPrecursorSamplingPlane, c0o1, lengthY,
             c0o1, lengthZ, timeStepStartPrecursor, timeStepsWritePrecursor, outputVariable,

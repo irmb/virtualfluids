@@ -55,25 +55,17 @@ public:
     //! \param parameter shared pointer to instance of class Parameter
     ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels);
 
-    //! \brief set initial concentration values at all nodes
-    //! \param cudaMemoryManager instance of class CudaMemoryManager
-    void setInitialNodeValuesAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const;
-
     //! \brief calculate the state of the next time step of the advection diffusion distributions
-    void runADcollisionKernel(const int level) const;
+    void runADcollisionKernel(int level) const;
 
     //! \brief calls the device function of the geometry boundary condition for advection diffusion
-    void runADgeometryBCKernel(const int level) const;
+    void runADgeometryBCKernel(int level) const;
 
     //! \brief calls the device function of the velocity boundary condition for advection diffusion
-    void runADDirichletBCKernel(const int level) const;
+    void runADDirichletBCKernel(int level) const;
 
     //! \brief calls the device function of the slip boundary condition for advection diffusion
-    void runADslipBCKernel(const int level) const;
-
-    //! \brief copy the concentration from device to host and writes VTK file with concentration
-    //! \param cudaMemoryManager instance of class CudaMemoryManager
-    void printAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const;
+    void runADslipBCKernel(int level) const;
 
 private:
     SPtr<Parameter> para;

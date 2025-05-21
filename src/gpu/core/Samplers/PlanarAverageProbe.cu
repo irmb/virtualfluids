@@ -454,7 +454,7 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
     const auto velocityZ =
         getPermutationIterators(parameter->velocityZ, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
     const auto turbulentViscosity =
-        getPermutationIterators(parameter->turbViscosity, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
+        getPermutationIterators(parameter->turbulentViscosity, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
     const auto phi =
         getPermutationIterators(parameter->concentration, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
 

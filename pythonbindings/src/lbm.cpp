@@ -29,6 +29,8 @@
 //! \author Henry Korb
 //=======================================================================================
 #include <pybind11/pybind11.h>
+#include <lbm/collision/TurbulentViscosity.h>
+#include <lbm/advectionDiffusion/TurbulentDiffusivity.h>
 
 namespace lbm_bindings
 {
@@ -36,5 +38,18 @@ namespace lbm_bindings
 
     PYBIND11_MODULE(lbm, m)
     {
+
+        py::enum_<vf::lbm::TurbulenceModel>(m, "TurbulenceModel")
+        .value("None", vf::lbm::TurbulenceModel::None)
+        .value("Smagorinsky", vf::lbm::TurbulenceModel::Smagorinsky)
+        .value("QR", vf::lbm::TurbulenceModel::QR)
+        .value("AMD", vf::lbm::TurbulenceModel::AMD)
+        .value("AMDStratified", vf::lbm::TurbulenceModel::AMDStratified);
+
+        py::enum_<vf::lbm::advection_diffusion::TurbulenceModel>(m, "TurbulenceModelAdvectionDiffusion")
+        .value("None", vf::lbm::advection_diffusion::TurbulenceModel::None)
+        .value("Default", vf::lbm::advection_diffusion::TurbulenceModel::Default)
+        .value("Moeng", vf::lbm::advection_diffusion::TurbulenceModel::Moeng)
+        .value("AMDStratified", vf::lbm::advection_diffusion::TurbulenceModel::AMDStratified);
     }
 }

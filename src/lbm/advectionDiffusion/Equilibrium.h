@@ -26,25 +26,22 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup gpu_PostProcessor PostProcessor
-//! \ingroup gpu_core core
+//! \addtogroup lbm
 //! \{
-//! \author Martin Schoenherr
-//======================================================================================
-
-#ifndef CONCENTRATION_CUH
-#define CONCENTRATION_CUH
-
+//! \author Henry Korb
+//=======================================================================================
+#ifndef LBM_ADVECTION_DIFFUSION_EQUILIBRIUM_H
+#define LBM_ADVECTION_DIFFUSION_EQUILIBRIUM_H
 #include <basics/DataTypes.h>
+#include <basics/constants/NumericConstants.h>
 
-void PlaneConcThS27(real* Conc, int* kPC, unsigned int numberOfPointskPC, unsigned int* geoD, unsigned int* neighborX,
-                    unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
-                    unsigned int numberOfThreads, real* DD27, bool isEvenTimestep);
+namespace vf::lbm::advection_diffusion
+{
 
-void CalcConcentration27(unsigned int numberOfThreads, real* Conc, unsigned int* geoD, unsigned int* neighborX,
-                         unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes, real* DD27,
-                         bool isEvenTimestep);
-
+constexpr real equilibrium(real weight, real concentration, real velocity, real cu_sq)
+{
+    using namespace vf::basics::constant;
+    return weight * concentration * (c1o1 + c3o1 * velocity + c9o2 * velocity * velocity - cu_sq);
+}
+} // namespace vf::lbm::advection_diffusion
 #endif
-
-//! \}

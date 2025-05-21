@@ -656,8 +656,8 @@ TEST_F(MultipleGridBuilderFacadeTest_24subdomains, notPeriodic)
     EXPECT_CALL(*mockGridBuilder, setPeriodicBoundaryCondition(periodic_X, periodic_Y, periodic_Z)).Times(24);
     for (int i = 0; i < 24; i++) {
         this->createNewSut();
-        sut->createGrids(i);
         sut->setPeriodicBoundaryCondition(periodic_X, periodic_Y, periodic_Z);
+        sut->createGrids(i);
     }
 }
 
@@ -672,15 +672,16 @@ TEST_F(MultipleGridBuilderFacadeTest_24subdomains, periodicAllDirectionsMultiGPU
     EXPECT_CALL(*mockGridBuilder, setPeriodicBoundaryCondition(false, false, false)).Times(24);
     for (int i = 0; i < 24; i++) {
         this->createNewSut();
-        sut->createGrids(i);
         sut->setPeriodicBoundaryCondition(periodic_X, periodic_Y, periodic_Z);
+        sut->createGrids(i);
     }
 }
 
 TEST_F(MultipleGridBuilderFacadeTest_24subdomains, periodicAllDirectionsMultiGPU_process0)
-{
-    sut->createGrids(0);
-
+{    
+    sut->setPeriodicBoundaryCondition(true, true, true);
+    EXPECT_CALL(*mockGridBuilder, setPeriodicBoundaryCondition(true, true, true)).Times(0);
+    EXPECT_CALL(*mockGridBuilder, setPeriodicBoundaryCondition(false, false, false));
     EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MX, false));
     EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MY, false));
     EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MZ, false));
@@ -688,77 +689,80 @@ TEST_F(MultipleGridBuilderFacadeTest_24subdomains, periodicAllDirectionsMultiGPU
     EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MY, 4));
     EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MZ, 18));
 
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PX, false)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PY, false)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PZ, false)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PX, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PY, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PZ, testing::_)).Times(0);
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PX, false));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PY, false));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PZ, false));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PX, 1));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PY, 2));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PZ, 6));
+    sut->createGrids(0);
 
-    sut->setPeriodicBoundaryCondition(true, true, true);
 }
 
 TEST_F(MultipleGridBuilderFacadeTest_24subdomains, periodicAllDirectionsMultiGPU_process9)
 {
-    sut->createGrids(9);
-
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PX, false));
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PX, 8));
-
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MX, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MY, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MZ, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MX, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MY, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MZ, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PY, false)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PZ, false)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PY, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PZ, testing::_)).Times(0);
-
     sut->setPeriodicBoundaryCondition(true, true, true);
+
+    EXPECT_CALL(*mockGridBuilder, setPeriodicBoundaryCondition(true, true, true)).Times(0);
+    EXPECT_CALL(*mockGridBuilder, setPeriodicBoundaryCondition(false, false, false));
+
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PX, 8));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PX, true));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PY, 11));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PY, false));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PZ, 15));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PZ, false));
+
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MX, 8));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MX, false));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MY, 7));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MY, false));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MZ, 3));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MZ, false));
+    
+    sut->createGrids(9);
 }
 
 TEST_F(MultipleGridBuilderFacadeTest_24subdomains, periodicAllDirectionsMultiGPU_process17)
 {
-    sut->createGrids(17);
-
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PX, testing::_));
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PY, testing::_));
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PX, 16));
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PY, 13));
-
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MX, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MY, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MZ, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MX, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MY, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MZ, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PZ, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PZ, testing::_)).Times(0);
-
     sut->setPeriodicBoundaryCondition(true, true, true);
+
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PX, 16));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PX, true));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PY, 13));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PY, true));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PZ, 23));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PZ, false));
+
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MX, 16));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MX, false));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MY, 15));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MY, false));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MZ, 11));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MZ, false));
+
+    sut->createGrids(17);
 }
 
 TEST_F(MultipleGridBuilderFacadeTest_24subdomains, periodicAllDirectionsMultiGPU_process23)
 {
-    sut->createGrids(23);
-
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PX, testing::_));
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PY, testing::_));
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PZ, testing::_));
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PX, 22));
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PY, 19));
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PZ, 5));
-
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MX, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MY, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MZ, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MX, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MY, testing::_)).Times(0);
-    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MZ, testing::_)).Times(0);
-
     sut->setPeriodicBoundaryCondition(true, true, true);
+
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PX, 22));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PX, true));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PY, 19));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PY, true));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PZ, 5));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PZ, true));
+
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MX, 22));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MX, false));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MY,21));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MY, false));
+    EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MZ, 17));
+    EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MZ, false));
+    
+    sut->createGrids(23);
 }
 
 class MultipleGridBuilderFacadeTest_CreateMockAndSut : public testing::Test
@@ -773,39 +777,41 @@ protected:
 TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, periodicAllDirectionsSingleGPU)
 {
     sut.setOverlapOfSubdomains(0.1);
-    sut.createGrids(0);
+    sut.setPeriodicBoundaryCondition(true, true, true);
 
     EXPECT_CALL(*mockGridBuilder, findCommunicationIndices).Times(0);
     EXPECT_CALL(*mockGridBuilder, setCommunicationProcess).Times(0);
     EXPECT_CALL(*mockGridBuilder, setPeriodicBoundaryCondition(true, true, true));
 
-    sut.setPeriodicBoundaryCondition(true, true, true);
+    sut.createGrids(0);
 }
 
 TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, periodicXY2GPUs)
 {
     sut.addDomainSplit(1.0, Axis::x);
     sut.setOverlapOfSubdomains(0.1);
+    sut.setPeriodicBoundaryCondition(true, true, false);
 
     EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PX, testing::_));
     EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PX, 1));
-    sut.createGrids(0);
     EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::MX, testing::_));
     EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::MX, 1));
     EXPECT_CALL(*mockGridBuilder, setPeriodicBoundaryCondition(false, true, false));
-    sut.setPeriodicBoundaryCondition(true, true, false);
+    
+    sut.createGrids(0);
 }
 
 TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, periodicYZ2GPUs)
 {
     sut.addDomainSplit(1.0, Axis::x);
     sut.setOverlapOfSubdomains(0.1);
+    sut.setPeriodicBoundaryCondition(false, true, true);
 
     EXPECT_CALL(*mockGridBuilder, findCommunicationIndices(communication_directions::PX, testing::_));
     EXPECT_CALL(*mockGridBuilder, setCommunicationProcess(communication_directions::PX, 1));
-    sut.createGrids(0);
     EXPECT_CALL(*mockGridBuilder, setPeriodicBoundaryCondition(false, true, true));
-    sut.setPeriodicBoundaryCondition(false, true, true);
+    
+    sut.createGrids(0);
 }
 
 TEST_F(MultipleGridBuilderFacadeTest_CreateMockAndSut, setNumberOfLayersForRefinement_callsSetNumberOfLayersInGridBuilder)

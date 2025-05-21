@@ -130,8 +130,8 @@ void scaleCoarseToFineCompressible(
         coarseToFine->numberOfCells,
         parameterDeviceC->omega,
         parameterDeviceF->omega,
-        parameterDeviceC->turbViscosity,
-        parameterDeviceF->turbViscosity,
+        parameterDeviceC->turbulentViscosity,
+        parameterDeviceF->turbulentViscosity,
         neighborCoarseToFine);
 
     getLastCudaError("scaleCoarseToFineCompressible_Device execution failed");
@@ -180,8 +180,8 @@ void scaleFineToCoarseCompressible(
         fineToCoarse->numberOfCells,
         parameterDeviceC->omega,
         parameterDeviceF->omega,
-        parameterDeviceC->turbViscosity,
-        parameterDeviceF->turbViscosity,
+        parameterDeviceC->turbulentViscosity,
+        parameterDeviceF->turbulentViscosity,
         neighborFineToCoarse);
 
     getLastCudaError("scaleFineToCoarseCompressible_Device execution failed");
