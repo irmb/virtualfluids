@@ -32,8 +32,8 @@
 //! \brief
 //=======================================================================================
 
-#ifndef BUOYANCY_REFERENCE_PROVIDER_H
-#define BUOYANCY_REFERENCE_PROVIDER_H
+#ifndef BUOYANCY_PROVIDER_H
+#define BUOYANCY_PROVIDER_H
 
 #include <functional>
 #include <iostream>
@@ -70,7 +70,7 @@ class BuoyancyProviderConstantValue : public PreCollisionInteractor
 public:
     BuoyancyProviderConstantValue(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager);
 
-    ~BuoyancyProviderConstantValue() = default;
+    ~BuoyancyProviderConstantValue() override = default;
 
     void init() override;
     void interact(int level, uint t) override;
@@ -85,11 +85,11 @@ class BuoyancyProviderPlanarAverage : public PreCollisionInteractor
 public:
     BuoyancyProviderPlanarAverage(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager);
 
-    ~BuoyancyProviderPlanarAverage();
+    ~BuoyancyProviderPlanarAverage() override;
 
     void init() override;
     void interact(int level, uint t) override;
-    void getTaggedFluidNodes(GridProvider*) override {};
+    void getTaggedFluidNodes(GridProvider* /**/) override {};
 
 private:
     uint numberOfInitialReferenceValues;
@@ -103,11 +103,11 @@ class BuoyancyProviderPlanarAverageMultiGPU : public PreCollisionInteractor
 public:
     BuoyancyProviderPlanarAverageMultiGPU(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager);
 
-    ~BuoyancyProviderPlanarAverageMultiGPU();
+    ~BuoyancyProviderPlanarAverageMultiGPU() override;
 
     void init() override;
     void interact(int level, uint t) override;
-    void getTaggedFluidNodes(GridProvider*) override {};
+    void getTaggedFluidNodes(GridProvider* /**/) override {};
 
 private:
     uint numberOfInitialReferenceValues;
