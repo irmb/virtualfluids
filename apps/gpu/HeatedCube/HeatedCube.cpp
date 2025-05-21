@@ -97,7 +97,7 @@ void run(const vf::basics::ConfigurationFile& config)
     const real tEnd = config.getValue<real>("tEnd"); // total time of simulation
 
     const real deltaX = sideLength / real(numberOfNodes);
-    const real deltaT = deltaX * machNumber / (std::sqrt(3) * velocity);
+    const real deltaT = deltaX * machNumber / (std::sqrt(c3o1) * velocity);
     const real velocityLB = velocity * deltaT / deltaX;
     const real viscosityLB = viscosity * deltaT / (deltaX * deltaX);
     const real diffusivityLB = viscosityLB / prandtlNumber;
@@ -141,16 +141,17 @@ void run(const vf::basics::ConfigurationFile& config)
     gridBuilder->setADDirichletBoundaryCondition(SideType::PX, temperatureColdSide, vxADBC, vyADBC, vzADBC);
 
     gridBuilder->setADNoSlipBoundaryCondition(SideType::MY);
-    gridBuilder->setADNoSlipBoundaryCondition(SideType::PY);
-    gridBuilder->setADNoSlipBoundaryCondition(SideType::MZ);
-    gridBuilder->setADNoSlipBoundaryCondition(SideType::PZ);
-
+    gridBuilder->setADNeumannBoundaryCondition(SideType::PY, c0o1, c0o1, c0o1, c0o1, deltaX);
+    gridBuilder->setADSlipVelocityBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, c0o1, deltaX);
+    gridBuilder->setADSlipVelocityBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1, c0o1, deltaX);
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityBounceBack);
     bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipDelayBounceBack);
     bcFactory.setAdvectionDiffusionDirichletBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip);
+    bcFactory.setAdvectionDiffusionNeumannBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip);
     bcFactory.setAdvectionDiffusionNoSlipBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoSlipBC::NoSlipBounceBack);
+    bcFactory.setAdvectionDiffusionSlipVelocityBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityBounceBack);
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////^
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
     auto para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
@@ -182,6 +183,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     // Advection Diffusion
     para->setDiffOn(true);
+    para->setIsBodyForce(true);
     para->setBuoyancyEnabled(true);
     para->setTurbulentPrandtlNumber(prandtlNumber);
     para->setADKernel(vf::advectionDiffusionKernel::compressible::F16);
