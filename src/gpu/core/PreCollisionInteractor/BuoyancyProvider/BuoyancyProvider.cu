@@ -156,12 +156,12 @@ void BuoyancyProviderConstantValue::init()
     streamIndex = para->getStreamManager()->registerAndLaunchStream(CudaStreamIndex::BuoyancyProvider);
 }
 
-void BuoyancyProviderConstantValue::interact(int level, uint t)
+void BuoyancyProviderConstantValue::interact(int level, uint /**/)
 {
     const real buoyancyFactor = para->getScaledBuoyancyFactor(level);
     const size_t numberOfNodes = para->getParD(level)->numberOfNodes;
 
-    auto grid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, numberOfNodes);
+    vf::cuda::CudaGrid grid (para->getParD(level)->numberofthreads, uint(numberOfNodes));
     auto* stream = para->getStreamManager()->getStream(CudaStreamIndex::BuoyancyProvider, streamIndex);
 
     computeBuoyancyConstantValue<<<grid.grid, grid.threads, 0, stream>>>(para->getParD(level)->localReferenceTemperature,
