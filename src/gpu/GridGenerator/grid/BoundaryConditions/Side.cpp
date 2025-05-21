@@ -82,7 +82,8 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                                             // Overlap of BCs on edge nodes
                                             || grid->nodeHasBC(index) )
             {   
-                grid->setFieldEntry(index, boundaryCondition->getType());
+                if(boundaryCondition->getType() != vf::gpu::BC_AD)
+                    grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
                 setPressureNeighborIndices(boundaryCondition, grid, index);
                 setStressSamplingIndices(boundaryCondition, grid, index);
