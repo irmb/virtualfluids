@@ -147,7 +147,7 @@ BuoyancyProviderConstantValue::BuoyancyProviderConstantValue(SPtr<Parameter> par
                                                              SPtr<CudaMemoryManager> cudaMemoryManager)
     : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
 {
-    if (!parameter->getBuoyancyEnabled())
+    if (!para->getBuoyancyEnabled())
         throw std::runtime_error("BuoyancyProviderConstantValue: parameter needs to have buoyancy!");
 }
 
@@ -174,7 +174,7 @@ BuoyancyProviderPlanarAverage::BuoyancyProviderPlanarAverage(SPtr<Parameter> par
                                                              SPtr<CudaMemoryManager> cudaMemoryManager)
     : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
 {
-    if (!parameter->getBuoyancyEnabled())
+    if (!para->getBuoyancyEnabled())
         throw std::runtime_error("BuoyancyProviderPlanarAverage: parameter needs to have buyoancy!");
 }
 
@@ -236,7 +236,7 @@ BuoyancyProviderPlanarAverageMultiGPU::BuoyancyProviderPlanarAverageMultiGPU(SPt
                                                                              SPtr<CudaMemoryManager> cudaMemoryManager)
     : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
 {
-    if (!parameter->getBuoyancyEnabled())
+    if (!para->getBuoyancyEnabled())
         throw std::runtime_error("BuoyancyProviderPlanarAverage: parameter needs to have buyoancy!");
 
     if (vf::parallel::MPICommunicator::getInstance()->getNumberOfProcesses() < 2)
