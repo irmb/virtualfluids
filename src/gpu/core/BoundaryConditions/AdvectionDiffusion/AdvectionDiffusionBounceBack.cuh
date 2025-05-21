@@ -37,52 +37,10 @@
 #include "Calculation/Calculation.h"
 
 //////////////////////////////////////////////////////////////////////////
-//! \brief \ref AD_SlipVelDeviceComp : device function for the slip-AD boundary condition
-__global__ void AdvectionDiffusionSlipVelocityCompressible_Device(
-    real * normalX,
-    real * normalY,
-    real * normalZ,
-    real * distributions,
-    real * distributionsAD,
-    int* QindexArray,
-    real * Qarrays,
-    uint numberOfBCnodes,
-    real omegaDiffusivity,
-    uint * neighborX,
-    uint * neighborY,
-    uint * neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
-
-__global__ void AdvectionDiffusionDirichlet_Device(
-    real* DD,
-    real* DD27,
-    real* temp,
-    real diffusivity,
-    int* k_Q,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
-
-__global__ void AdvectionDiffusionBounceBack_Device(
-    real* DD,
-    real* DD27,
-    real* temp,
-    real diffusivity,
-    int* k_Q,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+__global__ void AdvectionDiffusionBounceBack_Device(real* distributions,
+                                                    AdvectionDiffusionNoSlipBoundaryConditions bcParameters,
+                                                    const uint* neighborX, const uint* neighborY, const uint* neighborZ,
+                                                    unsigned long long numberOfLBnodes, bool isEvenTimestep);
 
 #endif
 

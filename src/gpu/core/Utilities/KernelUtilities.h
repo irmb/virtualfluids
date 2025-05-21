@@ -224,9 +224,9 @@ constexpr bool isValidFluidNode(uint nodeType)
 
 struct ListIndices
 {
-    __device__ ListIndices() {};
-    __device__ ListIndices(unsigned int index, const unsigned int* neighborX, const unsigned int* neighborY,
-                           const unsigned int* neighborZ)
+    constexpr ListIndices() = default;
+    constexpr ListIndices(uint index, const uint* neighborX, const uint* neighborY,
+                           const uint* neighborZ)
     {
         k_000 = index;
         k_M00 = neighborX[k_000];
@@ -238,15 +238,74 @@ struct ListIndices
         k_MMM = neighborZ[k_MM0];
     }
 
-    unsigned int k_000 { 0 };
-    unsigned int k_M00 { 0 };
-    unsigned int k_0M0 { 0 };
-    unsigned int k_00M { 0 };
-    unsigned int k_MM0 { 0 };
-    unsigned int k_M0M { 0 };
-    unsigned int k_0MM { 0 };
-    unsigned int k_MMM { 0 };
+    uint k_000 { 0 };
+    uint k_M00 { 0 };
+    uint k_0M0 { 0 };
+    uint k_00M { 0 };
+    uint k_MM0 { 0 };
+    uint k_M0M { 0 };
+    uint k_0MM { 0 };
+    uint k_MMM { 0 };
+
+    constexpr uint k000() const { return k_000; }
+    constexpr uint kP00() const { return k_000; }
+    constexpr uint k0P0() const { return k_000; }
+    constexpr uint k00P() const { return k_000; }
+    constexpr uint kPP0() const { return k_000; }
+    constexpr uint k0PP() const { return k_000; }
+    constexpr uint kP0P() const { return k_000; }
+    constexpr uint kPPP() const { return k_000; }
+    constexpr uint kM00() const { return k_M00; }
+    constexpr uint kMP0() const { return k_M00; }
+    constexpr uint kM0P() const { return k_M00; }
+    constexpr uint kMPP() const { return k_M00; }
+    constexpr uint k0M0() const { return k_0M0; }
+    constexpr uint kPM0() const { return k_0M0; }
+    constexpr uint k0MP() const { return k_0M0; }
+    constexpr uint kPMP() const { return k_0M0; }
+    constexpr uint k00M() const { return k_00M; }
+    constexpr uint kP0M() const { return k_00M; }
+    constexpr uint k0PM() const { return k_00M; }
+    constexpr uint kPPM() const { return k_00M; }
+    constexpr uint kMM0() const { return k_MM0; }
+    constexpr uint kMMP() const { return k_MM0; }
+    constexpr uint kM0M() const { return k_M0M; }
+    constexpr uint kMPM() const { return k_M0M; }
+    constexpr uint k0MM() const { return k_0MM; }
+    constexpr uint kPMM() const { return k_0MM; }
+    constexpr uint kMMM() const { return k_MMM; }
+
+    
+    template<size_t direction> constexpr uint getIndex() const;
 };
+
+template <> constexpr uint ListIndices::getIndex<d000>() const { return k000(); }
+template <> constexpr uint ListIndices::getIndex<dP00>() const { return kP00(); }
+template <> constexpr uint ListIndices::getIndex<dM00>() const { return kM00(); }
+template <> constexpr uint ListIndices::getIndex<d0P0>() const { return k0P0(); }
+template <> constexpr uint ListIndices::getIndex<d0M0>() const { return k0M0(); }
+template <> constexpr uint ListIndices::getIndex<d00P>() const { return k00P(); }
+template <> constexpr uint ListIndices::getIndex<d00M>() const { return k00M(); }
+template <> constexpr uint ListIndices::getIndex<dPP0>() const { return kPP0(); }
+template <> constexpr uint ListIndices::getIndex<dMM0>() const { return kMM0(); }
+template <> constexpr uint ListIndices::getIndex<dPM0>() const { return kPM0(); }
+template <> constexpr uint ListIndices::getIndex<dMP0>() const { return kMP0(); }
+template <> constexpr uint ListIndices::getIndex<dP0P>() const { return kP0P(); }
+template <> constexpr uint ListIndices::getIndex<dM0M>() const { return kM0M(); }
+template <> constexpr uint ListIndices::getIndex<dP0M>() const { return kP0M(); }
+template <> constexpr uint ListIndices::getIndex<dM0P>() const { return kM0P(); }
+template <> constexpr uint ListIndices::getIndex<d0PP>() const { return k0PP(); }
+template <> constexpr uint ListIndices::getIndex<d0MM>() const { return k0MM(); }
+template <> constexpr uint ListIndices::getIndex<d0PM>() const { return k0PM(); }
+template <> constexpr uint ListIndices::getIndex<d0MP>() const { return k0MP(); }
+template <> constexpr uint ListIndices::getIndex<dPPP>() const { return kPPP(); }
+template <> constexpr uint ListIndices::getIndex<dMPP>() const { return kMPP(); }
+template <> constexpr uint ListIndices::getIndex<dPMP>() const { return kPMP(); }
+template <> constexpr uint ListIndices::getIndex<dMMP>() const { return kMMP(); }
+template <> constexpr uint ListIndices::getIndex<dPPM>() const { return kPPM(); }
+template <> constexpr uint ListIndices::getIndex<dMPM>() const { return kMPM(); }
+template <> constexpr uint ListIndices::getIndex<dPMM>() const { return kPMM(); }
+template <> constexpr uint ListIndices::getIndex<dMMM>() const { return kMMM(); }
 
 ////////////////////////////////////////////////////////////////////////////////////
 //! - Read distributions: style of reading and writing the distributions from/to

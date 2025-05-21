@@ -53,6 +53,11 @@ using BoundaryConditionWithParameterKernel = std::function<void(Parameter*, Qfor
 using PrecursorBoundaryConditionKernel =
     std::function<void(LBMSimulationParameter*, QforPrecursorBoundaryConditions*, real timeRatio, real velocityRatio)>;
 
+using AdvectionDiffusionNoSlipBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionNoSlipBoundaryConditions)>;
+using AdvectionDiffusionDirichletBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionDirichletBoundaryConditions)>;
+using AdvectionDiffusionNeumannBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionNeumannBoundaryConditions)>;
+using AdvectionDiffusionSlipVelocityBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionSlipVelocityBoundaryConditions)>;
+
 class BoundaryConditionFactory
 {
 public:
@@ -132,6 +137,33 @@ public:
         NotSpecified
     };
 
+    enum class AdvectionDiffusionNoSlipBC { NoSlipBounceBack, NotSpecified };
+
+    enum class AdvectionDiffusionSlipVelocityBC {
+        SlipVelocityTurbulentViscosityCompressible,
+        SlipVelocityCompressible,
+        SlipVelocityBounceBack,
+        NotSpecified
+    };
+
+    enum class AdvectionDiffusionDirichletBC {
+        //! - Interpolated Dirichlet boundary condition, uses subgrid distances
+        DirichletInterpolatedSlip,
+        DirichletAntiBounceBackSlip,
+        DirichletInterpolatedNoSlip,
+        DirichletAntiBounceBackNoSlip,
+        NotSpecified
+    };
+
+    enum class AdvectionDiffusionNeumannBC {
+        //! - Interpolated Neumann boundary condition, uses subgrid distances
+        NeumannInterpolatedSlip,
+        NeumannAntiBounceBackSlip,
+        NeumannInterpolatedNoSlip,
+        NeumannAntiBounceBackNoSlip,
+        NotSpecified
+    };
+
     void setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC boundaryConditionType);
     void setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC boundaryConditionType);
     void setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC boundaryConditionType);
@@ -148,7 +180,10 @@ public:
     //!
     //! - slip: only use a slip boundary condition which sets the normals
     void setGeometryBoundaryCondition(std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType);
-
+    void setAdvectionDiffusionNoSlipBoundaryCondition(AdvectionDiffusionNoSlipBC boundaryConditionType);
+    void setAdvectionDiffusionSlipVelocityBoundaryCondition(AdvectionDiffusionSlipVelocityBC boundaryConditionType);
+    void setAdvectionDiffusionDirichletBoundaryCondition(AdvectionDiffusionDirichletBC boundaryConditionType);
+    void setAdvectionDiffusionNeumannBoundaryCondition(AdvectionDiffusionNeumannBC boundaryConditionType);
     // void setOutflowBoundaryCondition(...); // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
@@ -159,7 +194,10 @@ public:
     [[nodiscard]] virtual std::variant<BoundaryConditionKernel, DirectionalBoundaryConditionKernel> getPressureBoundaryConditionPre() const;
     [[nodiscard]] BoundaryConditionWithParameterKernel getStressBoundaryConditionPost() const;
     [[nodiscard]] PrecursorBoundaryConditionKernel getPrecursorBoundaryConditionPost() const;
-
+    [[nodiscard]] AdvectionDiffusionNoSlipBoundaryConditionKernel getAdvectionDiffusionNoSlipBoundaryConditionPost() const;
+    [[nodiscard]] AdvectionDiffusionSlipVelocityBoundaryConditionKernel getAdvectionDiffusionSlipVelocityBoundaryConditionPost() const;
+    [[nodiscard]] AdvectionDiffusionDirichletBoundaryConditionKernel getAdvectionDiffusionDirichletBoundaryConditionPost() const;
+    [[nodiscard]] AdvectionDiffusionNeumannBoundaryConditionKernel getAdvectionDiffusionNeumannBoundaryConditionPost() const;
     [[nodiscard]] virtual bool hasDirectionalPressureBoundaryCondition() const;
 
 private:
@@ -170,6 +208,10 @@ private:
     std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition = NoSlipBC::NoSlipDelayBounceBack;
     StressBC stressBoundaryCondition = StressBC::NotSpecified;
     PrecursorBC precursorBoundaryCondition = PrecursorBC::NotSpecified;
+    AdvectionDiffusionNoSlipBC advectionDiffusionNoSlipBoundaryCondition = AdvectionDiffusionNoSlipBC::NotSpecified;
+    AdvectionDiffusionSlipVelocityBC advectionDiffusionSlipVelocityBoundaryCondition = AdvectionDiffusionSlipVelocityBC::NotSpecified;
+    AdvectionDiffusionDirichletBC advectionDiffusionDirichletBoundaryCondition = AdvectionDiffusionDirichletBC::NotSpecified;
+    AdvectionDiffusionNeumannBC advectionDiffusionNeumannBoundaryCondition = AdvectionDiffusionNeumannBC::NotSpecified;
 
     // OutflowBoundaryConditon outflowBC // TODO: https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 };

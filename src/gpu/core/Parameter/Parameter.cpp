@@ -463,6 +463,8 @@ void Parameter::setDiffOn(bool isDiff)
 void Parameter::setBuoyancyEnabled(bool buoyancyEnabled)
 {
     this->buoyancyEnabled = buoyancyEnabled;
+    if(!this->isBodyForce)
+        VF_LOG_WARNING("Need to enable body force for buoyancy!");
 }
 void Parameter::setD3Qxx(int d3qxx)
 {
@@ -780,22 +782,6 @@ void Parameter::setMaxCoordY(std::vector<real> MaxCoordY)
 void Parameter::setMaxCoordZ(std::vector<real> MaxCoordZ)
 {
     this->maxCoordZ = MaxCoordZ;
-}
-void Parameter::setConcentrationNoSlipBCHost(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost)
-{
-    this->concentrationNoSlipBCHost = concentrationNoSlipBCHost;
-}
-void Parameter::setConcentrationNoSlipBCDevice(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCDevice)
-{
-    this->concentrationNoSlipBCDevice = concentrationNoSlipBCDevice;
-}
-void Parameter::setConcentrationDirichletBCHost(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost)
-{
-    this->concentrationDirichletBCHost = concentrationDirichletBCHost;
-}
-void Parameter::setConcentrationDirichletBCDevice(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCDevice)
-{
-    this->concentrationDirichletBCDevice = concentrationDirichletBCDevice;
 }
 void Parameter::setgeoVec(std::string geoVec)
 {
@@ -1527,22 +1513,6 @@ std::vector<real> Parameter::getMaxCoordY()
 std::vector<real> Parameter::getMaxCoordZ()
 {
     return this->maxCoordZ;
-}
-AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCHost()
-{
-    return this->concentrationNoSlipBCHost;
-}
-AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCDevice()
-{
-    return this->concentrationNoSlipBCDevice;
-}
-AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCHost()
-{
-    return this->concentrationDirichletBCHost;
-}
-AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCDevice()
-{
-    return this->concentrationDirichletBCDevice;
 }
 std::string Parameter::getgeoVec()
 {

@@ -11,7 +11,7 @@ MAJOR.MINOR.PATCH
 - Major: will be considered when VirtualFluids achieves a stable state
 
 
-Release of VirtulFluids can be done by the core developers of VirtualFluids. A Release requires the following steps:
+Release of VirtualFluids can be done by the core developers of VirtualFluids. A Release requires the following steps:
 
 ## 0. Check Issues and Merge Requests
 

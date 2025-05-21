@@ -257,9 +257,10 @@ void UpdateGrid27::postCollisionBC(int level, uint t)
     // A D V E C T I O N    D I F F U S I O N
     if (para->getDiffOn())
     {
-        this->adKernelManager->runADgeometryBCKernel(level);
-        this->adKernelManager->runADDirichletBCKernel(level);
-        this->adKernelManager->runADslipBCKernel(level);
+        this->bcKernelManager->runADDirichletBCKernel(level);
+        this->bcKernelManager->runADNeumannBCKernel(level);
+        this->bcKernelManager->runADSlipVelocityBCKernel(level);
+        this->bcKernelManager->runADNoSlipBCKernel(level);
     }
 }
 

@@ -2383,6 +2383,15 @@ void GridImp::addBCalreadySet(SideType side)
     this->bcAlreadySet.push_back(side);
 }
 
+std::vector<SideType> GridImp::getADBCAlreadySet() {
+    return this->adBCAlreadySet;
+}
+
+void GridImp::addADBCalreadySet(SideType side)
+{
+    this->adBCAlreadySet.push_back(side);
+}
+
 
 void GridImp::print() const
 {

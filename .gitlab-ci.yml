@@ -27,7 +27,7 @@
 #  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 #
 #=======================================================================================
-image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.3
+image: git.rz.tu-bs.de:4567/irmb/virtualfluids/ubuntu22_04:1.4
 
 stages:
   - build
@@ -180,11 +180,10 @@ gcc_12_python:
     - $CC --version
     - export CCACHE_BASEDIR=$CI_PROJECT_DIR
     - export CCACHE_DIR=$CI_PROJECT_DIR/cache
+    - . $VIRTUAL_ENV/bin/activate
 
   script:
-    - export SKBUILD_BUILD_DIR="pybuild"
-    - export SKBUILD_CMAKE_ARGS="--preset=make_all;-G=Ninja"
-    - pip install . -v
+    - pip install . -v -C cmake.define.VF_ENABLE_GPU=ON -C cmake.define.VF_ENABLE_CPU=ON
 
 ###############################################################################
 ##                                Tests                                      ##

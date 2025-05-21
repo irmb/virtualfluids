@@ -236,7 +236,7 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Calculate modified omega with turbulent viscosity
     //!
-    const real omega = turbulenceModel == TurbulenceModel::None ? parameter.omega : vf::lbm::calculateOmegaWithturbulentViscosity(parameter.omega, turbulentViscosity.value);
+    const real omega = turbulenceModel == TurbulenceModel::None ? parameter.omega : vf::lbm::calculateOmegaWithTurbulentViscosity(parameter.omega, turbulentViscosity.value);
     ////////////////////////////////////////////////////////////
     // 2.
     real OxxPyyPzz = c1o1;
