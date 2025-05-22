@@ -36,7 +36,9 @@
 #include <iostream>
 #include <string>
 
+#include "DataTypes.h"
 #include "K17CompressibleNavierStokes.h"
+#include "VelocityNonReflecting.h"
 #include "VirtualFluids.h"
 
 using namespace std;
@@ -99,8 +101,9 @@ void run(string configname)
       real Re = 20.0;
       real radius = 0.05;
       real rhoReal = 1.0; //kg/m^3
-      real uReal = 0.45;//m/s
-      real nuReal = (uReal*radius*2.0)/Re;
+      real uBarReal= 0.2;
+      real uReal = 0.45;//m/s uBarReal * 9/4 max velocity
+      real nuReal = (uBarReal*radius*2.0)/Re;
       
       real rhoLB = 0.0;
       real nuLB = (((4.0/9.0)*uLB)*2.0*(radius/dx))/Re;
@@ -120,7 +123,7 @@ void run(string configname)
       fct.DefineConst("U", uLB);
       fct.DefineConst("H", H);
       SPtr<BC> velBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityInterpolated()));
+      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityNonReflecting(0.001)));
 
       SPtr<BC> denBC(new PressureBC(rhoLB));
       denBC->setBCStrategy(SPtr<BCStrategy>(new PressureNonEquilibrium()));
