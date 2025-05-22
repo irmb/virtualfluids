@@ -138,7 +138,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setOutputPrefix(simulationName);
 
     para->setPrintFiles(true);
-    para->worldLength = domainSize;
+    para->worldLength = domainSize+2*deltaX;
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio(deltaX / deltaT);
