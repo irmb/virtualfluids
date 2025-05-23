@@ -14,7 +14,7 @@ BINARY = MAIN_DIR / "build/bin/GaussianHillOfConcentration"
 PLOT = True
 COLORS = ["#d95f02", "#1b9e77", "#7570b3"]
 MARKERS = ["x", "+"]
-FIG_WIDTH = 503 / 72.27 * 0.5
+FIG_WIDTH = 503 / 72.27 * 0.45
 CMAP = "Blues"
 RUN = True
 
@@ -74,6 +74,8 @@ transports = [0.3, 3]
 
 
 def write_config_file(n_per_sigma, peclet_number, diff_lb, transport):
+    if not OUTPUT_DIR.exists():
+        OUTPUT_DIR.mkdir(parents=True)
     fname = OUTPUT_DIR / f"gaussian_hill_Pe{int(peclet_number)}_N{n_per_sigma}.cfg"
     text = "\n".join(
         [
