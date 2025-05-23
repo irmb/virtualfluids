@@ -93,5 +93,31 @@ namespace boundary_conditions
         .value("PrecursorNonReflectiveCompressible", BoundaryConditionFactory::PrecursorBC::PrecursorNonReflectiveCompressible)
         .value("PrecursorDistributions", BoundaryConditionFactory::PrecursorBC::PrecursorDistributions)
         .value("NotSpecified", BoundaryConditionFactory::PrecursorBC::NotSpecified);
+
+        py::enum_<BoundaryConditionFactory::AdvectionDiffusionDirichletBC>(parentModule, "AdvectionDiffusionDirichletBC")
+        .value("DirichletAntiBounceBackNoSlip", BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip)
+        .value("DirichletAntiBounceBackSlip", BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackSlip)
+        .value("DirichletInterpolatedNoSlip", BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedNoSlip)
+        .value("DirichletInterpolatedSlip", BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedSlip)
+        .value("NotSpecified", BoundaryConditionFactory::AdvectionDiffusionDirichletBC::NotSpecified);
+
+        py::enum_<BoundaryConditionFactory::AdvectionDiffusionNeumannBC>(parentModule, "AdvectionDiffusionNeumannBC")
+        .value("NeumannAntiBounceBackNoSlip", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip)
+        .value("NeumannAntiBounceBackSlip", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackSlip)
+        .value("NeumannInterpolatedNoSlip", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannInterpolatedNoSlip)
+        .value("NeumannInterpolatedSlip", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannInterpolatedSlip)
+        .value("NotSpecified", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NotSpecified);
+
+        py::enum_<BoundaryConditionFactory::AdvectionDiffusionNoSlipBC>(parentModule, "AdvectionDiffusionNoSlipBC")
+        .value("NoSlipBounceBack", BoundaryConditionFactory::AdvectionDiffusionNoSlipBC::NoSlipBounceBack)
+        .value("NoSlipBounceBackDelayed", BoundaryConditionFactory::AdvectionDiffusionNoSlipBC::NoSlipDelayedBounceBack);
+        
+        py::enum_<BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC>(parentModule, "AdvectionDiffusionSlipVelocityBC")
+        .value("SlipVelocityBounceBack", BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityBounceBack)
+        .value("SlipVelocityCompressible", BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityCompressible)
+        .value("SlipVelocityTurbulentViscosityCompressible", BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityTurbulentViscosityCompressible)
+        .value("NotSpecified", BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::NotSpecified);
+
+
     }
 }
