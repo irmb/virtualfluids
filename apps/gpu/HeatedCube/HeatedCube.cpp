@@ -75,16 +75,14 @@ void run(const vf::basics::ConfigurationFile& config)
     const real temperatureColdSide = meanTemperature - c1o2 * temperatureDifference;
     const real temperatureHotSide = meanTemperature + c1o2 * temperatureDifference;
     const real thermalDiffusionVelocity = c1o1;
-
-    const real sideLength = config.getValue("domainLength", c1o1); // Side length of the cube
-    const uint numberOfNodes = config.getValue<uint>("nNodes", 16);
-
-    const real diffusivity = thermalDiffusionVelocity * sideLength;
-    const real diffusivityLB = config.getValue("diffusivityLB", c1o100 * c1o10);
+    const real sideLength = c1o1;
     const real gravity = 9.81F;
+    const real diffusivity = thermalDiffusionVelocity * sideLength;
+    const real prandtlNumber = 0.71F;
 
-    const real prandtlNumber = config.getValue<real>("Pr", 0.7f);
-    const real rayleighNumber = config.getValue<real>("Ra", 1000.f);
+    const uint numberOfNodes = config.getValue<uint>("nNodes", 16);
+    const real diffusivityLB = config.getValue("diffusivityLB", c1o100 * c1o10);
+    const real rayleighNumber = config.getValue<real>("Ra", 1000.F);
 
     const real deltaX = sideLength / real(numberOfNodes);
     const real deltaT = diffusivityLB * deltaX * deltaX / diffusivity;
@@ -94,14 +92,13 @@ void run(const vf::basics::ConfigurationFile& config)
     const real viscosityLB = prandtlNumber * diffusivityLB;
     const real thermalExpansion =
         (rayleighNumber * diffusivity * viscosity) / (gravity * std::pow(sideLength, c3o1) * temperatureDifference);
-    // const real Thot = (Ra*diffusivity*viscosity)/(gravity*thermalExpansion*pow(L,c3o1))+Tcold;
+    const real machNumber = std::sqrt(c3o1) * velocityLB;
 
     // all in s
     const real tStartOut = config.getValue<real>("tStartOut");
     const real tOut = config.getValue<real>("tOut");
     const real tEnd = config.getValue<real>("tEnd"); // total time of simulation
 
-    const real machNumber = std::sqrt(c3o1) * velocityLB;
 
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
     VF_LOG_INFO("dt   = {}", deltaT);
@@ -139,12 +136,17 @@ void run(const vf::basics::ConfigurationFile& config)
     gridBuilder->setADDirichletBoundaryCondition(SideType::MX, temperatureHotSide, vxADBC, vyADBC, vzADBC);
     gridBuilder->setADDirichletBoundaryCondition(SideType::PX, temperatureColdSide, vxADBC, vyADBC, vzADBC);
 
-    gridBuilder->setADSlipVelocityBoundaryCondition(SideType::MY, c0o1, c1o1, c0o1, c0o1, deltaX);
-    gridBuilder->setADSlipVelocityBoundaryCondition(SideType::PY, c0o1, -c1o1, c0o1, c0o1, deltaX);
-    gridBuilder->setADSlipVelocityBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, c0o1, deltaX);
-    gridBuilder->setADSlipVelocityBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1, c0o1, deltaX);
+    // gridBuilder->setADSlipVelocityBoundaryCondition(SideType::MY, c0o1, c1o1, c0o1, c0o1, deltaX);
+    // gridBuilder->setADSlipVelocityBoundaryCondition(SideType::PY, c0o1, -c1o1, c0o1, c0o1, deltaX);
+    // gridBuilder->setADSlipVelocityBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, c0o1, deltaX);
+    // gridBuilder->setADSlipVelocityBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1, c0o1, deltaX);
+    // gridBuilder->setADNoSlipBoundaryCondition(SideType::MY);
+    // gridBuilder->setADNoSlipBoundaryCondition(SideType::PY);
+    // gridBuilder->setADNoSlipBoundaryCondition(SideType::MZ);
+    // gridBuilder->setADNoSlipBoundaryCondition(SideType::PZ);
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityBounceBack);
     bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipDelayBounceBack);
+    bcFactory.setAdvectionDiffusionNoSlipBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoSlipBC::NoSlipBounceBack);
     bcFactory.setAdvectionDiffusionDirichletBoundaryCondition(
         BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip);
     bcFactory.setAdvectionDiffusionSlipVelocityBoundaryCondition(
