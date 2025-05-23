@@ -451,8 +451,6 @@ public:
     void setConcentration(std::string concFile);
     void setPrintFiles(bool printfiles);
     void setReadGeo(bool readGeo);
-    void setConcentrationInit(real concentrationInit);
-    void setConcentrationBC(real concentrationBC);
     void setViscosityLB(real Viscosity);
     void setVelocityLB(real Velocity);
     void setViscosityRatio(real ViscosityRatio);
@@ -489,10 +487,6 @@ public:
     void setMaxCoordX(std::vector<real> MaxCoordX);
     void setMaxCoordY(std::vector<real> MaxCoordY);
     void setMaxCoordZ(std::vector<real> MaxCoordZ);
-    void setConcentrationNoSlipBCHost(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost);
-    void setConcentrationNoSlipBCDevice(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCDevice);
-    void setConcentrationDirichletBCHost(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost);
-    void setConcentrationDirichletBCDevice(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCDevice);
     void setTimeDoCheckPoint(unsigned int tDoCheckPoint);
     void setTimeDoRestart(unsigned int tDoRestart);
     void setDoCheckPoint(bool doCheckPoint);
@@ -626,8 +620,6 @@ public:
     unsigned int getTimestepForMeasurePoints();
     unsigned int getTimestepOfCoarseLevel();
     real getDiffusivity();
-    real getConcentrationInit();
-    real getConcentrationBC();
     real getViscosity() const;
     real getVelocity() const;
     //! \returns the viscosity ratio in SI/LB units

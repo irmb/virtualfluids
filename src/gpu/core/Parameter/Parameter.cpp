@@ -152,12 +152,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Diffusivity"))
         this->setDiffusivity(configData.getValue<real>("Diffusivity"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("Concentration"))
-        this->setConcentrationInit(configData.getValue<real>("Concentration"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("ConcentrationBC"))
-        this->setConcentrationBC(configData.getValue<real>("ConcentrationBC"));
 
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Viscosity_LB"))
@@ -552,14 +546,7 @@ void Parameter::setDiffusivity(real Diffusivity)
 {
     this->Diffusivity = Diffusivity;
 }
-void Parameter::setConcentrationInit(real concentrationInit)
-{
-    this->concentrationInit = concentrationInit;
-}
-void Parameter::setConcentrationBC(real concentrationBC)
-{
-    this->concentrationBC = concentrationBC;
-}
+
 void Parameter::setViscosityLB(real Viscosity)
 {
     this->vis = Viscosity;
@@ -1409,14 +1396,6 @@ bool Parameter::getCalcTurbulenceIntensity()
 real Parameter::getDiffusivity()
 {
     return this->Diffusivity;
-}
-real Parameter::getConcentrationInit()
-{
-    return this->concentrationInit;
-}
-real Parameter::getConcentrationBC()
-{
-    return this->concentrationBC;
 }
 real Parameter::getViscosity() const
 {
