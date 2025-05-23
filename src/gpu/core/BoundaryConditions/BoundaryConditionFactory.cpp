@@ -233,8 +233,11 @@ BoundaryConditionKernel BoundaryConditionFactory::getGeometryBoundaryConditionPo
 
 AdvectionDiffusionNoSlipBoundaryConditionKernel BoundaryConditionFactory::getAdvectionDiffusionNoSlipBoundaryConditionPost() const
 {
+    if(this->advectionDiffusionNoSlipBoundaryCondition == AdvectionDiffusionNoSlipBC::NoSlipBounceBackDelayed)
+        return [](LBMSimulationParameter*, AdvectionDiffusionNoSlipBoundaryConditions) {};
     if(this->advectionDiffusionNoSlipBoundaryCondition == AdvectionDiffusionNoSlipBC::NoSlipBounceBack)
         return AdvectionDiffusionBounceBack;
+
     return nullptr;
 }
 

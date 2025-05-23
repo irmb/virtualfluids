@@ -137,8 +137,15 @@ public:
         NotSpecified
     };
 
-    enum class AdvectionDiffusionNoSlipBC { NoSlipBounceBack, NotSpecified };
+    // Equivalent to an adiabatic boundary condition, best used in combination with NoSlip
+    enum class AdvectionDiffusionNoSlipBC { 
+        //! NoSlipBounceBackDelayed = implicit bounce back
+        NoSlipBounceBackDelayed, 
+        //! NoSlipBounceBack = simple bounce back
+        NoSlipBounceBack,
+        NotSpecified };
 
+    // Cans set flux (if flux=0 equivalent to adiabatic boundary), best used in combination with Slip
     enum class AdvectionDiffusionSlipVelocityBC {
         SlipVelocityTurbulentViscosityCompressible,
         SlipVelocityCompressible,
@@ -147,19 +154,25 @@ public:
     };
 
     enum class AdvectionDiffusionDirichletBC {
-        //! - Interpolated Dirichlet boundary condition, uses subgrid distances
+        //! - Interpolated Dirichlet boundary condition, uses subgrid distances, must be used with Slip
         DirichletInterpolatedSlip,
+        //! - Bounce Back Dirichlet boundary condition, does not use subgrid distances, must be used with Slip
         DirichletAntiBounceBackSlip,
+        //! - Interpolated Dirichlet boundary condition, uses subgrid distances, must be used with NoSlip
         DirichletInterpolatedNoSlip,
+        //! - BounceBack Dirichlet boundary condition, does not use subgrid distances, must be used with NoSlip
         DirichletAntiBounceBackNoSlip,
         NotSpecified
     };
 
     enum class AdvectionDiffusionNeumannBC {
-        //! - Interpolated Neumann boundary condition, uses subgrid distances
+        //! - Interpolated Neumann boundary condition, uses subgrid distances, must be used with Slip
         NeumannInterpolatedSlip,
+        //! - Interpolated Neumann boundary condition, does not use subgrid distances, must be used with Slip
         NeumannAntiBounceBackSlip,
+        //! - Interpolated Neumann boundary condition, uses subgrid distances, must be used with NoSlip
         NeumannInterpolatedNoSlip,
+        //! - Interpolated Neumann boundary condition, does not use subgrid distances, must be used with NoSlip
         NeumannAntiBounceBackNoSlip,
         NotSpecified
     };
