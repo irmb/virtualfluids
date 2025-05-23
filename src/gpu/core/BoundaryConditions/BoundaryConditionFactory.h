@@ -140,10 +140,10 @@ public:
     // Equivalent to an adiabatic boundary condition, best used in combination with NoSlip
     enum class AdvectionDiffusionNoSlipBC { 
         //! NoSlipBounceBackDelayed = implicit bounce back
-        NoSlipBounceBackDelayed, 
+        NoSlipDelayedBounceBack, 
         //! NoSlipBounceBack = simple bounce back
         NoSlipBounceBack,
-        NotSpecified };
+    };
 
     // Cans set flux (if flux=0 equivalent to adiabatic boundary), best used in combination with Slip
     enum class AdvectionDiffusionSlipVelocityBC {
@@ -221,7 +221,7 @@ private:
     std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition = NoSlipBC::NoSlipDelayBounceBack;
     StressBC stressBoundaryCondition = StressBC::NotSpecified;
     PrecursorBC precursorBoundaryCondition = PrecursorBC::NotSpecified;
-    AdvectionDiffusionNoSlipBC advectionDiffusionNoSlipBoundaryCondition = AdvectionDiffusionNoSlipBC::NotSpecified;
+    AdvectionDiffusionNoSlipBC advectionDiffusionNoSlipBoundaryCondition = AdvectionDiffusionNoSlipBC::NoSlipDelayedBounceBack;
     AdvectionDiffusionSlipVelocityBC advectionDiffusionSlipVelocityBoundaryCondition = AdvectionDiffusionSlipVelocityBC::NotSpecified;
     AdvectionDiffusionDirichletBC advectionDiffusionDirichletBoundaryCondition = AdvectionDiffusionDirichletBC::NotSpecified;
     AdvectionDiffusionNeumannBC advectionDiffusionNeumannBoundaryCondition = AdvectionDiffusionNeumannBC::NotSpecified;
