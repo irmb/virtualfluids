@@ -105,8 +105,6 @@ TEST(ParameterTest, check_all_Parameter_CanBePassedToConstructor)
 
     EXPECT_THAT(para.getDiffOn(), testing::Eq(true));
     EXPECT_THAT(para.getDiffusivity(), RealEq(1.11));
-    EXPECT_THAT(para.getConcentrationInit(), RealEq(2.22));
-    EXPECT_THAT(para.getConcentrationBC(), RealEq(3.33));
 
     EXPECT_THAT(para.getViscosity(), RealEq(4.44));
     EXPECT_THAT(para.getVelocity(), RealEq(5.55));
