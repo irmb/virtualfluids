@@ -166,7 +166,6 @@ TEST(ParameterTest, defaultGridPath)
 {
     Parameter para;
     EXPECT_THAT(para.getGridPath(), testing::Eq("grid/"));
-    EXPECT_THAT(para.getConcentration(), testing::Eq("grid/conc.dat"));
 }
 
 TEST(ParameterTest, defaultGridPathMultiGPU)
@@ -174,7 +173,6 @@ TEST(ParameterTest, defaultGridPathMultiGPU)
     Parameter para(2, 1);
 
     EXPECT_THAT(para.getGridPath(), testing::Eq("grid/1/"));
-    EXPECT_THAT(para.getConcentration(), testing::Eq("grid/1/conc.dat"));
 }
 
 TEST(ParameterTest, setGridPathOverridesDefaultGridPath)
@@ -183,7 +181,6 @@ TEST(ParameterTest, setGridPathOverridesDefaultGridPath)
     para.setGridPath("gridPathTest");
 
     EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/1/"));
-    EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/1/conc.dat"));
 }
 
 TEST(ParameterTest, setGridPathOverridesConfigFile)
@@ -197,7 +194,6 @@ TEST(ParameterTest, setGridPathOverridesConfigFile)
     para.setGridPath("gridPathTest");
 
     EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/0/"));
-    EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/0/conc.dat"));
 }
 
 TEST(ParameterTest, userMissedSlash)
@@ -206,7 +202,6 @@ TEST(ParameterTest, userMissedSlash)
     para.setGridPath("gridPathTest");
 
     EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/"));
-    EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/conc.dat"));
 }
 
 TEST(ParameterTest, userMissedSlashMultiGPU)
@@ -215,7 +210,6 @@ TEST(ParameterTest, userMissedSlashMultiGPU)
     para.setGridPath("gridPathTest");
 
     EXPECT_THAT(para.getGridPath(), testing::Eq("gridPathTest/0/"));
-    EXPECT_THAT(para.getConcentration(), testing::Eq("gridPathTest/0/conc.dat"));
 }
 
 class MockGridGenerator : public GridGenerator
