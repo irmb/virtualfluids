@@ -753,8 +753,6 @@ private:
     real Re;
     real factorPressBC{ 1.0 };
     real Diffusivity{ 0.001 };
-    real concentrationInit{ 0.0 };
-    real concentrationBC{ 1.0 };
     real RealX{ 1.0 };
     real RealY{ 1.0 };
     real clockCycleForMeasurePoints{ 1.0 };
