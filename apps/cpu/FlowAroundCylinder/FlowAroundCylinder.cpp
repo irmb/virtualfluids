@@ -123,7 +123,8 @@ void run(string configname)
       fct.DefineConst("U", uLB);
       fct.DefineConst("H", H);
       SPtr<BC> velBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityNonReflecting(0.001)));
+      //velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityNonReflecting(0.001)));
+      velBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBounceBack()));
 
       SPtr<BC> denBC(new PressureBC(rhoLB));
       denBC->setBCStrategy(SPtr<BCStrategy>(new PressureNonEquilibrium()));
