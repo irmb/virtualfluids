@@ -54,40 +54,83 @@ namespace vf::lbm
 
 //! \brief An enumeration for selecting a turbulence model
 enum class TurbulenceModel {
+    //! - No turbulence model
+    None,
     //! - Smagorinsky
     Smagorinsky,
+    //! - QR model by Verstappen
+    QR,
     //! - AMD (Anisotropic Minimum Dissipation) model, see e.g. Rozema et al., Phys. Fluids 27, 085107 (2015),
     //! https://doi.org/10.1063/1.4928700
     AMD,
-    //! - QR model by Verstappen
-    QR,
-    //! - No turbulence model
-    None
+    //! Computes diffusivity according to \ref <a href="https://doi.org/10.1007/s10546-017-0288-4" ><b><M. Abkar and P. Moin,
+    //! 2017 \DOI:10.1007/s10546-017-0288-4>
+    AMDStratified
 };
 
-inline __host__ __device__ real calcTurbulentViscositySmagorinsky(real Cs, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
+inline __host__ __device__ real calcTurbulentViscositySmagorinsky(real SGSConstant, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
 {
-    return Cs * Cs * sqrt(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
+    return SGSConstant * SGSConstant * sqrtf(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
 }
 
-constexpr real calcTurbulentViscosityQR(real C, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
+inline __host__ __device__ real calcTurbulentViscosityQR(real SGSConstant, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
 {
     // ! Verstappen's QR model
     //! Second invariant of the strain-rate tensor
-    real Q = c1o2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + c1o4 * (Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
+    const real secondInvariant = c1o2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + c1o4 * (Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
     //! Third invariant of the strain-rate tensor (determinant)
-    // real R = - dxux*dyuy*dzuz - c1o4*( Dxy*Dxz*Dyz + dxux*Dyz*Dyz + dyuy*Dxz*Dxz + dzuz*Dxy*Dxy );
-    real R = -dxux * dyuy * dzuz + c1o4 * (-Dxy * Dxz * Dyz + dxux * Dyz * Dyz + dyuy * Dxz * Dxz + dzuz * Dxy * Dxy);
+    const real thirdInvariant = -dxux * dyuy * dzuz + c1o4 * (-Dxy * Dxz * Dyz + dxux * Dyz * Dyz + dyuy * Dxz * Dxz + dzuz * Dxy * Dxy);
 
     constexpr real zero = c0o1; // I Don't know why this is necessary, but it is apparently to pass it to std::max ...
-    return C * std::max(R, zero) / Q;
+    return SGSConstant * std::max(thirdInvariant, zero) / secondInvariant;
+}
+
+constexpr real calcDenominatorAMD(real dvxdx, real dvxdy, real dvxdz, real dvydx, real dvydy, real dvydz, real dvzdx,
+                                  real dvzdy, real dvzdz)
+{
+    return dvxdx * dvxdx + dvydx * dvydx + dvzdx * dvzdx + dvxdy * dvxdy + dvydy * dvydy + dvzdy * dvzdy + dvxdz * dvxdz +
+           dvydz * dvydz + dvzdz * dvzdz;
+}
+
+constexpr real calcNumeratorAMD(real dvxdx, real dvxdy, real dvxdz, real dvydx, real dvydy, real dvydz, real dvzdx,
+                                real dvzdy, real dvzdz)
+{
+    return -((dvxdx * dvxdx + dvxdy * dvxdy + dvxdz * dvxdz) * dvxdx +
+             (dvydx * dvydx + dvydy * dvydy + dvydz * dvydz) * dvydy +
+             (dvzdx * dvzdx + dvzdy * dvzdy + dvzdz * dvzdz) * dvzdz +
+             (dvxdx * dvydx + dvxdy * dvydy + dvxdz * dvydz) * (dvxdy + dvydx) +
+             (dvxdx * dvzdx + dvxdy * dvzdy + dvxdz * dvzdz) * (dvxdz + dvzdx) +
+             (dvydx * dvzdx + dvydy * dvzdy + dvydz * dvzdz) * (dvydz + dvzdy));
+}
+constexpr real calcTurbulentViscosityAMD(real SGSConstant, real dvxdx, real dvxdy, real dvxdz, real dvydx, real dvydy,
+                                         real dvydz, real dvzdx, real dvzdy, real dvzdz)
+{
+    const real denominator = calcDenominatorAMD(dvxdx, dvxdy, dvxdz, dvydx, dvydy, dvydz, dvzdx, dvzdy, dvzdz);
+    if (denominator == c0o1)
+        return c0o1;
+    const real numerator = calcNumeratorAMD(dvxdx, dvxdy, dvxdz, dvydx, dvydy, dvydz, dvzdx, dvzdy, dvzdz);
+    constexpr real zero = c0o1;
+    return std::max(zero, SGSConstant * numerator / denominator);
+}
+
+constexpr real calcTurbulentViscosityAMDStratified(real SGSConstant, real dvxdx, real dvxdy, real dvxdz, real dvydx,
+                                                   real dvydy, real dvydz, real dvzdx, real dvzdy, real dvzdz,
+                                                   real buoyancyParameter, real dthetadx, real dthetady, real dthetadz)
+{
+    const real denominator = calcDenominatorAMD(dvxdx, dvxdy, dvxdz, dvydx, dvydy, dvydz, dvzdx, dvzdy, dvzdz);
+    if (denominator <= cSmallSingle)
+        return c0o1;
+    const real temp = buoyancyParameter * (dvzdx * dthetadx + dvzdy * dthetady + dvzdz * dthetadz);
+    const real numerator = calcNumeratorAMD(dvxdx, dvxdy, dvxdz, dvydx, dvydy, dvydz, dvzdx, dvzdy, dvzdz);
+    constexpr real zero = c0o1;
+    constexpr real upperLimit = c1o100;
+    return std::clamp(SGSConstant * (numerator + temp) / denominator, zero, upperLimit);
 }
 
 constexpr real calculateOmegaWithturbulentViscosity(real omega, real turbulenceViscosity)
 {
     return omega / (c1o1 + c3o1 * omega * turbulenceViscosity);
 }
-
 } // namespace vf::lbm
 
 #endif // TURBULENT_VISCOSITY_H

@@ -37,40 +37,16 @@
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h"
 #include "Parameter/Parameter.h"
 #include "Kernel/AdvectionDiffusionKernel.h"
-#include "PostProcessor/Concentration.cuh"
 
-ADKernelManager::ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels): para(parameter), adkernels(adkernels){}
-
-////////////////////////////////////////////////////////////////////////////////
-void ADKernelManager::setInitialNodeValuesAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const
-{
-    for (size_t index = 1; index <= para->getParH(level)->numberOfNodes; index++) {
-        const real coordX = para->getParH(level)->coordinateX[index];
-        const real coordY = para->getParH(level)->coordinateY[index];
-        const real coordZ = para->getParH(level)->coordinateZ[index];
-
-        real concentration;
-
-        // call functor object with initial condition
-        if (para->getInitialConditionAD()) {
-            para->getInitialConditionAD()(coordX, coordY, coordZ, concentration);
-        } else {
-            concentration = real(0.0);
-        }
-
-        para->getParH(level)->concentration[index] = concentration;
-    }
-
-    cudaMemoryManager->cudaCopyConcentrationHostToDevice(level);
-}
+ADKernelManager::ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels): para(std::move(parameter)), adkernels(adkernels){}
 
 ////////////////////////////////////////////////////////////////////////////////
-void ADKernelManager::runADcollisionKernel(const int level)const
+void ADKernelManager::runADcollisionKernel(int level)const
 {
     adkernels[level]->run();
 }
 
-void ADKernelManager::runADslipBCKernel(const int level) const{
+void ADKernelManager::runADslipBCKernel(int level) const{
     if (para->getParD(level)->slipBC.numberOfBCnodes > 1) {
         AdvectionDiffusionSlipVelocityCompressible(
             para->getParD(level)->numberofthreads,
@@ -91,7 +67,7 @@ void ADKernelManager::runADslipBCKernel(const int level) const{
     }
 }
 
-void ADKernelManager::runADgeometryBCKernel(const int level) const
+void ADKernelManager::runADgeometryBCKernel(int level) const
 {
     if (para->getParD(level)->geometryBC.numberOfBCnodes > 0) {
             AdvectionDiffusionBounceBack(
@@ -112,7 +88,7 @@ void ADKernelManager::runADgeometryBCKernel(const int level) const
     }
 }
 
-void ADKernelManager::runADDirichletBCKernel(const int level) const{
+void ADKernelManager::runADDirichletBCKernel(int level) const{
     if (para->getParD(level)->AdvectionDiffusionDirichletBC.numberOfBcNodes > 0){
             AdvectionDiffusionDirichlet(
                 para->getParD(level)->numberofthreads,
@@ -131,23 +107,6 @@ void ADKernelManager::runADDirichletBCKernel(const int level) const{
                 para->getParD(level)->isEvenTimestep);
 
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void ADKernelManager::printAD(const int level, SPtr<CudaMemoryManager> cudaMemoryManager) const
-{
-    CalcConcentration27(
-        para->getParD(level)->numberofthreads,
-        para->getParD(level)->concentration,
-        para->getParD(level)->typeOfGridNode,
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level)->distributionsAD.f[0],
-        para->getParD(level)->isEvenTimestep);
-
-    cudaMemoryManager->cudaCopyConcentrationDeviceToHost(level);
 }
 
 //! \}

@@ -294,7 +294,7 @@ std::vector<std::string> FileWriter::writeUnstructuredGridLT(std::shared_ptr<Par
 
                 if(para->getUseTurbulentViscosity())
                 {
-                    nodeData[firstNutNode][relPosInPart] = (double)parH.turbViscosity[pos] * (double)para->getScaledViscosityRatio(level);
+                    nodeData[firstNutNode][relPosInPart] = (double)parH.turbulentViscosity[pos] * (double)para->getScaledViscosityRatio(level);
                 }
 
                 if (para->getCalcTurbulenceIntensity()) {

@@ -35,6 +35,7 @@ FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
 # timezone
 ARG TZ
 ENV TZ="$TZ"
+ENV VIRTUAL_ENV=/opt/venv
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update &&   \
@@ -52,6 +53,7 @@ RUN apt-get update &&   \
     clang-tools-15      \
     python3.11          \
     python3-pip         \
+    python3.11-venv     \
     python3.11-dev      \
     cppcheck            \
     # needed for doxygen
@@ -79,3 +81,5 @@ RUN apt-get update &&   \
         lizard==1.17.10  \
     && wget https://www.doxygen.nl/files/doxygen-1.9.8.src.tar.gz && tar -xvf doxygen-1.9.8.src.tar.gz \
     && cd doxygen-1.9.8 && mkdir build && cd build && cmake -G "Unix Makefiles" .. && make -j8 && make install
+RUN python3 -m venv $VIRTUAL_ENV \
+    && $VIRTUAL_ENV/bin/python3 -m pip install --upgrade pip

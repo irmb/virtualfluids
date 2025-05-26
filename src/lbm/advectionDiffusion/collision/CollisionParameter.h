@@ -26,25 +26,25 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup gpu_Kernel Kernel
-//! \ingroup gpu_core core
+//! \addtogroup collision
+//! \ingroup lbm
 //! \{
-#ifndef F16IncompressibleAdvectionDiffusion_Device_H
-#define F16IncompressibleAdvectionDiffusion_Device_H
+//! \author Henry Korb
+//=======================================================================================
+#ifndef LBM_KERNEL_PARAMETER_ADVECTION_DIFFUSION_H
+#define LBM_KERNEL_PARAMETER_ADVECTION_DIFFUSION_H
 
-#include <DataTypes.h>
-#include <curand.h>
+#include <basics/DataTypes.h>
 
-__global__ void F16IncompressibleAdvectionDiffusion_Device(real diffusivity,
-    unsigned int* bcMatD,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    real* DDStart,
-    real* DD27, 
-    unsigned long long numberOfLBnodes, 
-    real* forces,
-    bool EvenOrOdd);
+namespace vf::lbm::advection_diffusion
+{
 
+struct ADCollisionParameter
+{
+    real distribution[27];
+    real velocityX, velocityY, velocityZ, omega;
+    real concentration;
+};
+} // namespace vf::lbm::advection_diffusion
 #endif
 //! \}

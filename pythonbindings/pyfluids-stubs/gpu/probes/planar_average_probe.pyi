@@ -38,10 +38,11 @@ from ... import gpu
 from ...basics.geometry3d import Axis
 
 class Statistic(enum.Enum):
-    Means: int
-    Covariances: int
-    Skewness: int
-    Flatness: int
+    _value_: int
+    Means = ...
+    Covariances = ...
+    Skewness = ...
+    Flatness = ...
 
 class PlanarAverageProbe(gpu.Sampler):
     def __init__(

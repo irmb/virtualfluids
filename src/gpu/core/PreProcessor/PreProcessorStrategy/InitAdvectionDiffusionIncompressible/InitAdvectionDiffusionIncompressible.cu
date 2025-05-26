@@ -68,7 +68,7 @@ bool InitAdvectionDiffusionIncompressible::checkParameter()
 
 InitAdvectionDiffusionIncompressible::InitAdvectionDiffusionIncompressible(std::shared_ptr<Parameter> para)
 {
-    this->para = para;
+    this->para = std::move(para);
 }
 
 InitAdvectionDiffusionIncompressible::InitAdvectionDiffusionIncompressible()

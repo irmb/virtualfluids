@@ -37,7 +37,9 @@
 
 class Parameter;
 
-void calcTurbulentViscosityAMD(Parameter* para, int level);
+void calculateTurbulentViscosityAMD(Parameter* para, int level);
+void calculateTurbulentDiffusivityMoeng(Parameter* para, int level);
+void calculateTurbulentViscosityAndDiffusivityAMDStratified(Parameter* para, int level);
 
 #endif // TURBULENT_VISCOSITY_H_e
 

@@ -56,6 +56,14 @@ static const std::vector<std::string> listOfKernels = { BGK, BGKPlus, CumulantK1
 
 } // namespace vf::collision_kernel::incompressible
 
+namespace vf::advectionDiffusionKernel{
+    namespace compressible{
+        static const std::string F16 = "ADComp27";
+    }
+    namespace incompressible {
+        static const std::string F16 = "ADIncomp27";
+    }
+}
 #endif
 
 //! \}
