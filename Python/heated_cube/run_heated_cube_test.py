@@ -21,7 +21,7 @@ FIGSIZE = 503 / 72.27 * 0.45
 
 rayleigh_numbers = [1000, 10_000, 100_000, 1_000_000]
 diffusivity_lb = 0.001
-nx = 64
+nx = 81
 t_outs = [0.1, 0.2, 0.2, 0.2]
 
 #%%
@@ -35,7 +35,7 @@ for rayleigh_number, t_out in zip(rayleigh_numbers, t_outs):
     file_name = OUTPUT_DIR/f"heated_cubeRa1e{int(np.log10(rayleigh_number)):d}.cfg"
     with open(file_name, "w") as f:
         text = [
-                f"Path = ./output/Ra1e{int(np.log10(rayleigh_number)):d}/",
+                f"Path = {OUTPUT_DIR}/Ra1e{int(np.log10(rayleigh_number)):d}/",
                 "tStartOut = 0",
                 f"tOut = {t_out:1.3f}",
                 f"tEnd = {t_out * 3.01:1.3f}",
@@ -122,7 +122,6 @@ class Reference:
 
     def plot_comparison(self, file_number: int, ax: plt.Axes):
         mid_plane, side_plane = self.get_files(file_number)
-        nx = int(np.sqrt(mid_plane.points.shape[0]))
         velocity = mid_plane.get_array("vx").reshape((nx, nx)) / thermal_expansion_velocity
         temperature = mid_plane.get_array("phi").reshape((nx, nx))
         max_index = np.argmax(velocity)
@@ -136,7 +135,7 @@ class Reference:
         mid_plane, side_plane = self.get_files(file_number)
         delta_x = mid_plane.points[1, 0] - mid_plane.points[0, 0]
         velocity = mid_plane.get_array("vx") / thermal_expansion_velocity
-        nx = int(np.sqrt(velocity.shape[0]))
+        
 
         max_index = np.argmax(velocity)
         max_value = velocity[max_index]
@@ -160,7 +159,7 @@ references = [
     Reference("Ra1e3", 3.54356, 0.0166, 0.3169, 1.087, 1.07),
       Reference("Ra1e4", 16.71986, 0.0196, 0.3250, 2.2505, 2.0542),
       Reference("Ra1e5", 43.0610, -0.1865, 0.3848, 4.6127, 4.3370),
-      Reference("Ra1e6", 123.4777, -0.3133, 0.4366, 8.8771, 8.6407),
+    #   Reference("Ra1e6", 123.4777, -0.3133, 0.4366, 8.8771, 8.6407),
     #   Reference("Ra1e7", 383.8358, -0.3777, 0.4662, 16.5477, 16.3427)
 ]
 #%%
