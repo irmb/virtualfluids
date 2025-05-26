@@ -41,7 +41,7 @@ namespace vf::lbm::advection_diffusion
 {
 
 template <size_t direction>
-constexpr real computeInterpolatedDistribution(const real* populations, const real concentration, const real velocityX,
+constexpr real computeInterpolatedPopulation(const real* populations, const real concentration, const real velocityX,
                                                const real velocityY, const real velocityZ, const real subgridDistance,
                                                const real relaxationFrequency)
 {
@@ -77,7 +77,7 @@ constexpr real computePopulationInterpolatedBounceBackWithFlux(const real subgri
     using namespace vf::lbm::dir;
 
     const real flux = getVelocity<direction>(fluxX, fluxY, fluxZ);
-    const real interpolated = computeInterpolatedDistribution<direction>(populations, concentration, vx1, vx2, vx3,
+    const real interpolated = computeInterpolatedPopulation<direction>(populations, concentration, vx1, vx2, vx3,
                                                                          subgridDistance, relaxationFrequency);
     return interpolated - c6o1 * getWeight<direction>() * flux / (subgridDistance + c1o1);
 }
@@ -106,7 +106,7 @@ constexpr real computePopulationInterpolatedAntiBounceBack(const real subgridDis
 
     const real equilibriumWall =
         computeEquilibrium<direction>(concentrationWall, velocityWallX, velocityWallY, velocityWallZ);
-    const real interpolated = computeInterpolatedDistribution<direction>(populations, concentrationNode, vx1, vx2, vx3,
+    const real interpolated = computeInterpolatedPopulation<direction>(populations, concentrationNode, vx1, vx2, vx3,
                                                                          subgridDistance, relaxationFrequency);
     return -interpolated + c2o1 * equilibriumWall / (subgridDistance + c1o1);
 }
