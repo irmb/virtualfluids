@@ -227,33 +227,45 @@ template<> constexpr real getVelocity<dMPP>(real velocityX, real velocityY, real
 
 
 template<size_t direction> constexpr real getWeight();
-template<> constexpr real getWeight<d000>(){ return basics::constant::c8o27;}
-template<> constexpr real getWeight<dP00>(){ return basics::constant::c2o27;}
-template<> constexpr real getWeight<dM00>(){ return basics::constant::c2o27;}
-template<> constexpr real getWeight<d0P0>(){ return basics::constant::c2o27;}
-template<> constexpr real getWeight<d0M0>(){ return basics::constant::c2o27;}
-template<> constexpr real getWeight<d00P>(){ return basics::constant::c2o27;}
-template<> constexpr real getWeight<d00M>(){ return basics::constant::c2o27;}
-template<> constexpr real getWeight<dPP0>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<dMM0>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<dPM0>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<dMP0>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<dP0P>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<dM0M>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<dP0M>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<dM0P>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<d0PP>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<d0MM>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<d0PM>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<d0MP>(){ return basics::constant::c1o54;}
-template<> constexpr real getWeight<dPPP>(){ return basics::constant::c1o216;}
-template<> constexpr real getWeight<dMMM>(){ return basics::constant::c1o216;}
-template<> constexpr real getWeight<dPPM>(){ return basics::constant::c1o216;}
-template<> constexpr real getWeight<dMMP>(){ return basics::constant::c1o216;}
-template<> constexpr real getWeight<dPMP>(){ return basics::constant::c1o216;}
-template<> constexpr real getWeight<dMPM>(){ return basics::constant::c1o216;}
-template<> constexpr real getWeight<dPMM>(){ return basics::constant::c1o216;}
-template<> constexpr real getWeight<dMPP>(){ return basics::constant::c1o216;}
+template<> constexpr real getWeight<d000>(){ return basics::constant::c8o27; }
+template<> constexpr real getWeight<dP00>(){ return basics::constant::c2o27; }
+template<> constexpr real getWeight<dM00>(){ return basics::constant::c2o27; }
+template<> constexpr real getWeight<d0P0>(){ return basics::constant::c2o27; }
+template<> constexpr real getWeight<d0M0>(){ return basics::constant::c2o27; }
+template<> constexpr real getWeight<d00P>(){ return basics::constant::c2o27; }
+template<> constexpr real getWeight<d00M>(){ return basics::constant::c2o27; }
+template<> constexpr real getWeight<dPP0>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<dMM0>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<dPM0>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<dMP0>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<dP0P>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<dM0M>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<dP0M>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<dM0P>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<d0PP>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<d0MM>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<d0PM>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<d0MP>(){ return basics::constant::c1o54; }
+template<> constexpr real getWeight<dPPP>(){ return basics::constant::c1o216; }
+template<> constexpr real getWeight<dMMM>(){ return basics::constant::c1o216; }
+template<> constexpr real getWeight<dPPM>(){ return basics::constant::c1o216; }
+template<> constexpr real getWeight<dMMP>(){ return basics::constant::c1o216; }
+template<> constexpr real getWeight<dPMP>(){ return basics::constant::c1o216; }
+template<> constexpr real getWeight<dMPM>(){ return basics::constant::c1o216; }
+template<> constexpr real getWeight<dPMM>(){ return basics::constant::c1o216; }
+template<> constexpr real getWeight<dMPP>(){ return basics::constant::c1o216; }
+
+template <std::size_t... S, typename F>
+constexpr void forSequence(std::index_sequence<S...> /**/, F func)
+{
+    (func(std::integral_constant<std::size_t, S + 1> {}), ...);
+}
+
+template <typename F>
+constexpr void loopDirections(F func)
+{
+    forSequence(std::make_index_sequence<vf::lbm::dir::ENDDIR> {}, func);
+}
 
 } // namespace vf::lbm::dir
 #endif
