@@ -307,6 +307,15 @@ template <> constexpr uint ListIndices::getIndex<dMPM>() const { return kMPM(); 
 template <> constexpr uint ListIndices::getIndex<dPMM>() const { return kPMM(); }
 template <> constexpr uint ListIndices::getIndex<dMMM>() const { return kMMM(); }
 
+template <size_t direction>
+constexpr void writeInInverseDirection(const real population, const vf::gpu::ListIndices& listIndices,
+                                       const Distributions27& populationReferences)
+{
+    const size_t inverseDir = vf::lbm::dir::inverseDir<direction>();
+    const uint writeIndex = listIndices.getIndex<inverseDir>();
+    (populationReferences.f[inverseDir])[writeIndex] = population;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 //! - Read distributions: style of reading and writing the distributions from/to
 //! stored arrays dependent on timestep is based on the esoteric twist algorithm

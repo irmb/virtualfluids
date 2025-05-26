@@ -31,77 +31,45 @@
 //! \{
 //! \author Martin Schoenherr, Henry Korb
 //=======================================================================================
-#include "Calculation/Calculation.h"
-#include "lbm/constants/D3Q27.h"
-
-#include "gpu/core/Utilities/KernelUtilities.h"
-#include "gpu/cuda_helper/CudaIndexCalculation.h"
 #include <basics/constants/NumericConstants.h>
 
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
+#include <lbm/constants/D3Q27.h>
 
-template <size_t direction>
-constexpr void setDistributions(const uint nodeIndex, const SubgridDistances27& subgridDistanceReferences,
-                                const Distributions27& distributionReferences, const vf::gpu::ListIndices& listIndices,
-                                const real* populations)
-{
-    const real subgridDistance = (subgridDistanceReferences.q[direction])[nodeIndex];
-    if (subgridDistance < c0o1 || subgridDistance > c1o1)
-        return;
-    const size_t inverseDir = vf::lbm::dir::inverseDir<direction>();
-    const uint writeIndex = listIndices.getIndex<inverseDir>();
-    (distributionReferences.f[inverseDir])[writeIndex] = populations[direction];
-}
+#include "gpu/core/Calculation/Calculation.h"
+#include "gpu/core/Utilities/KernelUtilities.h"
+#include "gpu/cuda_helper/CudaIndexCalculation.h"
 
 __global__ void AdvectionDiffusionBounceBack_Device(real* distributions,
                                                     AdvectionDiffusionNoSlipBoundaryConditions bcParameters,
                                                     const uint* neighborX, const uint* neighborY, const uint* neighborZ,
                                                     unsigned long long numberOfLBnodes, bool isEvenTimestep)
 {
+    using namespace vf::basics::constant;
+    using namespace vf::lbm::dir;
+    using namespace vf::gpu;
+
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
     if (nodeIndex >= bcParameters.numberOfBCnodes)
         return;
 
-    Distributions27 distributionReferences =
-        vf::gpu::getDistributionReferences27(distributions, numberOfLBnodes, isEvenTimestep);
+    Distributions27 populationReferences = getDistributionReferences27(distributions, numberOfLBnodes, isEvenTimestep);
     const uint indexOfBCnode = bcParameters.BCNodeIndices[nodeIndex];
-    const vf::gpu::ListIndices listIndices(indexOfBCnode, neighborX, neighborY, neighborZ);
+    const ListIndices listIndices(indexOfBCnode, neighborX, neighborY, neighborZ);
 
-    SubgridDistances27 subgridDistanceReferences;
-    vf::gpu::getPointersToSubgridDistances(subgridDistanceReferences, bcParameters.q27[0], bcParameters.numberOfBCnodes);
+    SubgridDistances27 subgridDistances;
+    getPointersToSubgridDistances(subgridDistances, bcParameters.q27[0], bcParameters.numberOfBCnodes);
 
     real populations[27];
-    vf::gpu::getPostCollisionDistribution(populations, distributionReferences, listIndices);
+    getPostCollisionDistribution(populations, populationReferences, listIndices);
 
-    vf::gpu::getPointersToDistributions(distributionReferences, distributions, numberOfLBnodes, !isEvenTimestep);
+    getPointersToDistributions(populationReferences, distributions, numberOfLBnodes, !isEvenTimestep);
 
-    setDistributions<dM00>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dP00>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<d0M0>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<d0P0>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<d00M>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<d00P>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dMM0>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dPP0>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dMP0>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dPM0>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dM0M>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dP0P>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dM0P>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dP0M>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<d0MM>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<d0PP>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<d0MP>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<d0PM>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dMMM>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dPPP>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dMMP>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dPPM>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dMPM>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dPMP>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dMPP>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
-    setDistributions<dPMM>(nodeIndex, subgridDistanceReferences, distributionReferences, listIndices, populations);
+    loopDirections([&](auto direction) {
+        const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
+        if (subgridDistance < c0o1 || subgridDistance > c1o1)
+            return;
+        writeInInverseDirection<direction>(populations[direction], listIndices, populationReferences);
+    });
 }
 
 //! \}
