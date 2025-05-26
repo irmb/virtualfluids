@@ -68,7 +68,8 @@ void NoSlipInterpolated::applyBC()
             // quadratic bounce back
             const int invDir = INVDIR[fdir];
             real q = bcPtr->getQ(invDir);
-            real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((f[invDir] - feq[invDir]) / (c1o1 - collFactor) + feq[invDir]) + ((q / (c1o1 + q)) * (f[invDir] + f[fdir]));
+            //real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((f[invDir] - feq[invDir]) / (c1o1 - collFactor) + feq[invDir]) + ((q / (c1o1 + q)) * (f[invDir] + f[fdir]));
+            real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((feq[invDir]-feq[fdir])+((f[invDir]+f[fdir])-(feq[invDir]+feq[fdir])*collFactor) / (c1o1-collFactor))*c1o2  + ((q / (c1o1 + q)) * (f[invDir] + f[fdir]))+((f[invDir]-f[fdir])-(feq[invDir]-feq[fdir]))*c1o2;
             distributions->setPostCollisionDistributionForDirection(fReturn, x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
         }
     }
