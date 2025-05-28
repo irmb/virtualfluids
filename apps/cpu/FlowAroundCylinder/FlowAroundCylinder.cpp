@@ -119,7 +119,8 @@ void run(string configname)
       noSlipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
 
       mu::Parser fct;
-      fct.SetExpr("16*U*x2*x3*(H-x2)*(H-x3)/H^4");
+      //fct.SetExpr("16*U*x2*x3*(H-x2)*(H-x3)/H^4");
+      fct.SetExpr("16*U*(x2+H*0.5)*(x3+H*0.5)*(H*0.5-x2)*(H*0.5-x3)/H^4");      
       fct.DefineConst("U", uLB);
       fct.DefineConst("H", H);
       SPtr<BC> velBC(new VelocityBC(true, false, false, fct, 0, BCFunction::INFCONST));
@@ -147,19 +148,27 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////
 
       ////cylinder
-      SPtr<GbObject3D> cylinder(new GbCylinder3D(0.5, 0.2, -0.1, 0.5, 0.2, L3+0.1, radius));
+      SPtr<GbObject3D> cylinder(new GbCylinder3D(0.5, 0.2-L2*0.5, -0.1-L3*0.5, 0.5, 0.2-L2*0.5, L3+0.1-L3*0.5, radius));
       gb_system_3d::writeGeoObject(cylinder.get(), pathOut+"/geo/cylinder", WbWriterVtkXmlBinary::getInstance());
       
       SPtr<D3Q27Interactor> cylinderInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(cylinder, grid, noSlipAdapter, Interactor3D::SOLID));
 
       // bounding box
-      real g_minX1 = 0.0;
-      real g_minX2 = 0.0;
-      real g_minX3 = 0.0;
+    //   real g_minX1 = 0.0;
+    //   real g_minX2 = 0.0;
+    //   real g_minX3 = 0.0;
 
-      real g_maxX1 = L1;
-      real g_maxX2 = L2;
-      real g_maxX3 = L3;
+    //   real g_maxX1 = L1;
+    //   real g_maxX2 = L2;
+    //   real g_maxX3 = L3;
+
+    real g_minX1 = 0.0;
+    real g_minX2 = -L2*0.5;
+    real g_minX3 = -L3*0.5;
+
+    real g_maxX1 = L1;
+    real g_maxX2 = L2*0.5;
+    real g_maxX3 = L3*0.5;
 
       const int blocknx1 = blockNx[0];
       const int blocknx2 = blockNx[1];
@@ -348,6 +357,7 @@ void run(string configname)
       SPtr<UbScheduler> stepSch(new UbScheduler(outTime));
 
       SPtr<SimulationObserver> writeMQSimulationObserver(new WriteMacroscopicQuantitiesSimulationObserver(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      writeMQSimulationObserver->update(0);
 
       real area = (2.0*radius*H)/(dx*dx);
       real v    = 4.0*uLB/9.0;
