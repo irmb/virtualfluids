@@ -20,7 +20,7 @@ CMAP = "coolwarm"
 FIGSIZE = 503 / 72.27 * 0.45
 
 rayleigh_numbers = [1000, 10_000, 100_000, 1_000_000]
-diffusivity_lb = 0.001
+diffusivity_lb = 0.0001
 nx = 81
 t_outs = [0.1, 0.2, 0.2, 0.2]
 
@@ -111,7 +111,7 @@ class Reference:
     nusselt_number_3d: float
 
     def get_files(self, file_number: int) -> tuple[pv.UnstructuredGrid, pv.UnstructuredGrid]:
-        output_dir =OUTPUT_DIR / self.name
+        output_dir = OUTPUT_DIR / self.name
         mid_plane_files = list(output_dir.glob(get_midplane_filename("*")))
         side_plane_files = list(output_dir.glob(get_sideplane_filename("*")))
         if not mid_plane_files:
@@ -122,11 +122,12 @@ class Reference:
 
     def plot_comparison(self, file_number: int, ax: plt.Axes):
         mid_plane, side_plane = self.get_files(file_number)
-        velocity = mid_plane.get_array("vx").reshape((nx, nx)) / thermal_expansion_velocity
-        temperature = mid_plane.get_array("phi").reshape((nx, nx))
+        velocity = mid_plane.get_array("vx").reshape((nx, 2, nx))[:,0] / thermal_expansion_velocity
+        temperature = mid_plane.get_array("phi").reshape((nx, 2, nx))[:,0]
         max_index = np.argmax(velocity)
+        points = mid_plane.points.reshape(nx,2,nx,3)[:,0].reshape(nx*nx,3)
 
-        ax.scatter(mid_plane.points[max_index, 0], mid_plane.points[max_index, 2], color="k", marker="x")
+        ax.scatter(points[max_index, 0], points[max_index, 2], color="k", marker="x")
         ax.scatter(self.x, self.z, facecolor="none", edgecolor="black", marker="o")
         ax.set_title(self.name)
         return ax.imshow(temperature, extent=(-0.5, 0.5, -0.5, 0.5), origin="lower", cmap=CMAP)
@@ -134,12 +135,12 @@ class Reference:
     def compare(self, file_number: int):
         mid_plane, side_plane = self.get_files(file_number)
         delta_x = mid_plane.points[1, 0] - mid_plane.points[0, 0]
-        velocity = mid_plane.get_array("vx") / thermal_expansion_velocity
+        velocity = mid_plane.get_array("vx").reshape((nx,2,nx))[:,0] / thermal_expansion_velocity
         
 
         max_index = np.argmax(velocity)
-        max_value = velocity[max_index]
-        max_location = mid_plane.points[max_index]
+        max_value = velocity.flatten()[max_index]
+        max_location = mid_plane.points.reshape(nx,2,nx,3)[:,0].reshape(nx*nx,3)[max_index]
         value_error = self.u_max / max_value - 1
         x_error = np.abs(max_location[0] - self.x) / delta_x
         z_error = np.abs(max_location[2] - self.z) / delta_x
@@ -159,17 +160,17 @@ references = [
     Reference("Ra1e3", 3.54356, 0.0166, 0.3169, 1.087, 1.07),
       Reference("Ra1e4", 16.71986, 0.0196, 0.3250, 2.2505, 2.0542),
       Reference("Ra1e5", 43.0610, -0.1865, 0.3848, 4.6127, 4.3370),
-    #   Reference("Ra1e6", 123.4777, -0.3133, 0.4366, 8.8771, 8.6407),
+      Reference("Ra1e6", 123.4777, -0.3133, 0.4366, 8.8771, 8.6407),
     #   Reference("Ra1e7", 383.8358, -0.3777, 0.4662, 16.5477, 16.3427)
 ]
 #%%
-for i in range(2):
+for i in range(1):
     for reference in references:
         reference.compare(-i)
 # %%
 fig, axes = plt.subplots(2, 2, figsize=(FIGSIZE, FIGSIZE * 1.1), sharex="col", sharey="row", layout="constrained")
 for reference, ax in zip(references, axes.flatten()):
-    cbar = reference.plot_comparison(-3, ax)
+    cbar = reference.plot_comparison(-1, ax)
 fig.colorbar(cbar, label=r"$\theta$", ax=axes[0, :], orientation="horizontal", location="top")
 for ax in axes.T[0]:
     ax.set_ylabel("$z/L$")
