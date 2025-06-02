@@ -43,6 +43,7 @@
 #include "LBMKernel.h"
 #include "UbLogger.h"
 #include "UbScheduler.h"
+#include "CalculateForcesSimulationObserver.h"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -99,6 +100,14 @@ void Simulation::notifyObservers(real step)
     for (SPtr<SimulationObserver> cp : simulationObserver) {
         cp->update(step);
     }
+}
+
+void Simulation::notifyObserversQAD(real step)
+{
+    // for (SPtr<SimulationObserver> cp : simulationObserver) {
+    //     if(std::static_pointer_cast<CalculateForcesSimulationObserver> == SPtr<CalculateForcesSimulationObserver>) cp->update(step);
+    // }
+    simulationObserver[1]->update(step);
 }
 //////////////////////////////////////////////////////////////////////////
 void Simulation::initLocalConnectors()
@@ -295,6 +304,8 @@ void Simulation::run()
                 // exchange data between blocks
                 exchangeBlockData(straightStartLevel, maxInitLevel);
                 //////////////////////////////////////////////////////////////////////////
+
+                notifyObserversQAD(calcStep);
 #ifdef TIMING
                 time[1] = timer.getCurrentRuntimeInSeconds();
                 UBLOG(logINFO, "exchangeBlockData time = " << time[1]);

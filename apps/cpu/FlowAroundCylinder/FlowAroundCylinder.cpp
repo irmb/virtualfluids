@@ -133,6 +133,9 @@ void run(string configname)
       BoundaryConditionsBlockVisitor bcVisitor;
 
       SPtr<LBMKernel> kernel(new K17CompressibleNavierStokes());
+      real quadricLimiter[3] = { 1e9, 1e9, 1e9 };
+      //real quadricLimiter[3] = { 0.01, 0.01, 0.01 };
+      static_pointer_cast<K17CompressibleNavierStokes>(kernel)->setQuadricLimiter(quadricLimiter);
 
       SPtr<BCSet> bcProc(new BCSet());
       kernel->setBCSet(bcProc);

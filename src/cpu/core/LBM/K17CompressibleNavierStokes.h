@@ -38,6 +38,7 @@
 #include <memory>
 
 #include <basics/DataTypes.h>
+#include <lbm/collision/CollisionParameter.h>
 
 #include "LBMKernel.h"
 
@@ -58,8 +59,10 @@ public:
     {
         return .0;
     }
-
+    void setQuadricLimiter(real quadricLimiter[3]);
 private:
+    vf::lbm::CollisionParameter parameter;
+    real quadricLimiter[3];
     void initDataSet();
 };
 

@@ -205,7 +205,7 @@ UbTupleDouble3 CalculateForcesSimulationObserver::getForces(int x1, int x2, int 
         double &forceX3 = val<3>(force);
         double f, fnbr;
 
-        dynamicPointerCast<EsoTwist3D>(distributions)->swap();
+        //dynamicPointerCast<EsoTwist3D>(distributions)->swap();
 
         for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
             if (bc->hasNoSlipBoundaryFlag(fdir)) {
@@ -221,7 +221,7 @@ UbTupleDouble3 CalculateForcesSimulationObserver::getForces(int x1, int x2, int 
                 forceX3 += (f + fnbr) * d3q27_system::DX3[invDir];
             }
         }
-        dynamicPointerCast<EsoTwist3D>(distributions)->swap();
+        //dynamicPointerCast<EsoTwist3D>(distributions)->swap();
     }
 
     return force;

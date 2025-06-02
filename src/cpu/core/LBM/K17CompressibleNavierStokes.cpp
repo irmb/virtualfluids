@@ -33,7 +33,6 @@
 //=======================================================================================
 #include "K17CompressibleNavierStokes.h"
 
-#include <lbm/collision/CollisionParameter.h>
 #include <lbm/collision/K17CompressibleNavierStokes.h>
 #include <lbm/collision/TurbulentViscosity.h>
 
@@ -70,6 +69,7 @@ SPtr<LBMKernel> K17CompressibleNavierStokes::clone()
     kernel->setIndex(ix1, ix2, ix3);
     kernel->setDeltaT(deltaT);
     kernel->setBlock(block.lock());
+    std::dynamic_pointer_cast<K17CompressibleNavierStokes>(kernel)->setQuadricLimiter(parameter.quadricLimiter);
 
     return kernel;
 }
@@ -125,11 +125,10 @@ void K17CompressibleNavierStokes::calculate(int step)
                     continue;
                 }
 
-                vf::lbm::CollisionParameter parameter;
                 esoSplit->getPreCollisionDistribution(parameter.distribution, x1, x2, x3);
 
                 real forces[3] = { c0o1, c0o1, c0o1 };
-                if (withForcing) // TODO: add level factor?
+                if (withForcing)
                 {
                     muX1 = static_cast<real>(x1 - 1 + ix1 * maxX1);
                     muX2 = static_cast<real>(x2 - 1 + ix2 * maxX2);
@@ -149,15 +148,27 @@ void K17CompressibleNavierStokes::calculate(int step)
 
                 parameter.omega = omega;
 
-                real quadricLimiter[3] = { 0.01, 0.01, 0.01 }; // TODO: Where do we configure the quadricLimiter?
-                parameter.quadricLimiter = quadricLimiter;
-
                 vf::lbm::MacroscopicValues mv;  // not used
                 vf::lbm::TurbulentViscosity tv; // not used
                 vf::lbm::runK17CompressibleNavierStokes<vf::lbm::TurbulenceModel::None>(parameter, mv, tv);
                 esoSplit->setPostCollisionDistribution(parameter.distribution, x1, x2, x3);
             }
         }
+    }
+}
+
+void K17CompressibleNavierStokes::setQuadricLimiter(real quadricLimiter[3])
+{
+    if(quadricLimiter != NULL)
+    {
+        parameter.quadricLimiter = quadricLimiter;
+    }
+    else
+    {
+        this->quadricLimiter[0] = 0.01;
+        this->quadricLimiter[1] = 0.01;
+        this->quadricLimiter[2] = 0.01; 
+        parameter.quadricLimiter = this->quadricLimiter;
     }
 }
 
