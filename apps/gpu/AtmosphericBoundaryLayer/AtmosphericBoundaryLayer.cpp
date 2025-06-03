@@ -89,7 +89,6 @@ void run(const vf::basics::ConfigurationFile& config)
 
     const real roughnessLength = config.getValue("z0", c1o10);
     const real frictionVelocity = config.getValue("u_star", c4o10);
-    const real vonKarmanConstant = config.getValue("vonKarmanConstant", c4o10);
 
     const uint nodesPerBoundaryLyerHeight = config.getValue<uint>("NodesPerBoundaryLayerHeight", 64);
 
@@ -125,7 +124,7 @@ void run(const vf::basics::ConfigurationFile& config)
     // compute parameters in lattice units
     //////////////////////////////////////////////////////////////////////////
     const auto velocityProfile = [&](real coordZ) {
-        return frictionVelocity / vonKarmanConstant * log(coordZ / roughnessLength + c1o1);
+        return frictionVelocity / cVonKarman * std::log(coordZ / roughnessLength + c1o1);
     };
     const real velocity = c1o2 * velocityProfile(boundaryLayerHeight);
 
@@ -252,7 +251,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setDevices(devices);
     para->setMaxDev(numberOfProcesses);
     if (usePrecursorInflow) {
-        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) {
+        para->setInitialCondition([&](real, real, real coordZ, real& rho, real& vx, real& vy, real& vz) {
             rho = c0o1;
             vx = velocityProfile(coordZ) * deltaT / deltaX;
             vy = c0o1;
@@ -264,17 +263,17 @@ void run(const vf::basics::ConfigurationFile& config)
             const real relativeY = coordY / lengthY;
             const real relativeZ = coordZ / lengthZ;
 
-            const real horizontalPerturbation = sin(cPi * c16o1 * relativeX);
-            const real verticalPerturbation = sin(cPi * c8o1 * relativeZ) / (pow(relativeZ, c2o1) + c1o1);
+            const real horizontalPerturbation = std::sin(cPi * c16o1 * relativeX);
+            const real verticalPerturbation = std::sin(cPi * c8o1 * relativeZ) / (std::pow(relativeZ, c2o1) + c1o1);
             const real perturbation = c2o1 * horizontalPerturbation * verticalPerturbation;
 
             rho = c0o1;
-            vx = (velocityProfile(coordZ) + perturbation) * (c1o1 - c1o10 * abs(relativeY - c1o2)) * deltaT / deltaX;
+            vx = (velocityProfile(coordZ) + perturbation) * (c1o1 - c1o10 * std::abs(relativeY - c1o2)) * deltaT / deltaX;
             vy = perturbation * deltaT / deltaX;
             vz = c8o1 * frictionVelocity / vonKarmanConstant *
-                 (sin(cPi * c8o1 * coordY / boundaryLayerHeight) * sin(cPi * c8o1 * relativeZ) +
-                  sin(cPi * c8o1 * relativeX)) /
-                 (pow(c1o2 * lengthZ - coordZ, c2o1) + c1o1) * deltaT / deltaX;
+                 (std::sin(cPi * c8o1 * coordY / boundaryLayerHeight) * std::sin(cPi * c8o1 * relativeZ) +
+                  std::sin(cPi * c8o1 * relativeX)) /
+                 (std::pow(c1o2 * lengthZ - coordZ, c2o1) + c1o1) * deltaT / deltaX;
         });
     }
 
