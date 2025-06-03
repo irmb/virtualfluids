@@ -270,7 +270,7 @@ void run(const vf::basics::ConfigurationFile& config)
             rho = c0o1;
             vx = (velocityProfile(coordZ) + perturbation) * (c1o1 - c1o10 * std::abs(relativeY - c1o2)) * deltaT / deltaX;
             vy = perturbation * deltaT / deltaX;
-            vz = c8o1 * frictionVelocity / vonKarmanConstant *
+            vz = c8o1 * frictionVelocity / cVonKarman *
                  (std::sin(cPi * c8o1 * coordY / boundaryLayerHeight) * std::sin(cPi * c8o1 * relativeZ) +
                   std::sin(cPi * c8o1 * relativeX)) /
                  (std::pow(c1o2 * lengthZ - coordZ, c2o1) + c1o1) * deltaT / deltaX;
