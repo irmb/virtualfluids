@@ -48,8 +48,6 @@
 #include "gpu/GridGenerator/grid/GridInterface.h"
 #include "gpu/GridGenerator/grid/NodeValues.h"
 
-using namespace vf::basics::constant;
-
 struct Vertex;
 class Grid;
 class Transformator;
@@ -85,8 +83,8 @@ public:
 
      ~LevelGridBuilder() override;
 
-    virtual void setSlipBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ);
-    virtual void setStressBoundaryCondition(SideType sideType, real nomalX, real normalY, real normalZ,
+    virtual void setSlipBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ);
+    virtual void setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ,
                                                                  uint samplingOffset, real z0, real dx);
     virtual void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
     virtual void setPressureBoundaryCondition(SideType sideType, real rho);
@@ -99,8 +97,8 @@ public:
     void setPeriodicShiftOnZBoundaryInYDirection(real shift);
     virtual void setNoSlipBoundaryCondition(SideType sideType);
     virtual void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection,
-                                                                    int timeStepsBetweenReads, real velocityX = c0o1,
-                                                                    real velocityY = c0o1, real velocityZ = c0o1,
+                                                                    int timeStepsBetweenReads, real velocityX = vf::basics::constant::c0o1,
+                                                                    real velocityY = vf::basics::constant::c0o1, real velocityZ = vf::basics::constant::c0o1,
                                                                     std::vector<uint> fileLevelToGridLevelMap = {});
     void setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz);
     void setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx);
