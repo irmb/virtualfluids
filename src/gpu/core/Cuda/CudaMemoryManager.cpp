@@ -45,6 +45,7 @@
 #include "Parameter/Parameter.h"
 #include "CudaStreamManager.h"
 #include "PreCollisionInteractor/Actuator/ActuatorFarm.h"
+#include "PreCollisionInteractor/CoriolisForce.h"
 #include "Samplers/Probe.h"
 #include "Samplers/PlanarAverageProbe.h"
 #include "Samplers/PrecursorWriter.h"
@@ -2359,6 +2360,21 @@ void CudaMemoryManager::cudaFreeSphereIndices(ActuatorFarm* actuatorFarm)
 {
     checkCudaErrors( cudaFreeHost(actuatorFarm->boundingSphereIndicesH) );
     checkCudaErrors( cudaFree(actuatorFarm->boundingSphereIndicesD) );
+}
+
+void CudaMemoryManager::cudaAllocCoriolisForceData(CoriolisForce* coriolisForce, int level)
+{
+    auto& levelData = coriolisForce->getLevelData(level);
+    const size_t size = sizeof(real)*parameter->getParD(level)->numberOfNodes;
+    checkCudaErrors( cudaMallocHost((void**) &(levelData.forceAccumulatorX), size ));
+    checkCudaErrors( cudaMallocHost((void**) &(levelData.forceAccumulatorY), size));
+    setMemsizeGPU(2.0*double(size), false);
+}
+
+void CudaMemoryManager::cudaFreeCoriolisForceData(CoriolisForce* coriolisForce, int level)
+{
+    cudaFree(coriolisForce->getLevelData(level).forceAccumulatorX);
+    cudaFree(coriolisForce->getLevelData(level).forceAccumulatorY);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
