@@ -145,7 +145,8 @@ public:
         NoSlipBounceBack,
     };
 
-    //! \brief Can set flux (if flux=0 equivalent to adiabatic boundary), best used in combination with Slip or velocity
+    //! \brief Can set flux, best used in combination with Slip or velocity. 
+    // Works well at high velocities.
     enum class AdvectionDiffusionFluxBC {
         FluxTurbulentViscosityCompressible,
         FluxCompressible,
@@ -166,7 +167,7 @@ public:
         NotSpecified
     };
 
-    //! \brief Sets gradient at boundary via anti bounce back rule
+    //! \brief Sets gradient at boundary via anti bounce back rule. Only works well at low velocities.
     enum class AdvectionDiffusionNeumannBC {
         //! - Interpolated Neumann boundary condition, uses subgrid distances, must be used with Slip
         NeumannInterpolatedSlip,
