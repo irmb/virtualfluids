@@ -2522,15 +2522,15 @@ void CudaMemoryManager::cudaAllocCoriolisForceData(CoriolisForce* coriolisForce,
 {
     auto& levelData = coriolisForce->getLevelData(level);
     const size_t size = sizeof(real)*parameter->getParD(level)->numberOfNodes;
-    checkCudaErrors( cudaMallocHost((void**) &(levelData.forceAccumulatorX), size ));
-    checkCudaErrors( cudaMallocHost((void**) &(levelData.forceAccumulatorY), size));
+    checkCudaErrors( cudaMalloc((void**) &(levelData.forceAccumulatorX), size) );
+    checkCudaErrors( cudaMalloc((void**) &(levelData.forceAccumulatorY), size) );
     setMemsizeGPU(2.0*double(size), false);
 }
 
 void CudaMemoryManager::cudaFreeCoriolisForceData(CoriolisForce* coriolisForce, int level)
 {
-    cudaFree(coriolisForce->getLevelData(level).forceAccumulatorX);
-    cudaFree(coriolisForce->getLevelData(level).forceAccumulatorY);
+    checkCudaErrors( cudaFree(coriolisForce->getLevelData(level).forceAccumulatorX) );
+    checkCudaErrors( cudaFree(coriolisForce->getLevelData(level).forceAccumulatorY) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
