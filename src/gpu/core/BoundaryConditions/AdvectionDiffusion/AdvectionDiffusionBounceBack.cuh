@@ -29,19 +29,47 @@
 //! \addtogroup gpu_BoundaryConditions BoundaryConditions
 //! \ingroup gpu_core core
 //! \{
-//! \author Martin Schoenherr
+//! \author Martin Schoenherr, Henry Korb
 //=======================================================================================
-#ifndef AdvectionDiffusion_Device_H
-#define AdvectionDiffusion_Device_H
+#include <basics/constants/NumericConstants.h>
 
-#include "Calculation/Calculation.h"
+#include <lbm/constants/D3Q27.h>
 
-//////////////////////////////////////////////////////////////////////////
+#include "gpu/core/Calculation/Calculation.h"
+#include "gpu/core/Utilities/KernelUtilities.h"
+#include "gpu/cuda_helper/CudaIndexCalculation.h"
+
 __global__ void AdvectionDiffusionBounceBack_Device(real* distributions,
                                                     AdvectionDiffusionNoSlipBoundaryConditions bcParameters,
                                                     const uint* neighborX, const uint* neighborY, const uint* neighborZ,
-                                                    unsigned long long numberOfLBnodes, bool isEvenTimestep);
+                                                    unsigned long long numberOfLBnodes, bool isEvenTimestep)
+{
+    using namespace vf::basics::constant;
+    using namespace vf::lbm::dir;
+    using namespace vf::gpu;
 
-#endif
+    const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
+    if (nodeIndex >= bcParameters.numberOfBCnodes)
+        return;
+
+    Distributions27 populationReferences = getDistributionReferences27(distributions, numberOfLBnodes, isEvenTimestep);
+    const uint indexOfBCnode = bcParameters.BCNodeIndices[nodeIndex];
+    const ListIndices listIndices(indexOfBCnode, neighborX, neighborY, neighborZ);
+
+    SubgridDistances27 subgridDistances;
+    getPointersToSubgridDistances(subgridDistances, bcParameters.q27[0], bcParameters.numberOfBCnodes);
+
+    real populations[27];
+    getPostCollisionDistribution(populations, populationReferences, listIndices);
+
+    getPointersToDistributions(populationReferences, distributions, numberOfLBnodes, !isEvenTimestep);
+
+    loopDirections([&](auto direction) {
+        const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
+        if (subgridDistance < c0o1 || subgridDistance > c1o1)
+            return;
+        writeInInverseDirection<direction>(populations[direction], listIndices, populationReferences);
+    });
+}
 
 //! \}
