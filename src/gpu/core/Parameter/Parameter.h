@@ -139,8 +139,8 @@ struct LBMSimulationParameter {
     //! \brief stores the data for a directional pressure boundary condition
     std::vector<QforDirectionalBoundaryCondition> pressureBCDirectional;
     //////////////////////////////////////////////////////////////////////////
-    //! \brief stores the advection diffusion noSlip boundary condition data
-    AdvectionDiffusionNoSlipBoundaryConditions AdvectionDiffusionNoSlipBC;
+    //! \brief stores the advection diffusion noFlux boundary condition data
+    AdvectionDiffusionNoFluxBoundaryConditions AdvectionDiffusionNoFluxBC;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the advection diffusion Dirichlet boundary condition data
     AdvectionDiffusionDirichletBoundaryConditions AdvectionDiffusionDirichletBC;

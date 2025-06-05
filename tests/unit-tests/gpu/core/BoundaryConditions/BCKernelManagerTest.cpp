@@ -150,9 +150,9 @@ TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, precursorBoundaryCond
     EXPECT_THROW(BoundaryConditionKernelManager(para, &bcFactory), std::runtime_error);
 }
 
-TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADNoSlipBoundaryConditionPostNotSpecified_withoutBoundaryNodes_doesNotThrow)
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADNoFluxBoundaryConditionPostNotSpecified_withoutBoundaryNodes_doesNotThrow)
 {
-    para->getParD(0)->AdvectionDiffusionNoSlipBC.numberOfBCnodes = 0;
+    para->getParD(0)->AdvectionDiffusionNoFluxBC.numberOfBCnodes = 0;
     EXPECT_NO_THROW(BoundaryConditionKernelManager(para, &bcFactory));
 }
 
@@ -175,9 +175,9 @@ TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADNeumannBoundaryCond
     EXPECT_NO_THROW(BoundaryConditionKernelManager(para, &bcFactory));
 }
 
-TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADNoSlipBoundaryConditionPostNotSpecified_withBoundaryNodes_doesNotThrow)
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADNoFluxBoundaryConditionPostNotSpecified_withBoundaryNodes_doesNotThrow)
 {
-    para->getParD(0)->AdvectionDiffusionNoSlipBC.numberOfBCnodes = 1;
+    para->getParD(0)->AdvectionDiffusionNoFluxBC.numberOfBCnodes = 1;
     EXPECT_NO_THROW(BoundaryConditionKernelManager(para, &bcFactory));
 }
 

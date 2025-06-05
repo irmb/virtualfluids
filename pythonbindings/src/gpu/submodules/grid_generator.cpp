@@ -97,7 +97,7 @@ namespace grid_generator
         .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("z0"), py::arg("dx"))
         .def("set_AD_dirichlet_boundary_condition", &LevelGridBuilder::setADDirichletBoundaryCondition, py::arg("side_type"), py::arg("value"), py::arg("vx"), py::arg("vy"), py::arg("vz"))
         .def("set_AD_neumann_boundary_condition", &LevelGridBuilder::setADNeumannBoundaryCondition, py::arg("side_type"), py::arg("gradient"), py::arg("vx"), py::arg("vy"), py::arg("vz"), py::arg("dx"))
-        .def("set_AD_no_slip_boundary_condition", &LevelGridBuilder::setADNoSlipBoundaryCondition, py::arg("side_type"))
+        .def("set_AD_no_flux_boundary_condition", &LevelGridBuilder::setADNoFluxBoundaryCondition, py::arg("side_type"))
         .def("set_AD_flux_boundary_condition", &LevelGridBuilder::setADFluxBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("gradient"), py::arg("dx"))
         .def("set_periodic_shift_on_x_boundary_in_y_direction", &LevelGridBuilder::setPeriodicShiftOnXBoundaryInYDirection, py::arg("shift"))
         .def("set_periodic_shift_on_x_boundary_in_z_direction", &LevelGridBuilder::setPeriodicShiftOnXBoundaryInZDirection, py::arg("shift"))

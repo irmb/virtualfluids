@@ -43,8 +43,8 @@
 struct LBMSimulationParameter;
 class Parameter;
 
-void AdvectionDiffusionBounceBack(LBMSimulationParameter* parameterDevice,
-                                  AdvectionDiffusionNoSlipBoundaryConditions bcParameters);
+void AdvectionDiffusionNoFluxBounceBack(LBMSimulationParameter* parameterDevice,
+                                  AdvectionDiffusionNoFluxBoundaryConditions bcParameters);
 void AdvectionDiffusionFluxTurbulentViscosityCompressible(LBMSimulationParameter* parameterDevice,
                                                           AdvectionDiffusionFluxBoundaryConditions bcParameters);
 void AdvectionDiffusionFluxCompressible(LBMSimulationParameter* parameterDevice,

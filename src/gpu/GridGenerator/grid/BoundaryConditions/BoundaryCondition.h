@@ -365,6 +365,25 @@ private:
     SPtr<TransientBCInputFileReader> reader;
 };
 
+class ADNoFluxBoundaryCondition : public grid_generator::BoundaryCondition
+{
+public:
+    static SPtr<ADNoFluxBoundaryCondition> make()
+    {
+        return SPtr<ADNoFluxBoundaryCondition>(new ADNoFluxBoundaryCondition());
+    }
+
+protected:
+    ADNoFluxBoundaryCondition() = default;
+
+public:
+    char getType() const override
+    {
+        return vf::gpu::BC_AD;
+    }
+};
+
+
 class ADFluxBoundaryCondition : public grid_generator::BoundaryCondition
 {
 public:
@@ -393,25 +412,6 @@ public:
     real getNormalY(uint index) {return this->normalYList[index];}
     real getNormalZ(uint index) {return this->normalZList[index];}
     real getGradient(uint index) {return this->gradientList[index];}
-};
-
-
-class ADNoSlipBoundaryCondition : public grid_generator::BoundaryCondition
-{
-public:
-    static SPtr<ADNoSlipBoundaryCondition> make()
-    {
-        return SPtr<ADNoSlipBoundaryCondition>(new ADNoSlipBoundaryCondition());
-    }
-
-protected:
-    ADNoSlipBoundaryCondition() = default;
-
-public:
-    char getType() const override
-    {
-        return vf::gpu::BC_AD;
-    }
 };
 
 

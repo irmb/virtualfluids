@@ -81,9 +81,9 @@ void BoundaryConditionFactory::setPrecursorBoundaryCondition(PrecursorBC boundar
 {
     this->precursorBoundaryCondition = boundaryConditionType;
 }
-void BoundaryConditionFactory::setAdvectionDiffusionNoSlipBoundaryCondition(AdvectionDiffusionNoSlipBC boundaryConditionType)
+void BoundaryConditionFactory::setAdvectionDiffusionNoFluxBoundaryCondition(AdvectionDiffusionNoFluxBC boundaryConditionType)
 {
-    this->advectionDiffusionNoSlipBoundaryCondition = boundaryConditionType;
+    this->advectionDiffusionNoFluxBoundaryCondition = boundaryConditionType;
 }
 void BoundaryConditionFactory::setAdvectionDiffusionFluxBoundaryCondition(AdvectionDiffusionFluxBC boundaryConditionType)
 {
@@ -231,12 +231,12 @@ BoundaryConditionKernel BoundaryConditionFactory::getGeometryBoundaryConditionPo
     return nullptr;
 }
 
-AdvectionDiffusionNoSlipBoundaryConditionKernel BoundaryConditionFactory::getAdvectionDiffusionNoSlipBoundaryConditionPost() const
+AdvectionDiffusionNoFluxBoundaryConditionKernel BoundaryConditionFactory::getAdvectionDiffusionNoFluxBoundaryConditionPost() const
 {
-    if(this->advectionDiffusionNoSlipBoundaryCondition == AdvectionDiffusionNoSlipBC::NoSlipDelayedBounceBack)
-        return [](LBMSimulationParameter*, AdvectionDiffusionNoSlipBoundaryConditions) {};
-    if(this->advectionDiffusionNoSlipBoundaryCondition == AdvectionDiffusionNoSlipBC::NoSlipBounceBack)
-        return AdvectionDiffusionBounceBack;
+    if(this->advectionDiffusionNoFluxBoundaryCondition == AdvectionDiffusionNoFluxBC::NoFluxDelayedBounceBack)
+        return [](LBMSimulationParameter*, AdvectionDiffusionNoFluxBoundaryConditions) {};
+    if(this->advectionDiffusionNoFluxBoundaryCondition == AdvectionDiffusionNoFluxBC::NoFluxBounceBack)
+        return AdvectionDiffusionNoFluxBounceBack;
     return nullptr;
 }
 

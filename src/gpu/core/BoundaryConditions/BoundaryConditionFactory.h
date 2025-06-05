@@ -53,7 +53,7 @@ using BoundaryConditionWithParameterKernel = std::function<void(Parameter*, Qfor
 using PrecursorBoundaryConditionKernel =
     std::function<void(LBMSimulationParameter*, QforPrecursorBoundaryConditions*, real timeRatio, real velocityRatio)>;
 
-using AdvectionDiffusionNoSlipBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionNoSlipBoundaryConditions)>;
+using AdvectionDiffusionNoFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionNoFluxBoundaryConditions)>;
 using AdvectionDiffusionFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionFluxBoundaryConditions)>;
 using AdvectionDiffusionDirichletBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionDirichletBoundaryConditions)>;
 using AdvectionDiffusionNeumannBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionNeumannBoundaryConditions)>;
@@ -138,11 +138,11 @@ public:
     };
 
     //! \brief Equivalent to an adiabatic boundary condition, best used in combination with NoSlip
-    enum class AdvectionDiffusionNoSlipBC { 
-        //! NoSlipBounceBackDelayed = implicit bounce back
-        NoSlipDelayedBounceBack, 
-        //! NoSlipBounceBack = simple bounce back
-        NoSlipBounceBack,
+    enum class AdvectionDiffusionNoFluxBC { 
+        //! NoFluxBounceBackDelayed = implicit bounce back
+        NoFluxDelayedBounceBack, 
+        //! NoFluxBounceBack = simple bounce back
+        NoFluxBounceBack,
     };
 
     //! \brief Can set flux, best used in combination with Slip or velocity. 
@@ -196,7 +196,7 @@ public:
     //!
     //! - slip: only use a slip boundary condition which sets the normals
     void setGeometryBoundaryCondition(std::variant<VelocityBC, NoSlipBC, SlipBC> boundaryConditionType);
-    void setAdvectionDiffusionNoSlipBoundaryCondition(AdvectionDiffusionNoSlipBC boundaryConditionType);
+    void setAdvectionDiffusionNoFluxBoundaryCondition(AdvectionDiffusionNoFluxBC boundaryConditionType);
     void setAdvectionDiffusionFluxBoundaryCondition(AdvectionDiffusionFluxBC boundaryConditionType);
     void setAdvectionDiffusionDirichletBoundaryCondition(AdvectionDiffusionDirichletBC boundaryConditionType);
     void setAdvectionDiffusionNeumannBoundaryCondition(AdvectionDiffusionNeumannBC boundaryConditionType);
@@ -210,7 +210,7 @@ public:
     [[nodiscard]] virtual std::variant<BoundaryConditionKernel, DirectionalBoundaryConditionKernel> getPressureBoundaryConditionPre() const;
     [[nodiscard]] BoundaryConditionWithParameterKernel getStressBoundaryConditionPost() const;
     [[nodiscard]] PrecursorBoundaryConditionKernel getPrecursorBoundaryConditionPost() const;
-    [[nodiscard]] AdvectionDiffusionNoSlipBoundaryConditionKernel getAdvectionDiffusionNoSlipBoundaryConditionPost() const;
+    [[nodiscard]] AdvectionDiffusionNoFluxBoundaryConditionKernel getAdvectionDiffusionNoFluxBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionFluxBoundaryConditionKernel getAdvectionDiffusionFluxBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionDirichletBoundaryConditionKernel getAdvectionDiffusionDirichletBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionNeumannBoundaryConditionKernel getAdvectionDiffusionNeumannBoundaryConditionPost() const;
@@ -224,7 +224,7 @@ private:
     std::variant<VelocityBC, NoSlipBC, SlipBC> geometryBoundaryCondition = NoSlipBC::NoSlipDelayBounceBack;
     StressBC stressBoundaryCondition = StressBC::NotSpecified;
     PrecursorBC precursorBoundaryCondition = PrecursorBC::NotSpecified;
-    AdvectionDiffusionNoSlipBC advectionDiffusionNoSlipBoundaryCondition = AdvectionDiffusionNoSlipBC::NoSlipDelayedBounceBack;
+    AdvectionDiffusionNoFluxBC advectionDiffusionNoFluxBoundaryCondition = AdvectionDiffusionNoFluxBC::NoFluxDelayedBounceBack;
     AdvectionDiffusionFluxBC advectionDiffusionFluxBoundaryCondition = AdvectionDiffusionFluxBC::NotSpecified;
     AdvectionDiffusionDirichletBC advectionDiffusionDirichletBoundaryCondition = AdvectionDiffusionDirichletBC::NotSpecified;
     AdvectionDiffusionNeumannBC advectionDiffusionNeumannBoundaryCondition = AdvectionDiffusionNeumannBC::NotSpecified;

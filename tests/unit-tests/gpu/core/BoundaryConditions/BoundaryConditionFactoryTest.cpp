@@ -50,7 +50,7 @@
 using bcFunction = void (*)(LBMSimulationParameter *, QforBoundaryConditions *);
 using bcFunctionDirectional = void (*)(LBMSimulationParameter *, QforDirectionalBoundaryCondition *);
 using bcFunctionParameter = void (*)(Parameter *, QforBoundaryConditions *, const int level);
-using adBCNoSlipFunction = void (*)(LBMSimulationParameter *, AdvectionDiffusionNoSlipBoundaryConditions);
+using adBCNoSlipFunction = void (*)(LBMSimulationParameter *, AdvectionDiffusionNoFluxBoundaryConditions);
 
 // tests for default boundary conditions
 TEST(BoundaryConditionFactoryTest, defaultVelocityBC)
@@ -99,11 +99,11 @@ TEST(BoundaryConditionFactoryTest, defaultStressBC)
     EXPECT_THROW(bc(nullptr, nullptr, 0), std::bad_function_call);
 }
 
-TEST(BoundaryConditionFactoryTest, defaultADNoSlipBC)
+TEST(BoundaryConditionFactoryTest, defaultADNoFluxBC)
 {
     auto bcFactory = BoundaryConditionFactory();
-    auto bc = bcFactory.getAdvectionDiffusionNoSlipBoundaryConditionPost();
-    EXPECT_NO_THROW(bc(nullptr, AdvectionDiffusionNoSlipBoundaryConditions{})); // empty lambda function should not throw
+    auto bc = bcFactory.getAdvectionDiffusionNoFluxBoundaryConditionPost();
+    EXPECT_NO_THROW(bc(nullptr, AdvectionDiffusionNoFluxBoundaryConditions{})); // empty lambda function should not throw
 }
 
 
@@ -321,25 +321,25 @@ TEST(BoundaryConditionFactoryTest, hasDirectionalPressureBoundaryCondition_noPre
     EXPECT_FALSE(bcFactory.hasDirectionalPressureBoundaryCondition());
 }
 
-adBCNoSlipFunction getADNoSlipBcTarget(BoundaryConditionFactory &bcFactory)
+adBCNoSlipFunction getADNoFluxBcTarget(BoundaryConditionFactory &bcFactory)
 {
-    auto bc = bcFactory.getAdvectionDiffusionNoSlipBoundaryConditionPost();
-    void (*bcTarget)(LBMSimulationParameter *, AdvectionDiffusionNoSlipBoundaryConditions) = (*bc.target<adBCNoSlipFunction>());
+    auto bc = bcFactory.getAdvectionDiffusionNoFluxBoundaryConditionPost();
+    void (*bcTarget)(LBMSimulationParameter *, AdvectionDiffusionNoFluxBoundaryConditions) = (*bc.target<adBCNoSlipFunction>());
     return bcTarget;
 }
 
 
-TEST(BoundaryConditionFactoryTest, ADNoSlipBoundaryConditions)
+TEST(BoundaryConditionFactoryTest, ADNoFluxBoundaryConditions)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setAdvectionDiffusionNoSlipBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoSlipBC::NoSlipDelayedBounceBack);
-    auto bc = bcFactory.getAdvectionDiffusionNoSlipBoundaryConditionPost();
-    EXPECT_NO_THROW(bc(nullptr, AdvectionDiffusionNoSlipBoundaryConditions{})); // empty lambda function should not throw
+    bcFactory.setAdvectionDiffusionNoFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoSlipDelayedBounceBack);
+    auto bc = bcFactory.getAdvectionDiffusionNoFluxBoundaryConditionPost();
+    EXPECT_NO_THROW(bc(nullptr, AdvectionDiffusionNoFluxBoundaryConditions{})); // empty lambda function should not throw
     
-    bcFactory.setAdvectionDiffusionNoSlipBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoSlipBC::NoSlipBounceBack);
-    auto bcTarget = getADNoSlipBcTarget(bcFactory);
-    EXPECT_TRUE(bcTarget == AdvectionDiffusionBounceBack)
+    bcFactory.setAdvectionDiffusionNoFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoSlipBounceBack);
+    auto bcTarget = getADNoFluxBcTarget(bcFactory);
+    EXPECT_TRUE(bcTarget == AdvectionDiffusionNoFluxBounceBack)
         << "The returned boundary condition is not the expected function AdvectionDiffusionBounceBack.";
 }
 

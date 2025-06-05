@@ -39,21 +39,21 @@
 #include "Calculation/Calculation.h"
 #include <cuda_helper/CudaGrid.h>
 
-#include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionBounceBack.cuh"
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionDirichlet.cuh"
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionFlux.cuh"
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionNeumann.cuh"
+#include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionNoFlux.cuh"
 #include "Parameter/Parameter.h"
 
-void AdvectionDiffusionBounceBack(LBMSimulationParameter* parameterDevice,
-                                  AdvectionDiffusionNoSlipBoundaryConditions bcParameters)
+void AdvectionDiffusionNoFluxBounceBack(LBMSimulationParameter* parameterDevice,
+                                        AdvectionDiffusionNoFluxBoundaryConditions bcParameters)
 {
     const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads, bcParameters.numberOfBCnodes);
 
-    AdvectionDiffusionBounceBack_Device<<<grid.grid, grid.threads>>>(
+    AdvectionDiffusionNoFluxBounceBack_Device<<<grid.grid, grid.threads>>>(
         parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->neighborX, parameterDevice->neighborY,
         parameterDevice->neighborZ, parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep);
-    getLastCudaError("AdvectionDiffusionBounceBack_Device execution failed");
+    getLastCudaError("AdvectionDiffusionNoFlux_Device execution failed");
 }
 
 void AdvectionDiffusionFluxTurbulentViscosityCompressible(LBMSimulationParameter* parameterDevice,

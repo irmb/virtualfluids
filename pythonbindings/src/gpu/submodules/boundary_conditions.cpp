@@ -56,7 +56,7 @@ namespace boundary_conditions
         .def("set_stress_boundary_condition", &BoundaryConditionFactory::setStressBoundaryCondition, py::arg("boundary_condition_type"))
         .def("set_precursor_boundary_condition", &BoundaryConditionFactory::setPrecursorBoundaryCondition, py::arg("boundary_condition_type"))
         .def("set_geometry_boundary_condition", &BoundaryConditionFactory::setGeometryBoundaryCondition, py::arg("boundary_condition_type"));
-        .def("set_advection_diffusion_no_slip_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionNoSlipBoundaryCondition, py::arg("boundary_condition_type"));
+        .def("set_advection_diffusion_no_flux_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionNoFluxBoundaryCondition, py::arg("boundary_condition_type"));
         .def("set_advection_diffusion_flux_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionFluxBoundaryCondition, py::arg("boundary_condition_type"));
         .def("set_advection_diffusion_dirichlet_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionDirichletBoundaryCondition, py::arg("boundary_condition_type"));
         .def("set_advection_diffusion_neumann_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionNeumannBoundaryCondition, py::arg("boundary_condition_type"));
@@ -112,9 +112,9 @@ namespace boundary_conditions
         .value("NeumannInterpolatedSlip", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannInterpolatedSlip)
         .value("NotSpecified", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NotSpecified);
 
-        py::enum_<BoundaryConditionFactory::AdvectionDiffusionNoSlipBC>(parentModule, "AdvectionDiffusionNoSlipBC")
-        .value("NoSlipBounceBack", BoundaryConditionFactory::AdvectionDiffusionNoSlipBC::NoSlipBounceBack)
-        .value("NoSlipBounceBackDelayed", BoundaryConditionFactory::AdvectionDiffusionNoSlipBC::NoSlipDelayedBounceBack);
+        py::enum_<BoundaryConditionFactory::AdvectionDiffusionNoFluxBC>(parentModule, "AdvectionDiffusionNoFluxBC")
+        .value("NoFluxBounceBack", BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoFluxBounceBack)
+        .value("NoFluxBounceBackDelayed", BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoFluxDelayedBounceBack);
         
         py::enum_<BoundaryConditionFactory::AdvectionDiffusionFluxBC>(parentModule, "AdvectionDiffusionFluxBC")
         .value("FluxBounceBack", BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxBounceBack)

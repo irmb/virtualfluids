@@ -62,10 +62,10 @@ class StressBoundaryCondition;
 class PressureBoundaryCondition;
 class GeometryBoundaryCondition;
 class PrecursorBoundaryCondition;
+class ADNoFluxBoundaryCondition;
+class ADFluxBoundaryCondition;
 class ADDirichletBoundaryCondition;
 class ADNeumannBoundaryCondition;
-class ADFluxBoundaryCondition;
-class ADNoSlipBoundaryCondition;
 enum class SideType;
 
 class TransientBCInputFileReader;
@@ -100,10 +100,10 @@ public:
                                                                     int timeStepsBetweenReads, real velocityX = vf::basics::constant::c0o1,
                                                                     real velocityY = vf::basics::constant::c0o1, real velocityZ = vf::basics::constant::c0o1,
                                                                     std::vector<uint> fileLevelToGridLevelMap = {});
+    void setADNoFluxBoundaryCondition(SideType sideType);
+    void setADFluxBoundaryCondition(SideType sideType,real normalX, real normalY, real normalZ, real gradient, real deltaX);
     void setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz);
     void setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx);
-    void setADFluxBoundaryCondition(SideType sideType,real normalX, real normalY, real normalZ, real gradient, real deltaX);
-    void setADNoSlipBoundaryCondition(SideType sideType);
                                                                     
     void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall);
 
@@ -160,6 +160,14 @@ public:
                                                     real& velocityX, real& velocityY, real& velocityZ, int level) const override;
     virtual void getPrecursorQs(real* qs[27], int level) const override;
 
+    uint getADNoFluxSize(int level) const override;
+    void getADNoFluxValues(int* indices, int level) const override;
+    void getADNoFluxQs(real* qs[27], int level) const override;
+
+    uint getADFluxSize(int level) const override;
+    void getADFluxValues(real* normalX, real* normalY, real* normalZ, real* gradient, int* indices, int level) const override;
+    void getADFluxQs(real* qs[27], int level) const override;
+
     uint getADDirichletSize(int level) const override;
     void getADDirichletValues(real* values, real* vx, real* vy, real* vz, int* indices, int level) const override;
     void getADDirichletQs(real* qs[27], int level) const override;
@@ -167,14 +175,6 @@ public:
     uint getADNeumannSize(int level) const override;
     void getADNeumannValues(real* gradients, real* vx, real* vy, real* vz, int* indices, int level) const override;
     void getADNeumannQs(real* qs[27], int level) const override;
-
-    uint getADFluxSize(int level) const override;
-    void getADFluxValues(real* normalX, real* normalY, real* normalZ, real* gradient, int* indices, int level) const override;
-    void getADFluxQs(real* qs[27], int level) const override;
-
-    uint getADNoSlipSize(int level) const override;
-    void getADNoSlipValues(int* indices, int level) const override;
-    void getADNoSlipQs(real* qs[27], int level) const override;
 
     virtual void getGeometryQs(real *qs[27], int level) const override;
     virtual uint getGeometrySize(int level) const override;
@@ -206,10 +206,10 @@ protected:
 
         std::vector<SPtr<PrecursorBoundaryCondition>> precursorBoundaryConditions;
 
+        std::vector<SPtr<ADNoFluxBoundaryCondition>> adNoFluxBoundaryConditions;
+        std::vector<SPtr<ADFluxBoundaryCondition>> adFluxBoundaryConditions;
         std::vector<SPtr<ADDirichletBoundaryCondition>> adDirichletBoundaryConditions;
         std::vector<SPtr<ADNeumannBoundaryCondition>> adNeumannBoundaryConditions;
-        std::vector<SPtr<ADFluxBoundaryCondition>> adFluxBoundaryConditions;
-        std::vector<SPtr<ADNoSlipBoundaryCondition>> adNoSlipBoundaryConditions;
 
         SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
     };

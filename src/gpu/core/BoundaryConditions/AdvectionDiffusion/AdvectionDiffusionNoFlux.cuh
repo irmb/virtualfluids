@@ -39,8 +39,8 @@
 #include "gpu/core/Utilities/KernelUtilities.h"
 #include "gpu/cuda_helper/CudaIndexCalculation.h"
 
-__global__ void AdvectionDiffusionBounceBack_Device(real* distributions,
-                                                    AdvectionDiffusionNoSlipBoundaryConditions bcParameters,
+__global__ void AdvectionDiffusionNoFluxBounceBack_Device(real* distributions,
+                                                    AdvectionDiffusionNoFluxBoundaryConditions bcParameters,
                                                     const uint* neighborX, const uint* neighborY, const uint* neighborZ,
                                                     unsigned long long numberOfLBnodes, bool isEvenTimestep)
 {

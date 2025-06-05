@@ -131,6 +131,14 @@ public:
 
     virtual void getPrecursorQs(real* qs[27], int level) const  = 0;
 
+    virtual uint getADNoFluxSize(int level) const = 0;
+    virtual void getADNoFluxValues(int* indices, int level) const = 0;
+    virtual void getADNoFluxQs(real* qs[27], int level) const = 0;
+
+    virtual uint getADFluxSize(int level) const = 0;
+    virtual void getADFluxValues(real* normalX, real* normalY, real* normalZ, real* gradient, int* indices, int level) const = 0;
+    virtual void getADFluxQs(real* qs[27], int level) const = 0;
+
     virtual uint getADDirichletSize(int level) const = 0;
     virtual void getADDirichletValues(real* values, real* vx, real* vy, real* vz, int* indices, int level) const = 0;
     virtual void getADDirichletQs(real* qs[27], int level) const = 0;
@@ -138,14 +146,6 @@ public:
     virtual uint getADNeumannSize(int level) const = 0;
     virtual void getADNeumannValues(real* gradients, real* vx, real* vy, real* vz, int* indices, int level) const = 0;
     virtual void getADNeumannQs(real* qs[27], int level) const = 0;
-
-    virtual uint getADFluxSize(int level) const = 0;
-    virtual void getADFluxValues(real* normalX, real* normalY, real* normalZ, real* gradient, int* indices, int level) const = 0;
-    virtual void getADFluxQs(real* qs[27], int level) const = 0;
-
-    virtual uint getADNoSlipSize(int level) const = 0;
-    virtual void getADNoSlipValues(int* indices, int level) const = 0;
-    virtual void getADNoSlipQs(real* qs[27], int level) const = 0;
 
     virtual uint getGeometrySize(int level) const                                 = 0;
     virtual void getGeometryIndices(int *indices, int level) const                = 0;

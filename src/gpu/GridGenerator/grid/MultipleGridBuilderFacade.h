@@ -128,7 +128,7 @@ public:
                                        std::vector<uint> fileLevelToGridLevelMap = {}) const;
     void setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz);
     void setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx);
-    void setADNoSlipBoundaryCondition(SideType sideType);
+    void setADNoFluxBoundaryCondition(SideType sideType);
     void setADFluxBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX);
     void setPeriodicShiftOnXBoundaryInYDirection(real shift);
     void setPeriodicShiftOnXBoundaryInZDirection(real shift);

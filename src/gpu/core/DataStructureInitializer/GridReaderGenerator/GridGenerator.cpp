@@ -526,15 +526,15 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
     if (para->getDiffOn()) {
         for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
         {
-            const int numberOfADNoSlipValues = int(builder->getADNoSlipSize(level));
-            para->getParH(level)->AdvectionDiffusionNoSlipBC.numberOfBCnodes = numberOfADNoSlipValues;
-            para->getParD(level)->AdvectionDiffusionNoSlipBC.numberOfBCnodes = numberOfADNoSlipValues;
-            if(numberOfADNoSlipValues < 1) continue;
-            VF_LOG_INFO("size No Slip AD level {}: {}", level, numberOfADNoSlipValues);
+            const int numberOfADNoFluxValues = int(builder->getADNoFluxSize(level));
+            para->getParH(level)->AdvectionDiffusionNoFluxBC.numberOfBCnodes = numberOfADNoFluxValues;
+            para->getParD(level)->AdvectionDiffusionNoFluxBC.numberOfBCnodes = numberOfADNoFluxValues;
+            if(numberOfADNoFluxValues < 1) continue;
+            VF_LOG_INFO("size No Flux AD level {}: {}", level, numberOfADNoFluxValues);
 
-            cudaMemoryManager->cudaAllocConcentrationNoSlipBC(level);
-            builder->getADNoSlipValues(para->getParH(level)->AdvectionDiffusionNoSlipBC.BCNodeIndices, level);
-            cudaMemoryManager->cudaCopyConcentrationNoSlipBCHostToDevice(level);
+            cudaMemoryManager->cudaAllocConcentrationNoFluxBC(level);
+            builder->getADNoFluxValues(para->getParH(level)->AdvectionDiffusionNoFluxBC.BCNodeIndices, level);
+            cudaMemoryManager->cudaCopyConcentrationNoFluxBCHostToDevice(level);
         }
 
         for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
@@ -975,14 +975,14 @@ void GridGenerator::allocArrays_BoundaryQs()
     {
         for(uint level=0; level<builder->getNumberOfGridLevels(); level++)
         {
-            const uint numberOfBoundaryNodes = builder->getADNoSlipSize(level);
+            const uint numberOfBoundaryNodes = builder->getADNoFluxSize(level);
             if(numberOfBoundaryNodes == 0) continue;
             VF_LOG_INFO("size NoSlipQs, Level {}: {}", level, numberOfBoundaryNodes);
 
-            real* QQ = para->getParH(level)->AdvectionDiffusionNoSlipBC.q27[0];
-            getPointersToBoundaryConditions(para->getParH(level)->AdvectionDiffusionNoSlipBC.q27, QQ, numberOfBoundaryNodes);
-            builder->getADNoSlipQs(para->getParH(level)->AdvectionDiffusionNoSlipBC.q27, level);
-            cudaMemoryManager->cudaCopyConcentrationNoSlipBCHostToDevice(level); 
+            real* QQ = para->getParH(level)->AdvectionDiffusionNoFluxBC.q27[0];
+            getPointersToBoundaryConditions(para->getParH(level)->AdvectionDiffusionNoFluxBC.q27, QQ, numberOfBoundaryNodes);
+            builder->getADNoFluxQs(para->getParH(level)->AdvectionDiffusionNoFluxBC.q27, level);
+            cudaMemoryManager->cudaCopyConcentrationNoFluxBCHostToDevice(level); 
         }
 
         for(uint level=0; level<builder->getNumberOfGridLevels(); level++)

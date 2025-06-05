@@ -1854,6 +1854,45 @@ void CudaMemoryManager::cudaFreeLocalReferenceTemperature(int lev)
     checkCudaErrors(cudaFree(parameter->getParD(lev)->localReferenceTemperature));
 }
 //////////////////////////////////////////////////////////////////////////
+void CudaMemoryManager::cudaAllocConcentrationNoFluxBC(int lev)
+{
+    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNoFluxBC;
+    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNoFluxBC;
+    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
+    const size_t memSizeReal = sizeof(real) * bcParamsH->numberOfBCnodes;
+
+    // Host Memory
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->BCNodeIndices, memSizeInt));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal));
+
+    // Device Memory
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->BCNodeIndices, memSizeInt));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
+    
+    //////////////////////////////////////////////////////////////////////////
+    double tmp = double(parameter->getD3Qxx()*memSizeReal+memSizeInt);
+    setMemsizeGPU(tmp, false);
+}
+void CudaMemoryManager::cudaCopyConcentrationNoFluxBCHostToDevice(int lev)
+{
+    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNoFluxBC;
+    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNoFluxBC;
+    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
+    const size_t memSizeReal = sizeof(int) * bcParamsH->numberOfBCnodes;
+
+    checkCudaErrors(cudaMemcpy(bcParamsD->BCNodeIndices, bcParamsH->BCNodeIndices, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->q27[0], bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal, cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaFreeConcentrationNoFluxBC(int lev)
+{
+    const auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNoFluxBC;
+    const auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNoFluxBC;
+    checkCudaErrors(cudaFreeHost(bcParamsH->BCNodeIndices));
+    checkCudaErrors(cudaFreeHost(bcParamsH->q27[0]));
+    checkCudaErrors(cudaFree(bcParamsD->BCNodeIndices));
+    checkCudaErrors(cudaFree(bcParamsD->q27[0]));
+}
+//////////////////////////////////////////////////////////////////////////
 void CudaMemoryManager::cudaAllocConcentrationFluxBC(int lev)
 {
     auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionFluxBC;
@@ -2034,45 +2073,6 @@ void CudaMemoryManager::cudaFreeConcentrationNeumannBC(int lev)
     checkCudaErrors(cudaFree(bcParamsD->vz));
     checkCudaErrors(cudaFree(bcParamsD->q27[0]));
     checkCudaErrors(cudaFree(bcParamsD->BCNodeIndices));
-}
-//////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocConcentrationNoSlipBC(int lev)
-{
-    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNoSlipBC;
-    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNoSlipBC;
-    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
-    const size_t memSizeReal = sizeof(real) * bcParamsH->numberOfBCnodes;
-
-    // Host Memory
-    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->BCNodeIndices, memSizeInt));
-    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal));
-
-    // Device Memory
-    checkCudaErrors(cudaMalloc((void**)&bcParamsD->BCNodeIndices, memSizeInt));
-    checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
-    
-    //////////////////////////////////////////////////////////////////////////
-    double tmp = double(parameter->getD3Qxx()*memSizeReal+memSizeInt);
-    setMemsizeGPU(tmp, false);
-}
-void CudaMemoryManager::cudaCopyConcentrationNoSlipBCHostToDevice(int lev)
-{
-    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNoSlipBC;
-    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNoSlipBC;
-    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
-    const size_t memSizeReal = sizeof(int) * bcParamsH->numberOfBCnodes;
-
-    checkCudaErrors(cudaMemcpy(bcParamsD->BCNodeIndices, bcParamsH->BCNodeIndices, memSizeInt, cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(bcParamsD->q27[0], bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal, cudaMemcpyHostToDevice));
-}
-void CudaMemoryManager::cudaFreeConcentrationNoSlipBC(int lev)
-{
-    const auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNoSlipBC;
-    const auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNoSlipBC;
-    checkCudaErrors(cudaFreeHost(bcParamsH->BCNodeIndices));
-    checkCudaErrors(cudaFreeHost(bcParamsH->q27[0]));
-    checkCudaErrors(cudaFree(bcParamsD->BCNodeIndices));
-    checkCudaErrors(cudaFree(bcParamsD->q27[0]));
 }
 //////////////////////////////////////////////////////////////////////////
 
