@@ -483,9 +483,9 @@ void Probe::writeGridFile(int level, int t, uint part)
     if (enableComputationInstantaneous)
         appendStatisticToNodeData(Statistic::Instantaneous, startpos, endpos, 0, level, nodedata);
     if (enableComputationMeans)
-        appendStatisticToNodeData(Statistic::Means, startpos, endpos, level, 0, nodedata);
+        appendStatisticToNodeData(Statistic::Means, startpos, endpos, 0, level, nodedata);
     if (enableComputationVariances)
-        appendStatisticToNodeData(Statistic::Variances, startpos, endpos, level, 0, nodedata);
+        appendStatisticToNodeData(Statistic::Variances, startpos, endpos, 0, level, nodedata);
     std::string fullName = getWriter()->writeNodesWithNodeData(fname, nodes, nodedatanames, nodedata);
     this->fileNamesForCollectionFile.push_back(fullName.substr(fullName.find_last_of('/') + 1));
 }
