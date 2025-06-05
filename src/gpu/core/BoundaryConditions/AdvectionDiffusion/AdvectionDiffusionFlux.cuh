@@ -44,11 +44,11 @@
 #include "gpu/core/Utilities/KernelUtilities.h"
 #include "gpu/cuda_helper/CudaIndexCalculation.h"
 
-using SlipBC = BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC;
+using FluxBC = BoundaryConditionFactory::AdvectionDiffusionFluxBC;
 
-template <SlipBC slipBCType>
-__global__ void AdvectionDiffusionSlipVelocity_Device(real* populationsArray,
-                                                      const AdvectionDiffusionSlipVelocityBoundaryConditions bcParameters,
+template <FluxBC fluxBCType>
+__global__ void AdvectionDiffusionFlux_Device(real* populationsArray,
+                                                      const AdvectionDiffusionFluxBoundaryConditions bcParameters,
                                                       const real* velocityX, const real* velocityY, const real* velocityZ,
                                                       const real* turbulentDiffusivity, real diffusivity,
                                                       const real omegaDiffusivity, const uint* neighborX,
@@ -64,7 +64,7 @@ __global__ void AdvectionDiffusionSlipVelocity_Device(real* populationsArray,
     if (nodeIndex >= bcParameters.numberOfBCnodes)
         return;
 
-    const bool withTurbulentViscosity = slipBCType == SlipBC::SlipVelocityTurbulentViscosityCompressible;
+    const bool withTurbulentViscosity = fluxBCType == FluxBC::FluxTurbulentViscosityCompressible;
 
     Distributions27 populationReferences = getDistributionReferences27(populationsArray, numberOfLBnodes, isEvenTimestep);
 
@@ -103,7 +103,7 @@ __global__ void AdvectionDiffusionSlipVelocity_Device(real* populationsArray,
     const real fluxY = (diffusiveFluxY - normalFlux * normalY) + neumannFlux * normalY;
     const real fluxZ = (diffusiveFluxZ - normalFlux * normalZ) + neumannFlux * normalZ;
 
-    if (slipBCType == SlipBC::SlipVelocityBounceBack) {
+    if (fluxBCType == FluxBC::FluxBounceBack) {
         loopDirections([&](auto direction) {
             const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
             if (subgridDistance < c0o1 || subgridDistance > c1o1)

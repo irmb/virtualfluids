@@ -149,7 +149,7 @@ struct LBMSimulationParameter {
     AdvectionDiffusionNeumannBoundaryConditions AdvectionDiffusionNeumannBC;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the advection diffusion Dirichlet boundary condition data
-    AdvectionDiffusionSlipVelocityBoundaryConditions AdvectionDiffusionSlipVelocityBC;
+    AdvectionDiffusionFluxBoundaryConditions AdvectionDiffusionFluxBC;
 
 
     //////////////////////////////////////////////////////////////////////////

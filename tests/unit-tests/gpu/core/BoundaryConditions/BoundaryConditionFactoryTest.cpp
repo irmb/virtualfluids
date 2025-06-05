@@ -107,12 +107,12 @@ TEST(BoundaryConditionFactoryTest, defaultADNoSlipBC)
 }
 
 
-TEST(BoundaryConditionFactoryTest, defaultADSlipVelocityBC)
+TEST(BoundaryConditionFactoryTest, defaultADFluxBC)
 {
     auto bcFactory = BoundaryConditionFactory();
-    auto bc = bcFactory.getAdvectionDiffusionSlipVelocityBoundaryConditionPost();
+    auto bc = bcFactory.getAdvectionDiffusionFluxBoundaryConditionPost();
     EXPECT_THAT(bc, testing::Eq(nullptr));
-    EXPECT_THROW(bc(nullptr, AdvectionDiffusionSlipVelocityBoundaryConditions{}), std::bad_function_call);
+    EXPECT_THROW(bc(nullptr, AdvectionDiffusionFluxBoundaryConditions{}), std::bad_function_call);
 }
 
 TEST(BoundaryConditionFactoryTest, defaultADDirichletBC)
@@ -343,32 +343,32 @@ TEST(BoundaryConditionFactoryTest, ADNoSlipBoundaryConditions)
         << "The returned boundary condition is not the expected function AdvectionDiffusionBounceBack.";
 }
 
-auto getADSlipVelocityBcTarget(BoundaryConditionFactory &bcFactory)
+auto getADFluxBcTarget(BoundaryConditionFactory &bcFactory)
 {
-    auto bc = bcFactory.getAdvectionDiffusionSlipVelocityBoundaryConditionPost();
-    void (*bcTarget)(LBMSimulationParameter *, AdvectionDiffusionSlipVelocityBoundaryConditions) =
-        (*bc.target<void (*)(LBMSimulationParameter *, AdvectionDiffusionSlipVelocityBoundaryConditions)>());
+    auto bc = bcFactory.getAdvectionDiffusionFluxBoundaryConditionPost();
+    void (*bcTarget)(LBMSimulationParameter *, AdvectionDiffusionFluxBoundaryConditions) =
+        (*bc.target<void (*)(LBMSimulationParameter *, AdvectionDiffusionFluxBoundaryConditions)>());
     return bcTarget;
 }
 
-TEST(BoundaryConditionFactoryTest, ADSlipVelocityBoundaryConditions)
+TEST(BoundaryConditionFactoryTest, ADFluxBoundaryConditions)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setAdvectionDiffusionSlipVelocityBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityBounceBack);
-    auto bc = getADSlipVelocityBcTarget(bcFactory);
-    EXPECT_TRUE(bc == AdvectionDiffusionSlipVelocityBounceBack)
-        << "The returned boundary condition is not the expected function AdvectionDiffusionSlipVelocityBounceBack.";
+    bcFactory.setAdvectionDiffusionFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxBounceBack);
+    auto bc = getADFluxBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionFluxBounceBack)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionFluxBounceBack.";
 
-    bcFactory.setAdvectionDiffusionSlipVelocityBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityCompressible);
-    bc = getADSlipVelocityBcTarget(bcFactory);
-    EXPECT_TRUE(bc == AdvectionDiffusionSlipVelocityCompressible)
-        << "The returned boundary condition is not the expected function AdvectionDiffusionSlipVelocityCompressible.";
+    bcFactory.setAdvectionDiffusionFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxCompressible);
+    bc = getADFluxBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionFluxCompressible)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionFluxCompressible.";
 
-    bcFactory.setAdvectionDiffusionSlipVelocityBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityTurbulentViscosityCompressible);
-    bc = getADSlipVelocityBcTarget(bcFactory);
-    EXPECT_TRUE(bc == AdvectionDiffusionSlipVelocityTurbulentViscosityCompressible)
-        << "The returned boundary condition is not the expected function AdvectionDiffusionSlipVelocityTurbulentViscosityCompressible.";
+    bcFactory.setAdvectionDiffusionFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxTurbulentViscosityCompressible);
+    bc = getADFluxBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionFluxTurbulentViscosityCompressible)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionFluxTurbulentViscosityCompressible.";
 }
 
 auto getADDirichletBcTarget(BoundaryConditionFactory &bcFactory)

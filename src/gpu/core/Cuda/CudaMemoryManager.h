@@ -256,9 +256,9 @@ public:
     void cudaCopyTurbulentDiffusivityDeviceToHost(int lev);
     void cudaFreeTurbulentDiffusivity(int lev);
 
-    void cudaAllocConcentrationSlipVelocityBC(int lev);
-    void cudaCopyConcentrationSlipVelocityBCHostToDevice(int lev);
-    void cudaFreeConcentrationSlipVelocityBC(int lev);
+    void cudaAllocConcentrationFluxBC(int lev);
+    void cudaCopyConcentrationFluxBCHostToDevice(int lev);
+    void cudaFreeConcentrationFluxBC(int lev);
 
     void cudaAllocConcentrationDirichletBC(int lev);
     void cudaCopyConcentrationDirichletBCHostToDevice(int lev);

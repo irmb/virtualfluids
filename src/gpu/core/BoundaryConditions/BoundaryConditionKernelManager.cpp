@@ -60,7 +60,7 @@ BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> p
     this->precursorBoundaryConditionPost = bcFactory->getPrecursorBoundaryConditionPost();
     
     this->ADNoSlipBoundaryConditionPost = bcFactory->getAdvectionDiffusionNoSlipBoundaryConditionPost();
-    this->ADSlipVelocityBoundaryConditionPost = bcFactory->getAdvectionDiffusionSlipVelocityBoundaryConditionPost();
+    this->ADFluxBoundaryConditionPost = bcFactory->getAdvectionDiffusionFluxBoundaryConditionPost();
     this->ADDirichletBoundaryConditionPost = bcFactory->getAdvectionDiffusionDirichletBoundaryConditionPost();
     this->ADNeumannBoundaryConditionPost = bcFactory->getAdvectionDiffusionNeumannBoundaryConditionPost();
 
@@ -88,9 +88,9 @@ BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> p
                            "directionalPressureBoundaryConditionPre");
     checkBoundaryCondition(this->ADNoSlipBoundaryConditionPost, this->para->getParD(0)->AdvectionDiffusionNoSlipBC,
                            "AdvectionDiffusionNoSlipBoundaryConditionPost");
-    checkBoundaryCondition(this->ADSlipVelocityBoundaryConditionPost,
-                           this->para->getParD(0)->AdvectionDiffusionSlipVelocityBC,
-                           "AdvectionDiffusionSlipVelocityBoundaryConditionPost");
+    checkBoundaryCondition(this->ADFluxBoundaryConditionPost,
+                           this->para->getParD(0)->AdvectionDiffusionFluxBC,
+                           "AdvectionDiffusionFluxBoundaryConditionPost");
     checkBoundaryCondition(this->ADDirichletBoundaryConditionPost, this->para->getParD(0)->AdvectionDiffusionDirichletBC,
                            "AdvectionDiffusionDirichletBoundaryConditionPost");
     checkBoundaryCondition(this->ADNeumannBoundaryConditionPost, this->para->getParD(0)->AdvectionDiffusionNeumannBC,
@@ -404,12 +404,12 @@ void BoundaryConditionKernelManager::runADNoSlipBCKernel(int level) const
     ADNoSlipBoundaryConditionPost(parD, parD->AdvectionDiffusionNoSlipBC);
 }
 
-void BoundaryConditionKernelManager::runADSlipVelocityBCKernel(int level) const
+void BoundaryConditionKernelManager::runADFluxBCKernel(int level) const
 {
     auto* parD = para->getParD(level).get();
-    if (parD->AdvectionDiffusionSlipVelocityBC.numberOfBCnodes == 0)
+    if (parD->AdvectionDiffusionFluxBC.numberOfBCnodes == 0)
         return;
-    ADSlipVelocityBoundaryConditionPost(parD, parD->AdvectionDiffusionSlipVelocityBC);
+    ADFluxBoundaryConditionPost(parD, parD->AdvectionDiffusionFluxBC);
 }
 
 void BoundaryConditionKernelManager::runADDirichletBCKernel(int level) const

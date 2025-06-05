@@ -53,7 +53,7 @@ using DirectionalBoundaryConditionKernel = std::function<void(LBMSimulationParam
 using BoundaryConditionWithParameterKernel = std::function<void(Parameter*, QforBoundaryConditions*, const int level)>;
 using PrecursorBoundaryConditionKernel =
     std::function<void(LBMSimulationParameter*, QforPrecursorBoundaryConditions*, real tRatio, real velocityRatio)>;
-using ADSlipVelocityBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionSlipVelocityBoundaryConditions bcParams)>;
+using ADFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionFluxBoundaryConditions bcParams)>;
 using ADDirichletBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionDirichletBoundaryConditions bcParams)>;
 using ADNeumannBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNeumannBoundaryConditions bcParams)>;
 using ADNoSlipBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNoSlipBoundaryConditions bcParams)>;
@@ -96,7 +96,7 @@ public:
     void runStressWallModelKernelPost(int level) const;
 
     void runADNoSlipBCKernel(int level) const ;
-    void runADSlipVelocityBCKernel(int level) const ;
+    void runADFluxBCKernel(int level) const ;
     void runADDirichletBCKernel(int level) const ;
     void runADNeumannBCKernel(int level) const ;
 private:
@@ -139,7 +139,7 @@ private:
     BoundaryConditionKernel pressureBoundaryConditionPre = nullptr;
     DirectionalBoundaryConditionKernel directionalPressureBoundaryConditionPre = nullptr;
     ADNoSlipBoundaryConditionKernel ADNoSlipBoundaryConditionPost = nullptr;
-    ADSlipVelocityBoundaryConditionKernel ADSlipVelocityBoundaryConditionPost = nullptr;
+    ADFluxBoundaryConditionKernel ADFluxBoundaryConditionPost = nullptr;
     ADDirichletBoundaryConditionKernel ADDirichletBoundaryConditionPost = nullptr;
     ADNeumannBoundaryConditionKernel ADNeumannBoundaryConditionPost = nullptr;
 };

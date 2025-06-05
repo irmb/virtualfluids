@@ -112,11 +112,11 @@ namespace boundary_conditions
         .value("NoSlipBounceBack", BoundaryConditionFactory::AdvectionDiffusionNoSlipBC::NoSlipBounceBack)
         .value("NoSlipBounceBackDelayed", BoundaryConditionFactory::AdvectionDiffusionNoSlipBC::NoSlipDelayedBounceBack);
         
-        py::enum_<BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC>(parentModule, "AdvectionDiffusionSlipVelocityBC")
-        .value("SlipVelocityBounceBack", BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityBounceBack)
-        .value("SlipVelocityCompressible", BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityCompressible)
-        .value("SlipVelocityTurbulentViscosityCompressible", BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::SlipVelocityTurbulentViscosityCompressible)
-        .value("NotSpecified", BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC::NotSpecified);
+        py::enum_<BoundaryConditionFactory::AdvectionDiffusionFluxBC>(parentModule, "AdvectionDiffusionFluxBC")
+        .value("FluxBounceBack", BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxBounceBack)
+        .value("FluxCompressible", BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxCompressible)
+        .value("FluxTurbulentViscosityCompressible", BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxTurbulentViscosityCompressible)
+        .value("NotSpecified", BoundaryConditionFactory::AdvectionDiffusionFluxBC::NotSpecified);
 
 
     }

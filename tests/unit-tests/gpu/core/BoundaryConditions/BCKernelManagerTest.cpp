@@ -156,9 +156,9 @@ TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADNoSlipBoundaryCondi
     EXPECT_NO_THROW(BoundaryConditionKernelManager(para, &bcFactory));
 }
 
-TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADSlipVelocityBoundaryConditionPostNotSpecified_withoutBoundaryNodes_doesNotThrow)
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADFluxBoundaryConditionPostNotSpecified_withoutBoundaryNodes_doesNotThrow)
 {
-    para->getParD(0)->AdvectionDiffusionSlipVelocityBC.numberOfBCnodes = 0;
+    para->getParD(0)->AdvectionDiffusionFluxBC.numberOfBCnodes = 0;
     EXPECT_NO_THROW(BoundaryConditionKernelManager(para, &bcFactory));
 }
 
@@ -181,9 +181,9 @@ TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADNoSlipBoundaryCondi
     EXPECT_NO_THROW(BoundaryConditionKernelManager(para, &bcFactory));
 }
 
-TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADSlipVelocityBoundaryConditionPostNotSpecified_withBoundaryNodes_throws)
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADFluxBoundaryConditionPostNotSpecified_withBoundaryNodes_throws)
 {
-    para->getParD(0)->AdvectionDiffusionSlipVelocityBC.numberOfBCnodes = 1;
+    para->getParD(0)->AdvectionDiffusionFluxBC.numberOfBCnodes = 1;
     EXPECT_THROW(BoundaryConditionKernelManager(para, &bcFactory), std::runtime_error);
 }
 

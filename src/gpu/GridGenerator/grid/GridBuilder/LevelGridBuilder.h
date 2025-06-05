@@ -64,7 +64,7 @@ class GeometryBoundaryCondition;
 class PrecursorBoundaryCondition;
 class ADDirichletBoundaryCondition;
 class ADNeumannBoundaryCondition;
-class ADSlipVelocityBoundaryCondition;
+class ADFluxBoundaryCondition;
 class ADNoSlipBoundaryCondition;
 enum class SideType;
 
@@ -102,7 +102,7 @@ public:
                                                                     std::vector<uint> fileLevelToGridLevelMap = {});
     void setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz);
     void setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx);
-    void setADSlipVelocityBoundaryCondition(SideType sideType,real normalX, real normalY, real normalZ, real gradient, real deltaX);
+    void setADFluxBoundaryCondition(SideType sideType,real normalX, real normalY, real normalZ, real gradient, real deltaX);
     void setADNoSlipBoundaryCondition(SideType sideType);
                                                                     
     void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall);
@@ -168,9 +168,9 @@ public:
     void getADNeumannValues(real* gradients, real* vx, real* vy, real* vz, int* indices, int level) const override;
     void getADNeumannQs(real* qs[27], int level) const override;
 
-    uint getADSlipVelocitySize(int level) const override;
-    void getADSlipVelocityValues(real* normalX, real* normalY, real* normalZ, real* gradient, int* indices, int level) const override;
-    void getADSlipVelocityQs(real* qs[27], int level) const override;
+    uint getADFluxSize(int level) const override;
+    void getADFluxValues(real* normalX, real* normalY, real* normalZ, real* gradient, int* indices, int level) const override;
+    void getADFluxQs(real* qs[27], int level) const override;
 
     uint getADNoSlipSize(int level) const override;
     void getADNoSlipValues(int* indices, int level) const override;
@@ -208,7 +208,7 @@ protected:
 
         std::vector<SPtr<ADDirichletBoundaryCondition>> adDirichletBoundaryConditions;
         std::vector<SPtr<ADNeumannBoundaryCondition>> adNeumannBoundaryConditions;
-        std::vector<SPtr<ADSlipVelocityBoundaryCondition>> adSlipVelocityBoundaryConditions;
+        std::vector<SPtr<ADFluxBoundaryCondition>> adFluxBoundaryConditions;
         std::vector<SPtr<ADNoSlipBoundaryCondition>> adNoSlipBoundaryConditions;
 
         SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;

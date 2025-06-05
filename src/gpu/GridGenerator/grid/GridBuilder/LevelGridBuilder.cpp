@@ -243,21 +243,21 @@ void LevelGridBuilder::setADNeumannBoundaryCondition(SideType sideType, real gra
     }
 }
 
-void LevelGridBuilder::setADSlipVelocityBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX)
+void LevelGridBuilder::setADFluxBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX)
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {   
         const real normalizedGradient = gradient * deltaX * std::exp2(-static_cast<real>(level));
-        SPtr<ADSlipVelocityBoundaryCondition> boundaryCondition = ADSlipVelocityBoundaryCondition::make(normalX, normalY, normalZ, normalizedGradient);
+        SPtr<ADFluxBoundaryCondition> boundaryCondition = ADFluxBoundaryCondition::make(normalX, normalY, normalZ, normalizedGradient);
 
         auto side = SideFactory::make(sideType);
         boundaryCondition->side = side;
         boundaryCondition->side->addIndices(grids, level, boundaryCondition);
         boundaryCondition->fillBoundaryValueLists();
 
-        boundaryConditions[level]->adSlipVelocityBoundaryConditions.push_back(boundaryCondition);
+        boundaryConditions[level]->adFluxBoundaryConditions.push_back(boundaryCondition);
 
-        VF_LOG_INFO("Set SlipVelocity Advection-Diffusion BC on level {} with {}", level, boundaryCondition->indices.size());
+        VF_LOG_INFO("Set Flux Advection-Diffusion BC on level {} with {}", level, boundaryCondition->indices.size());
     }
 }
 
@@ -943,19 +943,19 @@ void LevelGridBuilder::getADNeumannQs(real* qs[27], int level) const
     }
 }
 
-uint LevelGridBuilder::getADSlipVelocitySize(int level) const
+uint LevelGridBuilder::getADFluxSize(int level) const
 {
     uint size = 0;
-    for (auto& boundaryCondition : boundaryConditions[level]->adSlipVelocityBoundaryConditions)
+    for (auto& boundaryCondition : boundaryConditions[level]->adFluxBoundaryConditions)
         size += uint(boundaryCondition->indices.size());
     return size;
 }
 
-void LevelGridBuilder::getADSlipVelocityValues(real* normalX, real* normalY, real* normalZ, real* gradient, int* indices,
+void LevelGridBuilder::getADFluxValues(real* normalX, real* normalY, real* normalZ, real* gradient, int* indices,
                                                int level) const
 {
     int allIndicesCounter = 0;
-    for (auto& boundaryCondition : boundaryConditions[level]->adSlipVelocityBoundaryConditions) {
+    for (auto& boundaryCondition : boundaryConditions[level]->adFluxBoundaryConditions) {
         for (uint i = 0; i < static_cast<uint>(boundaryCondition->indices.size()); i++) {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) + 1;
             normalX[allIndicesCounter] = boundaryCondition->getNormalX(i);
@@ -967,10 +967,10 @@ void LevelGridBuilder::getADSlipVelocityValues(real* normalX, real* normalY, rea
     }
 }
 
-void LevelGridBuilder::getADSlipVelocityQs(real* qs[27], int level) const
+void LevelGridBuilder::getADFluxQs(real* qs[27], int level) const
 {
     int allIndicesCounter = 0;
-    for (auto& boundaryCondition : boundaryConditions[level]->adSlipVelocityBoundaryConditions) {
+    for (auto& boundaryCondition : boundaryConditions[level]->adFluxBoundaryConditions) {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++) {
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
                 qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];

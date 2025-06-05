@@ -259,7 +259,7 @@ void UpdateGrid27::postCollisionBC(int level, uint t)
     {
         this->bcKernelManager->runADDirichletBCKernel(level);
         this->bcKernelManager->runADNeumannBCKernel(level);
-        this->bcKernelManager->runADSlipVelocityBCKernel(level);
+        this->bcKernelManager->runADFluxBCKernel(level);
         this->bcKernelManager->runADNoSlipBCKernel(level);
     }
 }

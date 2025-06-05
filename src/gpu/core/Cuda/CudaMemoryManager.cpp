@@ -1854,10 +1854,10 @@ void CudaMemoryManager::cudaFreeLocalReferenceTemperature(int lev)
     checkCudaErrors(cudaFree(parameter->getParD(lev)->localReferenceTemperature));
 }
 //////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocConcentrationSlipVelocityBC(int lev)
+void CudaMemoryManager::cudaAllocConcentrationFluxBC(int lev)
 {
-    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionSlipVelocityBC;
-    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionSlipVelocityBC;
+    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionFluxBC;
+    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionFluxBC;
     const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
     const size_t memSizeReal = sizeof(real) * bcParamsH->numberOfBCnodes;
 
@@ -1881,10 +1881,10 @@ void CudaMemoryManager::cudaAllocConcentrationSlipVelocityBC(int lev)
     double tmp = double((parameter->getD3Qxx()+4)*memSizeReal+memSizeInt);
     setMemsizeGPU(tmp, false);
 }
-void CudaMemoryManager::cudaCopyConcentrationSlipVelocityBCHostToDevice(int lev)
+void CudaMemoryManager::cudaCopyConcentrationFluxBCHostToDevice(int lev)
 {
-    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionSlipVelocityBC;
-    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionSlipVelocityBC;
+    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionFluxBC;
+    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionFluxBC;
     const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
     const size_t memSizeReal = sizeof(int) * bcParamsH->numberOfBCnodes;
 
@@ -1895,10 +1895,10 @@ void CudaMemoryManager::cudaCopyConcentrationSlipVelocityBCHostToDevice(int lev)
     checkCudaErrors(cudaMemcpy(bcParamsD->gradient, bcParamsH->gradient, memSizeReal, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(bcParamsD->q27[0], bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal, cudaMemcpyHostToDevice));
 }
-void CudaMemoryManager::cudaFreeConcentrationSlipVelocityBC(int lev)
+void CudaMemoryManager::cudaFreeConcentrationFluxBC(int lev)
 {
-    const auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionSlipVelocityBC;
-    const auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionSlipVelocityBC;
+    const auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionFluxBC;
+    const auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionFluxBC;
     checkCudaErrors(cudaFreeHost(bcParamsH->BCNodeIndices));
     checkCudaErrors(cudaFreeHost(bcParamsH->normalX));
     checkCudaErrors(cudaFreeHost(bcParamsH->normalY));

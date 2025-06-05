@@ -445,19 +445,19 @@ public:
     real getVz(uint index)  { return this->vzList[index]; }
 };
 
-class ADSlipVelocityBoundaryCondition : public grid_generator::BoundaryCondition
+class ADFluxBoundaryCondition : public grid_generator::BoundaryCondition
 {
 public:
-    static SPtr<ADSlipVelocityBoundaryCondition> make(real normalX, real normalY, real normalZ, real gradient)
+    static SPtr<ADFluxBoundaryCondition> make(real normalX, real normalY, real normalZ, real gradient)
     {
-        return SPtr<ADSlipVelocityBoundaryCondition>(new ADSlipVelocityBoundaryCondition(normalX, normalY, normalZ, gradient));
+        return SPtr<ADFluxBoundaryCondition>(new ADFluxBoundaryCondition(normalX, normalY, normalZ, gradient));
     }
 
     real normalX, normalY, normalZ, gradient;
     std::vector<real> normalXList, normalYList, normalZList, gradientList;
 
 protected:
-    ADSlipVelocityBoundaryCondition(real normalX, real normalY, real normalZ, real gradient) : normalX(normalX), normalY(normalY), normalZ(normalZ), gradient(gradient)
+    ADFluxBoundaryCondition(real normalX, real normalY, real normalZ, real gradient) : normalX(normalX), normalY(normalY), normalZ(normalZ), gradient(gradient)
     {
     }
 
