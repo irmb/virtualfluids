@@ -55,10 +55,10 @@ namespace boundary_conditions
         .def("set_pressure_boundary_condition", &BoundaryConditionFactory::setPressureBoundaryCondition, py::arg("boundary_condition_type"))
         .def("set_stress_boundary_condition", &BoundaryConditionFactory::setStressBoundaryCondition, py::arg("boundary_condition_type"))
         .def("set_precursor_boundary_condition", &BoundaryConditionFactory::setPrecursorBoundaryCondition, py::arg("boundary_condition_type"))
-        .def("set_geometry_boundary_condition", &BoundaryConditionFactory::setGeometryBoundaryCondition, py::arg("boundary_condition_type"));
-        .def("set_advection_diffusion_no_flux_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionNoFluxBoundaryCondition, py::arg("boundary_condition_type"));
-        .def("set_advection_diffusion_flux_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionFluxBoundaryCondition, py::arg("boundary_condition_type"));
-        .def("set_advection_diffusion_dirichlet_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionDirichletBoundaryCondition, py::arg("boundary_condition_type"));
+        .def("set_geometry_boundary_condition", &BoundaryConditionFactory::setGeometryBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_advection_diffusion_no_flux_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionNoFluxBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_advection_diffusion_flux_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionFluxBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_advection_diffusion_dirichlet_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionDirichletBoundaryCondition, py::arg("boundary_condition_type"))
         .def("set_advection_diffusion_neumann_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionNeumannBoundaryCondition, py::arg("boundary_condition_type"));
 
         py::enum_<BoundaryConditionFactory::VelocityBC>(parentModule, "VelocityBC")
