@@ -50,7 +50,7 @@
 using bcFunction = void (*)(LBMSimulationParameter *, QforBoundaryConditions *);
 using bcFunctionDirectional = void (*)(LBMSimulationParameter *, QforDirectionalBoundaryCondition *);
 using bcFunctionParameter = void (*)(Parameter *, QforBoundaryConditions *, const int level);
-using adBCNoSlipFunction = void (*)(LBMSimulationParameter *, AdvectionDiffusionNoFluxBoundaryConditions);
+using adBCNoFluxFunction = void (*)(LBMSimulationParameter *, AdvectionDiffusionNoFluxBoundaryConditions);
 
 // tests for default boundary conditions
 TEST(BoundaryConditionFactoryTest, defaultVelocityBC)
@@ -321,10 +321,10 @@ TEST(BoundaryConditionFactoryTest, hasDirectionalPressureBoundaryCondition_noPre
     EXPECT_FALSE(bcFactory.hasDirectionalPressureBoundaryCondition());
 }
 
-adBCNoSlipFunction getADNoFluxBcTarget(BoundaryConditionFactory &bcFactory)
+adBCNoFluxFunction getADNoFluxBcTarget(BoundaryConditionFactory &bcFactory)
 {
     auto bc = bcFactory.getAdvectionDiffusionNoFluxBoundaryConditionPost();
-    void (*bcTarget)(LBMSimulationParameter *, AdvectionDiffusionNoFluxBoundaryConditions) = (*bc.target<adBCNoSlipFunction>());
+    void (*bcTarget)(LBMSimulationParameter *, AdvectionDiffusionNoFluxBoundaryConditions) = (*bc.target<adBCNoFluxFunction>());
     return bcTarget;
 }
 
@@ -333,14 +333,14 @@ TEST(BoundaryConditionFactoryTest, ADNoFluxBoundaryConditions)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setAdvectionDiffusionNoFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoSlipDelayedBounceBack);
+    bcFactory.setAdvectionDiffusionNoFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoFluxDelayedBounceBack);
     auto bc = bcFactory.getAdvectionDiffusionNoFluxBoundaryConditionPost();
     EXPECT_NO_THROW(bc(nullptr, AdvectionDiffusionNoFluxBoundaryConditions{})); // empty lambda function should not throw
     
-    bcFactory.setAdvectionDiffusionNoFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoSlipBounceBack);
+    bcFactory.setAdvectionDiffusionNoFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoFluxBounceBack);
     auto bcTarget = getADNoFluxBcTarget(bcFactory);
     EXPECT_TRUE(bcTarget == AdvectionDiffusionNoFluxBounceBack)
-        << "The returned boundary condition is not the expected function AdvectionDiffusionBounceBack.";
+        << "The returned boundary condition is not the expected function AdvectionDiffusionNoFluxBounceBack.";
 }
 
 auto getADFluxBcTarget(BoundaryConditionFactory &bcFactory)

@@ -136,11 +136,12 @@ void run(const vf::basics::ConfigurationFile& config)
     gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
     gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
     gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
-
+    
+    // only using all kinds of Bc as showcase
     gridBuilder->setADDirichletBoundaryCondition(SideType::MX, temperatureHotSide, vxADBC, vyADBC, vzADBC);
     gridBuilder->setADDirichletBoundaryCondition(SideType::PX, temperatureColdSide, vxADBC, vyADBC, vzADBC);
 
-    gridBuilder->setADNoSlipBoundaryCondition(SideType::MY);
+    gridBuilder->setADNoFluxBoundaryCondition(SideType::MY);
     gridBuilder->setADNeumannBoundaryCondition(SideType::PY, c0o1, c0o1, c0o1, c0o1, deltaX);
     gridBuilder->setADFluxBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, c0o1, deltaX);
     gridBuilder->setADFluxBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1, c0o1, deltaX);
@@ -148,7 +149,7 @@ void run(const vf::basics::ConfigurationFile& config)
     bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipDelayBounceBack);
     bcFactory.setAdvectionDiffusionDirichletBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip);
     bcFactory.setAdvectionDiffusionNeumannBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip);
-    bcFactory.setAdvectionDiffusionNoSlipBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoSlipBC::NoSlipBounceBack);
+    bcFactory.setAdvectionDiffusionNoFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoFluxBounceBack);
     bcFactory.setAdvectionDiffusionFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxBounceBack);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
