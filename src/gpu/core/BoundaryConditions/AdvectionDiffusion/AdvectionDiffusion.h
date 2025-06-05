@@ -43,14 +43,14 @@
 struct LBMSimulationParameter;
 class Parameter;
 
-//////////////////////////////////////////////////////////////////////////
-
-void AdvectionDiffusionFluxTurbulentViscosityCompressible(
-    LBMSimulationParameter* parameterDevice, AdvectionDiffusionFluxBoundaryConditions bcParameters);
+void AdvectionDiffusionBounceBack(LBMSimulationParameter* parameterDevice,
+                                  AdvectionDiffusionNoSlipBoundaryConditions bcParameters);
+void AdvectionDiffusionFluxTurbulentViscosityCompressible(LBMSimulationParameter* parameterDevice,
+                                                          AdvectionDiffusionFluxBoundaryConditions bcParameters);
 void AdvectionDiffusionFluxCompressible(LBMSimulationParameter* parameterDevice,
-                                                AdvectionDiffusionFluxBoundaryConditions bcParameters);
+                                        AdvectionDiffusionFluxBoundaryConditions bcParameters);
 void AdvectionDiffusionFluxBounceBack(LBMSimulationParameter* parameterDevice,
-                                              AdvectionDiffusionFluxBoundaryConditions bcParameters);
+                                      AdvectionDiffusionFluxBoundaryConditions bcParameters);
 void AdvectionDiffusionDirichletAntiBounceBackSlip(LBMSimulationParameter* parameterDevice,
                                                    AdvectionDiffusionDirichletBoundaryConditions bcParameters);
 void AdvectionDiffusionDirichletInterpolatedSlip(LBMSimulationParameter* parameterDevice,
@@ -67,8 +67,6 @@ void AdvectionDiffusionNeumannAntiBounceBackNoSlip(LBMSimulationParameter* param
                                                    AdvectionDiffusionNeumannBoundaryConditions bcParameters);
 void AdvectionDiffusionNeumannInterpolatedNoSlip(LBMSimulationParameter* parameterDevice,
                                                  AdvectionDiffusionNeumannBoundaryConditions bcParameters);
-void AdvectionDiffusionBounceBack(LBMSimulationParameter* parameterDevice,
-                                  AdvectionDiffusionNoSlipBoundaryConditions bcParameters);
 
 #endif
 

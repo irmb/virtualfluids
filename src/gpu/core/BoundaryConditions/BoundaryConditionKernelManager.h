@@ -53,10 +53,10 @@ using DirectionalBoundaryConditionKernel = std::function<void(LBMSimulationParam
 using BoundaryConditionWithParameterKernel = std::function<void(Parameter*, QforBoundaryConditions*, const int level)>;
 using PrecursorBoundaryConditionKernel =
     std::function<void(LBMSimulationParameter*, QforPrecursorBoundaryConditions*, real tRatio, real velocityRatio)>;
+using ADNoSlipBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNoSlipBoundaryConditions bcParams)>;
 using ADFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionFluxBoundaryConditions bcParams)>;
 using ADDirichletBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionDirichletBoundaryConditions bcParams)>;
 using ADNeumannBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNeumannBoundaryConditions bcParams)>;
-using ADNoSlipBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNoSlipBoundaryConditions bcParams)>;
 //! \class BCKernelManager
 //! \brief manage the cuda kernel calls to boundary conditions
 //! \details This class stores the boundary conditions and manages the calls to the boundary condition kernels.

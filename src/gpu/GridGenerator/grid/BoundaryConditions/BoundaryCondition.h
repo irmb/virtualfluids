@@ -365,8 +365,57 @@ private:
     SPtr<TransientBCInputFileReader> reader;
 };
 
+class ADFluxBoundaryCondition : public grid_generator::BoundaryCondition
+{
+public:
+    static SPtr<ADFluxBoundaryCondition> make(real normalX, real normalY, real normalZ, real gradient)
+    {
+        return SPtr<ADFluxBoundaryCondition>(new ADFluxBoundaryCondition(normalX, normalY, normalZ, gradient));
+    }
 
-class ADDirichletBoundaryCondition : public grid_generator ::BoundaryCondition
+    real normalX, normalY, normalZ, gradient;
+    std::vector<real> normalXList, normalYList, normalZList, gradientList;
+
+protected:
+    ADFluxBoundaryCondition(real normalX, real normalY, real normalZ, real gradient) : normalX(normalX), normalY(normalY), normalZ(normalZ), gradient(gradient)
+    {
+    }
+
+public:
+    char getType() const override
+    {
+        return vf::gpu::BC_AD;
+    }
+
+    void fillBoundaryValueLists();
+
+    real getNormalX(uint index) {return this->normalXList[index];}
+    real getNormalY(uint index) {return this->normalYList[index];}
+    real getNormalZ(uint index) {return this->normalZList[index];}
+    real getGradient(uint index) {return this->gradientList[index];}
+};
+
+
+class ADNoSlipBoundaryCondition : public grid_generator::BoundaryCondition
+{
+public:
+    static SPtr<ADNoSlipBoundaryCondition> make()
+    {
+        return SPtr<ADNoSlipBoundaryCondition>(new ADNoSlipBoundaryCondition());
+    }
+
+protected:
+    ADNoSlipBoundaryCondition() = default;
+
+public:
+    char getType() const override
+    {
+        return vf::gpu::BC_AD;
+    }
+};
+
+
+class ADDirichletBoundaryCondition : public grid_generator::BoundaryCondition
 {
 public:
     static SPtr<ADDirichletBoundaryCondition> make(real BCvalue, real vx, real vy, real vz)
@@ -445,54 +494,7 @@ public:
     real getVz(uint index)  { return this->vzList[index]; }
 };
 
-class ADFluxBoundaryCondition : public grid_generator::BoundaryCondition
-{
-public:
-    static SPtr<ADFluxBoundaryCondition> make(real normalX, real normalY, real normalZ, real gradient)
-    {
-        return SPtr<ADFluxBoundaryCondition>(new ADFluxBoundaryCondition(normalX, normalY, normalZ, gradient));
-    }
 
-    real normalX, normalY, normalZ, gradient;
-    std::vector<real> normalXList, normalYList, normalZList, gradientList;
-
-protected:
-    ADFluxBoundaryCondition(real normalX, real normalY, real normalZ, real gradient) : normalX(normalX), normalY(normalY), normalZ(normalZ), gradient(gradient)
-    {
-    }
-
-public:
-    char getType() const override
-    {
-        return vf::gpu::BC_AD;
-    }
-
-    void fillBoundaryValueLists();
-
-    real getNormalX(uint index) {return this->normalXList[index];}
-    real getNormalY(uint index) {return this->normalYList[index];}
-    real getNormalZ(uint index) {return this->normalZList[index];}
-    real getGradient(uint index) {return this->gradientList[index];}
-};
-
-
-class ADNoSlipBoundaryCondition : public grid_generator::BoundaryCondition
-{
-public:
-    static SPtr<ADNoSlipBoundaryCondition> make()
-    {
-        return SPtr<ADNoSlipBoundaryCondition>(new ADNoSlipBoundaryCondition());
-    }
-
-protected:
-    ADNoSlipBoundaryCondition() = default;
-
-public:
-    char getType() const override
-    {
-        return vf::gpu::BC_AD;
-    }
-};
 
 #endif
 //! \}

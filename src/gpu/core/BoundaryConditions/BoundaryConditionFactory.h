@@ -54,9 +54,9 @@ using PrecursorBoundaryConditionKernel =
     std::function<void(LBMSimulationParameter*, QforPrecursorBoundaryConditions*, real timeRatio, real velocityRatio)>;
 
 using AdvectionDiffusionNoSlipBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionNoSlipBoundaryConditions)>;
+using AdvectionDiffusionFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionFluxBoundaryConditions)>;
 using AdvectionDiffusionDirichletBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionDirichletBoundaryConditions)>;
 using AdvectionDiffusionNeumannBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionNeumannBoundaryConditions)>;
-using AdvectionDiffusionFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionFluxBoundaryConditions)>;
 
 class BoundaryConditionFactory
 {
