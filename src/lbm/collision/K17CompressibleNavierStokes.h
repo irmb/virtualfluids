@@ -155,9 +155,9 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
     //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
     //!
-    vvx += parameter.forceX;
-    vvy += parameter.forceY;
-    vvz += parameter.forceZ;
+    vvx += parameter.forceX * c1o2;
+    vvy += parameter.forceY * c1o2;
+    vvz += parameter.forceZ * c1o2;
 
     ////////////////////////////////////////////////////////////////////////////////////
     // calculate the square of velocities for this lattice node

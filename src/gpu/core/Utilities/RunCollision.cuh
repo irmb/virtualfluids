@@ -87,9 +87,9 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
     para.quadricLimiter = collisionParameter.quadricLimiters;
 
     if (applyBodyForce) {
-        para.forceX = (collisionParameter.forces[0] + collisionParameter.bodyForceX[k_000]) * c1o2 * collisionParameter.forceFactor;
-        para.forceY = (collisionParameter.forces[1] + collisionParameter.bodyForceY[k_000]) * c1o2 * collisionParameter.forceFactor;
-        para.forceZ = (collisionParameter.forces[2] + collisionParameter.bodyForceZ[k_000]) * c1o2 * collisionParameter.forceFactor;
+        para.forceX = (collisionParameter.forces[0] + collisionParameter.bodyForceX[k_000]) * collisionParameter.forceFactor;
+        para.forceY = (collisionParameter.forces[1] + collisionParameter.bodyForceY[k_000]) * collisionParameter.forceFactor;
+        para.forceZ = (collisionParameter.forces[2] + collisionParameter.bodyForceZ[k_000]) * collisionParameter.forceFactor;
 
         // Reset body force. To be used when not using round-off correction.
         collisionParameter.bodyForceX[k_000] = c0o1;
@@ -109,9 +109,9 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
         // bodyForceY[k_000] = (acc_y-(vvy-vy))*factor*c2o1;
         // bodyForceZ[k_000] = (acc_z-(vvz-vz))*factor*c2o1;
     } else {
-        para.forceX = collisionParameter.forces[0] * c1o2 * collisionParameter.forceFactor;
-        para.forceY = collisionParameter.forces[1] * c1o2 * collisionParameter.forceFactor;
-        para.forceZ = collisionParameter.forces[2] * c1o2 * collisionParameter.forceFactor;
+        para.forceX = collisionParameter.forces[0] * collisionParameter.forceFactor;
+        para.forceY = collisionParameter.forces[1] * collisionParameter.forceFactor;
+        para.forceZ = collisionParameter.forces[2] * collisionParameter.forceFactor;
     }
 
     vf::lbm::TurbulentViscosity turbulentViscosity;

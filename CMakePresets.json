@@ -202,6 +202,26 @@
                 "enable_all_apps"
             ],
             "displayName": "cpu debug msvc configuration"
+        },
+        {
+            "name": "msvc_gpu",
+            "inherits": [
+                "msvc",
+                "gpu",
+                "release",
+                "enable_all_apps"
+            ],
+            "displayName": "gpu release msvc configuration"
+        },
+        {
+            "name": "msvc_gpu_debug",
+            "inherits": [
+                "msvc",
+                "gpu",
+                "debug",
+                "enable_all_apps"
+            ],
+            "displayName": "gpu debug msvc configuration"
         }
 
     ],
@@ -277,6 +297,42 @@
         {
             "name": "make_all",
             "configurePreset": "make_all",
+            "inherits": [
+                "cpu",
+                "gpu"
+            ]
+        },
+        {
+            "name": "msvc_gpu",
+            "configurePreset": "msvc_gpu",
+            "inherits": [
+                "gpu"
+            ]
+        },
+        {
+            "name": "msvc_gpu_debug",
+            "configurePreset": "msvc_gpu_debug",
+            "inherits": [
+                "gpu"
+            ]
+        },
+        {
+            "name": "msvc_cpu",
+            "configurePreset": "msvc_cpu",
+            "inherits": [
+                "cpu"
+            ]
+        },
+        {
+            "name": "msvc_cpu_debug",
+            "configurePreset": "msvc_cpu_debug",
+            "inherits": [
+                "cpu"
+            ]
+        },
+        {
+            "name": "msvc_all",
+            "configurePreset": "msvc_all",
             "inherits": [
                 "cpu",
                 "gpu"
