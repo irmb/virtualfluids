@@ -101,7 +101,9 @@ void run(const vf::basics::ConfigurationFile& config)
 
     const bool writePrecursor = config.getValue("WritePrecursor", false);
     const bool useCoriolisForce = config.getValue("UseCoriolisForce", false);
-    const real geostrophicWindSpeed = config.getValue("GeostrophicWindSpeed", c10o1);
+    const real geostrophicWindSpeed = config.getValue("GeostrophicWindSpeed", c8o1);
+    const real geostrophicWindDirection = config.getValue("GeostrophicWindDirection", c0o1);
+    const real coriolisParameter = config.getValue("CoriolisParameter", 1e-4F);
 
     const bool useDistributionsForPrecursor = config.getValue<bool>("UseDistributions", false);
     std::string precursorDirectory = config.getValue<std::string>("PrecursorDirectory", "precursor/");
@@ -135,7 +137,7 @@ void run(const vf::basics::ConfigurationFile& config)
     const auto velocityProfile = [&](real coordZ) {
         return frictionVelocity / cVonKarman * std::log(coordZ / roughnessLength + c1o1);
     };
-    const real velocity = useCoriolisForce ? geostrophicWindSpeed : c1o2 * velocityProfile(boundaryLayerHeight);
+    const real velocity = c1o2 * velocityProfile(boundaryLayerHeight);
 
     const real deltaX = boundaryLayerHeight / real(nodesPerBoundaryLyerHeight);
 
@@ -169,11 +171,11 @@ void run(const vf::basics::ConfigurationFile& config)
 
     auto dimensions = std::make_shared<GridDimensions>(c0o1, lengthX, c0o1, lengthY, c0o1, lengthZ, deltaX);
 
-    auto gridBuilder = std::make_shared<MultipleGridBuilderFacade>(dimensions, overlap);
+    auto gridBuilder = std::make_unique<MultipleGridBuilderFacade>(dimensions, overlap);
     auto scalingFactory = GridScalingFactory();
 
-    for (int iProcess = 0; iProcess < numberOfProcesses; iProcess++)
-        gridBuilder->addDomainSplit(lengthX / numberOfProcesses, Axis::x);
+    for (int iProcess = 1; iProcess < numberOfProcesses; iProcess++)
+        gridBuilder->addDomainSplit(lengthX / numberOfProcesses*iProcess, Axis::x);
 
     if (useRefinement) {
         gridBuilder->setNumberOfLayersForRefinement(4, 0);
@@ -269,10 +271,10 @@ void run(const vf::basics::ConfigurationFile& config)
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
-    para->setIsBodyForce(true);
-    para->setAllNodesAllFeatures(true);
     if (useCoriolisForce) {
-        auto coriolisForce = std::make_shared<CoriolisForce>(para, cudaMemoryManager, 10.0, c0o1, 1e-4F);
+        para->setIsBodyForce(true);
+        para->setAllNodesAllFeatures(true);
+        auto coriolisForce = std::make_shared<CoriolisForce>(para, cudaMemoryManager, geostrophicWindSpeed, geostrophicWindDirection, coriolisParameter);
         para->addInteractor(coriolisForce);
     }
 
