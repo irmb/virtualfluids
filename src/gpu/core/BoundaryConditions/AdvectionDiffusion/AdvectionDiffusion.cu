@@ -189,4 +189,17 @@ void AdvectionDiffusionNeumannAntiBounceBackNoSlip(LBMSimulationParameter* param
     getLastCudaError("AdvectionDiffusionNeumann_Device execution failed");
 }
 
+void AdvectionDiffusionNeumannInterpolatedNoSlip(LBMSimulationParameter* parameterDevice,
+                                                 AdvectionDiffusionNeumannBoundaryConditions bcParameters)
+{
+    const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads, bcParameters.numberOfBCnodes);
+
+    AdvectionDiffusionNeumann_Device<BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannInterpolatedNoSlip>
+        <<<grid.grid, grid.threads>>>(parameterDevice->distributionsAD.f[0], bcParameters, parameterDevice->neighborX,
+                                      parameterDevice->neighborY, parameterDevice->neighborZ, parameterDevice->velocityX,
+                                      parameterDevice->velocityY, parameterDevice->velocityZ, parameterDevice->numberOfNodes,
+                                      parameterDevice->omegaDiffusivity, parameterDevice->isEvenTimestep);
+    getLastCudaError("AdvectionDiffusionNeumann_Device execution failed");
+}
+
 //! \}
