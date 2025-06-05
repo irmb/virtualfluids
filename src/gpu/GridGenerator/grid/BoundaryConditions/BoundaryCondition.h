@@ -364,5 +364,137 @@ private:
     real velocityZ = 0.0;
     SPtr<TransientBCInputFileReader> reader;
 };
+
+class ADNoFluxBoundaryCondition : public grid_generator::BoundaryCondition
+{
+public:
+    static SPtr<ADNoFluxBoundaryCondition> make()
+    {
+        return SPtr<ADNoFluxBoundaryCondition>(new ADNoFluxBoundaryCondition());
+    }
+
+protected:
+    ADNoFluxBoundaryCondition() = default;
+
+public:
+    char getType() const override
+    {
+        return vf::gpu::BC_AD;
+    }
+};
+
+
+class ADFluxBoundaryCondition : public grid_generator::BoundaryCondition
+{
+public:
+    static SPtr<ADFluxBoundaryCondition> make(real normalX, real normalY, real normalZ, real gradient)
+    {
+        return SPtr<ADFluxBoundaryCondition>(new ADFluxBoundaryCondition(normalX, normalY, normalZ, gradient));
+    }
+
+    real normalX, normalY, normalZ, gradient;
+    std::vector<real> normalXList, normalYList, normalZList, gradientList;
+
+protected:
+    ADFluxBoundaryCondition(real normalX, real normalY, real normalZ, real gradient) : normalX(normalX), normalY(normalY), normalZ(normalZ), gradient(gradient)
+    {
+    }
+
+public:
+    char getType() const override
+    {
+        return vf::gpu::BC_AD;
+    }
+
+    void fillBoundaryValueLists();
+
+    real getNormalX(uint index) {return this->normalXList[index];}
+    real getNormalY(uint index) {return this->normalYList[index];}
+    real getNormalZ(uint index) {return this->normalZList[index];}
+    real getGradient(uint index) {return this->gradientList[index];}
+};
+
+
+class ADDirichletBoundaryCondition : public grid_generator::BoundaryCondition
+{
+public:
+    static SPtr<ADDirichletBoundaryCondition> make(real BCvalue, real vx, real vy, real vz)
+    {
+        return SPtr<ADDirichletBoundaryCondition>(new ADDirichletBoundaryCondition(BCvalue, vx, vy, vz));
+    }
+
+protected:
+    ADDirichletBoundaryCondition(real BCValue, real vx, real vy, real vz) : BCvalue(BCValue), vx(vx), vy(vy), vz(vz) 
+    {
+
+    }
+
+public:
+    char getType() const override
+    {
+        return vf::gpu::BC_AD;
+    }
+
+    void fillBoundaryValueLists()
+    {
+            std::fill_n(std::back_inserter(this->vxList), this->indices.size(), vx);
+            std::fill_n(std::back_inserter(this->vyList), this->indices.size(), vy);
+            std::fill_n(std::back_inserter(this->vzList), this->indices.size(), vz);
+            std::fill_n(std::back_inserter(this->BCvalueList), this->indices.size(), BCvalue);
+    }
+
+    real getBCvalue() const { return this->BCvalue; }
+    real getVx() const { return this->vx; }
+    real getVy() const { return this->vy; }
+    real getVz() const { return this->vz; }
+
+    real getBCvalue(uint index) { return this->BCvalueList[index]; }
+    real getVx(uint index)  { return this->vxList[index]; }
+    real getVy(uint index)  { return this->vyList[index]; }
+    real getVz(uint index)  { return this->vzList[index]; }
+
+private:
+    real BCvalue, vx, vy, vz;
+    std::vector<real> BCvalueList, vxList, vyList, vzList;
+};
+
+class ADNeumannBoundaryCondition : public grid_generator::BoundaryCondition
+{
+public:
+    static SPtr<ADNeumannBoundaryCondition> make(real BCvalue, real vx, real vy, real vz)
+    {
+        return SPtr<ADNeumannBoundaryCondition>(new ADNeumannBoundaryCondition(BCvalue, vx, vy, vz));
+    }
+
+    real gradient, vx, vy, vz;
+    std::vector<real> gradientList, vxList, vyList, vzList;
+
+protected:
+    ADNeumannBoundaryCondition(real gradient, real vx, real vy, real vz) : gradient(gradient), vx(vx), vy(vy), vz(vz) 
+    {
+
+    }
+
+public:
+    char getType() const override
+    {
+        return vf::gpu::BC_AD;
+    }
+
+    void fillBoundaryValueLists();
+
+    real getBCgradient() const { return this->gradient; }
+    real getVx() const { return this->vx; }
+    real getVy() const { return this->vy; }
+    real getVz() const { return this->vz; }
+
+    real getBCgradient(uint index) { return this->gradientList[index]; }
+    real getVx(uint index)  { return this->vxList[index]; }
+    real getVy(uint index)  { return this->vyList[index]; }
+    real getVz(uint index)  { return this->vzList[index]; }
+};
+
+
+
 #endif
 //! \}

@@ -123,6 +123,10 @@ public:
     void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads,
                                        real velocityX = vf::basics::constant::c0o1, real velocityY = vf::basics::constant::c0o1, real velocityZ = vf::basics::constant::c0o1, 
                                        std::vector<uint> fileLevelToGridLevelMap = {}) const;
+    void setADNoFluxBoundaryCondition(SideType sideType);
+    void setADFluxBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX);
+    void setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz);
+    void setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx);
     void setPeriodicShiftOnXBoundaryInYDirection(real shift);
     void setPeriodicShiftOnXBoundaryInZDirection(real shift);
     void setPeriodicShiftOnYBoundaryInXDirection(real shift);

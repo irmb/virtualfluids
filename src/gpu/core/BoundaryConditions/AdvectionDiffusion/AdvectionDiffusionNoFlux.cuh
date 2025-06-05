@@ -29,61 +29,47 @@
 //! \addtogroup gpu_BoundaryConditions BoundaryConditions
 //! \ingroup gpu_core core
 //! \{
-//! \author Martin Schoenherr
+//! \author Martin Schoenherr, Henry Korb
 //=======================================================================================
-#ifndef AdvectionDiffusion_Device_H
-#define AdvectionDiffusion_Device_H
+#include <basics/constants/NumericConstants.h>
 
-#include "Calculation/Calculation.h"
+#include <lbm/constants/D3Q27.h>
 
-//////////////////////////////////////////////////////////////////////////
-//! \brief \ref AD_SlipVelDeviceComp : device function for the slip-AD boundary condition
-__global__ void AdvectionDiffusionSlipVelocityCompressible_Device(
-    real * normalX,
-    real * normalY,
-    real * normalZ,
-    real * distributions,
-    real * distributionsAD,
-    int* QindexArray,
-    real * Qarrays,
-    uint numberOfBCnodes,
-    real omegaDiffusivity,
-    uint * neighborX,
-    uint * neighborY,
-    uint * neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+#include "gpu/core/Calculation/Calculation.h"
+#include "gpu/core/Utilities/KernelUtilities.h"
+#include "gpu/cuda_helper/CudaIndexCalculation.h"
 
-__global__ void AdvectionDiffusionDirichlet_Device(
-    real* DD,
-    real* DD27,
-    real* temp,
-    real diffusivity,
-    int* k_Q,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+__global__ void AdvectionDiffusionNoFluxBounceBack_Device(real* distributions,
+                                                    AdvectionDiffusionNoFluxBoundaryConditions bcParameters,
+                                                    const uint* neighborX, const uint* neighborY, const uint* neighborZ,
+                                                    unsigned long long numberOfLBnodes, bool isEvenTimestep)
+{
+    using namespace vf::basics::constant;
+    using namespace vf::lbm::dir;
+    using namespace vf::gpu;
 
-__global__ void AdvectionDiffusionBounceBack_Device(
-    real* DD,
-    real* DD27,
-    real* temp,
-    real diffusivity,
-    int* k_Q,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+    const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
+    if (nodeIndex >= bcParameters.numberOfBCnodes)
+        return;
 
-#endif
+    Distributions27 populationReferences = getDistributionReferences27(distributions, numberOfLBnodes, isEvenTimestep);
+    const uint indexOfBCnode = bcParameters.BCNodeIndices[nodeIndex];
+    const ListIndices listIndices(indexOfBCnode, neighborX, neighborY, neighborZ);
+
+    SubgridDistances27 subgridDistances;
+    getPointersToSubgridDistances(subgridDistances, bcParameters.q27[0], bcParameters.numberOfBCnodes);
+
+    real populations[27];
+    getPostCollisionDistribution(populations, populationReferences, listIndices);
+
+    getPointersToDistributions(populationReferences, distributions, numberOfLBnodes, !isEvenTimestep);
+
+    loopDirections([&](auto direction) {
+        const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
+        if (subgridDistance < c0o1 || subgridDistance > c1o1)
+            return;
+        writeInInverseDirection<direction>(populations[direction], listIndices, populationReferences);
+    });
+}
 
 //! \}

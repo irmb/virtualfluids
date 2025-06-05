@@ -127,7 +127,7 @@ constexpr real calcTurbulentViscosityAMDStratified(real SGSConstant, real dvxdx,
     return std::clamp(SGSConstant * (numerator + temp) / denominator, zero, upperLimit);
 }
 
-constexpr real calculateOmegaWithturbulentViscosity(real omega, real turbulenceViscosity)
+constexpr real calculateOmegaWithTurbulentViscosity(real omega, real turbulenceViscosity)
 {
     return omega / (c1o1 + c3o1 * omega * turbulenceViscosity);
 }

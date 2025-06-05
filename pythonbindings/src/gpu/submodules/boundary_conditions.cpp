@@ -55,7 +55,11 @@ namespace boundary_conditions
         .def("set_pressure_boundary_condition", &BoundaryConditionFactory::setPressureBoundaryCondition, py::arg("boundary_condition_type"))
         .def("set_stress_boundary_condition", &BoundaryConditionFactory::setStressBoundaryCondition, py::arg("boundary_condition_type"))
         .def("set_precursor_boundary_condition", &BoundaryConditionFactory::setPrecursorBoundaryCondition, py::arg("boundary_condition_type"))
-        .def("set_geometry_boundary_condition", &BoundaryConditionFactory::setGeometryBoundaryCondition, py::arg("boundary_condition_type"));
+        .def("set_geometry_boundary_condition", &BoundaryConditionFactory::setGeometryBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_advection_diffusion_no_flux_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionNoFluxBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_advection_diffusion_flux_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionFluxBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_advection_diffusion_dirichlet_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionDirichletBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_advection_diffusion_neumann_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionNeumannBoundaryCondition, py::arg("boundary_condition_type"));
 
         py::enum_<BoundaryConditionFactory::VelocityBC>(parentModule, "VelocityBC")
         .value("VelocityBounceBack", BoundaryConditionFactory::VelocityBC::VelocityBounceBack)
@@ -93,5 +97,31 @@ namespace boundary_conditions
         .value("PrecursorNonReflectiveCompressible", BoundaryConditionFactory::PrecursorBC::PrecursorNonReflectiveCompressible)
         .value("PrecursorDistributions", BoundaryConditionFactory::PrecursorBC::PrecursorDistributions)
         .value("NotSpecified", BoundaryConditionFactory::PrecursorBC::NotSpecified);
+
+        py::enum_<BoundaryConditionFactory::AdvectionDiffusionDirichletBC>(parentModule, "AdvectionDiffusionDirichletBC")
+        .value("DirichletAntiBounceBackNoSlip", BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip)
+        .value("DirichletAntiBounceBackSlip", BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackSlip)
+        .value("DirichletInterpolatedNoSlip", BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedNoSlip)
+        .value("DirichletInterpolatedSlip", BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedSlip)
+        .value("NotSpecified", BoundaryConditionFactory::AdvectionDiffusionDirichletBC::NotSpecified);
+
+        py::enum_<BoundaryConditionFactory::AdvectionDiffusionNeumannBC>(parentModule, "AdvectionDiffusionNeumannBC")
+        .value("NeumannAntiBounceBackNoSlip", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip)
+        .value("NeumannAntiBounceBackSlip", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackSlip)
+        .value("NeumannInterpolatedNoSlip", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannInterpolatedNoSlip)
+        .value("NeumannInterpolatedSlip", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannInterpolatedSlip)
+        .value("NotSpecified", BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NotSpecified);
+
+        py::enum_<BoundaryConditionFactory::AdvectionDiffusionNoFluxBC>(parentModule, "AdvectionDiffusionNoFluxBC")
+        .value("NoFluxBounceBack", BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoFluxBounceBack)
+        .value("NoFluxBounceBackDelayed", BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoFluxDelayedBounceBack);
+        
+        py::enum_<BoundaryConditionFactory::AdvectionDiffusionFluxBC>(parentModule, "AdvectionDiffusionFluxBC")
+        .value("FluxBounceBack", BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxBounceBack)
+        .value("FluxCompressible", BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxCompressible)
+        .value("FluxTurbulentViscosityCompressible", BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxTurbulentViscosityCompressible)
+        .value("NotSpecified", BoundaryConditionFactory::AdvectionDiffusionFluxBC::NotSpecified);
+
+
     }
 }
