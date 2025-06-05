@@ -51,14 +51,17 @@ __global__ void computeCoriolis(unsigned long long numberOfNodes, const real* ve
         return;
     const real coriolisForceX = -(data.velocityY - velocityY[nodeIndex]) * data.coriolisFrequency;
     const real coriolisForceY = (data.velocityX - velocityX[nodeIndex]) * data.coriolisFrequency;
-    if (timestep % numberOfAccumulationSteps != 0) {
-        data.forceAccumulatorX[nodeIndex] += coriolisForceX;
-        data.forceAccumulatorY[nodeIndex] += coriolisForceY;
-    } else {
-        forceX[nodeIndex] += data.forceAccumulatorX[nodeIndex] + coriolisForceX;
+    const real accumulatedForceX = data.forceAccumulatorX[nodeIndex] + coriolisForceX;
+    const real accumulatedForceY = data.forceAccumulatorY[nodeIndex] + coriolisForceY;
+    
+    if (timestep % numberOfAccumulationSteps == 0) {        
+        forceX[nodeIndex] += accumulatedForceX;
         data.forceAccumulatorX[nodeIndex] = c0o1;
-        forceY[nodeIndex] += data.forceAccumulatorY[nodeIndex] + coriolisForceY;
+        forceY[nodeIndex] += accumulatedForceY;
         data.forceAccumulatorY[nodeIndex] = c0o1;
+    } else {
+        data.forceAccumulatorX[nodeIndex] = accumulatedForceX;
+        data.forceAccumulatorY[nodeIndex] = accumulatedForceY;
     }
 }
 
@@ -75,9 +78,8 @@ void CoriolisForce::init()
 
 void CoriolisForce::interact(int level, uint t)
 {
-    vf::cuda::CudaGrid grid(para->getParH(level)->numberofthreads, para->getParD(level)->numberOfNodes);
-    printf("%u %llu \n", para->getParH(level)->numberofthreads, para->getParD(level)->numberOfNodes);
     auto parD = para->getParD(level);
+    vf::cuda::CudaGrid grid(parD->numberofthreads, parD->numberOfNodes);
     computeCoriolis<<<grid.grid, grid.threads>>>(parD->numberOfNodes, parD->velocityX, parD->velocityY, parD->forceX_SP,
                                                  parD->forceY_SP, levelData[level], t, numberOfAccumulationTimesteps);
 }
