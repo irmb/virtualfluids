@@ -209,6 +209,40 @@ void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
     }
 }
 
+void LevelGridBuilder::setADNoFluxBoundaryCondition(SideType sideType)
+{
+    for (uint level = 0; level < getNumberOfGridLevels(); level++)
+    {   
+        SPtr<ADNoFluxBoundaryCondition> boundaryCondition = ADNoFluxBoundaryCondition::make();
+
+        auto side = SideFactory::make(sideType);
+        boundaryCondition->side = side;
+        boundaryCondition->side->addIndices(grids, level, boundaryCondition);
+
+        boundaryConditions[level]->adNoFluxBoundaryConditions.push_back(boundaryCondition);
+
+        VF_LOG_INFO("Set NoFlux Advection-Diffusion BC on level {} with {}", level, boundaryCondition->indices.size());
+    }
+}
+
+void LevelGridBuilder::setADFluxBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX)
+{
+    for (uint level = 0; level < getNumberOfGridLevels(); level++)
+    {   
+        const real normalizedGradient = gradient * deltaX * std::exp2(-static_cast<real>(level));
+        SPtr<ADFluxBoundaryCondition> boundaryCondition = ADFluxBoundaryCondition::make(normalX, normalY, normalZ, normalizedGradient);
+
+        auto side = SideFactory::make(sideType);
+        boundaryCondition->side = side;
+        boundaryCondition->side->addIndices(grids, level, boundaryCondition);
+        boundaryCondition->fillBoundaryValueLists();
+
+        boundaryConditions[level]->adFluxBoundaryConditions.push_back(boundaryCondition);
+
+        VF_LOG_INFO("Set Flux Advection-Diffusion BC on level {} with {}", level, boundaryCondition->indices.size());
+    }
+}
+
 void LevelGridBuilder::setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz)
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
@@ -240,40 +274,6 @@ void LevelGridBuilder::setADNeumannBoundaryCondition(SideType sideType, real gra
         boundaryConditions[level]->adNeumannBoundaryConditions.push_back(boundaryCondition);
 
         VF_LOG_INFO("Set Neumann Advection-Diffusion BC on level {} with {}", level, boundaryCondition->indices.size());
-    }
-}
-
-void LevelGridBuilder::setADFluxBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX)
-{
-    for (uint level = 0; level < getNumberOfGridLevels(); level++)
-    {   
-        const real normalizedGradient = gradient * deltaX * std::exp2(-static_cast<real>(level));
-        SPtr<ADFluxBoundaryCondition> boundaryCondition = ADFluxBoundaryCondition::make(normalX, normalY, normalZ, normalizedGradient);
-
-        auto side = SideFactory::make(sideType);
-        boundaryCondition->side = side;
-        boundaryCondition->side->addIndices(grids, level, boundaryCondition);
-        boundaryCondition->fillBoundaryValueLists();
-
-        boundaryConditions[level]->adFluxBoundaryConditions.push_back(boundaryCondition);
-
-        VF_LOG_INFO("Set Flux Advection-Diffusion BC on level {} with {}", level, boundaryCondition->indices.size());
-    }
-}
-
-void LevelGridBuilder::setADNoFluxBoundaryCondition(SideType sideType)
-{
-    for (uint level = 0; level < getNumberOfGridLevels(); level++)
-    {   
-        SPtr<ADNoFluxBoundaryCondition> boundaryCondition = ADNoFluxBoundaryCondition::make();
-
-        auto side = SideFactory::make(sideType);
-        boundaryCondition->side = side;
-        boundaryCondition->side->addIndices(grids, level, boundaryCondition);
-
-        boundaryConditions[level]->adNoFluxBoundaryConditions.push_back(boundaryCondition);
-
-        VF_LOG_INFO("Set NoFlux Advection-Diffusion BC on level {} with {}", level, boundaryCondition->indices.size());
     }
 }
 
