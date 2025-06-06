@@ -35,8 +35,8 @@
 #ifndef CORIOLIS_FORCE_H_
 #define CORIOLIS_FORCE_H_
 
-#include "PreCollisionInteractor.h"
 #include "Parameter/Parameter.h"
+#include "PreCollisionInteractor.h"
 
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
@@ -48,15 +48,16 @@
 class CoriolisForce : public PreCollisionInteractor
 {
 public:
-
-    CoriolisForce(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager, real geostrophicWindX, real geostrophicWindY, real coriolisParameter)
+    CoriolisForce(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager, real geostrophicWindX,
+                  real geostrophicWindY, real coriolisFrequency)
         : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
     {
-        this->geostrophicWindX = geostrophicWindX*para->getVelocityRatio();
-        this->geostrophicWindY = geostrophicWindY*para->getVelocityRatio();
-        this->coriolisFrequency = coriolisParameter/para->getTimeRatio();
-        VF_LOG_INFO("using Coriolis Force with geostrophic wind vector ({},{}) and coriolis parameter {}", geostrophicWindX, geostrophicWindY, coriolisParameter);
-        if(!para->getIsBodyForce())
+        this->geostrophicWindX = geostrophicWindX / para->getVelocityRatio();
+        this->geostrophicWindY = geostrophicWindY / para->getVelocityRatio();
+        this->coriolisFrequency = coriolisFrequency * para->getTimeRatio();
+        VF_LOG_INFO("using Coriolis Force with geostrophic wind vector ({},{}) and coriolis frequency {}", geostrophicWindX,
+                    geostrophicWindY, coriolisFrequency);
+        if (!para->getIsBodyForce())
             throw std::runtime_error("Coriolis force needs body force.");
         para->setAllNodesAllFeatures(true);
     }
@@ -65,9 +66,9 @@ public:
     void interact(int level, uint /**/) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override {};
     ~CoriolisForce() override = default;
+
 private:
     real geostrophicWindX, geostrophicWindY, coriolisFrequency;
 };
-
 
 #endif //! \}
