@@ -142,14 +142,20 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
     real& m200 = fPMM;
     real& m000 = fMMM;
 
-    //////////////////////////////////////////////////////(unsigned long)//////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
     //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
     //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
     //!
     real drho = 0.0, oneOverRho = 0.0, vvx = 0.0, vvy = 0.0, vvz = 0.0;
     getCompressibleMacroscopicValues(distribution, drho, oneOverRho, vvx, vvy, vvz);
+    
 
+    ////////////////////////////////////////////////////////////////////////////////////
+    //! - Compute round off errors using Kahan summation algorithm <a href=https://en.wikipedia.org/wiki/Kahan_summation_algorithm">
+    parameter.forceCorrectionX = vvx;
+    parameter.forceCorrectionY = vvy;
+    parameter.forceCorrectionZ = vvz;
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
@@ -158,6 +164,13 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
     vvx += parameter.forceX * c1o2;
     vvy += parameter.forceY * c1o2;
     vvz += parameter.forceZ * c1o2;
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    //! - Compute round off errors using Kahan summation algorithm <a href=https://en.wikipedia.org/wiki/Kahan_summation_algorithm">
+
+    parameter.forceCorrectionX = c2o1*((parameter.forceCorrectionX-vvx) + c1o2*parameter.forceX);
+    parameter.forceCorrectionY = c2o1*((parameter.forceCorrectionY-vvy) + c1o2*parameter.forceY);
+    parameter.forceCorrectionZ = c2o1*((parameter.forceCorrectionZ-vvz) + c1o2*parameter.forceZ);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // calculate the square of velocities for this lattice node

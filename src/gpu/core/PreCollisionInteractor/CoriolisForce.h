@@ -44,36 +44,29 @@
 #include <stdexcept>
 #include <vector>
 
+//!\brief Interactor to compute Coriolis force. All parameters in SI units.
 class CoriolisForce : public PreCollisionInteractor
 {
 public:
-    CoriolisForce(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager, real windSpeed, real windDirection, real coriolisParameter,
-                  uint numberOfAccumulationTimesteps = 100)
-        : numberOfAccumulationTimesteps(numberOfAccumulationTimesteps), windSpeed(windSpeed), windDirection(windDirection), coriolisParameter(coriolisParameter),
-          PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
+
+    CoriolisForce(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager, real geostrophicWindX, real geostrophicWindY, real coriolisParameter)
+        : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
     {
-        VF_LOG_INFO("using Coriolis Force with wind speed {}, wind direction {} and coriolis parameter {}", windSpeed, windDirection, coriolisParameter);
+        this->geostrophicWindX = geostrophicWindX*para->getVelocityRatio();
+        this->geostrophicWindY = geostrophicWindY*para->getVelocityRatio();
+        this->coriolisFrequency = coriolisParameter/para->getTimeRatio();
+        VF_LOG_INFO("using Coriolis Force with geostrophic wind vector ({},{}) and coriolis parameter {}", geostrophicWindX, geostrophicWindY, coriolisParameter);
         if(!para->getIsBodyForce())
             throw std::runtime_error("Coriolis force needs body force.");
         para->setAllNodesAllFeatures(true);
     }
 
-    void init() override;
-    void interact(int level, uint t) override;
+    void init() override {};
+    void interact(int level, uint /**/) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override {};
-    ~CoriolisForce() override;
-    struct LevelData;
-    LevelData& getLevelData(int level);
+    ~CoriolisForce() override = default;
 private:
-
-    const uint numberOfAccumulationTimesteps;
-    const real windSpeed, windDirection, coriolisParameter;
-    std::vector<LevelData> levelData;
-};
-
-struct CoriolisForce::LevelData {
-    real velocityX, velocityY, coriolisFrequency;
-    real* forceAccumulatorX, *forceAccumulatorY;
+    real geostrophicWindX, geostrophicWindY, coriolisFrequency;
 };
 
 

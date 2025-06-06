@@ -175,7 +175,7 @@ void run(const vf::basics::ConfigurationFile& config)
     auto scalingFactory = GridScalingFactory();
 
     for (int iProcess = 1; iProcess < numberOfProcesses; iProcess++)
-        gridBuilder->addDomainSplit(lengthX / numberOfProcesses*iProcess, Axis::x);
+        gridBuilder->addDomainSplit(lengthX / numberOfProcesses * iProcess, Axis::x);
 
     if (useRefinement) {
         gridBuilder->setNumberOfLayersForRefinement(4, 0);
@@ -274,7 +274,8 @@ void run(const vf::basics::ConfigurationFile& config)
     if (useCoriolisForce) {
         para->setIsBodyForce(true);
         para->setAllNodesAllFeatures(true);
-        auto coriolisForce = std::make_shared<CoriolisForce>(para, cudaMemoryManager, geostrophicWindSpeed, geostrophicWindDirection, coriolisParameter);
+        auto coriolisForce = std::make_shared<CoriolisForce>(para, cudaMemoryManager, geostrophicWindSpeed*std::cos(geostrophicWindDirection),
+                                                             geostrophicWindDirection*std::sin(geostrophicWindDirection), coriolisParameter);
         para->addInteractor(coriolisForce);
     }
 
@@ -282,7 +283,7 @@ void run(const vf::basics::ConfigurationFile& config)
     // add probes
     //////////////////////////////////////////////////////////////////////////
 
-    if (!usePrecursorInflow && processID==0) {
+    if (!usePrecursorInflow && processID == 0) {
         const auto planarAverageProbe =
             std::make_shared<PlanarAverageProbe>(para, cudaMemoryManager, para->getOutputPath(), "planarAverageProbe",
                                                  timeStepStartAveraging, timeStepStartTemporalAveraging, timeStepAveraging,

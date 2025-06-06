@@ -47,6 +47,7 @@ struct CollisionParameter
     real forceX;
     real forceY;
     real forceZ;
+    real forceCorrectionX, forceCorrectionY, forceCorrectionZ;
 };
 
 struct TurbulentViscosity
