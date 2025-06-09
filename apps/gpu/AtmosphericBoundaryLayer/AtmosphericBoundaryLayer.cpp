@@ -103,7 +103,7 @@ void run(const vf::basics::ConfigurationFile& config)
     const bool useCoriolisForce = config.getValue("UseCoriolisForce", false);
     const real geostrophicWindSpeed = config.getValue("GeostrophicWindSpeed", c8o1);
     const real geostrophicWindDirection = config.getValue("GeostrophicWindDirection", c0o1);
-    const real coriolisFrequency = config.getValue("CoriolisFrequency", 1e-4F);
+    const real coriolisParameter = config.getValue("CoriolisParameter", 1e-4F);
 
     const bool useDistributionsForPrecursor = config.getValue<bool>("UseDistributions", false);
     std::string precursorDirectory = config.getValue<std::string>("PrecursorDirectory", "precursor/");
@@ -275,7 +275,7 @@ void run(const vf::basics::ConfigurationFile& config)
         para->setIsBodyForce(true);
         para->setAllNodesAllFeatures(true);
         auto coriolisForce = std::make_shared<CoriolisForce>(para, cudaMemoryManager, geostrophicWindSpeed*std::cos(geostrophicWindDirection),
-                                                             geostrophicWindDirection*std::sin(geostrophicWindDirection), coriolisFrequency);
+                                                             geostrophicWindDirection*std::sin(geostrophicWindDirection), coriolisParameter);
         para->addInteractor(coriolisForce);
     }
 
