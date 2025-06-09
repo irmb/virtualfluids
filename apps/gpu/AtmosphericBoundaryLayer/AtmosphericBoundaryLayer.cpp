@@ -345,7 +345,8 @@ void run(const vf::basics::ConfigurationFile& config)
     VF_LOG_INFO("process parameter:");
     VF_LOG_INFO("Number of Processes {} process ID {}", numberOfProcesses, processID);
     printf("\n");
-
+    
+    para->worldLength = lengthX + c2o1*deltaX;
     Simulation simulation(para, cudaMemoryManager, gridBuilder->getGridBuilder(), &bcFactory, tmFactory, &scalingFactory);
     simulation.run();
 }
