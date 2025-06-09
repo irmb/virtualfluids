@@ -152,10 +152,10 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
     
 
     ////////////////////////////////////////////////////////////////////////////////////
-    //! - Compute round off errors using Kahan summation algorithm <a href=https://en.wikipedia.org/wiki/Kahan_summation_algorithm">
-    parameter.forceCorrectionX = vvx;
-    parameter.forceCorrectionY = vvy;
-    parameter.forceCorrectionZ = vvz;
+    //! - needed for Kahan summation algorithm
+    const real vvxWithoutForce = vvx;
+    const real vvyWithoutForce = vvy;
+    const real vvzWithoutForce = vvz;
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
@@ -167,10 +167,9 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Compute round off errors using Kahan summation algorithm <a href=https://en.wikipedia.org/wiki/Kahan_summation_algorithm">
-
-    parameter.forceCorrectionX = c2o1*((parameter.forceCorrectionX-vvx) + c1o2*parameter.forceX);
-    parameter.forceCorrectionY = c2o1*((parameter.forceCorrectionY-vvy) + c1o2*parameter.forceY);
-    parameter.forceCorrectionZ = c2o1*((parameter.forceCorrectionZ-vvz) + c1o2*parameter.forceZ);
+    parameter.forceCorrectionX = parameter.forceX - c2o1*(vvx - vvxWithoutForce);
+    parameter.forceCorrectionY = parameter.forceY - c2o1*(vvy - vvyWithoutForce);
+    parameter.forceCorrectionZ = parameter.forceZ - c2o1*(vvz - vvzWithoutForce);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // calculate the square of velocities for this lattice node
