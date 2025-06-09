@@ -88,6 +88,7 @@ public:
 
     virtual void allReduceSum(std::vector<float>& svalues) = 0;
     virtual void allReduceSum(std::vector<double>& svalues) = 0;
+    virtual void allReduceSum(std::vector<uint>& svalues) = 0;
 
     virtual void broadcast(int &value)                    = 0;
     virtual void broadcast(float &value)                  = 0;

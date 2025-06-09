@@ -160,6 +160,7 @@ void NullCommunicator::allGather(std::vector<uint> &svalues, std::vector<uint> &
 }
 void NullCommunicator::allReduceSum(std::vector<float>& svalues) {};
 void NullCommunicator::allReduceSum(std::vector<double>& svalues) {};
+void NullCommunicator::allReduceSum(std::vector<uint>& svalues) {};
 void NullCommunicator::broadcast(int &value)
 {
 }

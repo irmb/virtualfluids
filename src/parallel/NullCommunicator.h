@@ -79,6 +79,7 @@ public:
 
     void allReduceSum(std::vector<float>& values) override;
     void allReduceSum(std::vector<double>& values) override;
+    void allReduceSum(std::vector<uint>& values) override;
 
     void broadcast(int &value) override;
     void broadcast(float &value) override;
