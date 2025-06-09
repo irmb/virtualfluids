@@ -31,57 +31,60 @@
 //! \{
 //! \author Martin Schoenherr, Henry Korb
 //=======================================================================================
-#include "Calculation/Calculation.h"
-#include "lbm/constants/D3Q27.h"
 
 #include <basics/constants/NumericConstants.h>
-#include <lbm/MacroscopicQuantities.h>
-#include <lbm/collision/TurbulentViscosity.h>
 
-#include "gpu/core/BoundaryConditions/AdvectionDiffusion/Utilities.cuh"
+#include <lbm/MacroscopicQuantities.h>
+#include <lbm/advectionDiffusion/BoundaryConditions.h>
+#include <lbm/collision/TurbulentViscosity.h>
+#include <lbm/constants/D3Q27.h>
+
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
+#include "gpu/core/Calculation/Calculation.h"
 #include "gpu/core/Utilities/KernelUtilities.h"
 #include "gpu/cuda_helper/CudaIndexCalculation.h"
 
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
-using SlipBC = BoundaryConditionFactory::AdvectionDiffusionSlipVelocityBC;
+using FluxBC = BoundaryConditionFactory::AdvectionDiffusionFluxBC;
 
-template <SlipBC slipBCType>
-__global__ void AdvectionDiffusionSlipVelocity_Device(real* populationsArray,
-                                                      const AdvectionDiffusionSlipVelocityBoundaryConditions bcParameters,
+template <FluxBC fluxBCType>
+__global__ void AdvectionDiffusionFlux_Device(real* populationsArray,
+                                                      const AdvectionDiffusionFluxBoundaryConditions bcParameters,
                                                       const real* velocityX, const real* velocityY, const real* velocityZ,
                                                       const real* turbulentDiffusivity, real diffusivity,
                                                       const real omegaDiffusivity, const uint* neighborX,
                                                       const uint* neighborY, const uint* neighborZ,
                                                       const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
 {
+    using namespace vf::basics::constant;
+    using namespace vf::lbm::dir;
+    using namespace vf::lbm::advection_diffusion;
+    using namespace vf::gpu;
+
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
     if (nodeIndex >= bcParameters.numberOfBCnodes)
         return;
 
-    const bool withTurbulentViscosity = slipBCType == SlipBC::SlipVelocityTurbulentViscosityCompressible;
+    const bool withTurbulentViscosity = fluxBCType == FluxBC::FluxTurbulentViscosityCompressible;
 
-    Distributions27 populationReferences =
-        vf::gpu::getDistributionReferences27(populationsArray, numberOfLBnodes, isEvenTimestep);
+    Distributions27 populationReferences = getDistributionReferences27(populationsArray, numberOfLBnodes, isEvenTimestep);
 
     const real normalX = bcParameters.normalX[nodeIndex];
     const real normalY = bcParameters.normalY[nodeIndex];
     const real normalZ = bcParameters.normalZ[nodeIndex];
 
     SubgridDistances27 subgridDistances;
-    vf::gpu::getPointersToSubgridDistances(subgridDistances, bcParameters.q27[0], bcParameters.numberOfBCnodes);
+    getPointersToSubgridDistances(subgridDistances, bcParameters.q27[0], bcParameters.numberOfBCnodes);
 
     const uint indexOfBCnode = bcParameters.BCNodeIndices[nodeIndex];
-    const vf::gpu::ListIndices listIndices(indexOfBCnode, neighborX, neighborY, neighborZ);
+    const ListIndices listIndices(indexOfBCnode, neighborX, neighborY, neighborZ);
 
     const real vx1 = velocityX[indexOfBCnode];
     const real vx2 = velocityY[indexOfBCnode];
     const real vx3 = velocityZ[indexOfBCnode];
 
     real populations[27];
-    vf::gpu::getPostCollisionDistribution(populations, populationReferences, listIndices);
-    vf::gpu::getPointersToDistributions(populationReferences, populationsArray, numberOfLBnodes, !isEvenTimestep);
+    getPostCollisionDistribution(populations, populationReferences, listIndices);
+    getPointersToDistributions(populationReferences, populationsArray, numberOfLBnodes, !isEvenTimestep);
 
     const real concentration = vf::lbm::getDensity(populations);
     // diffusive flux
@@ -100,13 +103,24 @@ __global__ void AdvectionDiffusionSlipVelocity_Device(real* populationsArray,
     const real fluxY = (diffusiveFluxY - normalFlux * normalY) + neumannFlux * normalY;
     const real fluxZ = (diffusiveFluxZ - normalFlux * normalZ) + neumannFlux * normalZ;
 
-    if (slipBCType == SlipBC::SlipVelocityBounceBack) {
-        writePopulationsBounceBackWithFlux(nodeIndex, subgridDistances, listIndices, populationReferences, populations,
-                                           fluxX, fluxY, fluxZ);
+    if (fluxBCType == FluxBC::FluxBounceBack) {
+        loopDirections([&](auto direction) {
+            const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
+            if (subgridDistance < c0o1 || subgridDistance > c1o1)
+                return;
+            const real population = computePopulationSimpleBounceBackWithFlux<direction>(populations, fluxX, fluxY, fluxZ);
+            writeInInverseDirection<direction>(population, listIndices, populationReferences);
+        });
     } else {
         const real relaxationFrequency = vf::lbm::calculateOmegaWithTurbulentViscosity(omegaDiffusivity, addedDiffusivity);
-        writePopulationsInterpolatedWithFlux(nodeIndex, subgridDistances, listIndices, populationReferences, populations,
-                                             vx1, vx2, vx3, relaxationFrequency, concentration, fluxX, fluxY, fluxZ);
+        loopDirections([&](auto direction) {
+            const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
+            if (subgridDistance < c0o1 || subgridDistance > c1o1)
+                return;
+            const real population = computePopulationInterpolatedBounceBackWithFlux<direction>(
+                subgridDistance, populations, vx1, vx2, vx3, relaxationFrequency, concentration, fluxX, fluxY, fluxZ);
+            writeInInverseDirection<direction>(population, listIndices, populationReferences);
+        });
     }
 }
 

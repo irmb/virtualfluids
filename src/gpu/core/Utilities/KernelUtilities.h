@@ -249,29 +249,29 @@ struct ListIndices
 
     constexpr uint k000() const { return k_000; }
     constexpr uint kP00() const { return k_000; }
-    constexpr uint k0P0() const { return k_000; }
-    constexpr uint k00P() const { return k_000; }
-    constexpr uint kPP0() const { return k_000; }
-    constexpr uint k0PP() const { return k_000; }
-    constexpr uint kP0P() const { return k_000; }
-    constexpr uint kPPP() const { return k_000; }
     constexpr uint kM00() const { return k_M00; }
-    constexpr uint kMP0() const { return k_M00; }
-    constexpr uint kM0P() const { return k_M00; }
-    constexpr uint kMPP() const { return k_M00; }
+    constexpr uint k0P0() const { return k_000; }
     constexpr uint k0M0() const { return k_0M0; }
-    constexpr uint kPM0() const { return k_0M0; }
-    constexpr uint k0MP() const { return k_0M0; }
-    constexpr uint kPMP() const { return k_0M0; }
+    constexpr uint k00P() const { return k_000; }
     constexpr uint k00M() const { return k_00M; }
-    constexpr uint kP0M() const { return k_00M; }
-    constexpr uint k0PM() const { return k_00M; }
-    constexpr uint kPPM() const { return k_00M; }
+    constexpr uint kPP0() const { return k_000; }
     constexpr uint kMM0() const { return k_MM0; }
-    constexpr uint kMMP() const { return k_MM0; }
+    constexpr uint kPM0() const { return k_0M0; }
+    constexpr uint kMP0() const { return k_M00; }
+    constexpr uint kP0P() const { return k_000; }
     constexpr uint kM0M() const { return k_M0M; }
-    constexpr uint kMPM() const { return k_M0M; }
+    constexpr uint kP0M() const { return k_00M; }
+    constexpr uint kM0P() const { return k_M00; }
+    constexpr uint k0PP() const { return k_000; }
     constexpr uint k0MM() const { return k_0MM; }
+    constexpr uint k0PM() const { return k_00M; }
+    constexpr uint k0MP() const { return k_0M0; }
+    constexpr uint kPPP() const { return k_000; }
+    constexpr uint kMPP() const { return k_M00; }
+    constexpr uint kPMP() const { return k_0M0; }
+    constexpr uint kMMP() const { return k_MM0; }
+    constexpr uint kPPM() const { return k_00M; }
+    constexpr uint kMPM() const { return k_M0M; }
     constexpr uint kPMM() const { return k_0MM; }
     constexpr uint kMMM() const { return k_MMM; }
 
@@ -306,6 +306,15 @@ template <> constexpr uint ListIndices::getIndex<dPPM>() const { return kPPM(); 
 template <> constexpr uint ListIndices::getIndex<dMPM>() const { return kMPM(); }
 template <> constexpr uint ListIndices::getIndex<dPMM>() const { return kPMM(); }
 template <> constexpr uint ListIndices::getIndex<dMMM>() const { return kMMM(); }
+
+template <size_t direction>
+constexpr void writeInInverseDirection(const real population, const vf::gpu::ListIndices& listIndices,
+                                       const Distributions27& populationReferences)
+{
+    const size_t inverseDir = vf::lbm::dir::inverseDir<direction>();
+    const uint writeIndex = listIndices.getIndex<inverseDir>();
+    (populationReferences.f[inverseDir])[writeIndex] = population;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 //! - Read distributions: style of reading and writing the distributions from/to

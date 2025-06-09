@@ -53,10 +53,10 @@ using DirectionalBoundaryConditionKernel = std::function<void(LBMSimulationParam
 using BoundaryConditionWithParameterKernel = std::function<void(Parameter*, QforBoundaryConditions*, const int level)>;
 using PrecursorBoundaryConditionKernel =
     std::function<void(LBMSimulationParameter*, QforPrecursorBoundaryConditions*, real tRatio, real velocityRatio)>;
-using ADSlipVelocityBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionSlipVelocityBoundaryConditions bcParams)>;
+using ADNoFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNoFluxBoundaryConditions bcParams)>;
+using ADFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionFluxBoundaryConditions bcParams)>;
 using ADDirichletBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionDirichletBoundaryConditions bcParams)>;
 using ADNeumannBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNeumannBoundaryConditions bcParams)>;
-using ADNoSlipBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNoSlipBoundaryConditions bcParams)>;
 //! \class BCKernelManager
 //! \brief manage the cuda kernel calls to boundary conditions
 //! \details This class stores the boundary conditions and manages the calls to the boundary condition kernels.
@@ -95,8 +95,8 @@ public:
     //! \brief calls the device function of the stress wall model (post-collision)
     void runStressWallModelKernelPost(int level) const;
 
-    void runADNoSlipBCKernel(int level) const ;
-    void runADSlipVelocityBCKernel(int level) const ;
+    void runADNoFluxBCKernel(int level) const ;
+    void runADFluxBCKernel(int level) const ;
     void runADDirichletBCKernel(int level) const ;
     void runADNeumannBCKernel(int level) const ;
 private:
@@ -138,8 +138,8 @@ private:
     PrecursorBoundaryConditionKernel precursorBoundaryConditionPost = nullptr;
     BoundaryConditionKernel pressureBoundaryConditionPre = nullptr;
     DirectionalBoundaryConditionKernel directionalPressureBoundaryConditionPre = nullptr;
-    ADNoSlipBoundaryConditionKernel ADNoSlipBoundaryConditionPost = nullptr;
-    ADSlipVelocityBoundaryConditionKernel ADSlipVelocityBoundaryConditionPost = nullptr;
+    ADNoFluxBoundaryConditionKernel ADNoFluxBoundaryConditionPost = nullptr;
+    ADFluxBoundaryConditionKernel ADFluxBoundaryConditionPost = nullptr;
     ADDirichletBoundaryConditionKernel ADDirichletBoundaryConditionPost = nullptr;
     ADNeumannBoundaryConditionKernel ADNeumannBoundaryConditionPost = nullptr;
 };

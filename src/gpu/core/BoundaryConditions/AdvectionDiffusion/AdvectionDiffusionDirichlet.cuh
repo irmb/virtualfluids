@@ -33,12 +33,13 @@
 //=======================================================================================
 #include <basics/DataTypes.h>
 #include <cuda_helper/CudaIndexCalculation.h>
-#include <lbm/MacroscopicQuantities.h>
 
-#include "BoundaryConditions/BoundaryConditionFactory.h"
-#include "Calculation/Calculation.h"
-#include "Utilities.cuh"
-#include "Utilities/KernelUtilities.h"
+#include <lbm/MacroscopicQuantities.h>
+#include <lbm/advectionDiffusion/BoundaryConditions.h>
+
+#include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
+#include "gpu/core/Calculation/Calculation.h"
+#include "gpu/core/Utilities/KernelUtilities.h"
 
 template <BoundaryConditionFactory::AdvectionDiffusionDirichletBC bcType>
 __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
@@ -49,52 +50,76 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
                                                    const bool isEvenTimestep)
 {
     using namespace vf::basics::constant;
-    using namespace vf::lbm::dir;
+    using namespace vf::lbm::advection_diffusion;
+    using namespace vf::gpu;
 
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
     if (nodeIndex >= bcParameters.numberOfBCnodes)
         return;
 
     SubgridDistances27 subgridDistances;
-    vf::gpu::getPointersToSubgridDistances(subgridDistances, bcParameters.q27[0], bcParameters.numberOfBCnodes);
+    getPointersToSubgridDistances(subgridDistances, bcParameters.q27[0], bcParameters.numberOfBCnodes);
 
     const uint k_000 = bcParameters.BCNodeIndices[nodeIndex];
-    const vf::gpu::ListIndices listIndices(k_000, neighborX, neighborY, neighborZ);
+    const ListIndices listIndices(k_000, neighborX, neighborY, neighborZ);
 
-    Distributions27 populationReferences =
-        vf::gpu::getDistributionReferences27(populationsArray, numberOfLBnodes, isEvenTimestep);
+    Distributions27 populationReferences = getDistributionReferences27(populationsArray, numberOfLBnodes, isEvenTimestep);
 
     real populations[27];
-    vf::gpu::getPostCollisionDistribution(populations, populationReferences, listIndices);
+    getPostCollisionDistribution(populations, populationReferences, listIndices);
     const real concentrationWall = bcParameters.concentration[nodeIndex];
 
-    vf::gpu::getPointersToDistributions(populationReferences, populationsArray, numberOfLBnodes, !isEvenTimestep);
+    getPointersToDistributions(populationReferences, populationsArray, numberOfLBnodes, !isEvenTimestep);
 
     switch (bcType) {
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackSlip:
-            writePopulationsSimpleAntiBounceBack(nodeIndex, subgridDistances, populationReferences, listIndices, populations,
-                                                 velocityX[k_000], velocityY[k_000], velocityZ[k_000], concentrationWall);
+            loopDirections([&](auto direction) {
+                const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
+                if (subgridDistance < c0o1 || subgridDistance > c1o1)
+                    return;
+                const real population = computePopulationSimpleAntiBounceBack<direction>(
+                    populations, concentrationWall, velocityX[k_000], velocityY[k_000], velocityZ[k_000]);
+                writeInInverseDirection<direction>(population, listIndices, populationReferences);
+            });
             break;
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip:
-            writePopulationsSimpleAntiBounceBack(nodeIndex, subgridDistances, populationReferences, listIndices, populations,
-                                                 bcParameters.vx[nodeIndex], bcParameters.vy[nodeIndex],
-                                                 bcParameters.vz[nodeIndex], concentrationWall);
+            loopDirections([&](auto direction) {
+                const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
+                if (subgridDistance < c0o1 || subgridDistance > c1o1)
+                    return;
+                const real population = computePopulationSimpleAntiBounceBack<direction>(
+                    populations, concentrationWall, bcParameters.vx[nodeIndex], bcParameters.vy[nodeIndex],
+                    bcParameters.vz[nodeIndex]);
+                writeInInverseDirection<direction>(population, listIndices, populationReferences);
+            });
             break;
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedSlip: {
             const real concentrationNode = vf::lbm::getDensity(populations);
             const real vx1 = velocityX[k_000];
             const real vx2 = velocityY[k_000];
             const real vx3 = velocityZ[k_000];
-            writePopulationsInterpolatedAntiBounceBack(nodeIndex, subgridDistances, populationReferences, listIndices,
-                                                       populations, relaxationFrequency, vx1, vx2, vx3, vx1, vx2, vx3,
-                                                       concentrationNode, concentrationWall);
+            loopDirections([&](auto direction) {
+                const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
+                if (subgridDistance < c0o1 || subgridDistance > c1o1)
+                    return;
+                const real population = computePopulationInterpolatedAntiBounceBack<direction>(
+                    subgridDistance, populations, concentrationNode, concentrationWall, vx1, vx2, vx3, vx1, vx2, vx3,
+                    relaxationFrequency);
+                writeInInverseDirection<direction>(population, listIndices, populationReferences);
+            });
         } break;
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedNoSlip: {
             const real concentrationNode = vf::lbm::getDensity(populations);
-            writePopulationsInterpolatedAntiBounceBack(
-                nodeIndex, subgridDistances, populationReferences, listIndices, populations, relaxationFrequency,
-                velocityX[k_000], velocityY[k_000], velocityZ[k_000], bcParameters.vx[nodeIndex], bcParameters.vy[nodeIndex],
-                bcParameters.vz[nodeIndex], concentrationNode, concentrationWall);
+            loopDirections([&](auto direction) {
+                const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
+                if (subgridDistance < c0o1 || subgridDistance > c1o1)
+                    return;
+                const real population = computePopulationInterpolatedAntiBounceBack<direction>(
+                    subgridDistance, populations, concentrationNode, concentrationWall, velocityX[k_000], velocityY[k_000],
+                    velocityZ[k_000], bcParameters.vx[nodeIndex], bcParameters.vy[nodeIndex], bcParameters.vz[nodeIndex],
+                    relaxationFrequency);
+                writeInInverseDirection<direction>(population, listIndices, populationReferences);
+            });
         } break;
     }
 }

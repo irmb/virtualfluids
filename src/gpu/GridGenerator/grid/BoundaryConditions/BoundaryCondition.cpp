@@ -134,7 +134,7 @@ void ADNeumannBoundaryCondition::fillBoundaryValueLists()
     std::fill_n(std::back_inserter(this->gradientList), this->indices.size(), gradient);
 }
 
-void ADSlipVelocityBoundaryCondition::fillBoundaryValueLists()
+void ADFluxBoundaryCondition::fillBoundaryValueLists()
 {
     const real gradient = static_cast<real>(side->getDirection()) * this->gradient;
     std::fill_n(std::back_inserter(this->normalXList), this->indices.size(), normalX);

@@ -40,6 +40,7 @@
 #include "utilities/math/Math.h"
 #include <array>
 #include <cstddef>
+#include <stdexcept>
 #include <vector>
 
 using namespace grid_generator;
@@ -278,6 +279,8 @@ uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, 
 void Geometry::addIndices(const std::vector<SPtr<Grid>> &grids, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     auto geometryBoundaryCondition = std::dynamic_pointer_cast<GeometryBoundaryCondition>(boundaryCondition);
+    if(geometryBoundaryCondition == nullptr)
+        throw std::runtime_error("Tried to set unallowed boundary condition on geometry");
 
     std::vector<real> qNode(grids[level]->getEndDirection() + 1);
 
