@@ -48,27 +48,34 @@
 class CoriolisForce : public PreCollisionInteractor
 {
 public:
-    CoriolisForce(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager, real geostrophicWindX,
-                  real geostrophicWindY, real coriolisFrequency)
-        : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
+    CoriolisForce(const SPtr<Parameter>& parameter, SPtr<CudaMemoryManager> cudaMemoryManager, real geostrophicWindX,
+                  real geostrophicWindY, real coriolisParameter, uint numberOfAccumulationSteps = 100)
+        : geostrophicWindX(geostrophicWindX / parameter->getVelocityRatio()),
+          geostrophicWindY(geostrophicWindY / parameter->getVelocityRatio()),
+          coriolisParameter(coriolisParameter * parameter->getTimeRatio()), nAccumulationSteps(numberOfAccumulationSteps),
+          PreCollisionInteractor(parameter, std::move(cudaMemoryManager))
     {
-        this->geostrophicWindX = geostrophicWindX / para->getVelocityRatio();
-        this->geostrophicWindY = geostrophicWindY / para->getVelocityRatio();
-        this->coriolisFrequency = coriolisFrequency * para->getTimeRatio();
-        VF_LOG_INFO("using Coriolis Force with geostrophic wind vector ({},{}) and coriolis frequency {}", geostrophicWindX,
-                    geostrophicWindY, coriolisFrequency);
+        VF_LOG_INFO("using Coriolis Force with geostrophic wind vector ({},{}) m/s and coriolis parameter {} 1/s", geostrophicWindX,
+                    geostrophicWindY, coriolisParameter);
         if (!para->getIsBodyForce())
             throw std::runtime_error("Coriolis force needs body force.");
         para->setAllNodesAllFeatures(true);
     }
 
-    void init() override {};
-    void interact(int level, uint /**/) override;
+    void init() override;
+    void interact(int level, uint t) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override {};
-    ~CoriolisForce() override = default;
+    ~CoriolisForce() override;
+    struct LevelData
+    {
+        real *forceAccumulatorX, *forceAccumulatorY;
+    };
+    LevelData& getLevelData(int level) {return levelData[level]; };
 
 private:
-    real geostrophicWindX, geostrophicWindY, coriolisFrequency;
+    real geostrophicWindX, geostrophicWindY, coriolisParameter;
+    const uint nAccumulationSteps;
+    std::vector<LevelData> levelData;
 };
 
 #endif //! \}
