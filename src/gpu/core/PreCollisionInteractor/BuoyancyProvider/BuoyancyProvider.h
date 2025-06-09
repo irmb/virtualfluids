@@ -37,39 +37,66 @@
 
 #include <functional>
 #include <iostream>
+#include <utility>
 #include <vector>
 
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
 
-#include "PreCollisionInteractor/PreCollisionInteractor.h"
+#include "gpu/core/Cuda/CudaMemoryManager.h"
+#include "gpu/core/PreCollisionInteractor/PreCollisionInteractor.h"
+#include "gpu/core/Parameter/Parameter.h"
 
-struct ProfileParameters
-{
-    uint numberOfPlanes;
-    real *referenceTemperaturesHost, *referenceTemperaturesDevice = nullptr;
-    uint *indicesHost, *indicesDevice = nullptr;
-    ProfileParameters(uint numberOfPlanes) : numberOfPlanes(numberOfPlanes)
-    {
-    }
-};
-
-struct ReductionParameters
-{
-    uint numberOfPlanes;
-    uint *numberOfNodesPerPlaneHost = nullptr, *numberOfNodesPerPlaneDevice = nullptr;
-    size_t sizeOfTemporaryMemory = 0;
-    void* temporaryMemory = nullptr;
-    ReductionParameters(uint numberOfPlanes) : numberOfPlanes(numberOfPlanes)
-    {
-    }
-};
-
-class BuoyancyProviderConstantValue : public PreCollisionInteractor
+class BuoyancyProvider : public PreCollisionInteractor
 {
 public:
-    BuoyancyProviderConstantValue(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager);
+    BuoyancyProvider(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager) : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
+    {
+        if (!para->getBuoyancyEnabled())
+            throw std::runtime_error("BuoyancyProvider: buoyancy needs to be enabled in Parameter!");
+    }
+    struct ProfileParameters
+    {
+        uint numberOfPlanes;
+        real *referenceTemperaturesHost, *referenceTemperaturesDevice = nullptr;
+        uint *indicesHost, *indicesDevice = nullptr;
+        ProfileParameters(uint numberOfPlanes) : numberOfPlanes(numberOfPlanes)
+        {
+        }
+    };
 
+    struct ReductionParameters
+    {
+        uint numberOfPlanes;
+        uint *numberOfNodesPerPlaneHost = nullptr, *numberOfNodesPerPlaneDevice = nullptr;
+        size_t sizeOfTemporaryMemory = 0;
+        void* temporaryMemory = nullptr;
+        ReductionParameters(uint numberOfPlanes) : numberOfPlanes(numberOfPlanes)
+        {
+        }
+    };
+
+    ReductionParameters* getReductionParameter(int level)
+    {
+        return &reductionParameters[level];
+    }
+    ProfileParameters* getProfileParameter(int level)
+    {
+        return &profileParameters[level];
+    }
+
+    void initializeProfileParameters();
+
+protected:
+    std::vector<ProfileParameters> profileParameters;
+    std::vector<ReductionParameters> reductionParameters;
+};
+
+class BuoyancyProviderConstantValue : public BuoyancyProvider
+{
+
+public:
+    using BuoyancyProvider::BuoyancyProvider;
     ~BuoyancyProviderConstantValue() override = default;
 
     void init() override;
@@ -80,7 +107,7 @@ private:
     int streamIndex;
 };
 
-class BuoyancyProviderPlanarAverage : public PreCollisionInteractor
+class BuoyancyProviderPlanarAverage : public BuoyancyProvider
 {
 public:
     BuoyancyProviderPlanarAverage(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager);
@@ -94,11 +121,9 @@ public:
 private:
     uint numberOfInitialReferenceValues;
     int streamIndex;
-    std::vector<ProfileParameters> profileParameters;
-    std::vector<ReductionParameters> reductionParameters;
 };
 
-class BuoyancyProviderPlanarAverageMultiGPU : public PreCollisionInteractor
+class BuoyancyProviderPlanarAverageMultiGPU : public BuoyancyProvider
 {
 public:
     BuoyancyProviderPlanarAverageMultiGPU(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager);
@@ -112,8 +137,6 @@ public:
 private:
     uint numberOfInitialReferenceValues;
     int streamIndex;
-    std::vector<ProfileParameters> profileParameters;
-    std::vector<ReductionParameters> reductionParameters;
     std::vector<std::vector<uint>> totalNumberOfNodesPerPlane;
 };
 

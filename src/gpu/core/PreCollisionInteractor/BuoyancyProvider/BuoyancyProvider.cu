@@ -30,6 +30,7 @@
 //=======================================================================================
 #include "BuoyancyProvider.h"
 
+#include <algorithm>
 #include <stdexcept>
 
 #include <cub/cub.cuh>
@@ -83,7 +84,7 @@ __global__ void computeBuoyancyConstantValue(real* referenceTemperature, const r
     forceZ[nodeIndex] += computeBuoyancyForce(factor, referenceTemperature[nodeIndex], temperature[nodeIndex]);
 }
 
-__global__ void computeBuoyancyPlanarAverage(ProfileParameters profileParameters, const real* temperature,
+__global__ void computeBuoyancyPlanarAverage(BuoyancyProvider::ProfileParameters profileParameters, const real* temperature,
                                              real* referenceTemperature, const uint* numberOfNodesPerPlane, real factor,
                                              real* forceZ, unsigned long long numberOfNodes)
 {
@@ -117,37 +118,27 @@ void findFirstIndicesInZDirection(std::vector<uint>& referenceStateIndices, std:
     referenceStateIndices.push_back(para->getParH(level)->numberOfNodes);
 }
 
-ProfileParameters initializeProfileParameters(int level, Parameter* para, CudaMemoryManager* cudaMemoryManager)
+void BuoyancyProvider::initializeProfileParameters()
 {
-    std::vector<uint> referenceStateIndices;
-    std::vector<real> referenceStateCoordsZ;
-    findFirstIndicesInZDirection(referenceStateIndices, referenceStateCoordsZ, para, level);
-    ProfileParameters profileParameters(static_cast<uint>(referenceStateIndices.size()) - 1);
-    cudaMemoryManager->cudaAllocBuoyancyProviderProfileParameters(&profileParameters);
-    std::copy(referenceStateIndices.begin(), referenceStateIndices.end(), profileParameters.indicesHost);
-    cudaMemoryManager->cudaCopyBuoyancyProviderProfileParametersHtoD(&profileParameters);
-    return profileParameters;
+    for (int level = 0; level <= para->getMaxLevel(); level++) {
+        std::vector<uint> referenceStateIndices;
+        std::vector<real> referenceStateCoordsZ;
+        findFirstIndicesInZDirection(referenceStateIndices, referenceStateCoordsZ, para.get(), level);
+        BuoyancyProvider::ProfileParameters profileParameters(static_cast<uint>(referenceStateIndices.size()) - 1);
+        cudaMemoryManager->cudaAllocBuoyancyProviderProfileParameters(this, level);
+        std::copy(referenceStateIndices.begin(), referenceStateIndices.end(), profileParameters.indicesHost);
+        cudaMemoryManager->cudaCopyBuoyancyProviderProfileParametersHtoD(this, level);
+    }
 }
 
 void countNodesPerPlane(std::vector<uint>& nodesPerPlane, LBMSimulationParameter* para, const uint* indices,
                         uint numberOfPlanes)
 {
     for (uint plane = 0; plane < numberOfPlanes; plane++) {
-        uint nodes = 0;
-        for (uint i = indices[plane]; i < indices[plane + 1]; i++) {
-            if (para->typeOfGridNode[i] == GEO_FLUID)
-                nodes++;
-        }
-        nodesPerPlane.push_back(nodes);
+        nodesPerPlane.push_back(std::count_if(para->typeOfGridNode + indices[plane],
+                                              para->typeOfGridNode + indices[plane + 1],
+                                              [](auto type) { return type == GEO_FLUID; }));
     }
-}
-
-BuoyancyProviderConstantValue::BuoyancyProviderConstantValue(SPtr<Parameter> parameter,
-                                                             SPtr<CudaMemoryManager> cudaMemoryManager)
-    : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
-{
-    if (!para->getBuoyancyEnabled())
-        throw std::runtime_error("BuoyancyProviderConstantValue: parameter needs to have buoyancy!");
 }
 
 void BuoyancyProviderConstantValue::init()
@@ -163,23 +154,15 @@ void BuoyancyProviderConstantValue::interact(int level, uint /**/)
     auto* stream = para->getStreamManager()->getStream(CudaStreamIndex::BuoyancyProvider, streamIndex);
 
     computeBuoyancyConstantValue<<<grid.grid, grid.threads, 0, stream>>>(parD.localReferenceTemperature, parD.concentration,
-                                                                          para->getScaledBuoyancyFactor(level), parD.forceZ_SP, parD.numberOfNodes);
+                                                                         para->getScaledBuoyancyFactor(level),
+                                                                         parD.forceZ_SP, parD.numberOfNodes);
     cudaStreamSynchronize(stream);
-}
-
-BuoyancyProviderPlanarAverage::BuoyancyProviderPlanarAverage(SPtr<Parameter> parameter,
-                                                             SPtr<CudaMemoryManager> cudaMemoryManager)
-    : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
-{
-    if (!para->getBuoyancyEnabled())
-        throw std::runtime_error("BuoyancyProviderPlanarAverage: parameter needs to have buoyancy!");
 }
 
 void BuoyancyProviderPlanarAverage::init()
 {
+    initializeProfileParameters();
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        profileParameters.push_back(initializeProfileParameters(level, para.get(), cudaMemoryManager.get()));
-
         std::vector<uint> nodesPerPlane;
         nodesPerPlane.reserve(profileParameters[level].numberOfPlanes);
 
@@ -193,9 +176,9 @@ void BuoyancyProviderPlanarAverage::init()
             reductionParameters[level].numberOfPlanes, profileParameters[level].indicesDevice,
             profileParameters[level].indicesDevice + 1));
 
-        cudaMemoryManager->cudaAllocBuoyancyProviderReductionParameters(&reductionParameters[level]);
+        cudaMemoryManager->cudaAllocBuoyancyProviderReductionParameters(this, level);
         std::copy(nodesPerPlane.begin(), nodesPerPlane.end(), reductionParameters[level].numberOfNodesPerPlaneHost);
-        cudaMemoryManager->cudaCopyBuoyancyProviderReductionParametersHtoD(&reductionParameters[level]);
+        cudaMemoryManager->cudaCopyBuoyancyProviderReductionParametersHtoD(this, level);
     }
     streamIndex = para->getStreamManager()->registerAndLaunchStream(CudaStreamIndex::BuoyancyProvider);
 }
@@ -223,18 +206,15 @@ void BuoyancyProviderPlanarAverage::interact(int level, uint /**/)
 BuoyancyProviderPlanarAverage::~BuoyancyProviderPlanarAverage()
 {
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        cudaMemoryManager->cudaFreeBuoyancyProviderProfileParameters(&profileParameters[level]);
-        cudaMemoryManager->cudaFreeBuoyancyProviderReductionParameters(&reductionParameters[level]);
+        cudaMemoryManager->cudaFreeBuoyancyProviderProfileParameters(this, level);
+        cudaMemoryManager->cudaFreeBuoyancyProviderReductionParameters(this, level);
     }
 }
 
 BuoyancyProviderPlanarAverageMultiGPU::BuoyancyProviderPlanarAverageMultiGPU(SPtr<Parameter> parameter,
                                                                              SPtr<CudaMemoryManager> cudaMemoryManager)
-    : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
+    : BuoyancyProvider(std::move(parameter), std::move(cudaMemoryManager))
 {
-    if (!para->getBuoyancyEnabled())
-        throw std::runtime_error("BuoyancyProviderPlanarAverage: parameter needs to have buoyancy!");
-
     if (vf::parallel::MPICommunicator::getInstance()->getNumberOfProcesses() < 2)
         throw std::runtime_error("Only 1 process. No need to use MultiGPU.");
 }
@@ -246,8 +226,9 @@ void BuoyancyProviderPlanarAverageMultiGPU::init()
     if (numberOfProcesses < 2)
         throw std::runtime_error("Only 1 process. No need to use MultiGPU.");
 
+    initializeProfileParameters();
+
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        profileParameters.push_back(initializeProfileParameters(level, para.get(), cudaMemoryManager.get()));
         std::vector<uint> nodesPerPlane;
         countNodesPerPlane(nodesPerPlane, para->getParH(level).get(), profileParameters[level].indicesHost,
                            profileParameters[level].numberOfPlanes);
@@ -265,11 +246,11 @@ void BuoyancyProviderPlanarAverageMultiGPU::init()
         totalNumberOfNodesPerPlane.emplace_back(nodesPerPlane);
 
         ReductionParameters reductionParams(profileParameters.back().numberOfPlanes);
-        cudaMemoryManager->cudaAllocBuoyancyProviderReductionParameters(&reductionParams);
+        cudaMemoryManager->cudaAllocBuoyancyProviderReductionParameters(this, level);
         // fill numberOfNodes with dummy value to reuse the same kernel as the single gpu version
         std::fill(reductionParams.numberOfNodesPerPlaneHost,
                   reductionParams.numberOfNodesPerPlaneHost + reductionParams.numberOfPlanes, 1);
-        cudaMemoryManager->cudaCopyBuoyancyProviderReductionParametersHtoD(&reductionParams);
+        cudaMemoryManager->cudaCopyBuoyancyProviderReductionParametersHtoD(this, level);
         reductionParameters.push_back(reductionParams);
     }
     streamIndex = para->getStreamManager()->registerAndLaunchStream(CudaStreamIndex::BuoyancyProvider);
@@ -285,7 +266,7 @@ void BuoyancyProviderPlanarAverageMultiGPU::interact(int level, uint /**/)
     std::vector<real> temperatureSums(profileParams->numberOfPlanes);
 
     for (uint plane = 0; plane < profileParams->numberOfPlanes; plane++) {
-        temperatureSums.push_back(thrust::reduce(thrust::device, parD.concentration + profileParams->indicesHost[plane],
+        temperatureSums.push_back(thrust::reduce(parD.concentration + profileParams->indicesHost[plane],
                                                  parD.concentration + profileParams->indicesHost[plane + 1]));
     }
 
@@ -297,7 +278,7 @@ void BuoyancyProviderPlanarAverageMultiGPU::interact(int level, uint /**/)
         profileParams->referenceTemperaturesHost[plane] = temperatureSums[plane] / real(nodesPerPlane[plane]);
     }
 
-    cudaMemoryManager->cudaCopyBuoyancyProviderProfileParametersHtoD(profileParams);
+    cudaMemoryManager->cudaCopyBuoyancyProviderProfileParametersHtoD(this, level);
     auto* stream = para->getStreamManager()->getStream(CudaStreamIndex::BuoyancyProvider, streamIndex);
 
     vf::cuda::CudaGrid grid(parD.numberofthreads, uint(parD.numberOfNodes));
@@ -312,6 +293,6 @@ void BuoyancyProviderPlanarAverageMultiGPU::interact(int level, uint /**/)
 BuoyancyProviderPlanarAverageMultiGPU::~BuoyancyProviderPlanarAverageMultiGPU()
 {
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        cudaMemoryManager->cudaFreeBuoyancyProviderProfileParameters(&profileParameters[level]);
+        cudaMemoryManager->cudaFreeBuoyancyProviderProfileParameters(this, level);
     }
 }

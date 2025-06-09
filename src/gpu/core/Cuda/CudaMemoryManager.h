@@ -39,7 +39,6 @@
 #include <vector>
 
 #include "Calculation/Calculation.h"
-#include "PreCollisionInteractor/BuoyancyProvider/BuoyancyProvider.h"
 
 class Parameter;
 class ActuatorFarm;
@@ -47,8 +46,7 @@ class Probe;
 class PlanarAverageProbe;
 class VelocitySetter;
 class PrecursorWriter;
-struct ReductionParameters;
-struct ProfileParameters;
+class BuoyancyProvider;
 
 class CudaMemoryManager
 {
@@ -337,15 +335,15 @@ public:
     void cudaFreeSphereIndices(ActuatorFarm* actuatorFarm);
 
     // BuoyancyProvider
-    void cudaAllocBuoyancyProviderProfileParameters(ProfileParameters* profileParams);
-    void cudaCopyBuoyancyProviderProfileParametersHtoD(ProfileParameters* profileParams);
-    void cudaCopyBuoyancyProviderProfileParametersDtoH(ProfileParameters* profileParams);
-    void cudaFreeBuoyancyProviderProfileParameters(ProfileParameters* profileParams);
+    void cudaAllocBuoyancyProviderProfileParameters(BuoyancyProvider* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderProfileParametersHtoD(BuoyancyProvider* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderProfileParametersDtoH(BuoyancyProvider* buoyancyProvider, int level);
+    void cudaFreeBuoyancyProviderProfileParameters(BuoyancyProvider* buoyancyProvider, int level);
 
-    void cudaAllocBuoyancyProviderReductionParameters(ReductionParameters* reductionParams);
-    void cudaCopyBuoyancyProviderReductionParametersHtoD(ReductionParameters* reductionParams);
-    void cudaCopyBuoyancyProviderReductionParametersDtoH(ReductionParameters* reductionParams);
-    void cudaFreeBuoyancyProviderReductionParameters(ReductionParameters* reductionParams);
+    void cudaAllocBuoyancyProviderReductionParameters(BuoyancyProvider* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderReductionParametersHtoD(BuoyancyProvider* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderReductionParametersDtoH(BuoyancyProvider* buoyancyProvider, int level);
+    void cudaFreeBuoyancyProviderReductionParameters(BuoyancyProvider* buoyancyProvider, int level);
     // Probes
     void cudaAllocProbeData(Probe* probe, int level);
     void cudaCopyProbeDataHtoD(Probe* probe, int level);
