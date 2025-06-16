@@ -113,6 +113,7 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
     vf::lbm::MacroscopicValues macroscopicValues;
     collision(para, macroscopicValues, turbulentViscosity);
     
+    // set body force to round off error
     if(applyBodyForce)
     {
         collisionParameter.bodyForceX[k_000] = para.forceX / collisionParameter.forceFactor;
