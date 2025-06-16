@@ -86,7 +86,7 @@ void run(const vf::basics::ConfigurationFile& config)
     const real viscosity = 1.56e-5;
     const real machNumber = 0.1;
 
-    const real boundaryLayerHeight = config.getValue("boundaryLayerHeight", 1000.0);
+    const real boundaryLayerHeight = config.getValue("BoundaryLayerHeight", 1000.0);
 
     const real lengthX = 6 * boundaryLayerHeight;
     const real lengthY = 4 * boundaryLayerHeight;
@@ -275,7 +275,7 @@ void run(const vf::basics::ConfigurationFile& config)
         para->setIsBodyForce(true);
         para->setAllNodesAllFeatures(true);
         auto coriolisForce = std::make_shared<CoriolisForce>(para, cudaMemoryManager, geostrophicWindSpeed*std::cos(geostrophicWindDirection),
-                                                             geostrophicWindDirection*std::sin(geostrophicWindDirection), coriolisParameter);
+                                                             geostrophicWindDirection*std::sin(geostrophicWindDirection), coriolisParameter, 1);
         para->addInteractor(coriolisForce);
     }
 
