@@ -115,9 +115,9 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
     
     if(applyBodyForce)
     {
-        collisionParameter.bodyForceX[k_000] = para.forceCorrectionX / collisionParameter.forceFactor;
-        collisionParameter.bodyForceY[k_000] = para.forceCorrectionY / collisionParameter.forceFactor;
-        collisionParameter.bodyForceZ[k_000] = para.forceCorrectionZ / collisionParameter.forceFactor;
+        collisionParameter.bodyForceX[k_000] = para.forceX / collisionParameter.forceFactor;
+        collisionParameter.bodyForceY[k_000] = para.forceY / collisionParameter.forceFactor;
+        collisionParameter.bodyForceZ[k_000] = para.forceZ / collisionParameter.forceFactor;
     }
 
     if (writeMacroscopicVariables || turbulenceModel == vf::lbm::TurbulenceModel::AMD) {

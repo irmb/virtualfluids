@@ -167,9 +167,9 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Compute round off errors using Kahan summation algorithm <a href=https://en.wikipedia.org/wiki/Kahan_summation_algorithm">
-    parameter.forceCorrectionX = parameter.forceX - c2o1*(vvx - vvxWithoutForce);
-    parameter.forceCorrectionY = parameter.forceY - c2o1*(vvy - vvyWithoutForce);
-    parameter.forceCorrectionZ = parameter.forceZ - c2o1*(vvz - vvzWithoutForce);
+    parameter.forceX -= c2o1*(vvx - vvxWithoutForce);
+    parameter.forceY -= c2o1*(vvy - vvyWithoutForce);
+    parameter.forceZ -= c2o1*(vvz - vvzWithoutForce);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // calculate the square of velocities for this lattice node
