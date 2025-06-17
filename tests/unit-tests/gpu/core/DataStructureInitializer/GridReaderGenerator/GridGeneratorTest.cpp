@@ -37,6 +37,7 @@
 #include <gpu/core/DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h>
 
 #include <basics/DataTypes.h>
+#include "Calculation/Calculation.h"
 #include "Cuda/CudaMemoryManager.h"
 
 #include "Parameter/Parameter.h"
@@ -98,8 +99,8 @@ class CudaMemoryManagerDouble : public CudaMemoryManager
 public:
     explicit CudaMemoryManagerDouble(std::shared_ptr<Parameter> parameter) : CudaMemoryManager(parameter){};
 
-    void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor) override{};
-    void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor) override{};
+    void cudaAllocProcessNeighbor(ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&) override{};
+    void cudaCopyProcessNeighborIndex(ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&) override{};
 };
 
 class IndexRearrangementForStreamsDouble : public IndexRearrangementForStreams
@@ -109,11 +110,11 @@ public:
                                        vf::parallel::Communicator &communicator)
         : IndexRearrangementForStreams(para, builder, communicator){};
 
-    void initCommunicationArraysForCommAfterFinetoCoarseX(uint level, int indexOfProcessNeighbor,
+    void initCommunicationArraysForCommAfterFinetoCoarseX(uint level, uint indexOfProcessNeighbor,
                                                           int direction) const override{};
-    void initCommunicationArraysForCommAfterFinetoCoarseY(uint level, int indexOfProcessNeighbor,
+    void initCommunicationArraysForCommAfterFinetoCoarseY(uint level, uint indexOfProcessNeighbor,
                                                           int direction) const override{};
-    void initCommunicationArraysForCommAfterFinetoCoarseZ(uint level, int indexOfProcessNeighbor,
+    void initCommunicationArraysForCommAfterFinetoCoarseZ(uint level, uint indexOfProcessNeighbor,
                                                           int direction) const override{};
 };
 
@@ -161,19 +162,19 @@ private:
 TEST_F(GridGeneratorTests_initalValuesDomainDecompostion, whenNoCommunication_sendProcessNeighborShouldNotExist)
 {
     act();
-    EXPECT_THAT(para->getParH(level)->sendProcessNeighborX.size(), testing::Eq(0));
-    EXPECT_THAT(para->getParH(level)->sendProcessNeighborY.size(), testing::Eq(0));
-    EXPECT_THAT(para->getParH(level)->sendProcessNeighborZ.size(), testing::Eq(0));
+    EXPECT_THAT(para->getParH(level)->sendProcessNeighborsX.size(), testing::Eq(0));
+    EXPECT_THAT(para->getParH(level)->sendProcessNeighborsY.size(), testing::Eq(0));
+    EXPECT_THAT(para->getParH(level)->sendProcessNeighborsZ.size(), testing::Eq(0));
 }
 
 TEST_F(GridGeneratorTests_initalValuesDomainDecompostion, whenCommunicationInX_sendProcessNeighborShouldExistInX)
 {
     builder->numberOfSendIndices = 1;
     act();
-    EXPECT_THAT(para->getParH(level)->sendProcessNeighborX.size(),
+    EXPECT_THAT(para->getParH(level)->sendProcessNeighborsX.size(),
                 testing::Eq(1)); // one entry for communication_directions::MX
-    EXPECT_THAT(para->getParH(level)->sendProcessNeighborY.size(), testing::Eq(0));
-    EXPECT_THAT(para->getParH(level)->sendProcessNeighborZ.size(), testing::Eq(0));
+    EXPECT_THAT(para->getParH(level)->sendProcessNeighborsY.size(), testing::Eq(0));
+    EXPECT_THAT(para->getParH(level)->sendProcessNeighborsZ.size(), testing::Eq(0));
 }
 
 //! \}

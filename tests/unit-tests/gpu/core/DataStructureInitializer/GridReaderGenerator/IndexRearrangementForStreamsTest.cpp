@@ -177,7 +177,7 @@ private:
         para->getParH(sendIndices.level)->neighborZ = sendIndices.neighborZ;
 
         para->setNumberOfProcessNeighborsX(sendIndices.numberOfProcessNeighbors, sendIndices.level, "send");
-        para->getParH(sendIndices.level)->sendProcessNeighborX[sendIndices.indexOfProcessNeighbor].index = sendIndices.sendIndices.data();
+        para->getParH(sendIndices.level)->sendProcessNeighborsX[sendIndices.indexOfProcessNeighbor].index = sendIndices.sendIndices.data();
         para->initProcessNeighborsAfterFtoCX(sendIndices.level);
 
         testSubject = std::make_unique<IndexRearrangementForStreams>(
@@ -197,7 +197,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderSendIndices, reorderSendIndicesFo
 
     EXPECT_THAT(para->getParH(sendIndices.level)->sendProcessNeighborsAfterFtoCX[sendIndices.indexOfProcessNeighbor].numberOfNodes,
                 testing::Eq(sendIndices.numberOfSendNodesAfterFtoC_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(sendIndices.level)->sendProcessNeighborX[sendIndices.indexOfProcessNeighbor].index,
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(sendIndices.level)->sendProcessNeighborsX[sendIndices.indexOfProcessNeighbor].index,
                                 sendIndices.sendProcessNeighborX_expected))
         << "sendProcessNeighborX[].index does not match the expected vector";
 }
@@ -265,7 +265,7 @@ private:
         para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes = 3;
 
         para->setNumberOfProcessNeighborsX(numberOfProcessNeighbors, level, "recv");
-        para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].rankNeighbor = 0;
+        para->getParH(level)->recvProcessNeighborsX[indexOfProcessNeighbor].rankNeighbor = 0;
 
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
@@ -384,7 +384,7 @@ private:
         para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes = 3;
 
         para->setNumberOfProcessNeighborsY(numberOfProcessNeighbors, level, "recv");
-        para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].rankNeighbor = 0;
+        para->getParH(level)->recvProcessNeighborsY[indexOfProcessNeighbor].rankNeighbor = 0;
 
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
@@ -503,7 +503,7 @@ private:
         para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes = 3;
 
         para->setNumberOfProcessNeighborsZ(numberOfProcessNeighbors, level, "recv");
-        para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor = 0;
+        para->getParH(level)->recvProcessNeighborsZ[indexOfProcessNeighbor].rankNeighbor = 0;
 
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
@@ -616,7 +616,7 @@ protected:
     {
         para->setNumberOfProcessNeighborsX(ri.numberOfProcessNeighbors, ri.level, "recv");
         para->initProcessNeighborsAfterFtoCX(ri.level);
-        para->getParH(ri.level)->recvProcessNeighborX[ri.indexOfProcessNeighbor].index = ri.recvIndices.data();
+        para->getParH(ri.level)->recvProcessNeighborsX[ri.indexOfProcessNeighbor].index = ri.recvIndices.data();
     }
 
     void act()
@@ -694,7 +694,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noSendIndicesForCom
 
     EXPECT_THAT(para->getParH(ri.level)->recvProcessNeighborsAfterFtoCX[ri.indexOfProcessNeighbor].numberOfNodes,
                 testing::Eq(numberOfRecvNodesAfterFtoC_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborX[ri.indexOfProcessNeighbor].index,
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborsX[ri.indexOfProcessNeighbor].index,
                                 recvIndices_expected));
 }
 
@@ -710,7 +710,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someSendIndicesForC
 
     EXPECT_THAT(para->getParH(ri.level)->recvProcessNeighborsAfterFtoCX[ri.indexOfProcessNeighbor].numberOfNodes,
                 testing::Eq(numberOfRecvNodesAfterFtoC_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborX[ri.indexOfProcessNeighbor].index,
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborsX[ri.indexOfProcessNeighbor].index,
                                 recvIndices_expected));
 }
 
@@ -726,7 +726,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, allIndicesAreSendIn
 
     EXPECT_THAT(para->getParH(ri.level)->recvProcessNeighborsAfterFtoCX[ri.indexOfProcessNeighbor].numberOfNodes,
                 testing::Eq(numberOfRecvNodesAfterFtoC_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborX[ri.indexOfProcessNeighbor].index,
+    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborsX[ri.indexOfProcessNeighbor].index,
                                 recvIndices_expected));
 }
 
