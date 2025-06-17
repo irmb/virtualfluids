@@ -117,22 +117,19 @@ public:
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
     virtual void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
-    void cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
     virtual void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor);
     //
     virtual void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
-    void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
     virtual void cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor);
     //
     virtual void cudaAllocProcessNeighborZ(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborZFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
-    void cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
     virtual void cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor);
     void cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor);
+
+    void cudaCopyProcessNeighborFsDtoH(ProcessNeighbor27* neighborHost, ProcessNeighbor27* neighborDevice);
+    void cudaCopyProcessNeighborFsHtoD(ProcessNeighbor27* neighborHost, ProcessNeighbor27* neighborDevice);
 
     //////////////////////////////////////////////////////////////////////////
 
