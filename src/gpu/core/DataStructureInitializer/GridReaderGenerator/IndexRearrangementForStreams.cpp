@@ -152,7 +152,7 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX
         para->getParH(level)->sendProcessNeighborX[indexOfProcessNeighbor].rankNeighbor);
 
     // resize receiving vector to correct size
-    if ((uint)recvIndicesForCommAfterFtoCPositions.size() > 0) {
+    if (!recvIndicesForCommAfterFtoCPositions.empty()) {
         auto it = std::unique(
             recvIndicesForCommAfterFtoCPositions.begin(),
             recvIndicesForCommAfterFtoCPositions.end()); // finds the second zero when there are multiple zeros in a row
@@ -179,7 +179,7 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCY
         para->getParH(level)->sendProcessNeighborY[indexOfProcessNeighbor].rankNeighbor);
 
     // resize receiving vector to correct size
-    if ((uint)recvIndicesForCommAfterFtoCPositions.size() > 0) {
+    if (!recvIndicesForCommAfterFtoCPositions.empty()) {
         auto it = std::unique(
             recvIndicesForCommAfterFtoCPositions.begin(),
             recvIndicesForCommAfterFtoCPositions.end()); // finds the second zero when there are multiple zeros in a row
@@ -206,7 +206,7 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCZ
         para->getParH(level)->sendProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor);
 
     // resize receiving vector to correct size
-    if ((uint)recvIndicesForCommAfterFtoCPositions.size() > 0) {
+    if (!recvIndicesForCommAfterFtoCPositions.empty()) {
         auto it = std::unique(
             recvIndicesForCommAfterFtoCPositions.begin(),
             recvIndicesForCommAfterFtoCPositions.end()); // finds the second zero when there are multiple zeros in a row
@@ -454,7 +454,7 @@ void IndexRearrangementForStreams::aggregateCoarseNodesForCtoF(int level, std::v
 
 void IndexRearrangementForStreams::addUniqueIndexToCommunicationVectors(
     std::vector<int> &sendIndicesAfterFtoC, int &sparseIndexSend,
-    std::vector<unsigned int> &sendIndicesForCommAfterFtoCPositions, uint &posInSendIndices) const
+    std::vector<uint> &sendIndicesForCommAfterFtoCPositions, uint &posInSendIndices) const
 {
     // add index to corresponding vectors, but omit indices which are already in sendIndicesAfterFtoC
     if (std::find(sendIndicesAfterFtoC.begin(), sendIndicesAfterFtoC.end(), sparseIndexSend) ==
@@ -465,7 +465,7 @@ void IndexRearrangementForStreams::addUniqueIndexToCommunicationVectors(
 }
 
 void IndexRearrangementForStreams::findIfSparseIndexIsInSendIndicesAndAddToCommVectors(
-    int sparseIndex, int *sendIndices, uint numberOfSendIndices, std::vector<int> &sendIndicesAfterFtoC,
+    int sparseIndex, const int *sendIndices, uint numberOfSendIndices, std::vector<int> &sendIndicesAfterFtoC,
     std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
     int sparseIndexSend;
@@ -480,7 +480,7 @@ void IndexRearrangementForStreams::findIfSparseIndexIsInSendIndicesAndAddToCommV
 }
 
 void IndexRearrangementForStreams::findIndicesNotInCommAfterFtoC(const uint &numberOfSendOrRecvIndices,
-                                                                 int *sendOrReceiveIndices,
+                                                                 const int *sendOrReceiveIndices,
                                                                  std::vector<int> &sendOrReceiveIndicesAfterFtoC,
                                                                  std::vector<int> &sendOrIndicesOther)
 {
@@ -530,7 +530,7 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
     VF_LOG_INFO("Reorder recv indices for communication after fine to coarse: level: {} direction: {}", level,
                 direction);
 
-    if (sendIndicesForCommAfterFtoCPositions.size() == 0)
+    if (sendIndicesForCommAfterFtoCPositions.empty())
         VF_LOG_WARNING("ReorderRecvIndicesForCommAfterFtoC(): sendIndicesForCommAfterFtoCPositions is empty.");
 
     uint numberOfRecvIndices = builder->getNumberOfReceiveIndices(direction, level);

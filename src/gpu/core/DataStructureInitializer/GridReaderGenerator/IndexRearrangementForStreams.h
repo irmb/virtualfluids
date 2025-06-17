@@ -136,11 +136,11 @@ protected:
                                               uint &posInSendIndices) const;
     //! \brief Find if a sparse index is a send index. If true, call addUniqueIndexToCommunicationVectors()
     void
-    findIfSparseIndexIsInSendIndicesAndAddToCommVectors(int sparseIndex, int *sendIndices, uint numberOfSendIndices,
+    findIfSparseIndexIsInSendIndicesAndAddToCommVectors(int sparseIndex, const int *sendIndices, uint numberOfSendIndices,
                                                         std::vector<int> &sendIndicesAfterFtoC,
                                                         std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
     //! \brief Find all indices which are not part of the communication after the interpolation from fine to coarse
-    static void findIndicesNotInCommAfterFtoC(const uint &numberOfSendOrRecvIndices, int *sendOrReceiveIndices,
+    static void findIndicesNotInCommAfterFtoC(const uint &numberOfSendOrRecvIndices, const int *sendOrReceiveIndices,
                                               std::vector<int> &sendOrReceiveIndicesAfterFtoC,
                                               std::vector<int> &sendOrIndicesOther);
 

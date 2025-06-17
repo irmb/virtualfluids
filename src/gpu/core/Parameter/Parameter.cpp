@@ -2089,32 +2089,48 @@ void Parameter::setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIn
 
 void Parameter::initProcessNeighborsAfterFtoCX(int level)
 {
-    this->getParH(level)->sendProcessNeighborsAfterFtoCX.resize(this->getParH(level)->sendProcessNeighborX.size());
-    this->getParH(level)->recvProcessNeighborsAfterFtoCX.resize(this->getParH(level)->recvProcessNeighborX.size());
-    this->getParD(level)->sendProcessNeighborsAfterFtoCX.resize(
-        this->getParH(level)->sendProcessNeighborsAfterFtoCX.size());
-    this->getParD(level)->recvProcessNeighborsAfterFtoCX.resize(
-        this->getParH(level)->recvProcessNeighborsAfterFtoCX.size());
+
+    parH[level]->sendProcessNeighborsAfterFtoCX.resize(parH[level]->sendProcessNeighborX.size());
+    parH[level]->recvProcessNeighborsAfterFtoCX.resize(parH[level]->recvProcessNeighborX.size());
+    parD[level]->sendProcessNeighborsAfterFtoCX.resize(parH[level]->sendProcessNeighborsAfterFtoCX.size());
+    parD[level]->recvProcessNeighborsAfterFtoCX.resize(parH[level]->recvProcessNeighborsAfterFtoCX.size());
+    if(getDiffOn())
+    {
+        parH[level]->sendProcessNeighborADAfterFtoCX.resize(parH[level]->sendProcessNeighborADX.size());
+        parH[level]->recvProcessNeighborADAfterFtoCX.resize(parH[level]->recvProcessNeighborADX.size());
+        parD[level]->sendProcessNeighborADAfterFtoCX.resize(parH[level]->sendProcessNeighborADAfterFtoCX.size());
+        parD[level]->recvProcessNeighborADAfterFtoCX.resize(parH[level]->recvProcessNeighborADAfterFtoCX.size());
+    }
 }
 
 void Parameter::initProcessNeighborsAfterFtoCY(int level)
 {
-    this->getParH(level)->sendProcessNeighborsAfterFtoCY.resize(this->getParH(level)->sendProcessNeighborY.size());
-    this->getParH(level)->recvProcessNeighborsAfterFtoCY.resize(this->getParH(level)->recvProcessNeighborY.size());
-    this->getParD(level)->sendProcessNeighborsAfterFtoCY.resize(
-        this->getParH(level)->sendProcessNeighborsAfterFtoCY.size());
-    this->getParD(level)->recvProcessNeighborsAfterFtoCY.resize(
-        this->getParH(level)->recvProcessNeighborsAfterFtoCY.size());
+    parH[level]->sendProcessNeighborsAfterFtoCY.resize(parH[level]->sendProcessNeighborY.size());
+    parH[level]->recvProcessNeighborsAfterFtoCY.resize(parH[level]->recvProcessNeighborY.size());
+    parD[level]->sendProcessNeighborsAfterFtoCY.resize(parH[level]->sendProcessNeighborsAfterFtoCY.size());
+    parD[level]->recvProcessNeighborsAfterFtoCY.resize(parH[level]->recvProcessNeighborsAfterFtoCY.size());
+    if(getDiffOn())
+    {
+        parH[level]->sendProcessNeighborADAfterFtoCY.resize(parH[level]->sendProcessNeighborADY.size());
+        parH[level]->recvProcessNeighborADAfterFtoCY.resize(parH[level]->recvProcessNeighborADY.size());
+        parD[level]->sendProcessNeighborADAfterFtoCY.resize(parH[level]->sendProcessNeighborADAfterFtoCY.size());
+        parD[level]->recvProcessNeighborADAfterFtoCY.resize(parH[level]->recvProcessNeighborADAfterFtoCY.size());
+    }
 }
 
 void Parameter::initProcessNeighborsAfterFtoCZ(int level)
 {
-    this->getParH(level)->sendProcessNeighborsAfterFtoCZ.resize(this->getParH(level)->sendProcessNeighborZ.size());
-    this->getParH(level)->recvProcessNeighborsAfterFtoCZ.resize(this->getParH(level)->recvProcessNeighborZ.size());
-    this->getParD(level)->sendProcessNeighborsAfterFtoCZ.resize(
-        this->getParH(level)->sendProcessNeighborsAfterFtoCZ.size());
-    this->getParD(level)->recvProcessNeighborsAfterFtoCZ.resize(
-        this->getParH(level)->recvProcessNeighborsAfterFtoCZ.size());
+    parH[level]->sendProcessNeighborsAfterFtoCZ.resize(parH[level]->sendProcessNeighborZ.size());
+    parH[level]->recvProcessNeighborsAfterFtoCZ.resize(parH[level]->recvProcessNeighborZ.size());
+    parD[level]->sendProcessNeighborsAfterFtoCZ.resize(parH[level]->sendProcessNeighborsAfterFtoCZ.size());
+    parD[level]->recvProcessNeighborsAfterFtoCZ.resize(parH[level]->recvProcessNeighborsAfterFtoCZ.size());
+    if(getDiffOn())
+    {
+        parH[level]->sendProcessNeighborADAfterFtoCZ.resize(parH[level]->sendProcessNeighborADZ.size());
+        parH[level]->recvProcessNeighborADAfterFtoCZ.resize(parH[level]->recvProcessNeighborADZ.size());
+        parD[level]->sendProcessNeighborADAfterFtoCZ.resize(parH[level]->sendProcessNeighborADAfterFtoCZ.size());
+        parD[level]->recvProcessNeighborADAfterFtoCZ.resize(parH[level]->recvProcessNeighborADAfterFtoCZ.size());
+    }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
