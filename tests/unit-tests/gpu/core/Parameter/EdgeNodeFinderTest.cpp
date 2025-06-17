@@ -86,7 +86,7 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXY)
     para->parH[level]->recvProcessNeighborsX.emplace_back();
     para->parH[level]->sendProcessNeighborsY.emplace_back();
     para->parH[level]->sendProcessNeighborsY.emplace_back();
-    cnt numRecvNeighbor = (int)para->parH[level]->recvProcessNeighborsX.size() - 1;
+    const int numRecvNeighbor = (int)para->parH[level]->recvProcessNeighborsX.size() - 1;
     const int numSendNeighbor = (int)para->parH[level]->sendProcessNeighborsY.size() - 1;
 
     const int sizeRecv = 6;
@@ -155,7 +155,7 @@ TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForXZ)
 
 TEST_F(EdgeNodeFinderTest_findEdgeNodes, shouldReturnCorrectVectorForYZ)
 {
-    para->parH[level]->recvProcessNeighborsY.emplace_back()
+    para->parH[level]->recvProcessNeighborsY.emplace_back();
     para->parH[level]->sendProcessNeighborsZ.emplace_back();
     para->parH[level]->sendProcessNeighborsZ.emplace_back();
 
