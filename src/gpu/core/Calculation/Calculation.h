@@ -194,6 +194,10 @@ struct ProcessNeighbor27
    uint rankNeighbor;
    int numberOfNodes;
    int numberOfFs;
+   ProcessNeighbor27()= default;
+   ProcessNeighbor27(uint memsizeFs, uint memsizeIndex, uint rankNeighbor, int numberOfNodes, int numberOfFs) : 
+      memsizeFs(memsizeFs), memsizeIndex(memsizeIndex), rankNeighbor(rankNeighbor), numberOfNodes(numberOfNodes), numberOfFs(numberOfFs)
+   {}
 };
 
 
