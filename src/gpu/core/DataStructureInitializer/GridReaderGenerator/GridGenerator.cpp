@@ -635,7 +635,10 @@ void GridGenerator::initalValuesDomainDecompostion()
                         para->getParD(level)->recvProcessNeighborX.back().memsizeFs = sizeof(real) * tempRecv;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // malloc on host and device
-                        cudaMemoryManager->cudaAllocProcessNeighborX(level, indexProcessNeighbor);
+                        cudaMemoryManager->cudaAllocProcessNeighbor(para->getParH(level)->sendProcessNeighborX.back(),
+                                                                    para->getParD(level)->sendProcessNeighborX.back(),
+                                                                    para->getParH(level)->recvProcessNeighborX.back(),
+                                                                    para->getParD(level)->recvProcessNeighborX.back());
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // init index arrays
                         builder->getSendIndices(para->getParH(level)->sendProcessNeighborX[indexProcessNeighbor].index, direction, level);
@@ -644,7 +647,10 @@ void GridGenerator::initalValuesDomainDecompostion()
                         if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
                             indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseX(level, indexProcessNeighbor, direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        cudaMemoryManager->cudaCopyProcessNeighborXIndex(level, indexProcessNeighbor);
+                        cudaMemoryManager->cudaCopyProcessNeighborIndex(para->getParH(level)->sendProcessNeighborX.back(),
+                                                                        para->getParD(level)->sendProcessNeighborX.back(),
+                                                                        para->getParH(level)->recvProcessNeighborX.back(),
+                                                                        para->getParD(level)->recvProcessNeighborX.back());
                         ////////////////////////////////////////////////////////////////////////////////////////
                     }
                 }
@@ -660,7 +666,7 @@ void GridGenerator::initalValuesDomainDecompostion()
                         para->getParD(level)->sendProcessNeighborY.emplace_back();
                         para->getParH(level)->recvProcessNeighborY.emplace_back();
                         para->getParD(level)->recvProcessNeighborY.emplace_back();
-                        if (para->getDiffOn() == true) {
+                        if (para->getDiffOn()) {
                             para->getParH(level)->sendProcessNeighborADY.emplace_back();
                             para->getParD(level)->sendProcessNeighborADY.emplace_back();
                             para->getParH(level)->recvProcessNeighborADY.emplace_back();
@@ -702,7 +708,10 @@ void GridGenerator::initalValuesDomainDecompostion()
                         para->getParD(level)->recvProcessNeighborY.back().memsizeFs = sizeof(real) * tempRecv;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // malloc on host and device
-                        cudaMemoryManager->cudaAllocProcessNeighborY(level, indexProcessNeighbor);
+                        cudaMemoryManager->cudaAllocProcessNeighbor(para->getParH(level)->sendProcessNeighborY.back(),
+                                                                    para->getParD(level)->sendProcessNeighborY.back(),
+                                                                    para->getParH(level)->recvProcessNeighborY.back(),
+                                                                    para->getParD(level)->recvProcessNeighborY.back());
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // init index arrays
                         builder->getSendIndices(para->getParH(level)->sendProcessNeighborY[indexProcessNeighbor].index, direction, level);
@@ -711,7 +720,10 @@ void GridGenerator::initalValuesDomainDecompostion()
                         if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
                             indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseY(level, indexProcessNeighbor, direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        cudaMemoryManager->cudaCopyProcessNeighborYIndex(level, indexProcessNeighbor);
+                        cudaMemoryManager->cudaCopyProcessNeighborIndex(para->getParH(level)->sendProcessNeighborY.back(),
+                                                                        para->getParD(level)->sendProcessNeighborY.back(),
+                                                                        para->getParH(level)->recvProcessNeighborY.back(),
+                                                                        para->getParD(level)->recvProcessNeighborY.back());
                         ////////////////////////////////////////////////////////////////////////////////////////
                     }
                 }
@@ -769,8 +781,10 @@ void GridGenerator::initalValuesDomainDecompostion()
                         para->getParD(level)->recvProcessNeighborZ.back().memsizeFs = sizeof(real) * tempRecv;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // malloc on host and device
-                        cudaMemoryManager->cudaAllocProcessNeighborZ(level, indexProcessNeighbor);
-                        ////////////////////////////////////////////////////////////////////////////////////////
+                        cudaMemoryManager->cudaAllocProcessNeighbor(para->getParH(level)->sendProcessNeighborZ.back(),
+                                                                    para->getParD(level)->sendProcessNeighborZ.back(),
+                                                                    para->getParH(level)->recvProcessNeighborZ.back(),
+                                                                    para->getParD(level)->recvProcessNeighborZ.back());                        ////////////////////////////////////////////////////////////////////////////////////////
                         // init index arrays
                         builder->getSendIndices(para->getParH(level)->sendProcessNeighborZ[indexProcessNeighbor].index, direction, level);
                         builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborZ[indexProcessNeighbor].index, direction,
@@ -778,8 +792,10 @@ void GridGenerator::initalValuesDomainDecompostion()
                         if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
                             indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseZ(level, indexProcessNeighbor, direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        cudaMemoryManager->cudaCopyProcessNeighborZIndex(level, indexProcessNeighbor);
-                        ////////////////////////////////////////////////////////////////////////////////////////
+                        cudaMemoryManager->cudaCopyProcessNeighborIndex(para->getParH(level)->sendProcessNeighborZ.back(),
+                                                                        para->getParD(level)->sendProcessNeighborZ.back(),
+                                                                        para->getParH(level)->recvProcessNeighborZ.back(),
+                                                                        para->getParD(level)->recvProcessNeighborZ.back());                        ////////////////////////////////////////////////////////////////////////////////////////
                     }
                 }
             }

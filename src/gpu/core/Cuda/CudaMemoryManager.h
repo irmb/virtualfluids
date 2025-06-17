@@ -116,17 +116,9 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
-    virtual void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
-    virtual void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor);
-    //
-    virtual void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);
-    virtual void cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor);
-    //
-    virtual void cudaAllocProcessNeighborZ(int lev, unsigned int processNeighbor);
-    virtual void cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor);
+    void cudaAllocProcessNeighbor(ProcessNeighbor27& sendNeighborHost, ProcessNeighbor27& sendNeighborDevice, ProcessNeighbor27& recvNeighborHost, ProcessNeighbor27& recvNeighborDevice);
+    void cudaCopyProcessNeighborIndex(ProcessNeighbor27& sendNeighborHost, ProcessNeighbor27& sendNeighborDevice, ProcessNeighbor27& recvNeighborHost, ProcessNeighbor27& recvNeighborDevice);
+    void cudaFreeProcessNeighbor(ProcessNeighbor27& sendNeighborHost, ProcessNeighbor27& sendNeighborDevice, ProcessNeighbor27& recvNeighborHost, ProcessNeighbor27& recvNeighborDevice);
 
     void cudaCopyProcessNeighborFsDtoH(ProcessNeighbor27* neighborHost, ProcessNeighbor27* neighborDevice);
     void cudaCopyProcessNeighborFsHtoD(ProcessNeighbor27* neighborHost, ProcessNeighbor27* neighborDevice);
@@ -264,24 +256,6 @@ public:
     void cudaCopyLocalReferenceTemperatureDeviceToHost(int lev);
     void cudaCopyLocalReferenceTemperatureHostToDevice(int lev);
     void cudaFreeLocalReferenceTemperature(int lev);
-
-    void cudaAllocProcessNeighborADX(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADXFsHD(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADXFsDH(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADXIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborADX(int lev, unsigned int processNeighbor);
-
-    void cudaAllocProcessNeighborADY(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADYFsHD(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADYFsDH(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADYIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborADY(int lev, unsigned int processNeighbor);
-
-    void cudaAllocProcessNeighborADZ(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADZFsHD(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADZFsDH(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADZIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor);
 
     void cudaAllocTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
     void cudaCopyTaggedFluidNodeIndices(CollisionTemplate tag, int lev);

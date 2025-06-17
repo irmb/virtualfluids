@@ -433,13 +433,17 @@ void GridReader::initalValuesDomainDecompostion(int level)
                     para->getParD(i)->recvProcessNeighborX[j].memsizeFs = sizeof(real)     *tempRecv;
                     ////////////////////////////////////////////////////////////////////////////////////////
                     //malloc on host and device
-                    cudaMemoryManager->cudaAllocProcessNeighborX(i, (uint)j);
+                    cudaMemoryManager->cudaAllocProcessNeighbor(
+                        para->getParH(i)->sendProcessNeighborX[j], para->getParD(i)->sendProcessNeighborX[j],
+                        para->getParH(i)->recvProcessNeighborX[j], para->getParD(i)->recvProcessNeighborX[j]);
                     ////////////////////////////////////////////////////////////////////////////////////////
                     //init index arrays
                     procNeighborsSendX[j]->initIndex(para->getParH(i)->sendProcessNeighborX[j].index, i);
                     procNeighborsRecvX[j]->initIndex(para->getParH(i)->recvProcessNeighborX[j].index, i);
                     ////////////////////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaCopyProcessNeighborXIndex(i, (uint)j);
+                    cudaMemoryManager->cudaCopyProcessNeighborIndex(
+                        para->getParH(i)->sendProcessNeighborX[j], para->getParD(i)->sendProcessNeighborX[j],
+                        para->getParH(i)->recvProcessNeighborX[j], para->getParD(i)->recvProcessNeighborX[j]);
                     ////////////////////////////////////////////////////////////////////////////////////////
                 }
             }
@@ -489,13 +493,17 @@ void GridReader::initalValuesDomainDecompostion(int level)
                     para->getParD(i)->recvProcessNeighborY[j].memsizeFs = sizeof(real)     *tempRecv;
                     ////////////////////////////////////////////////////////////////////////////////////////
                     //malloc on host and device
-                    cudaMemoryManager->cudaAllocProcessNeighborY(i, (uint)j);
+                    cudaMemoryManager->cudaAllocProcessNeighbor(
+                        para->getParH(i)->sendProcessNeighborY[j], para->getParD(i)->sendProcessNeighborY[j],
+                        para->getParH(i)->recvProcessNeighborY[j], para->getParD(i)->recvProcessNeighborY[j]);
                     ////////////////////////////////////////////////////////////////////////////////////////
                     //init index arrays
                     procNeighborsSendY[j]->initIndex(para->getParH(i)->sendProcessNeighborY[j].index, i);
                     procNeighborsRecvY[j]->initIndex(para->getParH(i)->recvProcessNeighborY[j].index, i);
                     ////////////////////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaCopyProcessNeighborYIndex(i, (uint)j);
+                    cudaMemoryManager->cudaCopyProcessNeighborIndex(
+                        para->getParH(i)->sendProcessNeighborY[j], para->getParD(i)->sendProcessNeighborY[j],
+                        para->getParH(i)->recvProcessNeighborY[j], para->getParD(i)->recvProcessNeighborY[j]);
                     ////////////////////////////////////////////////////////////////////////////////////////
                 }
             }
@@ -545,13 +553,17 @@ void GridReader::initalValuesDomainDecompostion(int level)
                     para->getParD(i)->recvProcessNeighborZ[j].memsizeFs = sizeof(real)     *tempRecv;
                     ////////////////////////////////////////////////////////////////////////////////////////
                     //malloc on host and device
-                    cudaMemoryManager->cudaAllocProcessNeighborZ(i, (uint)j);
+                    cudaMemoryManager->cudaAllocProcessNeighbor(
+                        para->getParH(i)->sendProcessNeighborZ[j], para->getParD(i)->sendProcessNeighborZ[j],
+                        para->getParH(i)->recvProcessNeighborZ[j], para->getParD(i)->recvProcessNeighborZ[j]);
                     ////////////////////////////////////////////////////////////////////////////////////////
                     //init index arrays
                     procNeighborsSendZ[j]->initIndex(para->getParH(i)->sendProcessNeighborZ[j].index, i);
                     procNeighborsRecvZ[j]->initIndex(para->getParH(i)->recvProcessNeighborZ[j].index, i);
                     ////////////////////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaCopyProcessNeighborZIndex(i, (uint)j);
+                    cudaMemoryManager->cudaCopyProcessNeighborIndex(
+                        para->getParH(i)->sendProcessNeighborZ[j], para->getParD(i)->sendProcessNeighborZ[j],
+                        para->getParH(i)->recvProcessNeighborZ[j], para->getParD(i)->recvProcessNeighborZ[j]);
                     ////////////////////////////////////////////////////////////////////////////////////////
                 }
             }

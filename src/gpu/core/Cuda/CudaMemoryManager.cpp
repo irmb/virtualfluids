@@ -42,6 +42,7 @@
 
 #include <basics/constants/NumericConstants.h>
 
+#include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 #include "CudaStreamManager.h"
 #include "PreCollisionInteractor/Actuator/ActuatorFarm.h"
@@ -548,130 +549,47 @@ void CudaMemoryManager::cudaFreeQuadricLimiters()
 //Process Neighbors
 //  3D domain decomposition
 //  X  /////////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor)
+void CudaMemoryManager::cudaAllocProcessNeighbor(ProcessNeighbor27& sendNeighborHost, ProcessNeighbor27& sendNeighborDevice, ProcessNeighbor27& recvNeighborHost, ProcessNeighbor27& recvNeighborDevice)
 {
-    //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].index ),                             parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].f[0]  ),     parameter->getD3Qxx() * parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].index ),                             parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].f[0]  ),     parameter->getD3Qxx() * parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].memsizeFs    ));
+    // Host
+    checkCudaErrors(cudaMallocHost((void**)&(sendNeighborHost.index), sendNeighborHost.memsizeIndex));
+    checkCudaErrors(
+        cudaMallocHost((void**)&(sendNeighborHost.f[0]), size_t(parameter->getD3Qxx() * sendNeighborHost.memsizeFs)));
+    checkCudaErrors(cudaMallocHost((void**)&(recvNeighborHost.index), recvNeighborHost.memsizeIndex));
+    checkCudaErrors(
+        cudaMallocHost((void**)&(recvNeighborHost.f[0]), size_t(parameter->getD3Qxx() * recvNeighborHost.memsizeFs)));
 
-    //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].index ),                                 parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].f[0]  ),         parameter->getD3Qxx() * parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborX[processNeighbor].index ),                                 parameter->getParD(lev)->recvProcessNeighborX[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborX[processNeighbor].f[0]  ),         parameter->getD3Qxx() * parameter->getParD(lev)->recvProcessNeighborX[processNeighbor].memsizeFs    ));
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    double tmp = (double)parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].memsizeIndex + (double)parameter->getD3Qxx()*(double)parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].memsizeFs +
-                 (double)parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].memsizeIndex + (double)parameter->getD3Qxx()*(double)parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].memsizeFs;
-    setMemsizeGPU(tmp, false);
-    //printf("memsize GPU for neighbors %f \n",tmp/1000000.0);
-}
-void CudaMemoryManager::cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor)
-{
-    //copy send Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->sendProcessNeighborX[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
-    //copy recv Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborX[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
-}
-
-void CudaMemoryManager::cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor)
-{
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].index ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborX[processNeighbor].f[0]     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].index  ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborX[processNeighbor].f[0]     ));
-}
-//  Y  /////////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor)
-{
-    //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].index ),                             parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].f[0]  ),     parameter->getD3Qxx() * parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].index ),                             parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].f[0]  ),     parameter->getD3Qxx() * parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].memsizeFs    ));
-
-    //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].index ),                                 parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].f[0]  ),         parameter->getD3Qxx() * parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].index ),                                 parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].f[0]  ),         parameter->getD3Qxx() * parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].memsizeFs    ));
+    // Device
+    checkCudaErrors(cudaMalloc((void**)&(sendNeighborDevice.index), sendNeighborDevice.memsizeIndex));
+    checkCudaErrors(
+        cudaMalloc((void**)&(sendNeighborDevice.f[0]), size_t(parameter->getD3Qxx() * sendNeighborDevice.memsizeFs)));
+    checkCudaErrors(cudaMalloc((void**)&(recvNeighborDevice.index), recvNeighborDevice.memsizeIndex));
+    checkCudaErrors(
+        cudaMalloc((void**)&(recvNeighborDevice.f[0]), size_t(parameter->getD3Qxx() * recvNeighborDevice.memsizeFs)));
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    double tmp = (double)parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].memsizeIndex + (double)parameter->getD3Qxx()*(double)parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].memsizeFs +
-                 (double)parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].memsizeIndex + (double)parameter->getD3Qxx()*(double)parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].memsizeFs;
+    double tmp = double(sendNeighborHost.memsizeIndex + parameter->getD3Qxx()*sendNeighborHost.memsizeFs +
+                 recvNeighborHost.memsizeIndex + parameter->getD3Qxx()*recvNeighborHost.memsizeFs);
     setMemsizeGPU(tmp, false);
-    //printf("memsize GPU for neighbors %f \n",tmp/1000000.0);
 }
-void CudaMemoryManager::cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor)
+void CudaMemoryManager::cudaCopyProcessNeighborIndex(ProcessNeighbor27& sendNeighborHost, ProcessNeighbor27& sendNeighborDevice, ProcessNeighbor27& recvNeighborHost, ProcessNeighbor27& recvNeighborDevice)
 {
-    //copy send Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->sendProcessNeighborY[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
-    //copy recv Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborY[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
+    checkCudaErrors(
+        cudaMemcpy(sendNeighborDevice.index, sendNeighborHost.index, sendNeighborHost.memsizeIndex, cudaMemcpyHostToDevice));
+    checkCudaErrors(
+        cudaMemcpy(recvNeighborDevice.index, recvNeighborHost.index, recvNeighborHost.memsizeIndex, cudaMemcpyHostToDevice));
 }
 
-void CudaMemoryManager::cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor)
+void CudaMemoryManager::cudaFreeProcessNeighbor(ProcessNeighbor27& sendNeighborHost, ProcessNeighbor27& sendNeighborDevice, ProcessNeighbor27& recvNeighborHost, ProcessNeighbor27& recvNeighborDevice)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].index ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborY[processNeighbor].f[0]     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].index  ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborY[processNeighbor].f[0]     ));
-}
-//  Z  /////////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocProcessNeighborZ(int lev, unsigned int processNeighbor)
-{
-    //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].index ),                             parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].f[0]  ),     parameter->getD3Qxx() * parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].index ),                             parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].f[0]  ),     parameter->getD3Qxx() * parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].memsizeFs    ));
-
-    //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborZ[processNeighbor].index ),                                 parameter->getParD(lev)->sendProcessNeighborZ[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborZ[processNeighbor].f[0]  ),         parameter->getD3Qxx() * parameter->getParD(lev)->sendProcessNeighborZ[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborZ[processNeighbor].index ),                                 parameter->getParD(lev)->recvProcessNeighborZ[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborZ[processNeighbor].f[0]  ),         parameter->getD3Qxx() * parameter->getParD(lev)->recvProcessNeighborZ[processNeighbor].memsizeFs    ));
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    double tmp = (double)parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].memsizeIndex + (double)parameter->getD3Qxx()*(double)parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].memsizeFs +
-                 (double)parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].memsizeIndex + (double)parameter->getD3Qxx()*(double)parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].memsizeFs;
-    setMemsizeGPU(tmp, false);
-    //printf("memsize GPU for neighbors %f \n",tmp/1000000.0);
-}
-void CudaMemoryManager::cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor)
-{
-    //copy send Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->sendProcessNeighborZ[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
-    //copy recv Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborZ[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
-}
-
-void CudaMemoryManager::cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor)
-{
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].index ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborZ[processNeighbor].f[0]     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].index  ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborZ[processNeighbor].f[0]     ));
+    checkCudaErrors(cudaFreeHost(sendNeighborHost.index));
+    checkCudaErrors(cudaFreeHost(sendNeighborHost.f[0]));
+    checkCudaErrors(cudaFreeHost(recvNeighborHost.index));
+    checkCudaErrors(cudaFreeHost(recvNeighborHost.f[0]));
+    checkCudaErrors(cudaFree(sendNeighborDevice.index));
+    checkCudaErrors(cudaFree(sendNeighborDevice.f[0]));
+    checkCudaErrors(cudaFree(recvNeighborDevice.index));
+    checkCudaErrors(cudaFree(recvNeighborDevice.f[0]));
 }
 
 void CudaMemoryManager::cudaCopyProcessNeighborFsHtoD(ProcessNeighbor27* neighborHost, ProcessNeighbor27* neighborDevice)
@@ -1875,186 +1793,6 @@ void CudaMemoryManager::cudaFreeMeanOutAD(int lev)
     checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->meanPressureOut));
     checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->meanConcentrationOut));
 }
-
-
-
-////////////////////////////////////////////////////////////////////////////////////
-//  3D domain decomposition advection diffusion
-//  X  /////////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocProcessNeighborADX(int lev, unsigned int processNeighbor)
-{
-    //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborADX[processNeighbor].index ),      parameter->getParH(lev)->sendProcessNeighborADX[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborADX[processNeighbor].f[0]  ), 27 * parameter->getParH(lev)->sendProcessNeighborADX[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborADX[processNeighbor].index ),      parameter->getParH(lev)->recvProcessNeighborADX[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborADX[processNeighbor].f[0]  ), 27 * parameter->getParH(lev)->recvProcessNeighborADX[processNeighbor].memsizeFs    ));
-
-    //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborADX[processNeighbor].index ),      parameter->getParD(lev)->sendProcessNeighborADX[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborADX[processNeighbor].f[0]  ), 27 * parameter->getParD(lev)->sendProcessNeighborADX[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborADX[processNeighbor].index ), parameter->getParD(lev)->recvProcessNeighborADX[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborADX[processNeighbor].f[0]  ), 27 * parameter->getParD(lev)->recvProcessNeighborADX[processNeighbor].memsizeFs    ));
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    double tmp =
-        (double)parameter->getParH(lev)->sendProcessNeighborADX[processNeighbor].memsizeIndex +
-        (double)27.0*(double)parameter->getParH(lev)->sendProcessNeighborADX[processNeighbor].memsizeFs +
-        (double)parameter->getParH(lev)->recvProcessNeighborADX[processNeighbor].memsizeIndex +
-        (double)27.0*(double)parameter->getParH(lev)->recvProcessNeighborADX[processNeighbor].memsizeFs;
-    setMemsizeGPU(tmp, false);
-    //printf("memsize GPU for neighbors %f \n",tmp/1000000.0);
-}
-void CudaMemoryManager::cudaCopyProcessNeighborADXIndex(int lev, unsigned int processNeighbor)
-{
-    //copy send Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->sendProcessNeighborADX[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborADX[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborADX[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
-    //copy recv Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborADX[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborADX[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborADX[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
-}
-void CudaMemoryManager::cudaCopyProcessNeighborADXFsHD(int lev, unsigned int processNeighbor)
-{
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborADX[processNeighbor].f[0],
-                                parameter->getParH(lev)->recvProcessNeighborADX[processNeighbor].f[0],
-                                27 * parameter->getParD(lev)->recvProcessNeighborADX[processNeighbor].memsizeFs,
-                                cudaMemcpyHostToDevice));
-}
-void CudaMemoryManager::cudaCopyProcessNeighborADXFsDH(int lev, unsigned int processNeighbor)
-{
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->sendProcessNeighborADX[processNeighbor].f[0],
-                                parameter->getParD(lev)->sendProcessNeighborADX[processNeighbor].f[0],
-                                27 * parameter->getParD(lev)->sendProcessNeighborADX[processNeighbor].memsizeFs,
-                                cudaMemcpyDeviceToHost));
-}
-void CudaMemoryManager::cudaFreeProcessNeighborADX(int lev, unsigned int processNeighbor)
-{
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborADX[processNeighbor].index ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborADX[processNeighbor].f[0]     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborADX[processNeighbor].index  ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborADX[processNeighbor].f[0]     ));
-}
-//  Y  /////////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocProcessNeighborADY(int lev, unsigned int processNeighbor)
-{
-    //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborADY[processNeighbor].index ),      parameter->getParH(lev)->sendProcessNeighborADY[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborADY[processNeighbor].f[0]  ), 27 * parameter->getParH(lev)->sendProcessNeighborADY[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborADY[processNeighbor].index ),      parameter->getParH(lev)->recvProcessNeighborADY[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborADY[processNeighbor].f[0]  ), 27 * parameter->getParH(lev)->recvProcessNeighborADY[processNeighbor].memsizeFs    ));
-
-    //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborADY[processNeighbor].index ),      parameter->getParD(lev)->sendProcessNeighborADY[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborADY[processNeighbor].f[0]  ), 27 * parameter->getParD(lev)->sendProcessNeighborADY[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborADY[processNeighbor].index ),      parameter->getParD(lev)->recvProcessNeighborADY[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborADY[processNeighbor].f[0]  ), 27 * parameter->getParD(lev)->recvProcessNeighborADY[processNeighbor].memsizeFs    ));
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    double tmp =
-        (double)parameter->getParH(lev)->sendProcessNeighborADY[processNeighbor].memsizeIndex +
-        (double)27.0*(double)parameter->getParH(lev)->sendProcessNeighborADY[processNeighbor].memsizeFs +
-        (double)parameter->getParH(lev)->recvProcessNeighborADY[processNeighbor].memsizeIndex +
-        (double)27.0*(double)parameter->getParH(lev)->recvProcessNeighborADY[processNeighbor].memsizeFs;
-    setMemsizeGPU(tmp, false);
-    //printf("memsize GPU for neighbors %f \n",tmp/1000000.0);
-}
-void CudaMemoryManager::cudaCopyProcessNeighborADYIndex(int lev, unsigned int processNeighbor)
-{
-    //copy send Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->sendProcessNeighborADY[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborADY[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborADY[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
-    //copy recv Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborADY[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborADY[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborADY[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
-}
-void CudaMemoryManager::cudaCopyProcessNeighborADYFsHD(int lev, unsigned int processNeighbor)
-{
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborADY[processNeighbor].f[0],
-                                parameter->getParH(lev)->recvProcessNeighborADY[processNeighbor].f[0],
-                                27 * parameter->getParD(lev)->recvProcessNeighborADY[processNeighbor].memsizeFs,
-                                cudaMemcpyHostToDevice));
-}
-void CudaMemoryManager::cudaCopyProcessNeighborADYFsDH(int lev, unsigned int processNeighbor)
-{
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->sendProcessNeighborADY[processNeighbor].f[0],
-                                parameter->getParD(lev)->sendProcessNeighborADY[processNeighbor].f[0],
-                                27 * parameter->getParD(lev)->sendProcessNeighborADY[processNeighbor].memsizeFs,
-                                cudaMemcpyDeviceToHost));
-}
-void CudaMemoryManager::cudaFreeProcessNeighborADY(int lev, unsigned int processNeighbor)
-{
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborADY[processNeighbor].index ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborADY[processNeighbor].f[0]     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborADY[processNeighbor].index  ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborADY[processNeighbor].f[0]     ));
-}
-//  Z  /////////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocProcessNeighborADZ(int lev, unsigned int processNeighbor)
-{
-    //Host
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborADZ[processNeighbor].index ),      parameter->getParH(lev)->sendProcessNeighborADZ[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->sendProcessNeighborADZ[processNeighbor].f[0]  ), 27 * parameter->getParH(lev)->sendProcessNeighborADZ[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].index ),      parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].f[0]  ), 27 * parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].memsizeFs    ));
-
-    //Device
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborADZ[processNeighbor].index ),      parameter->getParD(lev)->sendProcessNeighborADZ[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->sendProcessNeighborADZ[processNeighbor].f[0]  ), 27 * parameter->getParD(lev)->sendProcessNeighborADZ[processNeighbor].memsizeFs    ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborADZ[processNeighbor].index ),      parameter->getParD(lev)->recvProcessNeighborADZ[processNeighbor].memsizeIndex ));
-    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->recvProcessNeighborADZ[processNeighbor].f[0]  ), 27 * parameter->getParD(lev)->recvProcessNeighborADZ[processNeighbor].memsizeFs    ));
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    double tmp =
-        (double)parameter->getParH(lev)->sendProcessNeighborADZ[processNeighbor].memsizeIndex +
-        (double)27.0*(double)parameter->getParH(lev)->sendProcessNeighborADZ[processNeighbor].memsizeFs +
-        (double)parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].memsizeIndex +
-        (double)27.0*(double)parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].memsizeFs;
-    setMemsizeGPU(tmp, false);
-    //printf("memsize GPU for neighbors %f \n",tmp/1000000.0);
-}
-void CudaMemoryManager::cudaCopyProcessNeighborADZIndex(int lev, unsigned int processNeighbor)
-{
-    //copy send Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->sendProcessNeighborADZ[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborADZ[processNeighbor].index,
-                                parameter->getParH(lev)->sendProcessNeighborADZ[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
-    //copy recv Index
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborADZ[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].index,
-                                parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].memsizeIndex,
-                                cudaMemcpyHostToDevice));
-}
-void CudaMemoryManager::cudaCopyProcessNeighborADZFsHD(int lev, unsigned int processNeighbor)
-{
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->recvProcessNeighborADZ[processNeighbor].f[0],
-                                parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].f[0],
-                                27 * parameter->getParD(lev)->recvProcessNeighborADZ[processNeighbor].memsizeFs,
-                                cudaMemcpyHostToDevice));
-}
-void CudaMemoryManager::cudaCopyProcessNeighborADZFsDH(int lev, unsigned int processNeighbor)
-{
-    checkCudaErrors( cudaMemcpy(parameter->getParH(lev)->sendProcessNeighborADZ[processNeighbor].f[0],
-                                parameter->getParD(lev)->sendProcessNeighborADZ[processNeighbor].f[0],
-                                27 * parameter->getParD(lev)->sendProcessNeighborADZ[processNeighbor].memsizeFs,
-                                cudaMemcpyDeviceToHost));
-}
-void CudaMemoryManager::cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor)
-{
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborADZ[processNeighbor].index ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->sendProcessNeighborADZ[processNeighbor].f[0]     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].index  ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->recvProcessNeighborADZ[processNeighbor].f[0]     ));
-}
-
 
 void CudaMemoryManager::cudaAllocTaggedFluidNodeIndices(CollisionTemplate tag, int lev) {
     uint mem_size_tagged_fluid_nodes = sizeof(uint) * parameter->getParH(lev)->numberOfTaggedFluidNodes[tag];
