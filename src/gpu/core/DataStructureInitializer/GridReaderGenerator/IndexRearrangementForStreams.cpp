@@ -147,9 +147,9 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCX
 
     communicator.receiveSend(
         recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
-        para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].rankNeighbor,
+        para->getParH(level)->recvProcessNeighborsX[indexOfProcessNeighbor].rankNeighbor,
         sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
-        para->getParH(level)->sendProcessNeighborX[indexOfProcessNeighbor].rankNeighbor);
+        para->getParH(level)->sendProcessNeighborsX[indexOfProcessNeighbor].rankNeighbor);
 
     // resize receiving vector to correct size
     if (!recvIndicesForCommAfterFtoCPositions.empty()) {
@@ -174,9 +174,9 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCY
 
     communicator.receiveSend(
         recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
-        para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].rankNeighbor,
+        para->getParH(level)->recvProcessNeighborsY[indexOfProcessNeighbor].rankNeighbor,
         sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
-        para->getParH(level)->sendProcessNeighborY[indexOfProcessNeighbor].rankNeighbor);
+        para->getParH(level)->sendProcessNeighborsY[indexOfProcessNeighbor].rankNeighbor);
 
     // resize receiving vector to correct size
     if (!recvIndicesForCommAfterFtoCPositions.empty()) {
@@ -201,9 +201,9 @@ std::vector<uint> IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoCZ
 
     communicator.receiveSend(
         recvIndicesForCommAfterFtoCPositions.data(), (int)recvIndicesForCommAfterFtoCPositions.size(),
-        para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor,
+        para->getParH(level)->recvProcessNeighborsZ[indexOfProcessNeighbor].rankNeighbor,
         sendIndicesForCommAfterFtoCPositions.data(), (int)sendIndicesForCommAfterFtoCPositions.size(),
-        para->getParH(level)->sendProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor);
+        para->getParH(level)->sendProcessNeighborsZ[indexOfProcessNeighbor].rankNeighbor);
 
     // resize receiving vector to correct size
     if (!recvIndicesForCommAfterFtoCPositions.empty()) {
@@ -251,93 +251,93 @@ void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoCX(uint leve
 {
     // init f[0]*
     para->getParD(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].f[0] =
-        para->getParD(level)->sendProcessNeighborX[indexOfProcessNeighbor].f[0];
+        para->getParD(level)->sendProcessNeighborsX[indexOfProcessNeighbor].f[0];
     para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].f[0] =
-        para->getParH(level)->sendProcessNeighborX[indexOfProcessNeighbor].f[0];
+        para->getParH(level)->sendProcessNeighborsX[indexOfProcessNeighbor].f[0];
     para->getParD(level)->recvProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].f[0] =
-        para->getParD(level)->recvProcessNeighborX[indexOfProcessNeighbor].f[0];
+        para->getParD(level)->recvProcessNeighborsX[indexOfProcessNeighbor].f[0];
     para->getParH(level)->recvProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].f[0] =
-        para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].f[0];
+        para->getParH(level)->recvProcessNeighborsX[indexOfProcessNeighbor].f[0];
 
     // init index*
     para->getParD(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].index =
-        para->getParD(level)->sendProcessNeighborX[indexOfProcessNeighbor].index;
+        para->getParD(level)->sendProcessNeighborsX[indexOfProcessNeighbor].index;
     para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].index =
-        para->getParH(level)->sendProcessNeighborX[indexOfProcessNeighbor].index;
+        para->getParH(level)->sendProcessNeighborsX[indexOfProcessNeighbor].index;
     para->getParD(level)->recvProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].index =
-        para->getParD(level)->recvProcessNeighborX[indexOfProcessNeighbor].index;
+        para->getParD(level)->recvProcessNeighborsX[indexOfProcessNeighbor].index;
     para->getParH(level)->recvProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].index =
-        para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].index;
+        para->getParH(level)->recvProcessNeighborsX[indexOfProcessNeighbor].index;
 
     // rank neighbor
     para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].rankNeighbor =
-        para->getParH(level)->sendProcessNeighborX[indexOfProcessNeighbor].rankNeighbor;
+        para->getParH(level)->sendProcessNeighborsX[indexOfProcessNeighbor].rankNeighbor;
     para->getParH(level)->recvProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].rankNeighbor =
-        para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].rankNeighbor;
+        para->getParH(level)->recvProcessNeighborsX[indexOfProcessNeighbor].rankNeighbor;
 }
 
 void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoCY(uint level, int indexOfProcessNeighbor) const
 {
     // init f[0]*
     para->getParD(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].f[0] =
-        para->getParD(level)->sendProcessNeighborY[indexOfProcessNeighbor].f[0];
+        para->getParD(level)->sendProcessNeighborsY[indexOfProcessNeighbor].f[0];
     para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].f[0] =
-        para->getParH(level)->sendProcessNeighborY[indexOfProcessNeighbor].f[0];
+        para->getParH(level)->sendProcessNeighborsY[indexOfProcessNeighbor].f[0];
     para->getParD(level)->recvProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].f[0] =
-        para->getParD(level)->recvProcessNeighborY[indexOfProcessNeighbor].f[0];
+        para->getParD(level)->recvProcessNeighborsY[indexOfProcessNeighbor].f[0];
     para->getParH(level)->recvProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].f[0] =
-        para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].f[0];
+        para->getParH(level)->recvProcessNeighborsY[indexOfProcessNeighbor].f[0];
 
     // init index*
     para->getParD(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].index =
-        para->getParD(level)->sendProcessNeighborY[indexOfProcessNeighbor].index;
+        para->getParD(level)->sendProcessNeighborsY[indexOfProcessNeighbor].index;
     para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].index =
-        para->getParH(level)->sendProcessNeighborY[indexOfProcessNeighbor].index;
+        para->getParH(level)->sendProcessNeighborsY[indexOfProcessNeighbor].index;
     para->getParD(level)->recvProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].index =
-        para->getParD(level)->recvProcessNeighborY[indexOfProcessNeighbor].index;
+        para->getParD(level)->recvProcessNeighborsY[indexOfProcessNeighbor].index;
     para->getParH(level)->recvProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].index =
-        para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].index;
+        para->getParH(level)->recvProcessNeighborsY[indexOfProcessNeighbor].index;
 
     // rank neighbor
     para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].rankNeighbor =
-        para->getParH(level)->sendProcessNeighborY[indexOfProcessNeighbor].rankNeighbor;
+        para->getParH(level)->sendProcessNeighborsY[indexOfProcessNeighbor].rankNeighbor;
     para->getParH(level)->recvProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].rankNeighbor =
-        para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].rankNeighbor;
+        para->getParH(level)->recvProcessNeighborsY[indexOfProcessNeighbor].rankNeighbor;
 }
 
 void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoCZ(uint level, int indexOfProcessNeighbor) const
 {
     // init f[0]*
     para->getParD(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].f[0] =
-        para->getParD(level)->sendProcessNeighborZ[indexOfProcessNeighbor].f[0];
+        para->getParD(level)->sendProcessNeighborsZ[indexOfProcessNeighbor].f[0];
     para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].f[0] =
-        para->getParH(level)->sendProcessNeighborZ[indexOfProcessNeighbor].f[0];
+        para->getParH(level)->sendProcessNeighborsZ[indexOfProcessNeighbor].f[0];
     para->getParD(level)->recvProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].f[0] =
-        para->getParD(level)->recvProcessNeighborZ[indexOfProcessNeighbor].f[0];
+        para->getParD(level)->recvProcessNeighborsZ[indexOfProcessNeighbor].f[0];
     para->getParH(level)->recvProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].f[0] =
-        para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].f[0];
+        para->getParH(level)->recvProcessNeighborsZ[indexOfProcessNeighbor].f[0];
 
     // init index*
     para->getParD(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].index =
-        para->getParD(level)->sendProcessNeighborZ[indexOfProcessNeighbor].index;
+        para->getParD(level)->sendProcessNeighborsZ[indexOfProcessNeighbor].index;
     para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].index =
-        para->getParH(level)->sendProcessNeighborZ[indexOfProcessNeighbor].index;
+        para->getParH(level)->sendProcessNeighborsZ[indexOfProcessNeighbor].index;
     para->getParD(level)->recvProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].index =
-        para->getParD(level)->recvProcessNeighborZ[indexOfProcessNeighbor].index;
+        para->getParD(level)->recvProcessNeighborsZ[indexOfProcessNeighbor].index;
     para->getParH(level)->recvProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].index =
-        para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].index;
+        para->getParH(level)->recvProcessNeighborsZ[indexOfProcessNeighbor].index;
 
     // rank neighbor
     para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].rankNeighbor =
-        para->getParH(level)->sendProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor;
+        para->getParH(level)->sendProcessNeighborsZ[indexOfProcessNeighbor].rankNeighbor;
     para->getParH(level)->recvProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].rankNeighbor =
-        para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].rankNeighbor;
+        para->getParH(level)->recvProcessNeighborsZ[indexOfProcessNeighbor].rankNeighbor;
 }
 
 void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoCX(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
-    int *sendIndices = para->getParH(level)->sendProcessNeighborX[indexOfProcessNeighbor].index;
+    int *sendIndices = para->getParH(level)->sendProcessNeighborsX[indexOfProcessNeighbor].index;
     int &numberOfSendNodesAfterFtoC =
         para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes;
     reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNodesAfterFtoC, direction, level,
@@ -347,7 +347,7 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoCX(
 void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoCY(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
-    int *sendIndices = para->getParH(level)->sendProcessNeighborY[indexOfProcessNeighbor].index;
+    int *sendIndices = para->getParH(level)->sendProcessNeighborsY[indexOfProcessNeighbor].index;
     int &numberOfSendNodesAfterFtoC =
         para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes;
     reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNodesAfterFtoC, direction, level,
@@ -357,7 +357,7 @@ void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoCY(
 void IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoCZ(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
-    int *sendIndices = para->getParH(level)->sendProcessNeighborZ[indexOfProcessNeighbor].index;
+    int *sendIndices = para->getParH(level)->sendProcessNeighborsZ[indexOfProcessNeighbor].index;
     int &numberOfSendNodesAfterFtoC =
         para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes;
     reorderSendIndicesForCommAfterFtoC(sendIndices, numberOfSendNodesAfterFtoC, direction, level,
@@ -496,7 +496,7 @@ void IndexRearrangementForStreams::findIndicesNotInCommAfterFtoC(const uint &num
 void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoCX(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
-    int *recvIndices = para->getParH(level)->recvProcessNeighborX[indexOfProcessNeighbor].index;
+    int *recvIndices = para->getParH(level)->recvProcessNeighborsX[indexOfProcessNeighbor].index;
     int &numberOfRecvNodesAfterFtoC =
         para->getParH(level)->recvProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes;
     reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNodesAfterFtoC, direction, level,
@@ -506,7 +506,7 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoCX(
 void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoCY(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
-    int *recvIndices = para->getParH(level)->recvProcessNeighborY[indexOfProcessNeighbor].index;
+    int *recvIndices = para->getParH(level)->recvProcessNeighborsY[indexOfProcessNeighbor].index;
     int &numberOfRecvNodesAfterFtoC =
         para->getParH(level)->recvProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes;
     reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNodesAfterFtoC, direction, level,
@@ -516,7 +516,7 @@ void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoCY(
 void IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoCZ(
     int direction, int level, int indexOfProcessNeighbor, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
-    int *recvIndices = para->getParH(level)->recvProcessNeighborZ[indexOfProcessNeighbor].index;
+    int *recvIndices = para->getParH(level)->recvProcessNeighborsZ[indexOfProcessNeighbor].index;
     int &numberOfRecvNodesAfterFtoC =
         para->getParH(level)->recvProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes;
     reorderRecvIndicesForCommAfterFtoC(recvIndices, numberOfRecvNodesAfterFtoC, direction, level,

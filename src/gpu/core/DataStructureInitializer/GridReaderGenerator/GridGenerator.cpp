@@ -587,70 +587,70 @@ void GridGenerator::initalValuesDomainDecompostion()
                     int tempRecv = builder->getNumberOfReceiveIndices(direction, level);
 
                     if (tempSend > 0) {
-                        int indexProcessNeighbor = (int)para->getParH(level)->sendProcessNeighborX.size();
+                        int indexProcessNeighbor = (int)para->getParH(level)->sendProcessNeighborsX.size();
 
-                        para->getParH(level)->sendProcessNeighborX.emplace_back();
-                        para->getParD(level)->sendProcessNeighborX.emplace_back();
-                        para->getParH(level)->recvProcessNeighborX.emplace_back();
-                        para->getParD(level)->recvProcessNeighborX.emplace_back();
+                        para->getParH(level)->sendProcessNeighborsX.emplace_back();
+                        para->getParD(level)->sendProcessNeighborsX.emplace_back();
+                        para->getParH(level)->recvProcessNeighborsX.emplace_back();
+                        para->getParD(level)->recvProcessNeighborsX.emplace_back();
                         if (para->getDiffOn() == true) {
-                            para->getParH(level)->sendProcessNeighborADX.emplace_back();
-                            para->getParD(level)->sendProcessNeighborADX.emplace_back();
-                            para->getParH(level)->recvProcessNeighborADX.emplace_back();
-                            para->getParD(level)->recvProcessNeighborADX.emplace_back();
+                            para->getParH(level)->sendProcessNeighborsADX.emplace_back();
+                            para->getParD(level)->sendProcessNeighborsADX.emplace_back();
+                            para->getParH(level)->recvProcessNeighborsADX.emplace_back();
+                            para->getParD(level)->recvProcessNeighborsADX.emplace_back();
                         }
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
-                        para->getParH(level)->sendProcessNeighborX.back().rankNeighbor =
+                        para->getParH(level)->sendProcessNeighborsX.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
                         VF_LOG_INFO("size of Data for X send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->sendProcessNeighborX.back().numberOfNodes = tempSend;
-                        para->getParD(level)->sendProcessNeighborX.back().numberOfNodes = tempSend;
-                        para->getParH(level)->sendProcessNeighborX.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParD(level)->sendProcessNeighborX.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParH(level)->sendProcessNeighborX.back().memsizeIndex =
+                        para->getParH(level)->sendProcessNeighborsX.back().numberOfNodes = tempSend;
+                        para->getParD(level)->sendProcessNeighborsX.back().numberOfNodes = tempSend;
+                        para->getParH(level)->sendProcessNeighborsX.back().numberOfFs    = para->getD3Qxx() * tempSend;
+                        para->getParD(level)->sendProcessNeighborsX.back().numberOfFs    = para->getD3Qxx() * tempSend;
+                        para->getParH(level)->sendProcessNeighborsX.back().memsizeIndex =
                             sizeof(unsigned int) * tempSend;
-                        para->getParD(level)->sendProcessNeighborX.back().memsizeIndex =
+                        para->getParD(level)->sendProcessNeighborsX.back().memsizeIndex =
                             sizeof(unsigned int) * tempSend;
-                        para->getParH(level)->sendProcessNeighborX.back().memsizeFs = sizeof(real) * tempSend;
-                        para->getParD(level)->sendProcessNeighborX.back().memsizeFs = sizeof(real) * tempSend;
+                        para->getParH(level)->sendProcessNeighborsX.back().memsizeFs = sizeof(real) * tempSend;
+                        para->getParD(level)->sendProcessNeighborsX.back().memsizeFs = sizeof(real) * tempSend;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // recv
                         VF_LOG_INFO("size of Data for X receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborX.back().rankNeighbor =
+                        para->getParH(level)->recvProcessNeighborsX.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborX.back().numberOfNodes = tempRecv;
-                        para->getParD(level)->recvProcessNeighborX.back().numberOfNodes = tempRecv;
-                        para->getParH(level)->recvProcessNeighborX.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParD(level)->recvProcessNeighborX.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParH(level)->recvProcessNeighborX.back().memsizeIndex =
+                        para->getParH(level)->recvProcessNeighborsX.back().numberOfNodes = tempRecv;
+                        para->getParD(level)->recvProcessNeighborsX.back().numberOfNodes = tempRecv;
+                        para->getParH(level)->recvProcessNeighborsX.back().numberOfFs    = para->getD3Qxx() * tempRecv;
+                        para->getParD(level)->recvProcessNeighborsX.back().numberOfFs    = para->getD3Qxx() * tempRecv;
+                        para->getParH(level)->recvProcessNeighborsX.back().memsizeIndex =
                             sizeof(unsigned int) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborX.back().memsizeIndex =
+                        para->getParD(level)->recvProcessNeighborsX.back().memsizeIndex =
                             sizeof(unsigned int) * tempRecv;
-                        para->getParH(level)->recvProcessNeighborX.back().memsizeFs = sizeof(real) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborX.back().memsizeFs = sizeof(real) * tempRecv;
+                        para->getParH(level)->recvProcessNeighborsX.back().memsizeFs = sizeof(real) * tempRecv;
+                        para->getParD(level)->recvProcessNeighborsX.back().memsizeFs = sizeof(real) * tempRecv;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // malloc on host and device
-                        cudaMemoryManager->cudaAllocProcessNeighbor(para->getParH(level)->sendProcessNeighborX.back(),
-                                                                    para->getParD(level)->sendProcessNeighborX.back(),
-                                                                    para->getParH(level)->recvProcessNeighborX.back(),
-                                                                    para->getParD(level)->recvProcessNeighborX.back());
+                        cudaMemoryManager->cudaAllocProcessNeighbor(para->getParH(level)->sendProcessNeighborsX.back(),
+                                                                    para->getParD(level)->sendProcessNeighborsX.back(),
+                                                                    para->getParH(level)->recvProcessNeighborsX.back(),
+                                                                    para->getParD(level)->recvProcessNeighborsX.back());
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // init index arrays
-                        builder->getSendIndices(para->getParH(level)->sendProcessNeighborX[indexProcessNeighbor].index, direction, level);
-                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborX[indexProcessNeighbor].index, direction,
+                        builder->getSendIndices(para->getParH(level)->sendProcessNeighborsX[indexProcessNeighbor].index, direction, level);
+                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborsX[indexProcessNeighbor].index, direction,
                                                    level);
                         if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
                             indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseX(level, indexProcessNeighbor, direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        cudaMemoryManager->cudaCopyProcessNeighborIndex(para->getParH(level)->sendProcessNeighborX.back(),
-                                                                        para->getParD(level)->sendProcessNeighborX.back(),
-                                                                        para->getParH(level)->recvProcessNeighborX.back(),
-                                                                        para->getParD(level)->recvProcessNeighborX.back());
+                        cudaMemoryManager->cudaCopyProcessNeighborIndex(para->getParH(level)->sendProcessNeighborsX.back(),
+                                                                        para->getParD(level)->sendProcessNeighborsX.back(),
+                                                                        para->getParH(level)->recvProcessNeighborsX.back(),
+                                                                        para->getParD(level)->recvProcessNeighborsX.back());
                         ////////////////////////////////////////////////////////////////////////////////////////
                     }
                 }
@@ -660,70 +660,70 @@ void GridGenerator::initalValuesDomainDecompostion()
                     int tempRecv = builder->getNumberOfReceiveIndices(direction, level);
 
                     if (tempSend > 0) {
-                        int indexProcessNeighbor = (int)para->getParH(level)->sendProcessNeighborY.size();
+                        int indexProcessNeighbor = (int)para->getParH(level)->sendProcessNeighborsY.size();
 
-                        para->getParH(level)->sendProcessNeighborY.emplace_back();
-                        para->getParD(level)->sendProcessNeighborY.emplace_back();
-                        para->getParH(level)->recvProcessNeighborY.emplace_back();
-                        para->getParD(level)->recvProcessNeighborY.emplace_back();
+                        para->getParH(level)->sendProcessNeighborsY.emplace_back();
+                        para->getParD(level)->sendProcessNeighborsY.emplace_back();
+                        para->getParH(level)->recvProcessNeighborsY.emplace_back();
+                        para->getParD(level)->recvProcessNeighborsY.emplace_back();
                         if (para->getDiffOn()) {
-                            para->getParH(level)->sendProcessNeighborADY.emplace_back();
-                            para->getParD(level)->sendProcessNeighborADY.emplace_back();
-                            para->getParH(level)->recvProcessNeighborADY.emplace_back();
-                            para->getParD(level)->recvProcessNeighborADY.emplace_back();
+                            para->getParH(level)->sendProcessNeighborsADY.emplace_back();
+                            para->getParD(level)->sendProcessNeighborsADY.emplace_back();
+                            para->getParH(level)->recvProcessNeighborsADY.emplace_back();
+                            para->getParD(level)->recvProcessNeighborsADY.emplace_back();
                         }
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
                         VF_LOG_INFO("size of Data for Y send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->sendProcessNeighborY.back().rankNeighbor =
+                        para->getParH(level)->sendProcessNeighborsY.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->sendProcessNeighborY.back().numberOfNodes = tempSend;
-                        para->getParD(level)->sendProcessNeighborY.back().numberOfNodes = tempSend;
-                        para->getParH(level)->sendProcessNeighborY.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParD(level)->sendProcessNeighborY.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParH(level)->sendProcessNeighborY.back().memsizeIndex =
+                        para->getParH(level)->sendProcessNeighborsY.back().numberOfNodes = tempSend;
+                        para->getParD(level)->sendProcessNeighborsY.back().numberOfNodes = tempSend;
+                        para->getParH(level)->sendProcessNeighborsY.back().numberOfFs    = para->getD3Qxx() * tempSend;
+                        para->getParD(level)->sendProcessNeighborsY.back().numberOfFs    = para->getD3Qxx() * tempSend;
+                        para->getParH(level)->sendProcessNeighborsY.back().memsizeIndex =
                             sizeof(unsigned int) * tempSend;
-                        para->getParD(level)->sendProcessNeighborY.back().memsizeIndex =
+                        para->getParD(level)->sendProcessNeighborsY.back().memsizeIndex =
                             sizeof(unsigned int) * tempSend;
-                        para->getParH(level)->sendProcessNeighborY.back().memsizeFs = sizeof(real) * tempSend;
-                        para->getParD(level)->sendProcessNeighborY.back().memsizeFs = sizeof(real) * tempSend;
+                        para->getParH(level)->sendProcessNeighborsY.back().memsizeFs = sizeof(real) * tempSend;
+                        para->getParD(level)->sendProcessNeighborsY.back().memsizeFs = sizeof(real) * tempSend;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // recv
                         VF_LOG_INFO("size of Data for Y receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborY.back().rankNeighbor =
+                        para->getParH(level)->recvProcessNeighborsY.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborY.back().numberOfNodes = tempRecv;
-                        para->getParD(level)->recvProcessNeighborY.back().numberOfNodes = tempRecv;
-                        para->getParH(level)->recvProcessNeighborY.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParD(level)->recvProcessNeighborY.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParH(level)->recvProcessNeighborY.back().memsizeIndex =
+                        para->getParH(level)->recvProcessNeighborsY.back().numberOfNodes = tempRecv;
+                        para->getParD(level)->recvProcessNeighborsY.back().numberOfNodes = tempRecv;
+                        para->getParH(level)->recvProcessNeighborsY.back().numberOfFs    = para->getD3Qxx() * tempRecv;
+                        para->getParD(level)->recvProcessNeighborsY.back().numberOfFs    = para->getD3Qxx() * tempRecv;
+                        para->getParH(level)->recvProcessNeighborsY.back().memsizeIndex =
                             sizeof(unsigned int) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborY.back().memsizeIndex =
+                        para->getParD(level)->recvProcessNeighborsY.back().memsizeIndex =
                             sizeof(unsigned int) * tempRecv;
-                        para->getParH(level)->recvProcessNeighborY.back().memsizeFs = sizeof(real) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborY.back().memsizeFs = sizeof(real) * tempRecv;
+                        para->getParH(level)->recvProcessNeighborsY.back().memsizeFs = sizeof(real) * tempRecv;
+                        para->getParD(level)->recvProcessNeighborsY.back().memsizeFs = sizeof(real) * tempRecv;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // malloc on host and device
-                        cudaMemoryManager->cudaAllocProcessNeighbor(para->getParH(level)->sendProcessNeighborY.back(),
-                                                                    para->getParD(level)->sendProcessNeighborY.back(),
-                                                                    para->getParH(level)->recvProcessNeighborY.back(),
-                                                                    para->getParD(level)->recvProcessNeighborY.back());
+                        cudaMemoryManager->cudaAllocProcessNeighbor(para->getParH(level)->sendProcessNeighborsY.back(),
+                                                                    para->getParD(level)->sendProcessNeighborsY.back(),
+                                                                    para->getParH(level)->recvProcessNeighborsY.back(),
+                                                                    para->getParD(level)->recvProcessNeighborsY.back());
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // init index arrays
-                        builder->getSendIndices(para->getParH(level)->sendProcessNeighborY[indexProcessNeighbor].index, direction, level);
-                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborY[indexProcessNeighbor].index, direction,
+                        builder->getSendIndices(para->getParH(level)->sendProcessNeighborsY[indexProcessNeighbor].index, direction, level);
+                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborsY[indexProcessNeighbor].index, direction,
                                                    level);
                         if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
                             indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseY(level, indexProcessNeighbor, direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        cudaMemoryManager->cudaCopyProcessNeighborIndex(para->getParH(level)->sendProcessNeighborY.back(),
-                                                                        para->getParD(level)->sendProcessNeighborY.back(),
-                                                                        para->getParH(level)->recvProcessNeighborY.back(),
-                                                                        para->getParD(level)->recvProcessNeighborY.back());
+                        cudaMemoryManager->cudaCopyProcessNeighborIndex(para->getParH(level)->sendProcessNeighborsY.back(),
+                                                                        para->getParD(level)->sendProcessNeighborsY.back(),
+                                                                        para->getParH(level)->recvProcessNeighborsY.back(),
+                                                                        para->getParD(level)->recvProcessNeighborsY.back());
                         ////////////////////////////////////////////////////////////////////////////////////////
                     }
                 }
@@ -733,69 +733,69 @@ void GridGenerator::initalValuesDomainDecompostion()
                     int tempRecv = builder->getNumberOfReceiveIndices(direction, level);
 
                     if (tempSend > 0) {
-                        int indexProcessNeighbor = (int)para->getParH(level)->sendProcessNeighborZ.size();
+                        int indexProcessNeighbor = (int)para->getParH(level)->sendProcessNeighborsZ.size();
 
-                        para->getParH(level)->sendProcessNeighborZ.emplace_back();
-                        para->getParD(level)->sendProcessNeighborZ.emplace_back();
-                        para->getParH(level)->recvProcessNeighborZ.emplace_back();
-                        para->getParD(level)->recvProcessNeighborZ.emplace_back();
+                        para->getParH(level)->sendProcessNeighborsZ.emplace_back();
+                        para->getParD(level)->sendProcessNeighborsZ.emplace_back();
+                        para->getParH(level)->recvProcessNeighborsZ.emplace_back();
+                        para->getParD(level)->recvProcessNeighborsZ.emplace_back();
                         if (para->getDiffOn() == true) {
-                            para->getParH(level)->sendProcessNeighborADZ.emplace_back();
-                            para->getParD(level)->sendProcessNeighborADZ.emplace_back();
-                            para->getParH(level)->recvProcessNeighborADZ.emplace_back();
-                            para->getParD(level)->recvProcessNeighborADZ.emplace_back();
+                            para->getParH(level)->sendProcessNeighborsADZ.emplace_back();
+                            para->getParD(level)->sendProcessNeighborsADZ.emplace_back();
+                            para->getParH(level)->recvProcessNeighborsADZ.emplace_back();
+                            para->getParD(level)->recvProcessNeighborsADZ.emplace_back();
                         }
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // send
                         VF_LOG_INFO("size of Data for Z send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->sendProcessNeighborZ.back().rankNeighbor =
+                        para->getParH(level)->sendProcessNeighborsZ.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->sendProcessNeighborZ.back().numberOfNodes = tempSend;
-                        para->getParD(level)->sendProcessNeighborZ.back().numberOfNodes = tempSend;
-                        para->getParH(level)->sendProcessNeighborZ.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParD(level)->sendProcessNeighborZ.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParH(level)->sendProcessNeighborZ.back().memsizeIndex =
+                        para->getParH(level)->sendProcessNeighborsZ.back().numberOfNodes = tempSend;
+                        para->getParD(level)->sendProcessNeighborsZ.back().numberOfNodes = tempSend;
+                        para->getParH(level)->sendProcessNeighborsZ.back().numberOfFs    = para->getD3Qxx() * tempSend;
+                        para->getParD(level)->sendProcessNeighborsZ.back().numberOfFs    = para->getD3Qxx() * tempSend;
+                        para->getParH(level)->sendProcessNeighborsZ.back().memsizeIndex =
                             sizeof(unsigned int) * tempSend;
-                        para->getParD(level)->sendProcessNeighborZ.back().memsizeIndex =
+                        para->getParD(level)->sendProcessNeighborsZ.back().memsizeIndex =
                             sizeof(unsigned int) * tempSend;
-                        para->getParH(level)->sendProcessNeighborZ.back().memsizeFs = sizeof(real) * tempSend;
-                        para->getParD(level)->sendProcessNeighborZ.back().memsizeFs = sizeof(real) * tempSend;
+                        para->getParH(level)->sendProcessNeighborsZ.back().memsizeFs = sizeof(real) * tempSend;
+                        para->getParD(level)->sendProcessNeighborsZ.back().memsizeFs = sizeof(real) * tempSend;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // recv
                         VF_LOG_INFO("size of Data for Z receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborZ.back().rankNeighbor =
+                        para->getParH(level)->recvProcessNeighborsZ.back().rankNeighbor =
                             builder->getCommunicationProcess(direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborZ.back().numberOfNodes = tempRecv;
-                        para->getParD(level)->recvProcessNeighborZ.back().numberOfNodes = tempRecv;
-                        para->getParH(level)->recvProcessNeighborZ.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParD(level)->recvProcessNeighborZ.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParH(level)->recvProcessNeighborZ.back().memsizeIndex =
+                        para->getParH(level)->recvProcessNeighborsZ.back().numberOfNodes = tempRecv;
+                        para->getParD(level)->recvProcessNeighborsZ.back().numberOfNodes = tempRecv;
+                        para->getParH(level)->recvProcessNeighborsZ.back().numberOfFs    = para->getD3Qxx() * tempRecv;
+                        para->getParD(level)->recvProcessNeighborsZ.back().numberOfFs    = para->getD3Qxx() * tempRecv;
+                        para->getParH(level)->recvProcessNeighborsZ.back().memsizeIndex =
                             sizeof(unsigned int) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborZ.back().memsizeIndex =
+                        para->getParD(level)->recvProcessNeighborsZ.back().memsizeIndex =
                             sizeof(unsigned int) * tempRecv;
-                        para->getParH(level)->recvProcessNeighborZ.back().memsizeFs = sizeof(real) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborZ.back().memsizeFs = sizeof(real) * tempRecv;
+                        para->getParH(level)->recvProcessNeighborsZ.back().memsizeFs = sizeof(real) * tempRecv;
+                        para->getParD(level)->recvProcessNeighborsZ.back().memsizeFs = sizeof(real) * tempRecv;
                         ////////////////////////////////////////////////////////////////////////////////////////
                         // malloc on host and device
-                        cudaMemoryManager->cudaAllocProcessNeighbor(para->getParH(level)->sendProcessNeighborZ.back(),
-                                                                    para->getParD(level)->sendProcessNeighborZ.back(),
-                                                                    para->getParH(level)->recvProcessNeighborZ.back(),
-                                                                    para->getParD(level)->recvProcessNeighborZ.back());                        ////////////////////////////////////////////////////////////////////////////////////////
+                        cudaMemoryManager->cudaAllocProcessNeighbor(para->getParH(level)->sendProcessNeighborsZ.back(),
+                                                                    para->getParD(level)->sendProcessNeighborsZ.back(),
+                                                                    para->getParH(level)->recvProcessNeighborsZ.back(),
+                                                                    para->getParD(level)->recvProcessNeighborsZ.back());                        ////////////////////////////////////////////////////////////////////////////////////////
                         // init index arrays
-                        builder->getSendIndices(para->getParH(level)->sendProcessNeighborZ[indexProcessNeighbor].index, direction, level);
-                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborZ[indexProcessNeighbor].index, direction,
+                        builder->getSendIndices(para->getParH(level)->sendProcessNeighborsZ[indexProcessNeighbor].index, direction, level);
+                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborsZ[indexProcessNeighbor].index, direction,
                                                    level);
                         if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
                             indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseZ(level, indexProcessNeighbor, direction);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        cudaMemoryManager->cudaCopyProcessNeighborIndex(para->getParH(level)->sendProcessNeighborZ.back(),
-                                                                        para->getParD(level)->sendProcessNeighborZ.back(),
-                                                                        para->getParH(level)->recvProcessNeighborZ.back(),
-                                                                        para->getParD(level)->recvProcessNeighborZ.back());                        ////////////////////////////////////////////////////////////////////////////////////////
+                        cudaMemoryManager->cudaCopyProcessNeighborIndex(para->getParH(level)->sendProcessNeighborsZ.back(),
+                                                                        para->getParD(level)->sendProcessNeighborsZ.back(),
+                                                                        para->getParH(level)->recvProcessNeighborsZ.back(),
+                                                                        para->getParD(level)->recvProcessNeighborsZ.back());                        ////////////////////////////////////////////////////////////////////////////////////////
                     }
                 }
             }

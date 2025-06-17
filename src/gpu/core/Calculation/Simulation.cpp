@@ -800,20 +800,20 @@ Simulation::~Simulation()
             //////////////////////////////////////////////////////////////////////////
             for (uint i = 0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++) {
                 cudaMemoryManager->cudaFreeProcessNeighbor(
-                    para->getParH(lev)->sendProcessNeighborX[i], para->getParD(lev)->sendProcessNeighborX[i],
-                    para->getParH(lev)->recvProcessNeighborX[i], para->getParD(lev)->recvProcessNeighborX[i]);
+                    para->getParH(lev)->sendProcessNeighborsX[i], para->getParD(lev)->sendProcessNeighborsX[i],
+                    para->getParH(lev)->recvProcessNeighborsX[i], para->getParD(lev)->recvProcessNeighborsX[i]);
             }
             //////////////////////////////////////////////////////////////////////////
             for (uint i = 0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++) {
                 cudaMemoryManager->cudaFreeProcessNeighbor(
-                    para->getParH(lev)->sendProcessNeighborY[i], para->getParD(lev)->sendProcessNeighborY[i],
-                    para->getParH(lev)->recvProcessNeighborY[i], para->getParD(lev)->recvProcessNeighborY[i]);
+                    para->getParH(lev)->sendProcessNeighborsY[i], para->getParD(lev)->sendProcessNeighborsY[i],
+                    para->getParH(lev)->recvProcessNeighborsY[i], para->getParD(lev)->recvProcessNeighborsY[i]);
             }
             //////////////////////////////////////////////////////////////////////////
             for (uint i = 0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++) {
                 cudaMemoryManager->cudaFreeProcessNeighbor(
-                    para->getParH(lev)->sendProcessNeighborZ[i], para->getParD(lev)->sendProcessNeighborZ[i],
-                    para->getParH(lev)->recvProcessNeighborZ[i], para->getParD(lev)->recvProcessNeighborZ[i]);
+                    para->getParH(lev)->sendProcessNeighborsZ[i], para->getParD(lev)->sendProcessNeighborsZ[i],
+                    para->getParH(lev)->recvProcessNeighborsZ[i], para->getParD(lev)->recvProcessNeighborsZ[i]);
         }
     }
     //////////////////////////////////////////////////////////////////////////

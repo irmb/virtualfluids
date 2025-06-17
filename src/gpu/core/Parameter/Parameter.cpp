@@ -1089,21 +1089,21 @@ void Parameter::setPossNeighborFilesZ(std::vector<std::string> possNeighborFiles
 void Parameter::setNumberOfProcessNeighborsX(unsigned int numberOfProcessNeighbors, int level, std::string sor)
 {
     if (sor == "send") {
-        parH[level]->sendProcessNeighborX.resize(numberOfProcessNeighbors);
-        parD[level]->sendProcessNeighborX.resize(numberOfProcessNeighbors);
+        parH[level]->sendProcessNeighborsX.resize(numberOfProcessNeighbors);
+        parD[level]->sendProcessNeighborsX.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
         if (getDiffOn()) {
-            parH[level]->sendProcessNeighborADX.resize(numberOfProcessNeighbors);
-            parD[level]->sendProcessNeighborADX.resize(numberOfProcessNeighbors);
+            parH[level]->sendProcessNeighborsADX.resize(numberOfProcessNeighbors);
+            parD[level]->sendProcessNeighborsADX.resize(numberOfProcessNeighbors);
         }
         //////////////////////////////////////////////////////////////////////////
     } else if (sor == "recv") {
-        parH[level]->recvProcessNeighborX.resize(numberOfProcessNeighbors);
-        parD[level]->recvProcessNeighborX.resize(numberOfProcessNeighbors);
+        parH[level]->recvProcessNeighborsX.resize(numberOfProcessNeighbors);
+        parD[level]->recvProcessNeighborsX.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
         if (getDiffOn()) {
-            parH[level]->recvProcessNeighborADX.resize(numberOfProcessNeighbors);
-            parD[level]->recvProcessNeighborADX.resize(numberOfProcessNeighbors);
+            parH[level]->recvProcessNeighborsADX.resize(numberOfProcessNeighbors);
+            parD[level]->recvProcessNeighborsADX.resize(numberOfProcessNeighbors);
         }
         //////////////////////////////////////////////////////////////////////////
     }
@@ -1111,21 +1111,21 @@ void Parameter::setNumberOfProcessNeighborsX(unsigned int numberOfProcessNeighbo
 void Parameter::setNumberOfProcessNeighborsY(unsigned int numberOfProcessNeighbors, int level, std::string sor)
 {
     if (sor == "send") {
-        parH[level]->sendProcessNeighborY.resize(numberOfProcessNeighbors);
-        parD[level]->sendProcessNeighborY.resize(numberOfProcessNeighbors);
+        parH[level]->sendProcessNeighborsY.resize(numberOfProcessNeighbors);
+        parD[level]->sendProcessNeighborsY.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
         if (getDiffOn()) {
-            parH[level]->sendProcessNeighborADY.resize(numberOfProcessNeighbors);
-            parD[level]->sendProcessNeighborADY.resize(numberOfProcessNeighbors);
+            parH[level]->sendProcessNeighborsADY.resize(numberOfProcessNeighbors);
+            parD[level]->sendProcessNeighborsADY.resize(numberOfProcessNeighbors);
         }
         //////////////////////////////////////////////////////////////////////////
     } else if (sor == "recv") {
-        parH[level]->recvProcessNeighborY.resize(numberOfProcessNeighbors);
-        parD[level]->recvProcessNeighborY.resize(numberOfProcessNeighbors);
+        parH[level]->recvProcessNeighborsY.resize(numberOfProcessNeighbors);
+        parD[level]->recvProcessNeighborsY.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
         if (getDiffOn()) {
-            parH[level]->recvProcessNeighborADY.resize(numberOfProcessNeighbors);
-            parD[level]->recvProcessNeighborADY.resize(numberOfProcessNeighbors);
+            parH[level]->recvProcessNeighborsADY.resize(numberOfProcessNeighbors);
+            parD[level]->recvProcessNeighborsADY.resize(numberOfProcessNeighbors);
         }
         //////////////////////////////////////////////////////////////////////////
     }
@@ -1133,21 +1133,21 @@ void Parameter::setNumberOfProcessNeighborsY(unsigned int numberOfProcessNeighbo
 void Parameter::setNumberOfProcessNeighborsZ(unsigned int numberOfProcessNeighbors, int level, std::string sor)
 {
     if (sor == "send") {
-        parH[level]->sendProcessNeighborZ.resize(numberOfProcessNeighbors);
-        parD[level]->sendProcessNeighborZ.resize(numberOfProcessNeighbors);
+        parH[level]->sendProcessNeighborsZ.resize(numberOfProcessNeighbors);
+        parD[level]->sendProcessNeighborsZ.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
         if (getDiffOn()) {
-            parH[level]->sendProcessNeighborADZ.resize(numberOfProcessNeighbors);
-            parD[level]->sendProcessNeighborADZ.resize(numberOfProcessNeighbors);
+            parH[level]->sendProcessNeighborsADZ.resize(numberOfProcessNeighbors);
+            parD[level]->sendProcessNeighborsADZ.resize(numberOfProcessNeighbors);
         }
         //////////////////////////////////////////////////////////////////////////
     } else if (sor == "recv") {
-        parH[level]->recvProcessNeighborZ.resize(numberOfProcessNeighbors);
-        parD[level]->recvProcessNeighborZ.resize(numberOfProcessNeighbors);
+        parH[level]->recvProcessNeighborsZ.resize(numberOfProcessNeighbors);
+        parD[level]->recvProcessNeighborsZ.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
         if (getDiffOn()) {
-            parH[level]->recvProcessNeighborADZ.resize(numberOfProcessNeighbors);
-            parD[level]->recvProcessNeighborADZ.resize(numberOfProcessNeighbors);
+            parH[level]->recvProcessNeighborsADZ.resize(numberOfProcessNeighbors);
+            parD[level]->recvProcessNeighborsADZ.resize(numberOfProcessNeighbors);
         }
         //////////////////////////////////////////////////////////////////////////
     }
@@ -1174,12 +1174,12 @@ void Parameter::setSendProcessNeighborsAfterFtoCX(int numberOfNodes, int level, 
     this->getParD(level)->sendProcessNeighborsAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     if(getDiffOn())
     {
-        this->getParH(level)->sendProcessNeighborADAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParD(level)->sendProcessNeighborADAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParH(level)->sendProcessNeighborADAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParD(level)->sendProcessNeighborADAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParH(level)->sendProcessNeighborADAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
-        this->getParD(level)->sendProcessNeighborADAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParH(level)->sendProcessNeighborsADAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParD(level)->sendProcessNeighborsADAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParH(level)->sendProcessNeighborsADAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParD(level)->sendProcessNeighborsADAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParH(level)->sendProcessNeighborsADAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParD(level)->sendProcessNeighborsADAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     }
 }
 void Parameter::setSendProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex)
@@ -1192,12 +1192,12 @@ void Parameter::setSendProcessNeighborsAfterFtoCY(int numberOfNodes, int level, 
     this->getParD(level)->sendProcessNeighborsAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     if(getDiffOn())
     {
-        this->getParH(level)->sendProcessNeighborADAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParD(level)->sendProcessNeighborADAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParH(level)->sendProcessNeighborADAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParD(level)->sendProcessNeighborADAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParH(level)->sendProcessNeighborADAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
-        this->getParD(level)->sendProcessNeighborADAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParH(level)->sendProcessNeighborsADAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParD(level)->sendProcessNeighborsADAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParH(level)->sendProcessNeighborsADAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParD(level)->sendProcessNeighborsADAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParH(level)->sendProcessNeighborsADAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParD(level)->sendProcessNeighborsADAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     }
 }
 void Parameter::setSendProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex)
@@ -1210,12 +1210,12 @@ void Parameter::setSendProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, 
     this->getParD(level)->sendProcessNeighborsAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     if(getDiffOn())
     {
-        this->getParH(level)->sendProcessNeighborADAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParD(level)->sendProcessNeighborADAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParH(level)->sendProcessNeighborADAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParD(level)->sendProcessNeighborADAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParH(level)->sendProcessNeighborADAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
-        this->getParD(level)->sendProcessNeighborADAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParH(level)->sendProcessNeighborsADAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParD(level)->sendProcessNeighborsADAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParH(level)->sendProcessNeighborsADAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParD(level)->sendProcessNeighborsADAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParH(level)->sendProcessNeighborsADAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParD(level)->sendProcessNeighborsADAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     }
 }
 void Parameter::setRecvProcessNeighborsAfterFtoCX(int numberOfNodes, int level, int arrayIndex)
@@ -1228,12 +1228,12 @@ void Parameter::setRecvProcessNeighborsAfterFtoCX(int numberOfNodes, int level, 
     this->getParD(level)->recvProcessNeighborsAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     if(getDiffOn())
     {
-        this->getParH(level)->recvProcessNeighborADAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParD(level)->recvProcessNeighborADAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParH(level)->recvProcessNeighborADAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParD(level)->recvProcessNeighborADAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParH(level)->recvProcessNeighborADAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
-        this->getParD(level)->recvProcessNeighborADAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParH(level)->recvProcessNeighborsADAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParD(level)->recvProcessNeighborsADAfterFtoCX[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParH(level)->recvProcessNeighborsADAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParD(level)->recvProcessNeighborsADAfterFtoCX[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParH(level)->recvProcessNeighborsADAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParD(level)->recvProcessNeighborsADAfterFtoCX[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     }
 }
 void Parameter::setRecvProcessNeighborsAfterFtoCY(int numberOfNodes, int level, int arrayIndex)
@@ -1246,12 +1246,12 @@ void Parameter::setRecvProcessNeighborsAfterFtoCY(int numberOfNodes, int level, 
     this->getParD(level)->recvProcessNeighborsAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     if(getDiffOn())
     {
-        this->getParH(level)->recvProcessNeighborADAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParD(level)->recvProcessNeighborADAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParH(level)->recvProcessNeighborADAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParD(level)->recvProcessNeighborADAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParH(level)->recvProcessNeighborADAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
-        this->getParD(level)->recvProcessNeighborADAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParH(level)->recvProcessNeighborsADAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParD(level)->recvProcessNeighborsADAfterFtoCY[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParH(level)->recvProcessNeighborsADAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParD(level)->recvProcessNeighborsADAfterFtoCY[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParH(level)->recvProcessNeighborsADAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParD(level)->recvProcessNeighborsADAfterFtoCY[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     }
 }
 void Parameter::setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, int arrayIndex)
@@ -1264,12 +1264,12 @@ void Parameter::setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, 
     this->getParD(level)->recvProcessNeighborsAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     if(getDiffOn())
     {
-        this->getParH(level)->recvProcessNeighborADAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParD(level)->recvProcessNeighborADAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
-        this->getParH(level)->recvProcessNeighborADAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParD(level)->recvProcessNeighborADAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
-        this->getParH(level)->recvProcessNeighborADAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
-        this->getParD(level)->recvProcessNeighborADAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParH(level)->recvProcessNeighborsADAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParD(level)->recvProcessNeighborsADAfterFtoCZ[arrayIndex].numberOfNodes = numberOfNodes;
+        this->getParH(level)->recvProcessNeighborsADAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParD(level)->recvProcessNeighborsADAfterFtoCZ[arrayIndex].memsizeFs     = sizeof(real) * numberOfNodes;
+        this->getParH(level)->recvProcessNeighborsADAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
+        this->getParD(level)->recvProcessNeighborsADAfterFtoCZ[arrayIndex].numberOfFs    = this->D3Qxx * numberOfNodes;
     }
 }
 void Parameter::configureMainKernel(std::string kernel)
@@ -1963,27 +1963,27 @@ std::vector<std::string> Parameter::getPossNeighborFilesZ(std::string sor)
 unsigned int Parameter::getNumberOfProcessNeighborsX(int level, std::string sor)
 {
     if (sor == "send") {
-        return (unsigned int)parH[level]->sendProcessNeighborX.size();
+        return (unsigned int)parH[level]->sendProcessNeighborsX.size();
     } else if (sor == "recv") {
-        return (unsigned int)parH[level]->recvProcessNeighborX.size();
+        return (unsigned int)parH[level]->recvProcessNeighborsX.size();
     }
     throw std::runtime_error("getNumberOfProcessNeighborsX: Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsY(int level, std::string sor)
 {
     if (sor == "send") {
-        return (unsigned int)parH[level]->sendProcessNeighborY.size();
+        return (unsigned int)parH[level]->sendProcessNeighborsY.size();
     } else if (sor == "recv") {
-        return (unsigned int)parH[level]->recvProcessNeighborY.size();
+        return (unsigned int)parH[level]->recvProcessNeighborsY.size();
     }
     throw std::runtime_error("getNumberOfProcessNeighborsY: Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsZ(int level, std::string sor)
 {
     if (sor == "send") {
-        return (unsigned int)parH[level]->sendProcessNeighborZ.size();
+        return (unsigned int)parH[level]->sendProcessNeighborsZ.size();
     } else if (sor == "recv") {
-        return (unsigned int)parH[level]->recvProcessNeighborZ.size();
+        return (unsigned int)parH[level]->recvProcessNeighborsZ.size();
     }
     throw std::runtime_error("getNumberOfProcessNeighborsZ: Parameter string invalid.");
 }
@@ -2090,46 +2090,46 @@ void Parameter::setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIn
 void Parameter::initProcessNeighborsAfterFtoCX(int level)
 {
 
-    parH[level]->sendProcessNeighborsAfterFtoCX.resize(parH[level]->sendProcessNeighborX.size());
-    parH[level]->recvProcessNeighborsAfterFtoCX.resize(parH[level]->recvProcessNeighborX.size());
+    parH[level]->sendProcessNeighborsAfterFtoCX.resize(parH[level]->sendProcessNeighborsX.size());
+    parH[level]->recvProcessNeighborsAfterFtoCX.resize(parH[level]->recvProcessNeighborsX.size());
     parD[level]->sendProcessNeighborsAfterFtoCX.resize(parH[level]->sendProcessNeighborsAfterFtoCX.size());
     parD[level]->recvProcessNeighborsAfterFtoCX.resize(parH[level]->recvProcessNeighborsAfterFtoCX.size());
     if(getDiffOn())
     {
-        parH[level]->sendProcessNeighborADAfterFtoCX.resize(parH[level]->sendProcessNeighborADX.size());
-        parH[level]->recvProcessNeighborADAfterFtoCX.resize(parH[level]->recvProcessNeighborADX.size());
-        parD[level]->sendProcessNeighborADAfterFtoCX.resize(parH[level]->sendProcessNeighborADAfterFtoCX.size());
-        parD[level]->recvProcessNeighborADAfterFtoCX.resize(parH[level]->recvProcessNeighborADAfterFtoCX.size());
+        parH[level]->sendProcessNeighborsADAfterFtoCX.resize(parH[level]->sendProcessNeighborsADX.size());
+        parH[level]->recvProcessNeighborsADAfterFtoCX.resize(parH[level]->recvProcessNeighborsADX.size());
+        parD[level]->sendProcessNeighborsADAfterFtoCX.resize(parH[level]->sendProcessNeighborsADAfterFtoCX.size());
+        parD[level]->recvProcessNeighborsADAfterFtoCX.resize(parH[level]->recvProcessNeighborsADAfterFtoCX.size());
     }
 }
 
 void Parameter::initProcessNeighborsAfterFtoCY(int level)
 {
-    parH[level]->sendProcessNeighborsAfterFtoCY.resize(parH[level]->sendProcessNeighborY.size());
-    parH[level]->recvProcessNeighborsAfterFtoCY.resize(parH[level]->recvProcessNeighborY.size());
+    parH[level]->sendProcessNeighborsAfterFtoCY.resize(parH[level]->sendProcessNeighborsY.size());
+    parH[level]->recvProcessNeighborsAfterFtoCY.resize(parH[level]->recvProcessNeighborsY.size());
     parD[level]->sendProcessNeighborsAfterFtoCY.resize(parH[level]->sendProcessNeighborsAfterFtoCY.size());
     parD[level]->recvProcessNeighborsAfterFtoCY.resize(parH[level]->recvProcessNeighborsAfterFtoCY.size());
     if(getDiffOn())
     {
-        parH[level]->sendProcessNeighborADAfterFtoCY.resize(parH[level]->sendProcessNeighborADY.size());
-        parH[level]->recvProcessNeighborADAfterFtoCY.resize(parH[level]->recvProcessNeighborADY.size());
-        parD[level]->sendProcessNeighborADAfterFtoCY.resize(parH[level]->sendProcessNeighborADAfterFtoCY.size());
-        parD[level]->recvProcessNeighborADAfterFtoCY.resize(parH[level]->recvProcessNeighborADAfterFtoCY.size());
+        parH[level]->sendProcessNeighborsADAfterFtoCY.resize(parH[level]->sendProcessNeighborsADY.size());
+        parH[level]->recvProcessNeighborsADAfterFtoCY.resize(parH[level]->recvProcessNeighborsADY.size());
+        parD[level]->sendProcessNeighborsADAfterFtoCY.resize(parH[level]->sendProcessNeighborsADAfterFtoCY.size());
+        parD[level]->recvProcessNeighborsADAfterFtoCY.resize(parH[level]->recvProcessNeighborsADAfterFtoCY.size());
     }
 }
 
 void Parameter::initProcessNeighborsAfterFtoCZ(int level)
 {
-    parH[level]->sendProcessNeighborsAfterFtoCZ.resize(parH[level]->sendProcessNeighborZ.size());
-    parH[level]->recvProcessNeighborsAfterFtoCZ.resize(parH[level]->recvProcessNeighborZ.size());
+    parH[level]->sendProcessNeighborsAfterFtoCZ.resize(parH[level]->sendProcessNeighborsZ.size());
+    parH[level]->recvProcessNeighborsAfterFtoCZ.resize(parH[level]->recvProcessNeighborsZ.size());
     parD[level]->sendProcessNeighborsAfterFtoCZ.resize(parH[level]->sendProcessNeighborsAfterFtoCZ.size());
     parD[level]->recvProcessNeighborsAfterFtoCZ.resize(parH[level]->recvProcessNeighborsAfterFtoCZ.size());
     if(getDiffOn())
     {
-        parH[level]->sendProcessNeighborADAfterFtoCZ.resize(parH[level]->sendProcessNeighborADZ.size());
-        parH[level]->recvProcessNeighborADAfterFtoCZ.resize(parH[level]->recvProcessNeighborADZ.size());
-        parD[level]->sendProcessNeighborADAfterFtoCZ.resize(parH[level]->sendProcessNeighborADAfterFtoCZ.size());
-        parD[level]->recvProcessNeighborADAfterFtoCZ.resize(parH[level]->recvProcessNeighborADAfterFtoCZ.size());
+        parH[level]->sendProcessNeighborsADAfterFtoCZ.resize(parH[level]->sendProcessNeighborsADZ.size());
+        parH[level]->recvProcessNeighborsADAfterFtoCZ.resize(parH[level]->recvProcessNeighborsADZ.size());
+        parD[level]->sendProcessNeighborsADAfterFtoCZ.resize(parH[level]->sendProcessNeighborsADAfterFtoCZ.size());
+        parD[level]->recvProcessNeighborsADAfterFtoCZ.resize(parH[level]->recvProcessNeighborsADAfterFtoCZ.size());
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

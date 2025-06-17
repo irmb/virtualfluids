@@ -205,12 +205,12 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the base-node-indices of coarse and fine refinement cells
     // 3D domain decomposition
-    std::vector<ProcessNeighbor27> sendProcessNeighborX;
-    std::vector<ProcessNeighbor27> sendProcessNeighborY;
-    std::vector<ProcessNeighbor27> sendProcessNeighborZ;
-    std::vector<ProcessNeighbor27> recvProcessNeighborX;
-    std::vector<ProcessNeighbor27> recvProcessNeighborY;
-    std::vector<ProcessNeighbor27> recvProcessNeighborZ;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsX;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsY;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsZ;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsX;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsY;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsZ;
 
     std::vector<ProcessNeighbor27> sendProcessNeighborsAfterFtoCX;
     std::vector<ProcessNeighbor27> sendProcessNeighborsAfterFtoCY;
@@ -220,19 +220,19 @@ struct LBMSimulationParameter {
     std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCZ;
     ///////////////////////////////////////////////////////
     // 3D domain decomposition convection diffusion
-    std::vector<ProcessNeighbor27> sendProcessNeighborADX;
-    std::vector<ProcessNeighbor27> sendProcessNeighborADY;
-    std::vector<ProcessNeighbor27> sendProcessNeighborADZ;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADX;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADY;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADZ;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsADX;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsADY;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsADZ;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsADX;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsADY;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsADZ;
 
-    std::vector<ProcessNeighbor27> sendProcessNeighborADAfterFtoCX;
-    std::vector<ProcessNeighbor27> sendProcessNeighborADAfterFtoCY;
-    std::vector<ProcessNeighbor27> sendProcessNeighborADAfterFtoCZ;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADAfterFtoCX;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADAfterFtoCY;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADAfterFtoCZ;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsADAfterFtoCX;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsADAfterFtoCY;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsADAfterFtoCZ;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsADAfterFtoCX;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsADAfterFtoCY;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsADAfterFtoCZ;
     ////////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition: position (index in array) of corner nodes in ProcessNeighbor27
     struct EdgeNodePositions {

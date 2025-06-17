@@ -601,37 +601,37 @@ void checkForSendOrRecvNode(int pos, int &commDir, int &commDirectionInCommAfter
 
 void checkForRecvNodeX(int pos, int &recvDir, int &recvDirectionInCommAfterFtoC, int& recvIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, recvIndex, para->getParH(level)->recvProcessNeighborX,
+    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, recvIndex, para->getParH(level)->recvProcessNeighborsX,
                            para->getParH(level)->recvProcessNeighborsAfterFtoCX, 2.0);
 }
 
 void checkForRecvNodeY(int pos, int &recvDir, int &recvDirectionInCommAfterFtoC, int& recvIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, recvIndex, para->getParH(level)->recvProcessNeighborY,
+    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, recvIndex, para->getParH(level)->recvProcessNeighborsY,
                            para->getParH(level)->recvProcessNeighborsAfterFtoCY, 4.0);
 }
 
 void checkForRecvNodeZ(int pos, int &recvDir, int &recvDirectionInCommAfterFtoC, int& recvIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, recvIndex, para->getParH(level)->recvProcessNeighborZ,
+    checkForSendOrRecvNode(pos, recvDir, recvDirectionInCommAfterFtoC, recvIndex, para->getParH(level)->recvProcessNeighborsZ,
                            para->getParH(level)->recvProcessNeighborsAfterFtoCZ, 8.0);
 }
 
 void checkForSendNodeX(int pos, int &sendDir, int &sendDirectionInCommAfterFtoC, int& sendIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, sendIndex, para->getParH(level)->sendProcessNeighborX,
+    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, sendIndex, para->getParH(level)->sendProcessNeighborsX,
                            para->getParH(level)->sendProcessNeighborsAfterFtoCX, 2.0);
 }
 
 void checkForSendNodeY(int pos, int &sendDir, int &sendDirectionInCommAfterFtoC, int& sendIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, sendIndex, para->getParH(level)->sendProcessNeighborY,
+    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, sendIndex, para->getParH(level)->sendProcessNeighborsY,
                            para->getParH(level)->sendProcessNeighborsAfterFtoCY, 4.0);
 }
 
 void checkForSendNodeZ(int pos, int &sendDir, int &sendDirectionInCommAfterFtoC, int& sendIndex, Parameter *para, int level)
 {
-    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, sendIndex, para->getParH(level)->sendProcessNeighborZ,
+    checkForSendOrRecvNode(pos, sendDir, sendDirectionInCommAfterFtoC, sendIndex, para->getParH(level)->sendProcessNeighborsZ,
                            para->getParH(level)->sendProcessNeighborsAfterFtoCZ, 8.0);
 }
 
@@ -765,9 +765,9 @@ void writeSendNodesStream(Parameter *para, int processID = 0)
     int sendDirectionInCommAfterFtoC;
     for (int level = 0; level < para->getMaxLevel(); level++) {
         // X
-        for (int pn = 0; pn < (int)para->getParH(level)->sendProcessNeighborX.size(); pn++) {
-            for (int i = 0; i < para->getParH(level)->sendProcessNeighborX[pn].numberOfNodes; i++) {
-                pos = para->getParH(level)->sendProcessNeighborX[pn].index[i];
+        for (int pn = 0; pn < (int)para->getParH(level)->sendProcessNeighborsX.size(); pn++) {
+            for (int i = 0; i < para->getParH(level)->sendProcessNeighborsX[pn].numberOfNodes; i++) {
+                pos = para->getParH(level)->sendProcessNeighborsX[pn].index[i];
                 nodedata[0].push_back(pos);
                 addToNodesVector(level, pos, nodesVec, para);
 
@@ -780,9 +780,9 @@ void writeSendNodesStream(Parameter *para, int processID = 0)
         }
 
         // Y
-        for (int pn = 0; pn < (int)para->getParH(level)->sendProcessNeighborY.size(); pn++) {
-            for (int i = 0; i < para->getParH(level)->sendProcessNeighborY[pn].numberOfNodes; i++) {
-                pos = para->getParH(level)->sendProcessNeighborY[pn].index[i];
+        for (int pn = 0; pn < (int)para->getParH(level)->sendProcessNeighborsY.size(); pn++) {
+            for (int i = 0; i < para->getParH(level)->sendProcessNeighborsY[pn].numberOfNodes; i++) {
+                pos = para->getParH(level)->sendProcessNeighborsY[pn].index[i];
 
                 sendDirectionInCommAfterFtoC =
                     (i < para->getParH(level)->sendProcessNeighborsAfterFtoCY[pn].numberOfNodes) ? 4.0 : 0.0;
@@ -804,9 +804,9 @@ void writeSendNodesStream(Parameter *para, int processID = 0)
         }
 
         // Z
-        for (int pn = 0; pn < (int)para->getParH(level)->sendProcessNeighborZ.size(); pn++) {
-            for (int i = 0; i < para->getParH(level)->sendProcessNeighborZ[pn].numberOfNodes; i++) {
-                pos = para->getParH(level)->sendProcessNeighborZ[pn].index[i];
+        for (int pn = 0; pn < (int)para->getParH(level)->sendProcessNeighborsZ.size(); pn++) {
+            for (int i = 0; i < para->getParH(level)->sendProcessNeighborsZ[pn].numberOfNodes; i++) {
+                pos = para->getParH(level)->sendProcessNeighborsZ[pn].index[i];
 
                 sendDirectionInCommAfterFtoC =
                     (i < para->getParH(level)->sendProcessNeighborsAfterFtoCZ[pn].numberOfNodes) ? 8.0 : 0.0;
@@ -861,9 +861,9 @@ void writeRecvNodesStream(Parameter *para, int processID = 0)
     int recvDirectionInCommAfterFtoC;
     for (int level = 0; level < para->getMaxLevel(); level++) {
         // X
-        for (int pn = 0; pn < (int)para->getParH(level)->recvProcessNeighborX.size(); pn++) {
-            for (int i = 0; i < para->getParH(level)->recvProcessNeighborX[pn].numberOfNodes; i++) {
-                pos = para->getParH(level)->recvProcessNeighborX[pn].index[i];
+        for (int pn = 0; pn < (int)para->getParH(level)->recvProcessNeighborsX.size(); pn++) {
+            for (int i = 0; i < para->getParH(level)->recvProcessNeighborsX[pn].numberOfNodes; i++) {
+                pos = para->getParH(level)->recvProcessNeighborsX[pn].index[i];
                 nodedata[0].push_back(pos);
                 addToNodesVector(level, pos, nodesVec, para);
 
@@ -876,9 +876,9 @@ void writeRecvNodesStream(Parameter *para, int processID = 0)
         }
 
         // Y
-        for (int pn = 0; pn < (int)para->getParH(level)->recvProcessNeighborY.size(); pn++) {
-            for (int i = 0; i < para->getParH(level)->recvProcessNeighborY[pn].numberOfNodes; i++) {
-                pos = para->getParH(level)->recvProcessNeighborY[pn].index[i];
+        for (int pn = 0; pn < (int)para->getParH(level)->recvProcessNeighborsY.size(); pn++) {
+            for (int i = 0; i < para->getParH(level)->recvProcessNeighborsY[pn].numberOfNodes; i++) {
+                pos = para->getParH(level)->recvProcessNeighborsY[pn].index[i];
 
                 recvDirectionInCommAfterFtoC =
                     (i < para->getParH(level)->recvProcessNeighborsAfterFtoCY[pn].numberOfNodes) ? 4.0 : 0.0;
@@ -900,9 +900,9 @@ void writeRecvNodesStream(Parameter *para, int processID = 0)
         }
 
         // Z
-        for (int pn = 0; pn < (int)para->getParH(level)->recvProcessNeighborZ.size(); pn++) {
-            for (int i = 0; i < para->getParH(level)->recvProcessNeighborZ[pn].numberOfNodes; i++) {
-                pos = para->getParH(level)->recvProcessNeighborZ[pn].index[i];
+        for (int pn = 0; pn < (int)para->getParH(level)->recvProcessNeighborsZ.size(); pn++) {
+            for (int i = 0; i < para->getParH(level)->recvProcessNeighborsZ[pn].numberOfNodes; i++) {
+                pos = para->getParH(level)->recvProcessNeighborsZ[pn].index[i];
 
                 recvDirectionInCommAfterFtoC =
                     (i < para->getParH(level)->recvProcessNeighborsAfterFtoCZ[pn].numberOfNodes) ? 8.0 : 0.0;

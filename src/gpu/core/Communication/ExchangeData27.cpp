@@ -173,7 +173,7 @@ void exchangeCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, Cu
 void prepareExchangeCollDataXGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.sendProcessNeighborX);
+    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.sendProcessNeighborsX);
 }
 
 void prepareExchangeCollDataXGPU27AfterFtoC(Parameter* para, int level, CudaStreamIndex streamIndex)
@@ -188,8 +188,8 @@ void exchangeCollDataXGPU27AllNodes(Parameter* para, vf::parallel::Communicator&
     auto& parD = para->getParDeviceAsReference(level);
     auto& parH = para->getParHostAsReference(level);
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex, 
-                          parD.sendProcessNeighborX, parD.recvProcessNeighborX,
-                          parH.sendProcessNeighborX, parH.recvProcessNeighborX);
+                          parD.sendProcessNeighborsX, parD.recvProcessNeighborsX,
+                          parH.sendProcessNeighborsX, parH.recvProcessNeighborsX);
 }
 
 void exchangeCollDataXGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
@@ -205,7 +205,7 @@ void exchangeCollDataXGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator
 void scatterNodesFromRecvBufferXGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.recvProcessNeighborX);
+    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.recvProcessNeighborsX);
 }
 
 void scatterNodesFromRecvBufferXGPU27AfterFtoC(Parameter* para, int level, CudaStreamIndex streamIndex)
@@ -221,7 +221,7 @@ void scatterNodesFromRecvBufferXGPU27AfterFtoC(Parameter* para, int level, CudaS
 void prepareExchangeCollDataYGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.sendProcessNeighborY);
+    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.sendProcessNeighborsY);
 }
 
 void prepareExchangeCollDataYGPU27AfterFtoC(Parameter* para, int level, CudaStreamIndex streamIndex)
@@ -236,8 +236,8 @@ void exchangeCollDataYGPU27AllNodes(Parameter* para, vf::parallel::Communicator&
     auto& parD = para->getParDeviceAsReference(level);
     auto& parH = para->getParHostAsReference(level);
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex,
-                          parD.sendProcessNeighborY, parD.recvProcessNeighborY,
-                          parH.sendProcessNeighborY, parH.recvProcessNeighborY);
+                          parD.sendProcessNeighborsY, parD.recvProcessNeighborsY,
+                          parH.sendProcessNeighborsY, parH.recvProcessNeighborsY);
 }
 
 void exchangeCollDataYGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
@@ -253,7 +253,7 @@ void exchangeCollDataYGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator
 void scatterNodesFromRecvBufferYGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.recvProcessNeighborY);
+    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.recvProcessNeighborsY);
 }
 
 void scatterNodesFromRecvBufferYGPU27AfterFtoC(Parameter* para, int level, CudaStreamIndex streamIndex)
@@ -269,7 +269,7 @@ void scatterNodesFromRecvBufferYGPU27AfterFtoC(Parameter* para, int level, CudaS
 void prepareExchangeCollDataZGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.sendProcessNeighborZ);
+    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.sendProcessNeighborsZ);
 }
 
 void prepareExchangeCollDataZGPU27AfterFtoC(Parameter* para, int level, CudaStreamIndex streamIndex)
@@ -284,8 +284,8 @@ void exchangeCollDataZGPU27AllNodes(Parameter* para, vf::parallel::Communicator&
     auto& parD = para->getParDeviceAsReference(level);
     auto& parH = para->getParHostAsReference(level);
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex, 
-                          parD.sendProcessNeighborZ, parD.recvProcessNeighborZ,
-                          parH.sendProcessNeighborZ, parH.recvProcessNeighborZ);
+                          parD.sendProcessNeighborsZ, parD.recvProcessNeighborsZ,
+                          parH.sendProcessNeighborsZ, parH.recvProcessNeighborsZ);
 }
 void exchangeCollDataZGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
                                      int level, CudaStreamIndex streamIndex)
@@ -300,7 +300,7 @@ void exchangeCollDataZGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator
 void scatterNodesFromRecvBufferZGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.recvProcessNeighborZ);
+    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributions.f[0], parD.recvProcessNeighborsZ);
 }
 
 void scatterNodesFromRecvBufferZGPU27AfterFtoC(Parameter* para, int level, CudaStreamIndex streamIndex)
@@ -318,7 +318,7 @@ void scatterNodesFromRecvBufferZGPU27AfterFtoC(Parameter* para, int level, CudaS
 void prepareExchangeCollDataXADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.sendProcessNeighborADX);
+    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.sendProcessNeighborsADX);
 }
 void exchangeCollDataXADGPU27AllNodes(Parameter* para, vf::parallel::Communicator& comm,
                                       CudaMemoryManager* cudaMemoryManager, int level, CudaStreamIndex streamIndex)
@@ -327,13 +327,13 @@ void exchangeCollDataXADGPU27AllNodes(Parameter* para, vf::parallel::Communicato
     auto& parH = para->getParHostAsReference(level);
 
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex, 
-                          parD.sendProcessNeighborADX, parD.recvProcessNeighborADX, 
-                          parH.sendProcessNeighborADX, parH.recvProcessNeighborADX);
+                          parD.sendProcessNeighborsADX, parD.recvProcessNeighborsADX, 
+                          parH.sendProcessNeighborsADX, parH.recvProcessNeighborsADX);
 }
 void scatterNodesFromRecvBufferXADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.recvProcessNeighborADX);
+    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.recvProcessNeighborsADX);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -342,7 +342,7 @@ void scatterNodesFromRecvBufferXADGPU27AllNodes(Parameter* para, int level, Cuda
 void prepareExchangeCollDataYADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.sendProcessNeighborADY);
+    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.sendProcessNeighborsADY);
 }
 void exchangeCollDataYADGPU27AllNodes(Parameter* para, vf::parallel::Communicator& comm,
                                       CudaMemoryManager* cudaMemoryManager, int level, CudaStreamIndex streamIndex)
@@ -351,13 +351,13 @@ void exchangeCollDataYADGPU27AllNodes(Parameter* para, vf::parallel::Communicato
     auto& parH = para->getParHostAsReference(level);
 
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex, 
-                          parD.sendProcessNeighborADY, parD.recvProcessNeighborADY, 
-                          parH.sendProcessNeighborADY, parH.recvProcessNeighborADY);
+                          parD.sendProcessNeighborsADY, parD.recvProcessNeighborsADY, 
+                          parH.sendProcessNeighborsADY, parH.recvProcessNeighborsADY);
 }
 void scatterNodesFromRecvBufferYADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.recvProcessNeighborADY);
+    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.recvProcessNeighborsADY);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Z
@@ -365,7 +365,7 @@ void scatterNodesFromRecvBufferYADGPU27AllNodes(Parameter* para, int level, Cuda
 void prepareExchangeCollDataZADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.sendProcessNeighborADZ);
+    collectNodesInSendBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.sendProcessNeighborsADZ);
 }
 void exchangeCollDataZADGPU27AllNodes(Parameter* para, vf::parallel::Communicator& comm,
                                       CudaMemoryManager* cudaMemoryManager, int level, CudaStreamIndex streamIndex)
@@ -373,13 +373,13 @@ void exchangeCollDataZADGPU27AllNodes(Parameter* para, vf::parallel::Communicato
     auto& parD = para->getParDeviceAsReference(level);
     auto& parH = para->getParHostAsReference(level);
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex, 
-                          parD.sendProcessNeighborADZ, parD.recvProcessNeighborADZ, 
-                          parH.sendProcessNeighborADZ, parH.recvProcessNeighborADZ);
+                          parD.sendProcessNeighborsADZ, parD.recvProcessNeighborsADZ, 
+                          parH.sendProcessNeighborsADZ, parH.recvProcessNeighborsADZ);
 }
 void scatterNodesFromRecvBufferZADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.recvProcessNeighborADZ);
+    scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.distributionsAD.f[0], parD.recvProcessNeighborsADZ);
 }
 
 //! \}

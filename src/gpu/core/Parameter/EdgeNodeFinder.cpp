@@ -61,19 +61,19 @@ void findEdgeNodesCommMultiGPU(Parameter& parameter)
 
 void findEdgeNodesXY(LBMSimulationParameter& parameterLB)
 {
-    findEdgeNodes(parameterLB.recvProcessNeighborX, parameterLB.sendProcessNeighborY,
+    findEdgeNodes(parameterLB.recvProcessNeighborsX, parameterLB.sendProcessNeighborsY,
                   parameterLB.edgeNodesXtoY);
 }
 
 void findEdgeNodesXZ(LBMSimulationParameter& parameterLB)
 {
-    findEdgeNodes(parameterLB.recvProcessNeighborX, parameterLB.sendProcessNeighborZ,
+    findEdgeNodes(parameterLB.recvProcessNeighborsX, parameterLB.sendProcessNeighborsZ,
                   parameterLB.edgeNodesXtoZ);
 }
 
 void findEdgeNodesYZ(LBMSimulationParameter& parameterLB)
 {
-    findEdgeNodes(parameterLB.recvProcessNeighborY, parameterLB.sendProcessNeighborZ,
+    findEdgeNodes(parameterLB.recvProcessNeighborsY, parameterLB.sendProcessNeighborsZ,
                   parameterLB.edgeNodesYtoZ);
 }
 
