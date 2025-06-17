@@ -66,13 +66,13 @@ public:
     //! \details Only the nodes involved in the interpolation need to be exchanged. Therefore in this method all nodes,
     //! which are part of the interpolation as well as the communication, are identified.
     //!See [master thesis of Anna Wellmann (p. 59-62: "Reduzieren der auszutauschenden Knoten")]
-    virtual void initCommunicationArraysForCommAfterFinetoCoarseX(uint level, int j, int direction) const;
+    virtual void initCommunicationArraysForCommAfterFinetoCoarseX(uint level, int indexOfProcessNeighbor, int direction) const;
     //! \brief Initialize the arrays for the communication after the interpolation from fine to coarse in y direction
     //! \details --> see x direction
-    virtual void initCommunicationArraysForCommAfterFinetoCoarseY(uint level, int j, int direction) const;
+    virtual void initCommunicationArraysForCommAfterFinetoCoarseY(uint level, int indexOfProcessNeighbor, int direction) const;
     //! \brief Initialize the arrays for the communication after the interpolation from fine to coarse in z direction
     //! \details --> see x direction
-    virtual void initCommunicationArraysForCommAfterFinetoCoarseZ(uint level, int j, int direction) const;
+    virtual void initCommunicationArraysForCommAfterFinetoCoarseZ(uint level, int indexOfProcessNeighbor, int direction) const;
 
 protected:
     //////////////////////////////////////////////////////////////////////////
