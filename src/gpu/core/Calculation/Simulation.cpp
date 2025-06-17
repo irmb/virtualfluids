@@ -814,6 +814,7 @@ Simulation::~Simulation()
                 cudaMemoryManager->cudaFreeProcessNeighbor(
                     para->getParH(lev)->sendProcessNeighborsZ[i], para->getParD(lev)->sendProcessNeighborsZ[i],
                     para->getParH(lev)->recvProcessNeighborsZ[i], para->getParD(lev)->recvProcessNeighborsZ[i]);
+            }
         }
     }
     //////////////////////////////////////////////////////////////////////////
