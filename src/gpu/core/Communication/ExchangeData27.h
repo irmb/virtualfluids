@@ -47,24 +47,15 @@ class Communicator;
 
 //! \author Martin Schoenherr, Anna Wellmann
 //! \brief Routines for data exchange when running simulations on multiple GPUs
-
-//////////////////////////////////////////////////////////////////////////
-// 1D domain decomposition
-void exchangePreCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
-                              int level);
-void exchangePostCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
-                               int level);
 //////////////////////////////////////////////////////////////////////////
 // 3D domain decomposition
 
 // functions used for all directions
 
 //! \brief Collect the send nodes in a buffer on the gpu
-void collectNodesInSendBufferGPU(Parameter* para, int level, CudaStreamIndex streamIndex, real* distributions,
-                                 std::vector<ProcessNeighbor27>& sendProcessNeighbor);
+void collectNodesInSendBufferGPU(Parameter* para, int level, CudaStreamIndex streamIndex, std::vector<ProcessNeighbor27>& sendProcessNeighbor);
 //! \brief Distribute the receive nodes from the buffer on the gpu
-void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex streamIndex, real* distributions,
-                                   std::vector<ProcessNeighbor27>& recvProcessNeighborDev);
+void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex streamIndex, std::vector<ProcessNeighbor27>& sendProcessNeighbor);
 //! \brief Copy nodes which are part of the communication in multiple directions
 //! \details The nodes are copied from the receive buffer in one direction to the send buffer in another direction. The
 //! copy operation is conducted on the cpu.
@@ -145,30 +136,6 @@ void exchangeCollDataZGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator
 
 void scatterNodesFromRecvBufferZGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex);
 void scatterNodesFromRecvBufferZGPU27AfterFtoC(Parameter* para, int level, CudaStreamIndex streamIndex);
-
-//////////////////////////////////////////////////////////////////////////
-// 3D domain decomposition advection diffusion
-void prepareExchangeCollDataXADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex);
-void exchangeCollDataXADGPU27AllNodes(Parameter* para, vf::parallel::Communicator& comm,
-                                      CudaMemoryManager* cudaMemoryManager, int level, CudaStreamIndex streamIndex);
-void scatterNodesFromRecvBufferXADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex);
-void prepareExchangeCollDataYADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex);
-void exchangeCollDataYADGPU27AllNodes(Parameter* para, vf::parallel::Communicator& comm,
-                                      CudaMemoryManager* cudaMemoryManager, int level, CudaStreamIndex streamIndex);
-void scatterNodesFromRecvBufferYADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex);
-void prepareExchangeCollDataZADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex);
-void exchangeCollDataZADGPU27AllNodes(Parameter* para, vf::parallel::Communicator& comm,
-                                      CudaMemoryManager* cudaMemoryManager, int level, CudaStreamIndex streamIndex);
-void scatterNodesFromRecvBufferZADGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex);
-
-//////////////////////////////////////////////////////////////////////////
-// 3D domain decomposition F3 - K18/K20
-void exchangeCollDataF3XGPU(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
-                            int level);
-void exchangeCollDataF3YGPU(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
-                            int level);
-void exchangeCollDataF3ZGPU(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
-                            int level);
 
 #endif
 

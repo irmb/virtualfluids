@@ -207,6 +207,7 @@ struct MeasurePoints
 struct ProcessNeighbor27
 {
    real* f[27];
+   real* fAD[27];
    size_t memsizeFs;
    int* index;
    size_t memsizeIndex;
