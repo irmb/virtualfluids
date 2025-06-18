@@ -224,21 +224,6 @@ struct LBMSimulationParameter {
     std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCX;
     std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCY;
     std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCZ;
-    ///////////////////////////////////////////////////////
-    // 3D domain decomposition convection diffusion
-    std::vector<ProcessNeighbor27> sendProcessNeighborsADX;
-    std::vector<ProcessNeighbor27> sendProcessNeighborsADY;
-    std::vector<ProcessNeighbor27> sendProcessNeighborsADZ;
-    std::vector<ProcessNeighbor27> recvProcessNeighborsADX;
-    std::vector<ProcessNeighbor27> recvProcessNeighborsADY;
-    std::vector<ProcessNeighbor27> recvProcessNeighborsADZ;
-
-    std::vector<ProcessNeighbor27> sendProcessNeighborsADAfterFtoCX;
-    std::vector<ProcessNeighbor27> sendProcessNeighborsADAfterFtoCY;
-    std::vector<ProcessNeighbor27> sendProcessNeighborsADAfterFtoCZ;
-    std::vector<ProcessNeighbor27> recvProcessNeighborsADAfterFtoCX;
-    std::vector<ProcessNeighbor27> recvProcessNeighborsADAfterFtoCY;
-    std::vector<ProcessNeighbor27> recvProcessNeighborsADAfterFtoCZ;
     ////////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition: position (index in array) of corner nodes in ProcessNeighbor27
     struct EdgeNodePositions {
