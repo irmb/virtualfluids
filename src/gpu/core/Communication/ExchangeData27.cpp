@@ -105,21 +105,21 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeN
                    std::vector<ProcessNeighbor27>& sendProcessNeighborHost)
 {
 #pragma omp parallel for
-    for (auto& edgeNode : edgeNodes) {
-        const int indexInSubdomainRecv = edgeNode.indexOfProcessNeighborRecv;
-        const int indexInSubdomainSend = edgeNode.indexOfProcessNeighborSend;
+    for (int i=0; i< int(edgeNodes.size()); i++) {
+        const int indexInSubdomainRecv = edgeNodes[i].indexOfProcessNeighborRecv;
+        const int indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
         const int numNodesInBufferRecv = recvProcessNeighborHost[indexInSubdomainRecv].numberOfNodes;
         const int numNodesInBufferSend = sendProcessNeighborHost[indexInSubdomainSend].numberOfNodes;
-        if (edgeNode.indexInSendBuffer >= numNodesInBufferSend)
+        if (edgeNodes[i].indexInSendBuffer >= numNodesInBufferSend)
             // for reduced communication after fine to coarse: only copy send nodes which are not part of the reduced comm
             continue;
 
         // copy fs for all directions
         for (size_t direction = 0; direction <= ENDDIR; direction++) {
             (sendProcessNeighborHost[indexInSubdomainSend].f[0] +
-             (direction * numNodesInBufferSend))[edgeNode.indexInSendBuffer] =
+             (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] =
                 (recvProcessNeighborHost[indexInSubdomainRecv].f[0] +
-                 (direction * numNodesInBufferRecv))[edgeNode.indexInRecvBuffer];
+                 (direction * numNodesInBufferRecv))[edgeNodes[i].indexInRecvBuffer];
         }
     }
 }
