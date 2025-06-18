@@ -104,28 +104,22 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeN
                    std::vector<ProcessNeighbor27>& recvProcessNeighborHost,
                    std::vector<ProcessNeighbor27>& sendProcessNeighborHost)
 {
-    int indexInSubdomainRecv = 0;
-    int indexInSubdomainSend = 0;
-    int numNodesInBufferRecv = 0;
-    int numNodesInBufferSend = 0;
-
 #pragma omp parallel for
-    for (size_t i = 0; i < edgeNodes.size(); i++) {
-        indexInSubdomainRecv = edgeNodes[i].indexOfProcessNeighborRecv;
-        indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
-        numNodesInBufferRecv = recvProcessNeighborHost[indexInSubdomainRecv].numberOfNodes;
-        numNodesInBufferSend = sendProcessNeighborHost[indexInSubdomainSend].numberOfNodes;
-        if (edgeNodes[i].indexInSendBuffer >= numNodesInBufferSend) {
+    for (auto& edgeNode : edgeNodes) {
+        const int indexInSubdomainRecv = edgeNode.indexOfProcessNeighborRecv;
+        const int indexInSubdomainSend = edgeNode.indexOfProcessNeighborSend;
+        const int numNodesInBufferRecv = recvProcessNeighborHost[indexInSubdomainRecv].numberOfNodes;
+        const int numNodesInBufferSend = sendProcessNeighborHost[indexInSubdomainSend].numberOfNodes;
+        if (edgeNode.indexInSendBuffer >= numNodesInBufferSend)
             // for reduced communication after fine to coarse: only copy send nodes which are not part of the reduced comm
             continue;
-        }
 
         // copy fs for all directions
         for (size_t direction = 0; direction <= ENDDIR; direction++) {
             (sendProcessNeighborHost[indexInSubdomainSend].f[0] +
-             (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] =
+             (direction * numNodesInBufferSend))[edgeNode.indexInSendBuffer] =
                 (recvProcessNeighborHost[indexInSubdomainRecv].f[0] +
-                 (direction * numNodesInBufferRecv))[edgeNodes[i].indexInRecvBuffer];
+                 (direction * numNodesInBufferRecv))[edgeNode.indexInRecvBuffer];
         }
     }
 }
