@@ -39,6 +39,7 @@
 
 #include "../../testUtilitiesGPU.h"
 
+#include "Calculation/Calculation.h"
 #include "DataStructureInitializer/GridReaderGenerator/IndexRearrangementForStreams.h"
 #include "Parameter/Parameter.h"
 #include "basics/config/ConfigurationFile.h"
@@ -154,8 +155,9 @@ protected:
 
     void act()
     {
-        testSubject->reorderSendIndicesForCommAfterFtoCX(sendIndices.direction, sendIndices.level, sendIndices.indexOfProcessNeighbor,
+        const uint numberOfNodes = testSubject->reorderSendIndicesForCommAfterFtoC(para->getParH(sendIndices.level)->sendProcessNeighborsX[sendIndices.indexOfProcessNeighbor], sendIndices.direction, sendIndices.level,
                                                          sendIndices.sendIndicesForCommAfterFtoCPositions);
+        testSubject->setNumberOfNodes(para->getParH(sendIndices.level)->sendProcessNeighborsAfterFtoCX[sendIndices.indexOfProcessNeighbor], para->getParH(sendIndices.level)->sendProcessNeighborsAfterFtoCX[sendIndices.indexOfProcessNeighbor], numberOfNodes);
     };
 
 private:
@@ -230,7 +232,7 @@ private:
     std::vector<uint> receivedIndices;
 };
 
-class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX : public testing::Test
+class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoC : public testing::Test
 {
 
 public:
@@ -242,14 +244,14 @@ public:
 protected:
     std::vector<uint> act()
     {
-        return sut->exchangeIndicesForCommAfterFtoCX(level, indexOfProcessNeighbor,
-                                                     sendIndicesForCommAfterFtoCPositions);
+        return sut->exchangeIndicesForCommAfterFtoC(sendProcess, recvProcess, sendIndicesForCommAfterFtoCPositions);
     }
 
 protected:
     SPtr<Parameter> para;
     std::shared_ptr<LevelGridBuilderDouble> builder;
     std::unique_ptr<IndexRearrangementForStreams> sut;
+    ProcessNeighbor27 sendProcess, recvProcess;
     const uint level = 1;
     const int indexOfProcessNeighbor = 0;
     const uint numberOfProcessNeighbors = 2;
@@ -260,12 +262,8 @@ private:
     {
         para = testing::vf::createParameterForLevel(level);
 
-        para->setNumberOfProcessNeighborsX(numberOfProcessNeighbors, level, "send");
-        para->initProcessNeighborsAfterFtoCX(level);
-        para->getParH(level)->sendProcessNeighborsAfterFtoCX[indexOfProcessNeighbor].numberOfNodes = 3;
-
-        para->setNumberOfProcessNeighborsX(numberOfProcessNeighbors, level, "recv");
-        para->getParH(level)->recvProcessNeighborsX[indexOfProcessNeighbor].rankNeighbor = 0;
+        sendProcess.numberOfNodes = 3;
+        recvProcess.rankNeighbor = 0;
 
         SPtr<GridImpDouble> grid =
             GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
@@ -273,7 +271,7 @@ private:
     };
 };
 
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, emptyRecvInX)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoC, emptyRecvInX)
 {
     CommunicatorDouble communicator;
     communicator.setReceivedIndices(std::vector<uint>());
@@ -283,17 +281,18 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, emptyR
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, zeroRecvIndexX)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoC, zeroRecvIndexX)
 {
     CommunicatorDouble communicator;
     communicator.setReceivedIndices({ 0 });
     createTestSubject(communicator);
 
     std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
+
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, oneRecvIndexX)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoC, oneRecvIndexX)
 {
     CommunicatorDouble communicator;
     std::vector<uint> expected = { 10 };
@@ -307,7 +306,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, oneRec
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, threeRecvIndicesX)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoC, threeRecvIndicesX)
 {
     CommunicatorDouble communicator;
     std::vector<uint> expected = { 10, 20, 30 };
@@ -321,7 +320,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, threeR
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, sixRecvIndicesX)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoC, sixRecvIndicesX)
 {
     // this test shows the limits of the current approach. The last index is always deleted
     CommunicatorDouble communicator;
@@ -335,245 +334,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, sixRec
     EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX, recvIndicesXContainZero)
-{
-    CommunicatorDouble communicator;
-    std::vector<uint> expected = { 0, 20, 30, 40 };
-    std::vector<uint> receivedIndicesByComm(6, 0);
-    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
-    communicator.setReceivedIndices(receivedIndicesByComm);
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(4));
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
-}
-
-class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY : public testing::Test
-{
-
-public:
-    void createTestSubject(vf::parallel::Communicator &Communicator)
-    {
-        sut = std::make_unique<IndexRearrangementForStreams>(para, builder, Communicator);
-    }
-
-protected:
-    std::vector<uint> act()
-    {
-        return sut->exchangeIndicesForCommAfterFtoCY(level, indexOfProcessNeighbor,
-                                                     sendIndicesForCommAfterFtoCPositions);
-    }
-
-protected:
-    SPtr<Parameter> para;
-    std::shared_ptr<LevelGridBuilderDouble> builder;
-    std::unique_ptr<IndexRearrangementForStreams> sut;
-    const uint level = 1;
-    const int indexOfProcessNeighbor = 0;
-    const uint numberOfProcessNeighbors = 2;
-    std::vector<uint> sendIndicesForCommAfterFtoCPositions = { 1, 2, 3 };
-
-private:
-    void SetUp() override
-    {
-        para = testing::vf::createParameterForLevel(level);
-
-        para->setNumberOfProcessNeighborsY(numberOfProcessNeighbors, level, "send");
-        para->initProcessNeighborsAfterFtoCY(level);
-        para->getParH(level)->sendProcessNeighborsAfterFtoCY[indexOfProcessNeighbor].numberOfNodes = 3;
-
-        para->setNumberOfProcessNeighborsY(numberOfProcessNeighbors, level, "recv");
-        para->getParH(level)->recvProcessNeighborsY[indexOfProcessNeighbor].rankNeighbor = 0;
-
-        SPtr<GridImpDouble> grid =
-            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
-        builder = std::make_shared<LevelGridBuilderDouble>(grid);
-    };
-};
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, emptyRecvInY)
-{
-    CommunicatorDouble communicator;
-    communicator.setReceivedIndices(std::vector<uint>());
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, zeroRecvIndexY)
-{
-    CommunicatorDouble communicator;
-    communicator.setReceivedIndices({ 0 });
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, oneRecvIndexY)
-{
-    CommunicatorDouble communicator;
-    std::vector<uint> expected = { 10 };
-    std::vector<uint> receivedIndicesByComm(4, 0);
-    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
-    communicator.setReceivedIndices(receivedIndicesByComm);
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(1));
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, threeRecvIndicesY)
-{
-    CommunicatorDouble communicator;
-    std::vector<uint> expected = { 10, 20, 30 };
-    std::vector<uint> receivedIndicesByComm(5, 0);
-    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
-    communicator.setReceivedIndices(receivedIndicesByComm);
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(3));
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, sixRecvIndicesY)
-{
-    // this test shows the limits of the current approach. The last index is always deleted
-    CommunicatorDouble communicator;
-    std::vector<uint> expected = { 10, 20, 30, 40, 50 };
-    std::vector<uint> receivedIndicesByComm = { 10, 20, 30, 40, 50, 60 };
-    communicator.setReceivedIndices(receivedIndicesByComm);
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(5));
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY, recvIndicesYContainZero)
-{
-    CommunicatorDouble communicator;
-    std::vector<uint> expected = { 0, 20, 30, 40 };
-    std::vector<uint> receivedIndicesByComm(6, 0);
-    std::copy(expected.begin(), expected.end(), receivedIndicesByComm.begin());
-    communicator.setReceivedIndices(receivedIndicesByComm);
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(4));
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
-}
-
-class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ : public testing::Test
-{
-
-public:
-    void createTestSubject(vf::parallel::Communicator &Communicator)
-    {
-        sut = std::make_unique<IndexRearrangementForStreams>(para, builder, Communicator);
-    }
-
-protected:
-    std::vector<uint> act()
-    {
-        return sut->exchangeIndicesForCommAfterFtoCZ(level, indexOfProcessNeighbor,
-                                                     sendIndicesForCommAfterFtoCPositions);
-    }
-
-protected:
-    SPtr<Parameter> para;
-    std::shared_ptr<LevelGridBuilderDouble> builder;
-    std::unique_ptr<IndexRearrangementForStreams> sut;
-    const uint level = 1;
-    const int indexOfProcessNeighbor = 0;
-    const uint numberOfProcessNeighbors = 2;
-    std::vector<uint> sendIndicesForCommAfterFtoCPositions = { 1, 2, 3 };
-
-private:
-    void SetUp() override
-    {
-        para = testing::vf::createParameterForLevel(level);
-
-        para->setNumberOfProcessNeighborsZ(numberOfProcessNeighbors, level, "send");
-        para->initProcessNeighborsAfterFtoCZ(level);
-        para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighbor].numberOfNodes = 3;
-
-        para->setNumberOfProcessNeighborsZ(numberOfProcessNeighbors, level, "recv");
-        para->getParH(level)->recvProcessNeighborsZ[indexOfProcessNeighbor].rankNeighbor = 0;
-
-        SPtr<GridImpDouble> grid =
-            GridImpDouble::makeShared(nullptr, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, Distribution(), 1);
-        builder = std::make_shared<LevelGridBuilderDouble>(grid);
-    };
-};
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, emptyRecvInZ)
-{
-    CommunicatorDouble communicator;
-    communicator.setReceivedIndices(std::vector<uint>());
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, zeroRecvIndexZ)
-{
-    CommunicatorDouble communicator;
-    communicator.setReceivedIndices({ 0 });
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(0));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, oneRecvIndexZ)
-{
-    CommunicatorDouble communicator;
-    std::vector<uint> expected = { 10 };
-    std::vector<uint> receivedIndicesBZComm(4, 0);
-    std::copy(expected.begin(), expected.end(), receivedIndicesBZComm.begin());
-    communicator.setReceivedIndices(receivedIndicesBZComm);
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(1));
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, threeRecvIndicesZ)
-{
-    CommunicatorDouble communicator;
-    std::vector<uint> expected = { 10, 20, 30 };
-    std::vector<uint> receivedIndicesBZComm(5, 0);
-    std::copy(expected.begin(), expected.end(), receivedIndicesBZComm.begin());
-    communicator.setReceivedIndices(receivedIndicesBZComm);
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(3));
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, sixRecvIndicesYZ)
-{
-    // this test shows the limits of the current approach. The last index is always deleted
-    CommunicatorDouble communicator;
-    std::vector<uint> expected = { 10, 20, 30, 40, 50 };
-    std::vector<uint> receivedIndicesByComm = { 10, 20, 30, 40, 50, 60 };
-    communicator.setReceivedIndices(receivedIndicesByComm);
-    createTestSubject(communicator);
-
-    std::vector<uint> recvIndicesForCommAfterFtoCPositions = act();
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions.size(), testing::Eq(5));
-    EXPECT_THAT(recvIndicesForCommAfterFtoCPositions, testing::Eq(expected));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ, recvIndicesZContainZero)
+TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoC, recvIndicesXContainZero)
 {
     CommunicatorDouble communicator;
     std::vector<uint> expected = { 0, 20, 30, 40 };
@@ -605,31 +366,20 @@ struct RecvIndicesForCommAfterFtoC {
     // and reordered recvIndices
 };
 
-class IndexRearrangementForStreamsTest_reorderRecvIndicesX : public testing::Test
+class IndexRearrangementForStreamsTest_reorderRecvIndices : public testing::Test
 {
 protected:
     RecvIndicesForCommAfterFtoC ri;
     SPtr<Parameter> para;
-    std::unique_ptr<IndexRearrangementForStreams> testSubject;
 
-    void setUpParaInX()
-    {
-        para->setNumberOfProcessNeighborsX(ri.numberOfProcessNeighbors, ri.level, "recv");
-        para->initProcessNeighborsAfterFtoCX(ri.level);
-        para->getParH(ri.level)->recvProcessNeighborsX[ri.indexOfProcessNeighbor].index = ri.recvIndices.data();
-    }
+    ProcessNeighbor27 neighbor;
+    std::unique_ptr<IndexRearrangementForStreams> testSubject;
 
     void act()
     {
-        testSubject->reorderRecvIndicesForCommAfterFtoC(ri.recvIndices.data(), ri.numberOfRecvNodesAfterFtoC,
+        ri.numberOfRecvNodesAfterFtoC = testSubject->reorderRecvIndicesForCommAfterFtoC(neighbor, 
                                                         ri.direction, ri.level,
                                                         ri.sendIndicesForCommAfterFtoCPositions);
-    };
-
-    void actWithX()
-    {
-        testSubject->reorderRecvIndicesForCommAfterFtoCX(ri.direction, ri.level, ri.indexOfProcessNeighbor,
-                                                         ri.sendIndicesForCommAfterFtoCPositions);
     };
 
 private:
@@ -644,12 +394,13 @@ private:
 
         testSubject = std::make_unique<IndexRearrangementForStreams>(
             IndexRearrangementForStreams(para, builder, communicator));
+        neighbor.index = ri.recvIndices.data();
     };
 
     vf::parallel::NullCommunicator communicator;
 };
 
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreUnchanged)
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndices, noSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreUnchanged)
 {
     ri.sendIndicesForCommAfterFtoCPositions = {};
     auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
@@ -660,7 +411,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noSendIndicesForCom
     EXPECT_THAT(ri.recvIndices, testing::Eq(recvIndices_expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreReorderedCorrectly)
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndices, someSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreReorderedCorrectly)
 {
     ri.sendIndicesForCommAfterFtoCPositions = { 0, 2, 4, 6 };
     auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
@@ -671,7 +422,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someSendIndicesForC
     EXPECT_THAT(ri.recvIndices, testing::Eq(recvIndices_expected));
 }
 
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, allIndicesAreSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreReorderedCorrectly)
+TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndices, allIndicesAreSendIndicesForCommunicationAfterScalingFineToCoarse_receiveIndicesAreReorderedCorrectly)
 {
     ri.sendIndicesForCommAfterFtoCPositions = { 0, 1, 2, 3, 4, 5, 6 };
     auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
@@ -680,54 +431,6 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, allIndicesAreSendIn
     act();
     EXPECT_THAT(ri.numberOfRecvNodesAfterFtoC, testing::Eq(numberOfRecvNodesAfterFtoC_expected));
     EXPECT_THAT(ri.recvIndices, testing::Eq(recvIndices_expected));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, noSendIndicesForCommunicationAfterScalingFineToCoarseInX_receiveIndicesAreUnchanged)
-{
-    setUpParaInX();
-
-    ri.sendIndicesForCommAfterFtoCPositions = {};
-    auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
-    std::vector<int> recvIndices_expected = { 10, 11, 12, 13, 14, 15, 16 };
-
-    this->actWithX();
-
-    EXPECT_THAT(para->getParH(ri.level)->recvProcessNeighborsAfterFtoCX[ri.indexOfProcessNeighbor].numberOfNodes,
-                testing::Eq(numberOfRecvNodesAfterFtoC_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborsX[ri.indexOfProcessNeighbor].index,
-                                recvIndices_expected));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, someSendIndicesForCommunicationAfterScalingFineToCoarseInX_receiveIndicesAreReorderedCorrectly)
-{
-    setUpParaInX();
-
-    ri.sendIndicesForCommAfterFtoCPositions = { 0, 2, 4, 6 };
-    auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
-    std::vector<int> recvIndices_expected = { 10, 12, 14, 16, 11, 13, 15 };
-
-    actWithX();
-
-    EXPECT_THAT(para->getParH(ri.level)->recvProcessNeighborsAfterFtoCX[ri.indexOfProcessNeighbor].numberOfNodes,
-                testing::Eq(numberOfRecvNodesAfterFtoC_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborsX[ri.indexOfProcessNeighbor].index,
-                                recvIndices_expected));
-}
-
-TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndicesX, allIndicesAreSendIndicesForCommunicationAfterScalingFineToCoarseInX_receiveIndicesAreReorderedCorrectly)
-{
-    setUpParaInX();
-
-    ri.sendIndicesForCommAfterFtoCPositions = { 0, 1, 2, 3, 4, 5, 6 };
-    auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
-    std::vector<int> recvIndices_expected = { 10, 11, 12, 13, 14, 15, 16 };
-
-    actWithX();
-
-    EXPECT_THAT(para->getParH(ri.level)->recvProcessNeighborsAfterFtoCX[ri.indexOfProcessNeighbor].numberOfNodes,
-                testing::Eq(numberOfRecvNodesAfterFtoC_expected));
-    EXPECT_TRUE(vectorsAreEqual(para->getParH(ri.level)->recvProcessNeighborsX[ri.indexOfProcessNeighbor].index,
-                                recvIndices_expected));
 }
 
 //! \}

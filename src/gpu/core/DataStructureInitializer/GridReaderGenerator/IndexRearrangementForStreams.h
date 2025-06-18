@@ -34,6 +34,7 @@
 #ifndef IndexRearrangementForStreams_H
 #define IndexRearrangementForStreams_H
 
+#include "Calculation/Calculation.h"
 #include <memory>
 #include <vector>
 
@@ -62,67 +63,35 @@ public:
     // communication after fine to coarse
     //////////////////////////////////////////////////////////////////////////
 
-    //! \brief Initialize the arrays for the communication after the interpolation from fine to coarse in x direction
+    //! \brief Initialize the arrays for the communication after the interpolation from fine to coarse
     //! \details Only the nodes involved in the interpolation need to be exchanged. Therefore in this method all nodes,
     //! which are part of the interpolation as well as the communication, are identified.
     //!See [master thesis of Anna Wellmann (p. 59-62: "Reduzieren der auszutauschenden Knoten")]
-    virtual void initCommunicationArraysForCommAfterFinetoCoarseX(uint level, uint indexOfProcessNeighbor, int direction) const;
-    //! \brief Initialize the arrays for the communication after the interpolation from fine to coarse in y direction
-    //! \details --> see x direction
-    virtual void initCommunicationArraysForCommAfterFinetoCoarseY(uint level, uint indexOfProcessNeighbor, int direction) const;
-    //! \brief Initialize the arrays for the communication after the interpolation from fine to coarse in z direction
-    //! \details --> see x direction
-    virtual void initCommunicationArraysForCommAfterFinetoCoarseZ(uint level, uint indexOfProcessNeighbor, int direction) const;
+    virtual void initCommunicationArraysForCommAfterFinetoCoarse(ProcessNeighbor27& sendNeighborHost, ProcessNeighbor27& sendNeighborDevice, ProcessNeighbor27& sendNeighborAfterFtoCHost,  ProcessNeighbor27& sendNeighborAfterFtoCDevice, ProcessNeighbor27& recvNeighborHost,ProcessNeighbor27& recvNeighborDevice, ProcessNeighbor27& recvNeighborAfterFtoCHost, ProcessNeighbor27& recvNeighborAfterFtoCDevice, int level, int direction) const;
+
 
 protected:
     //////////////////////////////////////////////////////////////////////////
     // communication after fine to coarse
     //////////////////////////////////////////////////////////////////////////
 
-    //! \brief Initializes the send indices for the communication after the interpolation from fine to coarse
-    std::vector<uint> initSendIndicesForCommAfterFToCX(uint level, uint indexOfProcessNeighbor, int direction) const;
-    std::vector<uint> initSendIndicesForCommAfterFToCY(uint level, uint indexOfProcessNeighbor, int direction) const;
-    std::vector<uint> initSendIndicesForCommAfterFToCZ(uint level, uint indexOfProcessNeighbor, int direction) const;
-
     //! \brief send sendIndicesForCommAfterFtoCPositions to receiving process and receive
     //! recvIndicesForCommAfterFtoCPositions from neighboring process
-    std::vector<uint> exchangeIndicesForCommAfterFtoCX(uint level, uint indexOfProcessNeighbor,
+    std::vector<uint> exchangeIndicesForCommAfterFtoC(ProcessNeighbor27& sendNeighbor, ProcessNeighbor27& recvNeighbor,
                                                        std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    std::vector<uint> exchangeIndicesForCommAfterFtoCY(uint level, uint indexOfProcessNeighbor,
-                                                       std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    std::vector<uint> exchangeIndicesForCommAfterFtoCZ(uint level, uint indexOfProcessNeighbor,
-                                                       std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-
-    //! \brief Initializes the send indices for the communication after the interpolation from fine to coarse
-    void initRecvIndicesForCommAfterFToCX(uint level, uint indexOfProcessNeighbor, int direction,
-                                          std::vector<uint> &recvIndicesForCommAfterFtoCPositions) const;
-    void initRecvIndicesForCommAfterFToCY(uint level, uint indexOfProcessNeighbor, int direction,
-                                          std::vector<uint> &recvIndicesForCommAfterFtoCPositions) const;
-    void initRecvIndicesForCommAfterFToCZ(uint level, uint indexOfProcessNeighbor, int direction,
-                                          std::vector<uint> &recvIndicesForCommAfterFtoCPositions) const;
 
     //! \brief Initializes pointers for reduced communication after the interpolation from fine to coarse by copying
     //! them from "normal" communication
-    void copyProcessNeighborToCommAfterFtoCX(uint level, uint indexOfProcessNeighbor) const;
-    void copyProcessNeighborToCommAfterFtoCY(uint level, uint indexOfProcessNeighbor) const;
-    void copyProcessNeighborToCommAfterFtoCZ(uint level, uint indexOfProcessNeighbor) const;
+    void copyProcessNeighborToCommAfterFtoC(ProcessNeighbor27& neighbor, ProcessNeighbor27& neighborAfterFtoC) const;
+    void setNumberOfNodes( ProcessNeighbor27& neighborAfterFtoCHost,  ProcessNeighbor27& neighborAfterFtoCDevice, uint numberOfNodes) const;
 
-    //! \brief --> see reorderSendIndicesForCommAfterFtoC
-    void reorderSendIndicesForCommAfterFtoCX(int direction, int level, uint indexOfProcessNeighbor,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    void reorderSendIndicesForCommAfterFtoCY(int direction, int level, uint indexOfProcessNeighbor,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    void reorderSendIndicesForCommAfterFtoCZ(int direction, int level, uint indexOfProcessNeighbor,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
 
     //! \brief The send indices are reordered for the communication after the interpolation from fine to coarse
     //! \details The indices of nodes which are part of the interpolation are moved to the front of vector with the send
     //! indices.
     //! \pre para->getParH(level)->intCF needs to be initialized
-    //! \param sendIndices is the pointer to the vector with the send indices, which will be reordered in this function
-    //! \param numberOfSendNodesAfterFtoC will be set in this method
     //! \param sendIndicesForCommAfterFtoCPositions stores each sendIndex's positions before reordering
-    void reorderSendIndicesForCommAfterFtoC(int *sendIndices, uint &numberOfSendNodesAfterFtoC, int direction,
+    uint reorderSendIndicesForCommAfterFtoC(ProcessNeighbor27& sendNeighbor, int direction,
                                             int level, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
     //! \brief Check if a sparse index occurs in the coarse nodes for the interpolation from fine to coarse
     bool isSparseIndexInCoarseIndexForFtoC(uint numberOfCoarseNodesForFtoC, int sparseIndexSend, int level) const;
@@ -144,14 +113,6 @@ protected:
                                               std::vector<int> &sendOrReceiveIndicesAfterFtoC,
                                               std::vector<int> &sendOrIndicesOther);
 
-    //! \brief --> see reorderRecvIndicesForCommAfterFtoC
-    void reorderRecvIndicesForCommAfterFtoCX(int direction, int level, uint indexOfProcessNeighbor,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    void reorderRecvIndicesForCommAfterFtoCY(int direction, int level, uint indexOfProcessNeighbor,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    void reorderRecvIndicesForCommAfterFtoCZ(int direction, int level, uint indexOfProcessNeighbor,
-                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-
     //! \brief Reorder the receive indices in the same way that the send indices were reordered.
     //! \details When the send indices are reordered, the receive indices need to be reordered accordingly.
     //! \pre sendIndicesForCommAfterFtoCPositions should not be empty
@@ -159,8 +120,8 @@ protected:
     //! function \param numberOfRecvNodesAfterFtoC will be set in this function \param
     //! sendIndicesForCommAfterFtoCPositions stores each sendIndex's positions before reordering and is used to reorder
     //! the receive indices in the same way
-    void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, uint &numberOfRecvNodesAfterFtoC, int direction, int level,
-                                            std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
+    uint reorderRecvIndicesForCommAfterFtoC(ProcessNeighbor27& recvNeighbor, int direction, int level,
+                                            const std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
 
 private:
     std::shared_ptr<GridBuilder> builder;
@@ -169,10 +130,8 @@ private:
 
     // used for tests
     friend class IndexRearrangementForStreamsTest_reorderSendIndices;
-    friend class IndexRearrangementForStreamsTest_reorderRecvIndicesX;
-    friend class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCX;
-    friend class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCY;
-    friend class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoCZ;
+    friend class IndexRearrangementForStreamsTest_reorderRecvIndices;
+    friend class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoC;
 };
 
 #endif
