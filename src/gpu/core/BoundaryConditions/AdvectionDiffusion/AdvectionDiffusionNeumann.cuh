@@ -75,7 +75,7 @@ AdvectionDiffusionNeumann_Device(real* populationArray, const AdvectionDiffusion
 
     switch (bcType) {
         case BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackSlip:
-            loopDirections([&](auto direction) {
+            forEachNonRestDirection([&](auto direction) {
                 const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
                 if (subgridDistance < c0o1 || subgridDistance > c1o1)
                     return;
@@ -85,7 +85,7 @@ AdvectionDiffusionNeumann_Device(real* populationArray, const AdvectionDiffusion
             });
             break;
         case BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip:
-            loopDirections([&](auto direction) {
+            forEachNonRestDirection([&](auto direction) {
                 const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
                 if (subgridDistance < c0o1 || subgridDistance > c1o1)
                     return;
@@ -99,7 +99,7 @@ AdvectionDiffusionNeumann_Device(real* populationArray, const AdvectionDiffusion
             const real vx1 = velocityX[k_000];
             const real vx2 = velocityY[k_000];
             const real vx3 = velocityZ[k_000];
-            loopDirections([&](auto direction) {
+            forEachNonRestDirection([&](auto direction) {
                 const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
                 if (subgridDistance < c0o1 || subgridDistance > c1o1)
                     return;
@@ -110,7 +110,7 @@ AdvectionDiffusionNeumann_Device(real* populationArray, const AdvectionDiffusion
             });
         } break;
         case BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannInterpolatedNoSlip: {
-            loopDirections([&](auto direction) {
+            forEachNonRestDirection([&](auto direction) {
                 const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
                 if (subgridDistance < c0o1 || subgridDistance > c1o1)
                     return;

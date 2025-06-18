@@ -64,7 +64,7 @@ __global__ void AdvectionDiffusionNoFluxBounceBack_Device(real* distributions,
 
     getPointersToDistributions(populationReferences, distributions, numberOfLBnodes, !isEvenTimestep);
 
-    loopDirections([&](auto direction) {
+    forEachNonRestDirection([&](auto direction) {
         const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
         if (subgridDistance < c0o1 || subgridDistance > c1o1)
             return;

@@ -256,22 +256,27 @@ template<> constexpr real getWeight<dPMM>(){ return basics::constant::c1o216; }
 template<> constexpr real getWeight<dMPP>(){ return basics::constant::c1o216; }
 
 
-template <std::size_t... S, typename F>
+template <std::size_t offset, std::size_t... S, typename F>
 constexpr void forSequence(std::index_sequence<S...> /**/, F func)
 {
-    (func(std::integral_constant<std::size_t, S + 1> {}), ...);
+    (func(std::integral_constant<std::size_t, S + offset> {}), ...);
 }
 
 //!\brief How to use this function:
 // this template can be used to generate a loop over all directions (except d000) at compile time.
-// it takes a lambda of the form [](auto direction){}. 
+// it takes a lambda of the form [](auto direction){...}. 
 // See src/gpu/core/BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionBounceBack.cuh for an example
 template <typename F>
-constexpr void loopDirections(F func)
+constexpr void forEachNonRestDirection(F func)
 {
-    forSequence(std::make_index_sequence<vf::lbm::dir::ENDDIR> {}, func);
+    forSequence<1>(std::make_index_sequence<vf::lbm::dir::ENDDIR> {}, func);
 }
 
+template <typename F>
+constexpr void forEachDirection(F func)
+{
+    forSequence<0>(std::make_index_sequence<vf::lbm::dir::NUMBER_Of_DIRECTIONS> {}, func);
+}
 } // namespace vf::lbm::dir
 #endif
 

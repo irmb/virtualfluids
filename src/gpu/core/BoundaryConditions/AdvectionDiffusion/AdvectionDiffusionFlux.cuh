@@ -104,7 +104,7 @@ __global__ void AdvectionDiffusionFlux_Device(real* populationsArray,
     const real fluxZ = (diffusiveFluxZ - normalFlux * normalZ) + neumannFlux * normalZ;
 
     if (fluxBCType == FluxBC::FluxBounceBack) {
-        loopDirections([&](auto direction) {
+        forEachNonRestDirection([&](auto direction) {
             const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
             if (subgridDistance < c0o1 || subgridDistance > c1o1)
                 return;
@@ -113,7 +113,7 @@ __global__ void AdvectionDiffusionFlux_Device(real* populationsArray,
         });
     } else {
         const real relaxationFrequency = vf::lbm::calculateOmegaWithTurbulentViscosity(omegaDiffusivity, addedDiffusivity);
-        loopDirections([&](auto direction) {
+        forEachNonRestDirection([&](auto direction) {
             const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
             if (subgridDistance < c0o1 || subgridDistance > c1o1)
                 return;
