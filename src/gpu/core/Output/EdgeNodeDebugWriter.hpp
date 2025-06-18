@@ -82,7 +82,7 @@ void writeEdgeNodesXZ_Send(SPtr<Parameter> para, int processID = 0)
             nodedata[0][nodeCount] = sparseIndex;
             nodedata[1][nodeCount] = indexOfProcessNeighborSend;
             nodedata[2][nodeCount] = indexInSendBuffer;
-            nodedata[3][nodeCount] = indexInSendBuffer < para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighborSend].numberOfNodes;
+            nodedata[3][nodeCount] = indexInSendBuffer < int(para->getParH(level)->sendProcessNeighborsAfterFtoCZ[indexOfProcessNeighborSend].numberOfNodes);
 
             addCoordinatesToNodeVector(para->getParH(level), nodesVec, nodeCount, sparseIndex);
 
