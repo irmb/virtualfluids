@@ -130,10 +130,10 @@ __global__ void getSendFsPost27(real* DD,
 
    Distributions27 populationReferences = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes,isEvenTimestep);
    Distributions27 bufferReferences = vf::gpu::getDistributionReferences27(bufferFs, buffmax, true);
+
    real populations[27];
    vf::gpu::getPostCollisionDistribution(populations, populationReferences, indices);
    copyToBuffer(bufferReferences, index, populations);
-
 }
 
 __global__ void setRecvFsPost27(real* DD,
@@ -163,9 +163,9 @@ __global__ void getSendFsPre27(real* DD,
                                real* bufferFs,
                                const int* sendIndex,
                                const int buffmax,
-                               const unsigned int* neighborX,
-                               const unsigned int* neighborY,
-                               const unsigned int* neighborZ,
+                               const uint* neighborX,
+                               const uint* neighborY,
+                               const uint* neighborZ,
                                const unsigned long long numberOfLBnodes, 
                                const bool isEvenTimestep)
 {
