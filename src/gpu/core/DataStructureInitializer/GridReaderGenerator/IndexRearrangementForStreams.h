@@ -118,11 +118,11 @@ protected:
     //! \brief The send indices are reordered for the communication after the interpolation from fine to coarse
     //! \details The indices of nodes which are part of the interpolation are moved to the front of vector with the send
     //! indices.
-    //! \pre para->getParH(level)->intCF needs to be inititalized
+    //! \pre para->getParH(level)->intCF needs to be initialized
     //! \param sendIndices is the pointer to the vector with the send indices, which will be reordered in this function
     //! \param numberOfSendNodesAfterFtoC will be set in this method
     //! \param sendIndicesForCommAfterFtoCPositions stores each sendIndex's positions before reordering
-    void reorderSendIndicesForCommAfterFtoC(int *sendIndices, int &numberOfSendNodesAfterFtoC, int direction,
+    void reorderSendIndicesForCommAfterFtoC(int *sendIndices, uint &numberOfSendNodesAfterFtoC, int direction,
                                             int level, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
     //! \brief Check if a sparse index occurs in the coarse nodes for the interpolation from fine to coarse
     bool isSparseIndexInCoarseIndexForFtoC(uint numberOfCoarseNodesForFtoC, int sparseIndexSend, int level) const;
@@ -159,7 +159,7 @@ protected:
     //! function \param numberOfRecvNodesAfterFtoC will be set in this function \param
     //! sendIndicesForCommAfterFtoCPositions stores each sendIndex's positions before reordering and is used to reorder
     //! the receive indices in the same way
-    void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, int &numberOfRecvNodesAfterFtoC, int direction, int level,
+    void reorderRecvIndicesForCommAfterFtoC(int *recvIndices, uint &numberOfRecvNodesAfterFtoC, int direction, int level,
                                             std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
 
 private:
