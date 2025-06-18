@@ -46,7 +46,6 @@ class Probe;
 class PlanarAverageProbe;
 class VelocitySetter;
 class PrecursorWriter;
-class CoriolisForce;
 
 class CudaMemoryManager
 {
@@ -333,9 +332,6 @@ public:
     void cudaAllocSphereIndices(ActuatorFarm* actuatorFarm);
     void cudaCopySphereIndicesHtoD(ActuatorFarm* actuatorFarm);
     void cudaFreeSphereIndices(ActuatorFarm* actuatorFarm);
-
-    void cudaAllocCoriolisForceData(CoriolisForce* coriolisForce, int level);
-    void cudaFreeCoriolisForceData(CoriolisForce* coriolisForce, int level);
 
     // Probes
     void cudaAllocProbeData(Probe* probe, int level);

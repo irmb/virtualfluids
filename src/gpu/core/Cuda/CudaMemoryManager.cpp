@@ -2518,21 +2518,6 @@ void CudaMemoryManager::cudaFreeSphereIndices(ActuatorFarm* actuatorFarm)
     checkCudaErrors( cudaFree(actuatorFarm->boundingSphereIndicesD) );
 }
 
-void CudaMemoryManager::cudaAllocCoriolisForceData(CoriolisForce* coriolisForce, int level)
-{
-    auto& levelData = coriolisForce->getLevelData(level);
-    const size_t size = sizeof(real)*parameter->getParD(level)->numberOfNodes;
-    checkCudaErrors( cudaMalloc((void**) &(levelData.forceAccumulatorX), size) );
-    checkCudaErrors( cudaMalloc((void**) &(levelData.forceAccumulatorY), size) );
-    setMemsizeGPU(2.0*double(size), false);
-}
-
-void CudaMemoryManager::cudaFreeCoriolisForceData(CoriolisForce* coriolisForce, int level)
-{
-    checkCudaErrors( cudaFree(coriolisForce->getLevelData(level).forceAccumulatorX) );
-    checkCudaErrors( cudaFree(coriolisForce->getLevelData(level).forceAccumulatorY) );
-}
-
 ////////////////////////////////////////////////////////////////////////////////////
 //  Probe
 ///////////////////////////////////////////////////////////////////////////////

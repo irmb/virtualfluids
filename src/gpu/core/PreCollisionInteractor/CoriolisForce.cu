@@ -43,43 +43,19 @@
 
 __global__ void computeCoriolis(unsigned long long numberOfNodes, const real* velocityX, const real* velocityY, real* forceX,
                                 real* forceY, const real geostrophicWindX, const real geostrophicWindY,
-                                const real coriolisParameter, CoriolisForce::LevelData levelData, const bool accumulate)
+                                const real coriolisParameter)
 {
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
     if (nodeIndex >= numberOfNodes)
         return;
-    const real newForceX = -(geostrophicWindY - velocityY[nodeIndex]) * coriolisParameter;
-    const real newForceY = (geostrophicWindX - velocityX[nodeIndex]) * coriolisParameter;
-    if(accumulate)
-    {
-        levelData.forceAccumulatorX[nodeIndex] += newForceX;
-        levelData.forceAccumulatorY[nodeIndex] += newForceY;
-    } else {
-        forceX[nodeIndex] += levelData.forceAccumulatorX[nodeIndex] + newForceX;
-        forceY[nodeIndex] += levelData.forceAccumulatorY[nodeIndex] + newForceY;
-        levelData.forceAccumulatorX[nodeIndex] = c0o1;
-        levelData.forceAccumulatorY[nodeIndex] = c0o1;
-    }
+    forceX[nodeIndex] += -(geostrophicWindY - velocityY[nodeIndex]) * coriolisParameter;
+    forceY[nodeIndex] += (geostrophicWindX - velocityX[nodeIndex]) * coriolisParameter;
 }
 
-void CoriolisForce::init()
-{
-    for (int level = 0; level <= para->getMaxLevel(); level++) {
-        levelData.emplace_back();
-        cudaMemoryManager->cudaAllocCoriolisForceData(this, level);
-    }
-}
-
-void CoriolisForce::interact(int level, uint t)
+void CoriolisForce::interact(int level, uint /**/)
 {
     auto parD = para->getParD(level);
     vf::cuda::CudaGrid grid(parD->numberofthreads, parD->numberOfNodes);
     computeCoriolis<<<grid.grid, grid.threads>>>(parD->numberOfNodes, parD->velocityX, parD->velocityY, parD->forceX_SP,
-                                                 parD->forceY_SP, geostrophicWindX, geostrophicWindY, coriolisParameter, levelData[level], t%nAccumulationSteps!=0);
-}
-
-CoriolisForce::~CoriolisForce()
-{
-    for (int level = 0; level <= para->getMaxLevel(); level++)
-        cudaMemoryManager->cudaFreeCoriolisForceData(this, level);
+                                                 parD->forceY_SP, geostrophicWindX, geostrophicWindY, coriolisParameter);
 }

@@ -49,10 +49,10 @@ class CoriolisForce : public PreCollisionInteractor
 {
 public:
     CoriolisForce(const SPtr<Parameter>& parameter, SPtr<CudaMemoryManager> cudaMemoryManager, real geostrophicWindX,
-                  real geostrophicWindY, real coriolisParameter, uint numberOfAccumulationSteps = 100)
+                  real geostrophicWindY, real coriolisParameter)
         : geostrophicWindX(geostrophicWindX / parameter->getVelocityRatio()),
           geostrophicWindY(geostrophicWindY / parameter->getVelocityRatio()),
-          coriolisParameter(coriolisParameter * parameter->getTimeRatio()), nAccumulationSteps(numberOfAccumulationSteps),
+          coriolisParameter(coriolisParameter * parameter->getTimeRatio()),
           PreCollisionInteractor(parameter, std::move(cudaMemoryManager))
     {
         VF_LOG_INFO("using Coriolis Force with geostrophic wind vector ({},{}) m/s and coriolis parameter {} 1/s", geostrophicWindX,
@@ -62,20 +62,13 @@ public:
         para->setAllNodesAllFeatures(true);
     }
 
-    void init() override;
+    void init() override {};
     void interact(int level, uint t) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override {};
-    ~CoriolisForce() override;
-    struct LevelData
-    {
-        real *forceAccumulatorX, *forceAccumulatorY;
-    };
-    LevelData& getLevelData(int level) {return levelData[level]; };
+    ~CoriolisForce() override = default;
 
 private:
-    real geostrophicWindX, geostrophicWindY, coriolisParameter;
-    const uint nAccumulationSteps;
-    std::vector<LevelData> levelData;
+    const real geostrophicWindX, geostrophicWindY, coriolisParameter;
 };
 
 #endif //! \}
