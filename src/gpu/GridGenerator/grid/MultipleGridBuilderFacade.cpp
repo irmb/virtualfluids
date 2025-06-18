@@ -392,6 +392,22 @@ void MultipleGridBuilderFacade::setNoSlipBoundaryCondition(SideType sideType) co
     setBoundaryCondition(sideType, [&]() { gridBuilder->setNoSlipBoundaryCondition(sideType); });
 }
 
+void MultipleGridBuilderFacade::setADNoFluxBoundaryCondition(SideType sideType){
+    setBoundaryCondition(sideType, [&]{gridBuilder->setADNoFluxBoundaryCondition(sideType);});
+}
+
+void MultipleGridBuilderFacade::setADFluxBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX){
+    setBoundaryCondition(sideType, [&]{gridBuilder->setADFluxBoundaryCondition(sideType, normalX, normalY, normalZ, gradient, deltaX);});
+}
+
+void MultipleGridBuilderFacade::setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz){
+    setBoundaryCondition(sideType, [&]{gridBuilder->setADDirichletBoundaryCondition(sideType, value, vx, vy, vz); });
+}
+
+void MultipleGridBuilderFacade::setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx){
+    setBoundaryCondition(sideType, [&]{gridBuilder->setADNeumannBoundaryCondition(sideType, gradient, vx, vy, vz, dx); });
+}
+
 bool MultipleGridBuilderFacade::isFinalSubdomainInDirection(CommunicationDirection direction) const
 {
     return !hasNeighbors.at(direction);

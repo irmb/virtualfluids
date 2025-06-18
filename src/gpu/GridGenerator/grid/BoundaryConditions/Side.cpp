@@ -40,6 +40,7 @@
 #include "utilities/math/Math.h"
 #include <array>
 #include <cstddef>
+#include <stdexcept>
 #include <vector>
 
 using namespace grid_generator;
@@ -82,7 +83,8 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                                             // Overlap of BCs on edge nodes
                                             || grid->nodeHasBC(index) )
             {   
-                grid->setFieldEntry(index, boundaryCondition->getType());
+                if(boundaryCondition->getType() != vf::gpu::BC_AD)
+                    grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
                 setPressureNeighborIndices(boundaryCondition, grid, index);
                 setStressSamplingIndices(boundaryCondition, grid, index);
@@ -95,7 +97,12 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
 
     const auto currentBCSide = this->whoAmI();
     if(currentBCSide != SideType::GEOMETRY)
-        grid->addBCalreadySet(currentBCSide);
+    {
+        if(boundaryCondition->getType() != vf::gpu::BC_AD)
+            grid->addBCalreadySet(currentBCSide);
+        else
+            grid->addADBCalreadySet(currentBCSide);
+    }
 }
 
 void Side::setPressureNeighborIndices(SPtr<BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index)
@@ -170,7 +177,10 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         }
 
         // reset diagonals in case they were set by another bc
-        resetDiagonalsInCaseOfOtherBC(grid.get(), qNode, dir, coords);
+        if(boundaryCondition->getType() == vf::gpu::BC_AD) 
+            resetDiagonalsInCaseOfOtherBC(grid.get(), qNode, dir, coords, grid->getADBCAlreadySet());
+        else
+            resetDiagonalsInCaseOfOtherBC(grid.get(), qNode, dir, coords, grid->getBCAlreadySet());
     }
 
     boundaryCondition->qs.push_back(qNode);
@@ -191,25 +201,24 @@ bool Side::neighborNormalToSideIsAStopper(Grid *grid, const std::array<real, 3> 
 }
 
 void Side::resetDiagonalsInCaseOfOtherBC(Grid *grid, std::vector<real> &qNode, int dir,
-                                         const std::array<real, 3> &coordinates) const
+                                         const std::array<real, 3> &coordinates, const std::vector<SideType>& BCAlreadySet) const
 {
     // When to reset a diagonal q to -1:
     // - it is normal to another boundary condition which was already set
     // - and it actually is influenced by the other bc:
     //   We check if its neighbor in the regular direction to the other bc is a stopper. If it is a stopper, it is influenced by the other bc.
+    if(qNode[dir] != 0.5)
+        return;
 
-    if (qNode[dir] == 0.5 && grid->getBCAlreadySet().size() > 0) {
-        for (int i = 0; i < (int)grid->getBCAlreadySet().size(); i++) {
-            SideType otherDir = grid->getBCAlreadySet()[i];
+    for (const auto& otherDir : BCAlreadySet) {
 
-            // only reset normals for nodes on edges and corners, not on faces
-            if (!neighborNormalToSideIsAStopper(grid, coordinates, otherDir))
-                continue;
+        // only reset normals for nodes on edges and corners, not on faces
+        if (!neighborNormalToSideIsAStopper(grid, coordinates, otherDir))
+            continue;
 
-            const auto otherNormal = normals.at(otherDir);
-            if (isAlignedWithNormal(grid, dir, otherNormal)) {
-                qNode[dir] = -1.0;
-            }
+        const auto otherNormal = normals.at(otherDir);
+        if (isAlignedWithNormal(grid, dir, otherNormal)) {
+            qNode[dir] = -1.0;
         }
     }
 }
@@ -270,6 +279,8 @@ uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, 
 void Geometry::addIndices(const std::vector<SPtr<Grid>> &grids, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     auto geometryBoundaryCondition = std::dynamic_pointer_cast<GeometryBoundaryCondition>(boundaryCondition);
+    if(geometryBoundaryCondition == nullptr)
+        throw std::runtime_error("Tried to set unallowed boundary condition on geometry");
 
     std::vector<real> qNode(grids[level]->getEndDirection() + 1);
 

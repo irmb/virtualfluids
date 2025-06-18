@@ -53,7 +53,10 @@ using DirectionalBoundaryConditionKernel = std::function<void(LBMSimulationParam
 using BoundaryConditionWithParameterKernel = std::function<void(Parameter*, QforBoundaryConditions*, const int level)>;
 using PrecursorBoundaryConditionKernel =
     std::function<void(LBMSimulationParameter*, QforPrecursorBoundaryConditions*, real tRatio, real velocityRatio)>;
-
+using ADNoFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNoFluxBoundaryConditions bcParams)>;
+using ADFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionFluxBoundaryConditions bcParams)>;
+using ADDirichletBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionDirichletBoundaryConditions bcParams)>;
+using ADNeumannBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNeumannBoundaryConditions bcParams)>;
 //! \class BCKernelManager
 //! \brief manage the cuda kernel calls to boundary conditions
 //! \details This class stores the boundary conditions and manages the calls to the boundary condition kernels.
@@ -92,6 +95,10 @@ public:
     //! \brief calls the device function of the stress wall model (post-collision)
     void runStressWallModelKernelPost(int level) const;
 
+    void runADNoFluxBCKernel(int level) const ;
+    void runADFluxBCKernel(int level) const ;
+    void runADDirichletBCKernel(int level) const ;
+    void runADNeumannBCKernel(int level) const ;
 private:
     //! \brief check if a directional boundary condition was set
     //! \throws std::runtime_error if boundary nodes were assigned, but no boundary condition was set in the boundary condition factory
@@ -131,6 +138,10 @@ private:
     PrecursorBoundaryConditionKernel precursorBoundaryConditionPost = nullptr;
     BoundaryConditionKernel pressureBoundaryConditionPre = nullptr;
     DirectionalBoundaryConditionKernel directionalPressureBoundaryConditionPre = nullptr;
+    ADNoFluxBoundaryConditionKernel ADNoFluxBoundaryConditionPost = nullptr;
+    ADFluxBoundaryConditionKernel ADFluxBoundaryConditionPost = nullptr;
+    ADDirichletBoundaryConditionKernel ADDirichletBoundaryConditionPost = nullptr;
+    ADNeumannBoundaryConditionKernel ADNeumannBoundaryConditionPost = nullptr;
 };
 #endif
 

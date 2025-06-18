@@ -49,7 +49,7 @@ std::shared_ptr<F16CompressibleAdvectionDiffusion<turbulenceModel>> F16Compressi
 template <TurbulenceModel turbulenceModel>
 void F16CompressibleAdvectionDiffusion<turbulenceModel>::run()
 {
-    runOnIndicesAD(para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default], para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default]);
+    runOnIndicesAD(para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::AllFeatures], para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::AllFeatures]);
 }
 
 template <TurbulenceModel turbulenceModel>

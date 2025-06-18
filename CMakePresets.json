@@ -239,6 +239,7 @@
                 "DrivenCavity",
                 "DrivenCavityMultiGPU",
                 "GaussianHillOfConcentration",
+                "HeatedCube",
                 "LaminarPipeFlowGPU",
                 "SphereInChannel",
                 "SphereMultiGPU",

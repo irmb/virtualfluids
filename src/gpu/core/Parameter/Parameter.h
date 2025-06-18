@@ -139,11 +139,17 @@ struct LBMSimulationParameter {
     //! \brief stores the data for a directional pressure boundary condition
     std::vector<QforDirectionalBoundaryCondition> pressureBCDirectional;
     //////////////////////////////////////////////////////////////////////////
-    //! \brief stores the advection diffusion noSlip boundary condition data
-    AdvectionDiffusionNoSlipBoundaryConditions AdvectionDiffusionNoSlipBC;
+    //! \brief stores the advection diffusion noFlux boundary condition data
+    AdvectionDiffusionNoFluxBoundaryConditions AdvectionDiffusionNoFluxBC;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the advection diffusion Dirichlet boundary condition data
     AdvectionDiffusionDirichletBoundaryConditions AdvectionDiffusionDirichletBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the advection diffusion Dirichlet boundary condition data
+    AdvectionDiffusionNeumannBoundaryConditions AdvectionDiffusionNeumannBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the advection diffusion Dirichlet boundary condition data
+    AdvectionDiffusionFluxBoundaryConditions AdvectionDiffusionFluxBC;
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -452,8 +458,6 @@ public:
     void setConcentration(std::string concFile);
     void setPrintFiles(bool printfiles);
     void setReadGeo(bool readGeo);
-    void setConcentrationInit(real concentrationInit);
-    void setConcentrationBC(real concentrationBC);
     void setViscosityLB(real Viscosity);
     void setVelocityLB(real Velocity);
     void setViscosityRatio(real ViscosityRatio);
@@ -490,10 +494,6 @@ public:
     void setMaxCoordX(std::vector<real> MaxCoordX);
     void setMaxCoordY(std::vector<real> MaxCoordY);
     void setMaxCoordZ(std::vector<real> MaxCoordZ);
-    void setConcentrationNoSlipBCHost(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost);
-    void setConcentrationNoSlipBCDevice(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCDevice);
-    void setConcentrationDirichletBCHost(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost);
-    void setConcentrationDirichletBCDevice(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCDevice);
     void setTimeDoCheckPoint(unsigned int tDoCheckPoint);
     void setTimeDoRestart(unsigned int tDoRestart);
     void setDoCheckPoint(bool doCheckPoint);
@@ -627,8 +627,6 @@ public:
     unsigned int getTimestepForMeasurePoints();
     unsigned int getTimestepOfCoarseLevel();
     real getDiffusivity();
-    real getConcentrationInit();
-    real getConcentrationBC();
     real getViscosity() const;
     real getVelocity() const;
     //! \returns the viscosity ratio in SI/LB units
@@ -681,10 +679,6 @@ public:
     std::vector<real> getMaxCoordX();
     std::vector<real> getMaxCoordY();
     std::vector<real> getMaxCoordZ();
-    AdvectionDiffusionNoSlipBoundaryConditions *getConcentrationNoSlipBCHost();
-    AdvectionDiffusionNoSlipBoundaryConditions *getConcentrationNoSlipBCDevice();
-    AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCHost();
-    AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCDevice();
     std::vector<SPtr<PreCollisionInteractor>> getInteractors();
     std::vector<SPtr<Sampler>> getSamplers();
     unsigned int getTimeDoCheckPoint();
@@ -766,8 +760,6 @@ private:
     real Re;
     real factorPressBC{ 1.0 };
     real Diffusivity{ 0.001 };
-    real concentrationInit{ 0.0 };
-    real concentrationBC{ 1.0 };
     real RealX{ 1.0 };
     real RealY{ 1.0 };
     real clockCycleForMeasurePoints{ 1.0 };
@@ -865,11 +857,6 @@ private:
     std::vector<std::string> multiKernel;
     bool kernelNeedsFluidNodeIndicesToRun = false;
     std::string adKernel;
-
-    // Concentration No Slip BC
-    AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost, *concentrationNoSlipBCDevice;
-    // Concentration Dirichlet BC
-    AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost, *concentrationDirichletBCDevice;
 
     std::vector<SPtr<PreCollisionInteractor>> interactors;
     std::vector<SPtr<Sampler>> samplers;

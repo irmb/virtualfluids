@@ -150,6 +150,56 @@ TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, precursorBoundaryCond
     EXPECT_THROW(BoundaryConditionKernelManager(para, &bcFactory), std::runtime_error);
 }
 
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADNoFluxBoundaryConditionPostNotSpecified_withoutBoundaryNodes_doesNotThrow)
+{
+    para->getParD(0)->AdvectionDiffusionNoFluxBC.numberOfBCnodes = 0;
+    EXPECT_NO_THROW(BoundaryConditionKernelManager(para, &bcFactory));
+}
+
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADFluxBoundaryConditionPostNotSpecified_withoutBoundaryNodes_doesNotThrow)
+{
+    para->getParD(0)->AdvectionDiffusionFluxBC.numberOfBCnodes = 0;
+    EXPECT_NO_THROW(BoundaryConditionKernelManager(para, &bcFactory));
+}
+
+
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADDirichletBoundaryConditionPostNotSpecified_withoutBoundaryNodes_doesNotThrow)
+{
+    para->getParD(0)->AdvectionDiffusionDirichletBC.numberOfBCnodes = 0;
+    EXPECT_NO_THROW(BoundaryConditionKernelManager(para, &bcFactory));
+}
+
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADNeumannBoundaryConditionPostNotSpecified_withoutBoundaryNodes_doesNotThrow)
+{
+    para->getParD(0)->AdvectionDiffusionNeumannBC.numberOfBCnodes = 0;
+    EXPECT_NO_THROW(BoundaryConditionKernelManager(para, &bcFactory));
+}
+
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADNoFluxBoundaryConditionPostNotSpecified_withBoundaryNodes_doesNotThrow)
+{
+    para->getParD(0)->AdvectionDiffusionNoFluxBC.numberOfBCnodes = 1;
+    EXPECT_NO_THROW(BoundaryConditionKernelManager(para, &bcFactory));
+}
+
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADFluxBoundaryConditionPostNotSpecified_withBoundaryNodes_throws)
+{
+    para->getParD(0)->AdvectionDiffusionFluxBC.numberOfBCnodes = 1;
+    EXPECT_THROW(BoundaryConditionKernelManager(para, &bcFactory), std::runtime_error);
+}
+
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADDirichletBoundaryConditionPostNotSpecified_withBoundaryNodes_throws)
+{
+    para->getParD(0)->AdvectionDiffusionDirichletBC.numberOfBCnodes = 1;
+    EXPECT_THROW(BoundaryConditionKernelManager(para, &bcFactory), std::runtime_error);
+}
+
+TEST_F(BoundaryConditionKernelManagerTest_BCsNotSpecified, ADNeumannBoundaryConditionPostNotSpecified_withBoundaryNodes_throws)
+{
+    para->getParD(0)->AdvectionDiffusionNeumannBC.numberOfBCnodes = 1;
+    EXPECT_THROW(BoundaryConditionKernelManager(para, &bcFactory), std::runtime_error);
+}
+
+
 class BoundaryConditionFactoryMock : public BoundaryConditionFactory
 {
 public:

@@ -760,8 +760,10 @@ Simulation::~Simulation()
     if (para->getDiffOn()) {
         for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
             cudaMemoryManager->cudaFreeConcentration(lev);
-            cudaMemoryManager->cudaFreeConcentrationNoSlipBC(lev);
+            cudaMemoryManager->cudaFreeConcentrationNoFluxBC(lev);
+            cudaMemoryManager->cudaFreeConcentrationFluxBC(lev);
             cudaMemoryManager->cudaFreeConcentrationDirichletBC(lev);
+            cudaMemoryManager->cudaFreeConcentrationNeumannBC(lev);
             if(para->getUseTurbulentDiffusivity())
                 cudaMemoryManager->cudaFreeTurbulentDiffusivity(lev);
             if(para->getBuoyancyEnabled())

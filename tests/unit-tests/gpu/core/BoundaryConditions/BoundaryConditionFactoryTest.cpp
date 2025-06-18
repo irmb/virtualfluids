@@ -31,6 +31,7 @@
 //! \{
 //! \author Martin Schoenherr, Anna Wellmann
 //======================================================================================
+#include "Calculation/Calculation.h"
 #include <gmock/gmock.h>
 
 #include <typeindex>
@@ -44,10 +45,12 @@
 #include <gpu/core/BoundaryConditions/Slip/Slip.h>
 #include <gpu/core/BoundaryConditions/Stress/Stress.h>
 #include <gpu/core/BoundaryConditions/Velocity/Velocity.h>
+#include <gpu/core/BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h>
 
 using bcFunction = void (*)(LBMSimulationParameter *, QforBoundaryConditions *);
 using bcFunctionDirectional = void (*)(LBMSimulationParameter *, QforDirectionalBoundaryCondition *);
 using bcFunctionParameter = void (*)(Parameter *, QforBoundaryConditions *, const int level);
+using adBCNoFluxFunction = void (*)(LBMSimulationParameter *, AdvectionDiffusionNoFluxBoundaryConditions);
 
 // tests for default boundary conditions
 TEST(BoundaryConditionFactoryTest, defaultVelocityBC)
@@ -94,6 +97,38 @@ TEST(BoundaryConditionFactoryTest, defaultStressBC)
     auto bc = bcFactory.getStressBoundaryConditionPost();
     EXPECT_THAT(bc, testing::Eq(nullptr));
     EXPECT_THROW(bc(nullptr, nullptr, 0), std::bad_function_call);
+}
+
+TEST(BoundaryConditionFactoryTest, defaultADNoFluxBC)
+{
+    auto bcFactory = BoundaryConditionFactory();
+    auto bc = bcFactory.getAdvectionDiffusionNoFluxBoundaryConditionPost();
+    EXPECT_NO_THROW(bc(nullptr, AdvectionDiffusionNoFluxBoundaryConditions{})); // empty lambda function should not throw
+}
+
+
+TEST(BoundaryConditionFactoryTest, defaultADFluxBC)
+{
+    auto bcFactory = BoundaryConditionFactory();
+    auto bc = bcFactory.getAdvectionDiffusionFluxBoundaryConditionPost();
+    EXPECT_THAT(bc, testing::Eq(nullptr));
+    EXPECT_THROW(bc(nullptr, AdvectionDiffusionFluxBoundaryConditions{}), std::bad_function_call);
+}
+
+TEST(BoundaryConditionFactoryTest, defaultADDirichletBC)
+{
+    auto bcFactory = BoundaryConditionFactory();
+    auto bc = bcFactory.getAdvectionDiffusionDirichletBoundaryConditionPost();
+    EXPECT_THAT(bc, testing::Eq(nullptr));
+    EXPECT_THROW(bc(nullptr, AdvectionDiffusionDirichletBoundaryConditions{}), std::bad_function_call);
+}
+
+TEST(BoundaryConditionFactoryTest, defaultADNeumannBC)
+{
+    auto bcFactory = BoundaryConditionFactory();
+    auto bc = bcFactory.getAdvectionDiffusionNeumannBoundaryConditionPost();
+    EXPECT_THAT(bc, testing::Eq(nullptr));
+    EXPECT_THROW(bc(nullptr, AdvectionDiffusionNeumannBoundaryConditions{}), std::bad_function_call);
 }
 
 // tests for boundary conditions which are set by the user (tests both set and get functions)
@@ -280,10 +315,126 @@ TEST(BoundaryConditionFactoryTest, hasDirectionalPressureBoundaryCondition_whenD
     EXPECT_TRUE(bcFactory.hasDirectionalPressureBoundaryCondition());
 }
 
-TEST(BoundaryConditionFactoryTest ,hasDirectionalPressureBoundaryCondition_noPressureBC_returnsTrue)
+TEST(BoundaryConditionFactoryTest, hasDirectionalPressureBoundaryCondition_noPressureBC_returnsTrue)
 {
     auto bcFactory=BoundaryConditionFactory();
     EXPECT_FALSE(bcFactory.hasDirectionalPressureBoundaryCondition());
+}
+
+adBCNoFluxFunction getADNoFluxBcTarget(BoundaryConditionFactory &bcFactory)
+{
+    auto bc = bcFactory.getAdvectionDiffusionNoFluxBoundaryConditionPost();
+    void (*bcTarget)(LBMSimulationParameter *, AdvectionDiffusionNoFluxBoundaryConditions) = (*bc.target<adBCNoFluxFunction>());
+    return bcTarget;
+}
+
+
+TEST(BoundaryConditionFactoryTest, ADNoFluxBoundaryConditions)
+{
+    auto bcFactory = BoundaryConditionFactory();
+
+    bcFactory.setAdvectionDiffusionNoFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoFluxDelayedBounceBack);
+    auto bc = bcFactory.getAdvectionDiffusionNoFluxBoundaryConditionPost();
+    EXPECT_NO_THROW(bc(nullptr, AdvectionDiffusionNoFluxBoundaryConditions{})); // empty lambda function should not throw
+    
+    bcFactory.setAdvectionDiffusionNoFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoFluxBounceBack);
+    auto bcTarget = getADNoFluxBcTarget(bcFactory);
+    EXPECT_TRUE(bcTarget == AdvectionDiffusionNoFluxBounceBack)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionNoFluxBounceBack.";
+}
+
+auto getADFluxBcTarget(BoundaryConditionFactory &bcFactory)
+{
+    auto bc = bcFactory.getAdvectionDiffusionFluxBoundaryConditionPost();
+    void (*bcTarget)(LBMSimulationParameter *, AdvectionDiffusionFluxBoundaryConditions) =
+        (*bc.target<void (*)(LBMSimulationParameter *, AdvectionDiffusionFluxBoundaryConditions)>());
+    return bcTarget;
+}
+
+TEST(BoundaryConditionFactoryTest, ADFluxBoundaryConditions)
+{
+    auto bcFactory = BoundaryConditionFactory();
+
+    bcFactory.setAdvectionDiffusionFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxBounceBack);
+    auto bc = getADFluxBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionFluxBounceBack)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionFluxBounceBack.";
+
+    bcFactory.setAdvectionDiffusionFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxCompressible);
+    bc = getADFluxBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionFluxCompressible)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionFluxCompressible.";
+
+    bcFactory.setAdvectionDiffusionFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxTurbulentViscosityCompressible);
+    bc = getADFluxBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionFluxTurbulentViscosityCompressible)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionFluxTurbulentViscosityCompressible.";
+}
+
+auto getADDirichletBcTarget(BoundaryConditionFactory &bcFactory)
+{
+    auto bc = bcFactory.getAdvectionDiffusionDirichletBoundaryConditionPost();
+    void (*bcTarget)(LBMSimulationParameter *, AdvectionDiffusionDirichletBoundaryConditions) =
+        (*bc.target<void (*)(LBMSimulationParameter *, AdvectionDiffusionDirichletBoundaryConditions)>());
+    return bcTarget;
+}
+
+TEST(BoundaryConditionFactoryTest, ADDirichletBoundaryConditions)
+{
+    auto bcFactory = BoundaryConditionFactory();
+
+    bcFactory.setAdvectionDiffusionDirichletBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip);
+    auto bc = getADDirichletBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionDirichletAntiBounceBackNoSlip)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionDirichletAntiBounceBackNoSlip.";
+
+    bcFactory.setAdvectionDiffusionDirichletBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackSlip);
+    bc = getADDirichletBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionDirichletAntiBounceBackSlip)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionDirichletAntiBounceBackSlip.";
+
+    bcFactory.setAdvectionDiffusionDirichletBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedNoSlip);
+    bc = getADDirichletBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionDirichletInterpolatedNoSlip)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionDirichletInterpolatedNoSlip.";
+
+    bcFactory.setAdvectionDiffusionDirichletBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedSlip);
+    bc = getADDirichletBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionDirichletInterpolatedSlip)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionDirichletInterpolatedSlip.";
+}
+
+auto getADNeumannBcTarget(BoundaryConditionFactory &bcFactory)
+{
+    auto bc = bcFactory.getAdvectionDiffusionNeumannBoundaryConditionPost();
+    void (*bcTarget)(LBMSimulationParameter *, AdvectionDiffusionNeumannBoundaryConditions) =
+        (*bc.target<void (*)(LBMSimulationParameter *, AdvectionDiffusionNeumannBoundaryConditions)>());
+    return bcTarget;
+}
+
+TEST(BoundaryConditionFactoryTest, ADNeumannBoundaryConditions)
+{
+    auto bcFactory = BoundaryConditionFactory();
+
+    bcFactory.setAdvectionDiffusionNeumannBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip);
+    auto bc = getADNeumannBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionNeumannAntiBounceBackNoSlip)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionNeumannAntiBounceBackNoSlip.";
+
+    bcFactory.setAdvectionDiffusionNeumannBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackSlip);
+    bc = getADNeumannBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionNeumannAntiBounceBackSlip)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionNeumannAntiBounceBackSlip.";
+
+    bcFactory.setAdvectionDiffusionNeumannBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannInterpolatedNoSlip);
+    bc = getADNeumannBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionNeumannInterpolatedNoSlip)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionNeumannInterpolatedNoSlip.";
+
+    bcFactory.setAdvectionDiffusionNeumannBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannInterpolatedSlip);
+    bc = getADNeumannBcTarget(bcFactory);
+    EXPECT_TRUE(bc == AdvectionDiffusionNeumannInterpolatedSlip)
+        << "The returned boundary condition is not the expected function AdvectionDiffusionNeumannInterpolatedSlip.";
 }
 
 //! \}
