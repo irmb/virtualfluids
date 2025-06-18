@@ -316,6 +316,31 @@ constexpr void writeInInverseDirection(const real population, const vf::gpu::Lis
     (populationReferences.f[inverseDir])[writeIndex] = population;
 }
 
+template <size_t direction>
+constexpr real readFromInverseDirection(const vf::gpu::ListIndices& listIndices,
+                                       const Distributions27& populationReferences)
+{
+    const size_t inverseDir = vf::lbm::dir::inverseDir<direction>();
+    const uint readIndex = listIndices.getIndex<inverseDir>();
+    return (populationReferences.f[inverseDir])[readIndex];
+}
+
+template <size_t direction>
+constexpr void writeInSameDirection(const real population, const vf::gpu::ListIndices& listIndices,
+                                       const Distributions27& populationReferences)
+{
+    const uint writeIndex = listIndices.getIndex<direction>();
+    (populationReferences.f[direction])[writeIndex] = population;
+}
+
+template <size_t direction>
+constexpr real readFromSameDirection(const vf::gpu::ListIndices& listIndices,
+                                       const Distributions27& populationReferences)
+{
+    const uint writeIndex = listIndices.getIndex<direction>();
+    return (populationReferences.f[direction])[writeIndex];
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 //! - Read distributions: style of reading and writing the distributions from/to
 //! stored arrays dependent on timestep is based on the esoteric twist algorithm
