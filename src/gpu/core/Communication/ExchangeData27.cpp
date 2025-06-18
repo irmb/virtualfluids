@@ -110,7 +110,7 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeN
     int numNodesInBufferSend = 0;
 
 #pragma omp parallel for
-    for (int i = 0; i < (int)edgeNodes.size(); i++) {
+    for (size_t i = 0; i < edgeNodes.size(); i++) {
         indexInSubdomainRecv = edgeNodes[i].indexOfProcessNeighborRecv;
         indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
         numNodesInBufferRecv = recvProcessNeighborHost[indexInSubdomainRecv].numberOfNodes;
@@ -121,7 +121,7 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeN
         }
 
         // copy fs for all directions
-        for (int direction = 0; direction <= (int)ENDDIR; direction++) {
+        for (size_t direction = 0; direction <= ENDDIR; direction++) {
             (sendProcessNeighborHost[indexInSubdomainSend].f[0] +
              (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] =
                 (recvProcessNeighborHost[indexInSubdomainRecv].f[0] +
@@ -131,28 +131,28 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeN
 }
 
 void exchangeCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
-                           CudaStreamIndex streamIndex, std::vector<ProcessNeighbor27>& sendProcessNeighborDev,
-                           std::vector<ProcessNeighbor27>& recvProcessNeighborDev,
-                           std::vector<ProcessNeighbor27>& sendProcessNeighborHost,
-                           std::vector<ProcessNeighbor27>& recvProcessNeighborHost)
+                           CudaStreamIndex streamIndex, std::vector<ProcessNeighbor27>& sendProcessNeighborsDev,
+                           std::vector<ProcessNeighbor27>& recvProcessNeighborsDev,
+                           std::vector<ProcessNeighbor27>& sendProcessNeighborsHost,
+                           std::vector<ProcessNeighbor27>& recvProcessNeighborsHost)
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
-    const uint numberOfProcessNeighbors = sendProcessNeighborHost.size();
+    const size_t numberOfProcessNeighbors = sendProcessNeighborsHost.size();
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! \details steps:
     //! 1. copy data from device to host
-    for (uint i = 0; i < numberOfProcessNeighbors; i++)
-        cudaMemoryManager->cudaCopyProcessNeighborFsDtoH(&sendProcessNeighborHost[i], &sendProcessNeighborDev[i]);
+    for (size_t i = 0; i < numberOfProcessNeighbors; i++)
+        cudaMemoryManager->cudaCopyProcessNeighborFsDtoH(&sendProcessNeighborsHost[i], &sendProcessNeighborsDev[i]);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 2. start non-blocking receive (MPI)
-    startNonBlockingMpiReceive(comm, recvProcessNeighborHost);
+    startNonBlockingMpiReceive(comm, recvProcessNeighborsHost);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 3. before sending data, wait for memcopy (from device to host) to finish
     if (para->getUseStreams())
         cudaStreamSynchronize(stream);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 4. send data to neighboring process (MPI)
-    startBlockingMpiSend(comm, sendProcessNeighborHost);
+    startBlockingMpiSend(comm, sendProcessNeighborsHost);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 5. wait until data is received
     comm.waitAll();
@@ -162,8 +162,8 @@ void exchangeCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, Cu
         comm.resetRequests();
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 7. copy received data from host to device
-    for (uint i = 0; i < numberOfProcessNeighbors; i++)
-        cudaMemoryManager->cudaCopyProcessNeighborFsHtoD(&recvProcessNeighborHost[i], &recvProcessNeighborDev[i]);
+    for (size_t i = 0; i < numberOfProcessNeighbors; i++)
+        cudaMemoryManager->cudaCopyProcessNeighborFsHtoD(&recvProcessNeighborsHost[i], &recvProcessNeighborsDev[i]);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
