@@ -43,775 +43,165 @@
 
 #include <basics/constants/NumericConstants.h>
 
+#include "cuda_helper/CudaIndexCalculation.h"
+#include "gpu/core/Utilities/KernelUtilities.h"
+
 #include "Calculation/Calculation.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
-__global__ void getSendFsPost27(real* DD,
-                                           real* bufferFs,
-                                           int* sendIndex,
-                                           int buffmax,
-                                           unsigned int* neighborX,
-                                           unsigned int* neighborY,
-                                           unsigned int* neighborZ,
-                                           unsigned long long numberOfLBnodes, 
-                                           bool isEvenTimestep)
+constexpr void copyToBuffer(DistributionReferences27& buffer, const uint index, const real* populations)
 {
-   ////////////////////////////////////////////////////////////////////////////////
-   const unsigned  x = threadIdx.x;  // Globaler x-Index 
-   const unsigned  y = blockIdx.x;   // Globaler y-Index 
-   const unsigned  z = blockIdx.y;   // Globaler z-Index 
+   (buffer.f[dP00])[index] = populations[dP00];
+   (buffer.f[dM00])[index] = populations[dM00];
+   (buffer.f[d0P0])[index] = populations[d0P0];
+   (buffer.f[d0M0])[index] = populations[d0M0];
+   (buffer.f[d00P])[index] = populations[d00P];
+   (buffer.f[d00M])[index] = populations[d00M];
+   (buffer.f[dPP0])[index] = populations[dPP0];
+   (buffer.f[dMM0])[index] = populations[dMM0];
+   (buffer.f[dPM0])[index] = populations[dPM0];
+   (buffer.f[dMP0])[index] = populations[dMP0];
+   (buffer.f[dP0P])[index] = populations[dP0P];
+   (buffer.f[dM0M])[index] = populations[dM0M];
+   (buffer.f[dP0M])[index] = populations[dP0M];
+   (buffer.f[dM0P])[index] = populations[dM0P];
+   (buffer.f[d0PP])[index] = populations[d0PP];
+   (buffer.f[d0MM])[index] = populations[d0MM];
+   (buffer.f[d0PM])[index] = populations[d0PM];
+   (buffer.f[d0MP])[index] = populations[d0MP];
+   (buffer.f[d000])[index] = populations[d000];
+   (buffer.f[dPPP])[index] = populations[dPPP];
+   (buffer.f[dMMP])[index] = populations[dMMP];
+   (buffer.f[dPMP])[index] = populations[dPMP];
+   (buffer.f[dMPP])[index] = populations[dMPP];
+   (buffer.f[dPPM])[index] = populations[dPPM];
+   (buffer.f[dMMM])[index] = populations[dMMM];
+   (buffer.f[dPMM])[index] = populations[dPMM];
+   (buffer.f[dMPM])[index] = populations[dMPM];
+}
 
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
+constexpr void copyFromBuffer(const DistributionReferences27& buffer, const uint index, real* populations)
+{
+   populations[dP00] = (buffer.f[dP00])[index];
+   populations[dM00] = (buffer.f[dM00])[index];
+   populations[d0P0] = (buffer.f[d0P0])[index];
+   populations[d0M0] = (buffer.f[d0M0])[index];
+   populations[d00P] = (buffer.f[d00P])[index];
+   populations[d00M] = (buffer.f[d00M])[index];
+   populations[dPP0] = (buffer.f[dPP0])[index];
+   populations[dMM0] = (buffer.f[dMM0])[index];
+   populations[dPM0] = (buffer.f[dPM0])[index];
+   populations[dMP0] = (buffer.f[dMP0])[index];
+   populations[dP0P] = (buffer.f[dP0P])[index];
+   populations[dM0M] = (buffer.f[dM0M])[index];
+   populations[dP0M] = (buffer.f[dP0M])[index];
+   populations[dM0P] = (buffer.f[dM0P])[index];
+   populations[d0PP] = (buffer.f[d0PP])[index];
+   populations[d0MM] = (buffer.f[d0MM])[index];
+   populations[d0PM] = (buffer.f[d0PM])[index];
+   populations[d0MP] = (buffer.f[d0MP])[index];
+   populations[d000] = (buffer.f[d000])[index];
+   populations[dPPP] = (buffer.f[dPPP])[index];
+   populations[dMMP] = (buffer.f[dMMP])[index];
+   populations[dPMP] = (buffer.f[dPMP])[index];
+   populations[dMPP] = (buffer.f[dMPP])[index];
+   populations[dPPM] = (buffer.f[dPPM])[index];
+   populations[dMMM] = (buffer.f[dMMM])[index];
+   populations[dPMM] = (buffer.f[dPMM])[index];
+   populations[dMPM] = (buffer.f[dMPM])[index];
+}
 
-   const unsigned k = nx*(ny*z + y) + x;
-   //////////////////////////////////////////////////////////////////////////
+__global__ void getSendFsPost27(real* DD,
+                                real* bufferFs,
+                                const int* sendIndex,
+                                const int buffmax,
+                                const uint* neighborX,
+                                const uint* neighborY,
+                                const uint* neighborZ,
+                                const unsigned long long numberOfLBnodes, 
+                                const bool isEvenTimestep)
+{
+   const uint index = vf::cuda::get1DIndexFrom2DBlock();
+   if(index >= buffmax) return;
+   
+   const vf::gpu::ListIndices indices(sendIndex[index], neighborX, neighborY, neighborZ);
 
-   if(k<buffmax)
-   {
-      ////////////////////////////////////////////////////////////////////////////////
-      //set index
-      unsigned int kIndex  = sendIndex[k];
-      unsigned int kzero   = kIndex;
-      unsigned int ke      = kIndex;
-      unsigned int kw      = neighborX[kIndex];
-      unsigned int kn      = kIndex;
-      unsigned int ks      = neighborY[kIndex];
-      unsigned int kt      = kIndex;
-      unsigned int kb      = neighborZ[kIndex];
-      unsigned int ksw     = neighborY[kw];
-      unsigned int kne     = kIndex;
-      unsigned int kse     = ks;
-      unsigned int knw     = kw;
-      unsigned int kbw     = neighborZ[kw];
-      unsigned int kte     = kIndex;
-      unsigned int kbe     = kb;
-      unsigned int ktw     = kw;
-      unsigned int kbs     = neighborZ[ks];
-      unsigned int ktn     = kIndex;
-      unsigned int kbn     = kb;
-      unsigned int kts     = ks;
-      unsigned int ktse    = ks;
-      unsigned int kbnw    = kbw;
-      unsigned int ktnw    = kw;
-      unsigned int kbse    = kbs;
-      unsigned int ktsw    = ksw;
-      unsigned int kbne    = kb;
-      unsigned int ktne    = kIndex;
-      unsigned int kbsw    = neighborZ[ksw];
-      ////////////////////////////////////////////////////////////////////////////////
-      //set Pointer for Fs
-      Distributions27 D;
-      if (isEvenTimestep==true)
-      {
-         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
-         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
-         D.f[d0P0] = &DD[d0P0 * numberOfLBnodes];
-         D.f[d0M0] = &DD[d0M0 * numberOfLBnodes];
-         D.f[d00P] = &DD[d00P * numberOfLBnodes];
-         D.f[d00M] = &DD[d00M * numberOfLBnodes];
-         D.f[dPP0] = &DD[dPP0 * numberOfLBnodes];
-         D.f[dMM0] = &DD[dMM0 * numberOfLBnodes];
-         D.f[dPM0] = &DD[dPM0 * numberOfLBnodes];
-         D.f[dMP0] = &DD[dMP0 * numberOfLBnodes];
-         D.f[dP0P] = &DD[dP0P * numberOfLBnodes];
-         D.f[dM0M] = &DD[dM0M * numberOfLBnodes];
-         D.f[dP0M] = &DD[dP0M * numberOfLBnodes];
-         D.f[dM0P] = &DD[dM0P * numberOfLBnodes];
-         D.f[d0PP] = &DD[d0PP * numberOfLBnodes];
-         D.f[d0MM] = &DD[d0MM * numberOfLBnodes];
-         D.f[d0PM] = &DD[d0PM * numberOfLBnodes];
-         D.f[d0MP] = &DD[d0MP * numberOfLBnodes];
-         D.f[d000] = &DD[d000 * numberOfLBnodes];
-         D.f[dPPP] = &DD[dPPP * numberOfLBnodes];
-         D.f[dMMP] = &DD[dMMP * numberOfLBnodes];
-         D.f[dPMP] = &DD[dPMP * numberOfLBnodes];
-         D.f[dMPP] = &DD[dMPP * numberOfLBnodes];
-         D.f[dPPM] = &DD[dPPM * numberOfLBnodes];
-         D.f[dMMM] = &DD[dMMM * numberOfLBnodes];
-         D.f[dPMM] = &DD[dPMM * numberOfLBnodes];
-         D.f[dMPM] = &DD[dMPM * numberOfLBnodes];
-      } 
-      else
-      {
-         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
-         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
-         D.f[d0M0] = &DD[d0P0 * numberOfLBnodes];
-         D.f[d0P0] = &DD[d0M0 * numberOfLBnodes];
-         D.f[d00M] = &DD[d00P * numberOfLBnodes];
-         D.f[d00P] = &DD[d00M * numberOfLBnodes];
-         D.f[dMM0] = &DD[dPP0 * numberOfLBnodes];
-         D.f[dPP0] = &DD[dMM0 * numberOfLBnodes];
-         D.f[dMP0] = &DD[dPM0 * numberOfLBnodes];
-         D.f[dPM0] = &DD[dMP0 * numberOfLBnodes];
-         D.f[dM0M] = &DD[dP0P * numberOfLBnodes];
-         D.f[dP0P] = &DD[dM0M * numberOfLBnodes];
-         D.f[dM0P] = &DD[dP0M * numberOfLBnodes];
-         D.f[dP0M] = &DD[dM0P * numberOfLBnodes];
-         D.f[d0MM] = &DD[d0PP * numberOfLBnodes];
-         D.f[d0PP] = &DD[d0MM * numberOfLBnodes];
-         D.f[d0MP] = &DD[d0PM * numberOfLBnodes];
-         D.f[d0PM] = &DD[d0MP * numberOfLBnodes];
-         D.f[d000] = &DD[d000 * numberOfLBnodes];
-         D.f[dPPP] = &DD[dMMM * numberOfLBnodes];
-         D.f[dMMP] = &DD[dPPM * numberOfLBnodes];
-         D.f[dPMP] = &DD[dMPM * numberOfLBnodes];
-         D.f[dMPP] = &DD[dPMM * numberOfLBnodes];
-         D.f[dPPM] = &DD[dMMP * numberOfLBnodes];
-         D.f[dMMM] = &DD[dPPP * numberOfLBnodes];
-         D.f[dPMM] = &DD[dMPP * numberOfLBnodes];
-         D.f[dMPM] = &DD[dPMP * numberOfLBnodes];
-      }
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //set Pointer for Buffer Fs
-      Distributions27 Dbuff;
-      Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
-      Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
-      Dbuff.f[d0P0] = &bufferFs[d0P0 * buffmax];
-      Dbuff.f[d0M0] = &bufferFs[d0M0 * buffmax];
-      Dbuff.f[d00P] = &bufferFs[d00P * buffmax];
-      Dbuff.f[d00M] = &bufferFs[d00M * buffmax];
-      Dbuff.f[dPP0] = &bufferFs[dPP0 * buffmax];
-      Dbuff.f[dMM0] = &bufferFs[dMM0 * buffmax];
-      Dbuff.f[dPM0] = &bufferFs[dPM0 * buffmax];
-      Dbuff.f[dMP0] = &bufferFs[dMP0 * buffmax];
-      Dbuff.f[dP0P] = &bufferFs[dP0P * buffmax];
-      Dbuff.f[dM0M] = &bufferFs[dM0M * buffmax];
-      Dbuff.f[dP0M] = &bufferFs[dP0M * buffmax];
-      Dbuff.f[dM0P] = &bufferFs[dM0P * buffmax];
-      Dbuff.f[d0PP] = &bufferFs[d0PP * buffmax];
-      Dbuff.f[d0MM] = &bufferFs[d0MM * buffmax];
-      Dbuff.f[d0PM] = &bufferFs[d0PM * buffmax];
-      Dbuff.f[d0MP] = &bufferFs[d0MP * buffmax];
-      Dbuff.f[d000] = &bufferFs[d000 * buffmax];
-      Dbuff.f[dPPP] = &bufferFs[dPPP * buffmax];
-      Dbuff.f[dMMP] = &bufferFs[dMMP * buffmax];
-      Dbuff.f[dPMP] = &bufferFs[dPMP * buffmax];
-      Dbuff.f[dMPP] = &bufferFs[dMPP * buffmax];
-      Dbuff.f[dPPM] = &bufferFs[dPPM * buffmax];
-      Dbuff.f[dMMM] = &bufferFs[dMMM * buffmax];
-      Dbuff.f[dPMM] = &bufferFs[dPMM * buffmax];
-      Dbuff.f[dMPM] = &bufferFs[dMPM * buffmax];
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //copy to buffer
-      //(Dbuff.f[dP00])[k] = (D.f[dP00])[ke   ];
-      //(Dbuff.f[dM00])[k] = (D.f[dM00])[kw   ];
-      //(Dbuff.f[d0P0])[k] = (D.f[d0P0])[kn   ];
-      //(Dbuff.f[d0M0])[k] = (D.f[d0M0])[ks   ];
-      //(Dbuff.f[d00P])[k] = (D.f[d00P])[kt   ];
-      //(Dbuff.f[d00M])[k] = (D.f[d00M])[kb   ];
-      //(Dbuff.f[dPP0])[k] = (D.f[dPP0])[kne  ];
-      //(Dbuff.f[dMM0])[k] = (D.f[dMM0])[ksw  ];
-      //(Dbuff.f[dPM0])[k] = (D.f[dPM0])[kse  ];
-      //(Dbuff.f[dMP0])[k] = (D.f[dMP0])[knw  ];
-      //(Dbuff.f[dP0P])[k] = (D.f[dP0P])[kte  ];
-      //(Dbuff.f[dM0M])[k] = (D.f[dM0M])[kbw  ];
-      //(Dbuff.f[dP0M])[k] = (D.f[dP0M])[kbe  ];
-      //(Dbuff.f[dM0P])[k] = (D.f[dM0P])[ktw  ];
-      //(Dbuff.f[d0PP])[k] = (D.f[d0PP])[ktn  ];
-      //(Dbuff.f[d0MM])[k] = (D.f[d0MM])[kbs  ];
-      //(Dbuff.f[d0PM])[k] = (D.f[d0PM])[kbn  ];
-      //(Dbuff.f[d0MP])[k] = (D.f[d0MP])[kts  ];
-      //(Dbuff.f[d000])[k] = (D.f[d000])[kzero];
-      //(Dbuff.f[dPPP])[k] = (D.f[dPPP])[ktne ];
-      //(Dbuff.f[dMMP])[k] = (D.f[dMMP])[ktsw ];
-      //(Dbuff.f[dPMP])[k] = (D.f[dPMP])[ktse ];
-      //(Dbuff.f[dMPP])[k] = (D.f[dMPP])[ktnw ];
-      //(Dbuff.f[dPPM])[k] = (D.f[dPPM])[kbne ];
-      //(Dbuff.f[dMMM])[k] = (D.f[dMMM])[kbsw ];
-      //(Dbuff.f[dPMM])[k] = (D.f[dPMM])[kbse ];
-      //(Dbuff.f[dMPM])[k] = (D.f[dMPM])[kbnw ];
-      (Dbuff.f[dP00])[k] = (D.f[dM00])[kw   ];
-      (Dbuff.f[dM00])[k] = (D.f[dP00])[ke   ];
-      (Dbuff.f[d0P0])[k] = (D.f[d0M0])[ks   ];
-      (Dbuff.f[d0M0])[k] = (D.f[d0P0])[kn   ];
-      (Dbuff.f[d00P])[k] = (D.f[d00M])[kb   ];
-      (Dbuff.f[d00M])[k] = (D.f[d00P])[kt   ];
-      (Dbuff.f[dPP0])[k] = (D.f[dMM0])[ksw  ];
-      (Dbuff.f[dMM0])[k] = (D.f[dPP0])[kne  ];
-      (Dbuff.f[dPM0])[k] = (D.f[dMP0])[knw  ];
-      (Dbuff.f[dMP0])[k] = (D.f[dPM0])[kse  ];
-      (Dbuff.f[dP0P])[k] = (D.f[dM0M])[kbw  ];
-      (Dbuff.f[dM0M])[k] = (D.f[dP0P])[kte  ];
-      (Dbuff.f[dP0M])[k] = (D.f[dM0P])[ktw  ];
-      (Dbuff.f[dM0P])[k] = (D.f[dP0M])[kbe  ];
-      (Dbuff.f[d0PP])[k] = (D.f[d0MM])[kbs  ];
-      (Dbuff.f[d0MM])[k] = (D.f[d0PP])[ktn  ];
-      (Dbuff.f[d0PM])[k] = (D.f[d0MP])[kts  ];
-      (Dbuff.f[d0MP])[k] = (D.f[d0PM])[kbn  ];
-      (Dbuff.f[d000])[k] = (D.f[d000])[kzero];
-      (Dbuff.f[dPPP])[k] = (D.f[dMMM])[kbsw ];
-      (Dbuff.f[dMMP])[k] = (D.f[dPPM])[kbne ];
-      (Dbuff.f[dPMP])[k] = (D.f[dMPM])[kbnw ];
-      (Dbuff.f[dMPP])[k] = (D.f[dPMM])[kbse ];
-      (Dbuff.f[dPPM])[k] = (D.f[dMMP])[ktsw ];
-      (Dbuff.f[dMMM])[k] = (D.f[dPPP])[ktne ];
-      (Dbuff.f[dPMM])[k] = (D.f[dMPP])[ktnw ];
-      (Dbuff.f[dMPM])[k] = (D.f[dPMP])[ktse ];
-   }
+   Distributions27 populationReferences = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes,isEvenTimestep);
+   Distributions27 bufferReferences = vf::gpu::getDistributionReferences27(bufferFs, buffmax, true);
+   real populations[27];
+   vf::gpu::getPostCollisionDistribution(populations, populationReferences, indices);
+   copyToBuffer(bufferReferences, index, populations);
+
 }
 
 __global__ void setRecvFsPost27(real* DD,
-                                           real* bufferFs,
-                                           int* recvIndex,
-                                           int buffmax,
-                                           unsigned int* neighborX,
-                                           unsigned int* neighborY,
-                                           unsigned int* neighborZ,
-                                           unsigned long long numberOfLBnodes, 
-                                           bool isEvenTimestep)
+                                real* bufferFs,
+                                const int* recvIndex,
+                                const int buffmax,
+                                const uint* neighborX,
+                                const uint* neighborY,
+                                const uint* neighborZ,
+                                const unsigned long long numberOfLBnodes, 
+                                const bool isEvenTimestep)
 {
-   ////////////////////////////////////////////////////////////////////////////////
-   const unsigned  x = threadIdx.x;  // Globaler x-Index 
-   const unsigned  y = blockIdx.x;   // Globaler y-Index 
-   const unsigned  z = blockIdx.y;   // Globaler z-Index 
+   const uint index = vf::cuda::get1DIndexFrom2DBlock();
+   if(index >= buffmax) return;
+   
+   const vf::gpu::ListIndices indices(recvIndex[index], neighborX, neighborY, neighborZ);
 
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
+   Distributions27 populationReferences = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes,isEvenTimestep);
+   Distributions27 bufferReferences = vf::gpu::getDistributionReferences27(bufferFs, buffmax, true);
+   real populations[27];
 
-   const unsigned k = nx*(ny*z + y) + x;
-   //////////////////////////////////////////////////////////////////////////
-
-   if(k<buffmax)
-   {
-      ////////////////////////////////////////////////////////////////////////////////
-      //set index
-      unsigned int kIndex  = recvIndex[k];
-      unsigned int kzero   = kIndex;
-      unsigned int ke      = kIndex;
-      unsigned int kw      = neighborX[kIndex];
-      unsigned int kn      = kIndex;
-      unsigned int ks      = neighborY[kIndex];
-      unsigned int kt      = kIndex;
-      unsigned int kb      = neighborZ[kIndex];
-      unsigned int ksw     = neighborY[kw];
-      unsigned int kne     = kIndex;
-      unsigned int kse     = ks;
-      unsigned int knw     = kw;
-      unsigned int kbw     = neighborZ[kw];
-      unsigned int kte     = kIndex;
-      unsigned int kbe     = kb;
-      unsigned int ktw     = kw;
-      unsigned int kbs     = neighborZ[ks];
-      unsigned int ktn     = kIndex;
-      unsigned int kbn     = kb;
-      unsigned int kts     = ks;
-      unsigned int ktse    = ks;
-      unsigned int kbnw    = kbw;
-      unsigned int ktnw    = kw;
-      unsigned int kbse    = kbs;
-      unsigned int ktsw    = ksw;
-      unsigned int kbne    = kb;
-      unsigned int ktne    = kIndex;
-      unsigned int kbsw    = neighborZ[ksw];
-      ////////////////////////////////////////////////////////////////////////////////
-      //set Pointer for Fs
-      Distributions27 D;
-      if (isEvenTimestep==true)
-      {
-         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
-         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
-         D.f[d0P0] = &DD[d0P0 * numberOfLBnodes];
-         D.f[d0M0] = &DD[d0M0 * numberOfLBnodes];
-         D.f[d00P] = &DD[d00P * numberOfLBnodes];
-         D.f[d00M] = &DD[d00M * numberOfLBnodes];
-         D.f[dPP0] = &DD[dPP0 * numberOfLBnodes];
-         D.f[dMM0] = &DD[dMM0 * numberOfLBnodes];
-         D.f[dPM0] = &DD[dPM0 * numberOfLBnodes];
-         D.f[dMP0] = &DD[dMP0 * numberOfLBnodes];
-         D.f[dP0P] = &DD[dP0P * numberOfLBnodes];
-         D.f[dM0M] = &DD[dM0M * numberOfLBnodes];
-         D.f[dP0M] = &DD[dP0M * numberOfLBnodes];
-         D.f[dM0P] = &DD[dM0P * numberOfLBnodes];
-         D.f[d0PP] = &DD[d0PP * numberOfLBnodes];
-         D.f[d0MM] = &DD[d0MM * numberOfLBnodes];
-         D.f[d0PM] = &DD[d0PM * numberOfLBnodes];
-         D.f[d0MP] = &DD[d0MP * numberOfLBnodes];
-         D.f[d000] = &DD[d000 * numberOfLBnodes];
-         D.f[dPPP] = &DD[dPPP * numberOfLBnodes];
-         D.f[dMMP] = &DD[dMMP * numberOfLBnodes];
-         D.f[dPMP] = &DD[dPMP * numberOfLBnodes];
-         D.f[dMPP] = &DD[dMPP * numberOfLBnodes];
-         D.f[dPPM] = &DD[dPPM * numberOfLBnodes];
-         D.f[dMMM] = &DD[dMMM * numberOfLBnodes];
-         D.f[dPMM] = &DD[dPMM * numberOfLBnodes];
-         D.f[dMPM] = &DD[dMPM * numberOfLBnodes];
-      } 
-      else
-      {
-         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
-         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
-         D.f[d0M0] = &DD[d0P0 * numberOfLBnodes];
-         D.f[d0P0] = &DD[d0M0 * numberOfLBnodes];
-         D.f[d00M] = &DD[d00P * numberOfLBnodes];
-         D.f[d00P] = &DD[d00M * numberOfLBnodes];
-         D.f[dMM0] = &DD[dPP0 * numberOfLBnodes];
-         D.f[dPP0] = &DD[dMM0 * numberOfLBnodes];
-         D.f[dMP0] = &DD[dPM0 * numberOfLBnodes];
-         D.f[dPM0] = &DD[dMP0 * numberOfLBnodes];
-         D.f[dM0M] = &DD[dP0P * numberOfLBnodes];
-         D.f[dP0P] = &DD[dM0M * numberOfLBnodes];
-         D.f[dM0P] = &DD[dP0M * numberOfLBnodes];
-         D.f[dP0M] = &DD[dM0P * numberOfLBnodes];
-         D.f[d0MM] = &DD[d0PP * numberOfLBnodes];
-         D.f[d0PP] = &DD[d0MM * numberOfLBnodes];
-         D.f[d0MP] = &DD[d0PM * numberOfLBnodes];
-         D.f[d0PM] = &DD[d0MP * numberOfLBnodes];
-         D.f[d000] = &DD[d000 * numberOfLBnodes];
-         D.f[dPPP] = &DD[dMMM * numberOfLBnodes];
-         D.f[dMMP] = &DD[dPPM * numberOfLBnodes];
-         D.f[dPMP] = &DD[dMPM * numberOfLBnodes];
-         D.f[dMPP] = &DD[dPMM * numberOfLBnodes];
-         D.f[dPPM] = &DD[dMMP * numberOfLBnodes];
-         D.f[dMMM] = &DD[dPPP * numberOfLBnodes];
-         D.f[dPMM] = &DD[dMPP * numberOfLBnodes];
-         D.f[dMPM] = &DD[dPMP * numberOfLBnodes];
-      }
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //set Pointer for Buffer Fs
-      Distributions27 Dbuff;
-      Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
-      Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
-      Dbuff.f[d0P0] = &bufferFs[d0P0 * buffmax];
-      Dbuff.f[d0M0] = &bufferFs[d0M0 * buffmax];
-      Dbuff.f[d00P] = &bufferFs[d00P * buffmax];
-      Dbuff.f[d00M] = &bufferFs[d00M * buffmax];
-      Dbuff.f[dPP0] = &bufferFs[dPP0 * buffmax];
-      Dbuff.f[dMM0] = &bufferFs[dMM0 * buffmax];
-      Dbuff.f[dPM0] = &bufferFs[dPM0 * buffmax];
-      Dbuff.f[dMP0] = &bufferFs[dMP0 * buffmax];
-      Dbuff.f[dP0P] = &bufferFs[dP0P * buffmax];
-      Dbuff.f[dM0M] = &bufferFs[dM0M * buffmax];
-      Dbuff.f[dP0M] = &bufferFs[dP0M * buffmax];
-      Dbuff.f[dM0P] = &bufferFs[dM0P * buffmax];
-      Dbuff.f[d0PP] = &bufferFs[d0PP * buffmax];
-      Dbuff.f[d0MM] = &bufferFs[d0MM * buffmax];
-      Dbuff.f[d0PM] = &bufferFs[d0PM * buffmax];
-      Dbuff.f[d0MP] = &bufferFs[d0MP * buffmax];
-      Dbuff.f[d000] = &bufferFs[d000 * buffmax];
-      Dbuff.f[dPPP] = &bufferFs[dPPP * buffmax];
-      Dbuff.f[dMMP] = &bufferFs[dMMP * buffmax];
-      Dbuff.f[dPMP] = &bufferFs[dPMP * buffmax];
-      Dbuff.f[dMPP] = &bufferFs[dMPP * buffmax];
-      Dbuff.f[dPPM] = &bufferFs[dPPM * buffmax];
-      Dbuff.f[dMMM] = &bufferFs[dMMM * buffmax];
-      Dbuff.f[dPMM] = &bufferFs[dPMM * buffmax];
-      Dbuff.f[dMPM] = &bufferFs[dMPM * buffmax];
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //copy from buffer
-      //(D.f[dP00])[ke   ] = (Dbuff.f[dP00])[k];
-      //(D.f[dM00])[kw   ] = (Dbuff.f[dM00])[k];
-      //(D.f[d0P0])[kn   ] = (Dbuff.f[d0P0])[k];
-      //(D.f[d0M0])[ks   ] = (Dbuff.f[d0M0])[k];
-      //(D.f[d00P])[kt   ] = (Dbuff.f[d00P])[k];
-      //(D.f[d00M])[kb   ] = (Dbuff.f[d00M])[k];
-      //(D.f[dPP0])[kne  ] = (Dbuff.f[dPP0])[k];
-      //(D.f[dMM0])[ksw  ] = (Dbuff.f[dMM0])[k];
-      //(D.f[dPM0])[kse  ] = (Dbuff.f[dPM0])[k];
-      //(D.f[dMP0])[knw  ] = (Dbuff.f[dMP0])[k];
-      //(D.f[dP0P])[kte  ] = (Dbuff.f[dP0P])[k];
-      //(D.f[dM0M])[kbw  ] = (Dbuff.f[dM0M])[k];
-      //(D.f[dP0M])[kbe  ] = (Dbuff.f[dP0M])[k];
-      //(D.f[dM0P])[ktw  ] = (Dbuff.f[dM0P])[k];
-      //(D.f[d0PP])[ktn  ] = (Dbuff.f[d0PP])[k];
-      //(D.f[d0MM])[kbs  ] = (Dbuff.f[d0MM])[k];
-      //(D.f[d0PM])[kbn  ] = (Dbuff.f[d0PM])[k];
-      //(D.f[d0MP])[kts  ] = (Dbuff.f[d0MP])[k];
-      //(D.f[d000])[kzero] = (Dbuff.f[d000])[k];
-      //(D.f[dPPP])[ktne ] = (Dbuff.f[dPPP])[k];
-      //(D.f[dMMP])[ktsw ] = (Dbuff.f[dMMP])[k];
-      //(D.f[dPMP])[ktse ] = (Dbuff.f[dPMP])[k];
-      //(D.f[dMPP])[ktnw ] = (Dbuff.f[dMPP])[k];
-      //(D.f[dPPM])[kbne ] = (Dbuff.f[dPPM])[k];
-      //(D.f[dMMM])[kbsw ] = (Dbuff.f[dMMM])[k];
-      //(D.f[dPMM])[kbse ] = (Dbuff.f[dPMM])[k];
-      //(D.f[dMPM])[kbnw ] = (Dbuff.f[dMPM])[k];
-      (D.f[dM00])[kw   ] = (Dbuff.f[dP00])[k];
-      (D.f[dP00])[ke   ] = (Dbuff.f[dM00])[k];
-      (D.f[d0M0])[ks   ] = (Dbuff.f[d0P0])[k];
-      (D.f[d0P0])[kn   ] = (Dbuff.f[d0M0])[k];
-      (D.f[d00M])[kb   ] = (Dbuff.f[d00P])[k];
-      (D.f[d00P])[kt   ] = (Dbuff.f[d00M])[k];
-      (D.f[dMM0])[ksw  ] = (Dbuff.f[dPP0])[k];
-      (D.f[dPP0])[kne  ] = (Dbuff.f[dMM0])[k];
-      (D.f[dMP0])[knw  ] = (Dbuff.f[dPM0])[k];
-      (D.f[dPM0])[kse  ] = (Dbuff.f[dMP0])[k];
-      (D.f[dM0M])[kbw  ] = (Dbuff.f[dP0P])[k];
-      (D.f[dP0P])[kte  ] = (Dbuff.f[dM0M])[k];
-      (D.f[dM0P])[ktw  ] = (Dbuff.f[dP0M])[k];
-      (D.f[dP0M])[kbe  ] = (Dbuff.f[dM0P])[k];
-      (D.f[d0MM])[kbs  ] = (Dbuff.f[d0PP])[k];
-      (D.f[d0PP])[ktn  ] = (Dbuff.f[d0MM])[k];
-      (D.f[d0MP])[kts  ] = (Dbuff.f[d0PM])[k];
-      (D.f[d0PM])[kbn  ] = (Dbuff.f[d0MP])[k];
-      (D.f[d000])[kzero] = (Dbuff.f[d000])[k];
-      (D.f[dMMM])[kbsw ] = (Dbuff.f[dPPP])[k];
-      (D.f[dPPM])[kbne ] = (Dbuff.f[dMMP])[k];
-      (D.f[dMPM])[kbnw ] = (Dbuff.f[dPMP])[k];
-      (D.f[dPMM])[kbse ] = (Dbuff.f[dMPP])[k];
-      (D.f[dMMP])[ktsw ] = (Dbuff.f[dPPM])[k];
-      (D.f[dPPP])[ktne ] = (Dbuff.f[dMMM])[k];
-      (D.f[dMPP])[ktnw ] = (Dbuff.f[dPMM])[k];
-      (D.f[dPMP])[ktse ] = (Dbuff.f[dMPM])[k];
-   }
+   copyFromBuffer(bufferReferences, index, populations);
+   vf::gpu::setPostCollisionDistribution(populationReferences, indices, populations);
 }
 
 __global__ void getSendFsPre27(real* DD,
-                                          real* bufferFs,
-                                          int* sendIndex,
-                                          int buffmax,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned long long numberOfLBnodes, 
-                                          bool isEvenTimestep)
+                               real* bufferFs,
+                               const int* sendIndex,
+                               const int buffmax,
+                               const unsigned int* neighborX,
+                               const unsigned int* neighborY,
+                               const unsigned int* neighborZ,
+                               const unsigned long long numberOfLBnodes, 
+                               const bool isEvenTimestep)
 {
-   ////////////////////////////////////////////////////////////////////////////////
-   const unsigned  x = threadIdx.x;  // Globaler x-Index 
-   const unsigned  y = blockIdx.x;   // Globaler y-Index 
-   const unsigned  z = blockIdx.y;   // Globaler z-Index 
+   const uint index = vf::cuda::get1DIndexFrom2DBlock();
+   if(index >= buffmax) return;
+   
+   const vf::gpu::ListIndices indices(sendIndex[index], neighborX, neighborY, neighborZ);
 
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
-
-   const unsigned k = nx*(ny*z + y) + x;
-   //////////////////////////////////////////////////////////////////////////
-
-   if(k<buffmax)
-   {
-      ////////////////////////////////////////////////////////////////////////////////
-      //set index
-      unsigned int kIndex  = sendIndex[k];
-      unsigned int kzero   = kIndex;
-      unsigned int ke      = kIndex;
-      unsigned int kw      = neighborX[kIndex];
-      unsigned int kn      = kIndex;
-      unsigned int ks      = neighborY[kIndex];
-      unsigned int kt      = kIndex;
-      unsigned int kb      = neighborZ[kIndex];
-      unsigned int ksw     = neighborY[kw];
-      unsigned int kne     = kIndex;
-      unsigned int kse     = ks;
-      unsigned int knw     = kw;
-      unsigned int kbw     = neighborZ[kw];
-      unsigned int kte     = kIndex;
-      unsigned int kbe     = kb;
-      unsigned int ktw     = kw;
-      unsigned int kbs     = neighborZ[ks];
-      unsigned int ktn     = kIndex;
-      unsigned int kbn     = kb;
-      unsigned int kts     = ks;
-      unsigned int ktse    = ks;
-      unsigned int kbnw    = kbw;
-      unsigned int ktnw    = kw;
-      unsigned int kbse    = kbs;
-      unsigned int ktsw    = ksw;
-      unsigned int kbne    = kb;
-      unsigned int ktne    = kIndex;
-      unsigned int kbsw    = neighborZ[ksw];
-      ////////////////////////////////////////////////////////////////////////////////
-      //set Pointer for Fs
-      Distributions27 D;
-      if (isEvenTimestep==true)
-      {
-         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
-         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
-         D.f[d0P0] = &DD[d0P0 * numberOfLBnodes];
-         D.f[d0M0] = &DD[d0M0 * numberOfLBnodes];
-         D.f[d00P] = &DD[d00P * numberOfLBnodes];
-         D.f[d00M] = &DD[d00M * numberOfLBnodes];
-         D.f[dPP0] = &DD[dPP0 * numberOfLBnodes];
-         D.f[dMM0] = &DD[dMM0 * numberOfLBnodes];
-         D.f[dPM0] = &DD[dPM0 * numberOfLBnodes];
-         D.f[dMP0] = &DD[dMP0 * numberOfLBnodes];
-         D.f[dP0P] = &DD[dP0P * numberOfLBnodes];
-         D.f[dM0M] = &DD[dM0M * numberOfLBnodes];
-         D.f[dP0M] = &DD[dP0M * numberOfLBnodes];
-         D.f[dM0P] = &DD[dM0P * numberOfLBnodes];
-         D.f[d0PP] = &DD[d0PP * numberOfLBnodes];
-         D.f[d0MM] = &DD[d0MM * numberOfLBnodes];
-         D.f[d0PM] = &DD[d0PM * numberOfLBnodes];
-         D.f[d0MP] = &DD[d0MP * numberOfLBnodes];
-         D.f[d000] = &DD[d000 * numberOfLBnodes];
-         D.f[dPPP] = &DD[dPPP * numberOfLBnodes];
-         D.f[dMMP] = &DD[dMMP * numberOfLBnodes];
-         D.f[dPMP] = &DD[dPMP * numberOfLBnodes];
-         D.f[dMPP] = &DD[dMPP * numberOfLBnodes];
-         D.f[dPPM] = &DD[dPPM * numberOfLBnodes];
-         D.f[dMMM] = &DD[dMMM * numberOfLBnodes];
-         D.f[dPMM] = &DD[dPMM * numberOfLBnodes];
-         D.f[dMPM] = &DD[dMPM * numberOfLBnodes];
-      } 
-      else
-      {
-         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
-         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
-         D.f[d0M0] = &DD[d0P0 * numberOfLBnodes];
-         D.f[d0P0] = &DD[d0M0 * numberOfLBnodes];
-         D.f[d00M] = &DD[d00P * numberOfLBnodes];
-         D.f[d00P] = &DD[d00M * numberOfLBnodes];
-         D.f[dMM0] = &DD[dPP0 * numberOfLBnodes];
-         D.f[dPP0] = &DD[dMM0 * numberOfLBnodes];
-         D.f[dMP0] = &DD[dPM0 * numberOfLBnodes];
-         D.f[dPM0] = &DD[dMP0 * numberOfLBnodes];
-         D.f[dM0M] = &DD[dP0P * numberOfLBnodes];
-         D.f[dP0P] = &DD[dM0M * numberOfLBnodes];
-         D.f[dM0P] = &DD[dP0M * numberOfLBnodes];
-         D.f[dP0M] = &DD[dM0P * numberOfLBnodes];
-         D.f[d0MM] = &DD[d0PP * numberOfLBnodes];
-         D.f[d0PP] = &DD[d0MM * numberOfLBnodes];
-         D.f[d0MP] = &DD[d0PM * numberOfLBnodes];
-         D.f[d0PM] = &DD[d0MP * numberOfLBnodes];
-         D.f[d000] = &DD[d000 * numberOfLBnodes];
-         D.f[dPPP] = &DD[dMMM * numberOfLBnodes];
-         D.f[dMMP] = &DD[dPPM * numberOfLBnodes];
-         D.f[dPMP] = &DD[dMPM * numberOfLBnodes];
-         D.f[dMPP] = &DD[dPMM * numberOfLBnodes];
-         D.f[dPPM] = &DD[dMMP * numberOfLBnodes];
-         D.f[dMMM] = &DD[dPPP * numberOfLBnodes];
-         D.f[dPMM] = &DD[dMPP * numberOfLBnodes];
-         D.f[dMPM] = &DD[dPMP * numberOfLBnodes];
-      }
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //set Pointer for Buffer Fs
-      Distributions27 Dbuff;
-      Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
-      Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
-      Dbuff.f[d0P0] = &bufferFs[d0P0 * buffmax];
-      Dbuff.f[d0M0] = &bufferFs[d0M0 * buffmax];
-      Dbuff.f[d00P] = &bufferFs[d00P * buffmax];
-      Dbuff.f[d00M] = &bufferFs[d00M * buffmax];
-      Dbuff.f[dPP0] = &bufferFs[dPP0 * buffmax];
-      Dbuff.f[dMM0] = &bufferFs[dMM0 * buffmax];
-      Dbuff.f[dPM0] = &bufferFs[dPM0 * buffmax];
-      Dbuff.f[dMP0] = &bufferFs[dMP0 * buffmax];
-      Dbuff.f[dP0P] = &bufferFs[dP0P * buffmax];
-      Dbuff.f[dM0M] = &bufferFs[dM0M * buffmax];
-      Dbuff.f[dP0M] = &bufferFs[dP0M * buffmax];
-      Dbuff.f[dM0P] = &bufferFs[dM0P * buffmax];
-      Dbuff.f[d0PP] = &bufferFs[d0PP * buffmax];
-      Dbuff.f[d0MM] = &bufferFs[d0MM * buffmax];
-      Dbuff.f[d0PM] = &bufferFs[d0PM * buffmax];
-      Dbuff.f[d0MP] = &bufferFs[d0MP * buffmax];
-      Dbuff.f[d000] = &bufferFs[d000 * buffmax];
-      Dbuff.f[dPPP] = &bufferFs[dPPP * buffmax];
-      Dbuff.f[dMMP] = &bufferFs[dMMP * buffmax];
-      Dbuff.f[dPMP] = &bufferFs[dPMP * buffmax];
-      Dbuff.f[dMPP] = &bufferFs[dMPP * buffmax];
-      Dbuff.f[dPPM] = &bufferFs[dPPM * buffmax];
-      Dbuff.f[dMMM] = &bufferFs[dMMM * buffmax];
-      Dbuff.f[dPMM] = &bufferFs[dPMM * buffmax];
-      Dbuff.f[dMPM] = &bufferFs[dMPM * buffmax];
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //copy to buffer
-      (Dbuff.f[dP00])[k] = (D.f[dP00])[ke   ];
-      (Dbuff.f[dM00])[k] = (D.f[dM00])[kw   ];
-      (Dbuff.f[d0P0])[k] = (D.f[d0P0])[kn   ];
-      (Dbuff.f[d0M0])[k] = (D.f[d0M0])[ks   ];
-      (Dbuff.f[d00P])[k] = (D.f[d00P])[kt   ];
-      (Dbuff.f[d00M])[k] = (D.f[d00M])[kb   ];
-      (Dbuff.f[dPP0])[k] = (D.f[dPP0])[kne  ];
-      (Dbuff.f[dMM0])[k] = (D.f[dMM0])[ksw  ];
-      (Dbuff.f[dPM0])[k] = (D.f[dPM0])[kse  ];
-      (Dbuff.f[dMP0])[k] = (D.f[dMP0])[knw  ];
-      (Dbuff.f[dP0P])[k] = (D.f[dP0P])[kte  ];
-      (Dbuff.f[dM0M])[k] = (D.f[dM0M])[kbw  ];
-      (Dbuff.f[dP0M])[k] = (D.f[dP0M])[kbe  ];
-      (Dbuff.f[dM0P])[k] = (D.f[dM0P])[ktw  ];
-      (Dbuff.f[d0PP])[k] = (D.f[d0PP])[ktn  ];
-      (Dbuff.f[d0MM])[k] = (D.f[d0MM])[kbs  ];
-      (Dbuff.f[d0PM])[k] = (D.f[d0PM])[kbn  ];
-      (Dbuff.f[d0MP])[k] = (D.f[d0MP])[kts  ];
-      (Dbuff.f[d000])[k] = (D.f[d000])[kzero];
-      (Dbuff.f[dPPP])[k] = (D.f[dPPP])[ktne ];
-      (Dbuff.f[dMMP])[k] = (D.f[dMMP])[ktsw ];
-      (Dbuff.f[dPMP])[k] = (D.f[dPMP])[ktse ];
-      (Dbuff.f[dMPP])[k] = (D.f[dMPP])[ktnw ];
-      (Dbuff.f[dPPM])[k] = (D.f[dPPM])[kbne ];
-      (Dbuff.f[dMMM])[k] = (D.f[dMMM])[kbsw ];
-      (Dbuff.f[dPMM])[k] = (D.f[dPMM])[kbse ];
-      (Dbuff.f[dMPM])[k] = (D.f[dMPM])[kbnw ];
-   }
+   Distributions27 populationReferences = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes,isEvenTimestep);
+   Distributions27 bufferReferences = vf::gpu::getDistributionReferences27(bufferFs, buffmax, true);
+   real populations[27];
+   vf::gpu::getPreCollisionDistribution(populations, populationReferences, indices);
+   copyFromBuffer(bufferReferences, index, populations);
 }
 
 __global__ void setRecvFsPre27(real* DD,
-                                          real* bufferFs,
-                                          int* recvIndex,
-                                          int buffmax,
-                                          unsigned int* neighborX,
-                                          unsigned int* neighborY,
-                                          unsigned int* neighborZ,
-                                          unsigned long long numberOfLBnodes, 
-                                          bool isEvenTimestep)
+                               real* bufferFs,
+                               const int* recvIndex,
+                               const int buffmax,
+                               const uint* neighborX,
+                               const uint* neighborY,
+                               const uint* neighborZ,
+                               const unsigned long long numberOfLBnodes, 
+                               const bool isEvenTimestep)
 {
-   ////////////////////////////////////////////////////////////////////////////////
-   const unsigned  x = threadIdx.x;  // Globaler x-Index 
-   const unsigned  y = blockIdx.x;   // Globaler y-Index 
-   const unsigned  z = blockIdx.y;   // Globaler z-Index 
+   const uint index = vf::cuda::get1DIndexFrom2DBlock();
+   if(index >= buffmax) return;
+   
+   const vf::gpu::ListIndices indices(recvIndex[index], neighborX, neighborY, neighborZ);
 
-   const unsigned nx = blockDim.x;
-   const unsigned ny = gridDim.x;
+   Distributions27 populationReferences = vf::gpu::getDistributionReferences27(DD, numberOfLBnodes,isEvenTimestep);
+   Distributions27 bufferReferences = vf::gpu::getDistributionReferences27(bufferFs, buffmax, true);
+   real populations[27];
 
-   const unsigned k = nx*(ny*z + y) + x;
-   //////////////////////////////////////////////////////////////////////////
-
-   if(k<buffmax)
-   {
-      ////////////////////////////////////////////////////////////////////////////////
-      //set index
-      unsigned int kIndex  = recvIndex[k];
-      unsigned int kzero   = kIndex;
-      unsigned int ke      = kIndex;
-      unsigned int kw      = neighborX[kIndex];
-      unsigned int kn      = kIndex;
-      unsigned int ks      = neighborY[kIndex];
-      unsigned int kt      = kIndex;
-      unsigned int kb      = neighborZ[kIndex];
-      unsigned int ksw     = neighborY[kw];
-      unsigned int kne     = kIndex;
-      unsigned int kse     = ks;
-      unsigned int knw     = kw;
-      unsigned int kbw     = neighborZ[kw];
-      unsigned int kte     = kIndex;
-      unsigned int kbe     = kb;
-      unsigned int ktw     = kw;
-      unsigned int kbs     = neighborZ[ks];
-      unsigned int ktn     = kIndex;
-      unsigned int kbn     = kb;
-      unsigned int kts     = ks;
-      unsigned int ktse    = ks;
-      unsigned int kbnw    = kbw;
-      unsigned int ktnw    = kw;
-      unsigned int kbse    = kbs;
-      unsigned int ktsw    = ksw;
-      unsigned int kbne    = kb;
-      unsigned int ktne    = kIndex;
-      unsigned int kbsw    = neighborZ[ksw];
-      ////////////////////////////////////////////////////////////////////////////////
-      //set Pointer for Fs
-      Distributions27 D;
-      if (isEvenTimestep==true)
-      {
-         D.f[dP00] = &DD[dP00 * numberOfLBnodes];
-         D.f[dM00] = &DD[dM00 * numberOfLBnodes];
-         D.f[d0P0] = &DD[d0P0 * numberOfLBnodes];
-         D.f[d0M0] = &DD[d0M0 * numberOfLBnodes];
-         D.f[d00P] = &DD[d00P * numberOfLBnodes];
-         D.f[d00M] = &DD[d00M * numberOfLBnodes];
-         D.f[dPP0] = &DD[dPP0 * numberOfLBnodes];
-         D.f[dMM0] = &DD[dMM0 * numberOfLBnodes];
-         D.f[dPM0] = &DD[dPM0 * numberOfLBnodes];
-         D.f[dMP0] = &DD[dMP0 * numberOfLBnodes];
-         D.f[dP0P] = &DD[dP0P * numberOfLBnodes];
-         D.f[dM0M] = &DD[dM0M * numberOfLBnodes];
-         D.f[dP0M] = &DD[dP0M * numberOfLBnodes];
-         D.f[dM0P] = &DD[dM0P * numberOfLBnodes];
-         D.f[d0PP] = &DD[d0PP * numberOfLBnodes];
-         D.f[d0MM] = &DD[d0MM * numberOfLBnodes];
-         D.f[d0PM] = &DD[d0PM * numberOfLBnodes];
-         D.f[d0MP] = &DD[d0MP * numberOfLBnodes];
-         D.f[d000] = &DD[d000 * numberOfLBnodes];
-         D.f[dPPP] = &DD[dPPP * numberOfLBnodes];
-         D.f[dMMP] = &DD[dMMP * numberOfLBnodes];
-         D.f[dPMP] = &DD[dPMP * numberOfLBnodes];
-         D.f[dMPP] = &DD[dMPP * numberOfLBnodes];
-         D.f[dPPM] = &DD[dPPM * numberOfLBnodes];
-         D.f[dMMM] = &DD[dMMM * numberOfLBnodes];
-         D.f[dPMM] = &DD[dPMM * numberOfLBnodes];
-         D.f[dMPM] = &DD[dMPM * numberOfLBnodes];
-      } 
-      else
-      {
-         D.f[dM00] = &DD[dP00 * numberOfLBnodes];
-         D.f[dP00] = &DD[dM00 * numberOfLBnodes];
-         D.f[d0M0] = &DD[d0P0 * numberOfLBnodes];
-         D.f[d0P0] = &DD[d0M0 * numberOfLBnodes];
-         D.f[d00M] = &DD[d00P * numberOfLBnodes];
-         D.f[d00P] = &DD[d00M * numberOfLBnodes];
-         D.f[dMM0] = &DD[dPP0 * numberOfLBnodes];
-         D.f[dPP0] = &DD[dMM0 * numberOfLBnodes];
-         D.f[dMP0] = &DD[dPM0 * numberOfLBnodes];
-         D.f[dPM0] = &DD[dMP0 * numberOfLBnodes];
-         D.f[dM0M] = &DD[dP0P * numberOfLBnodes];
-         D.f[dP0P] = &DD[dM0M * numberOfLBnodes];
-         D.f[dM0P] = &DD[dP0M * numberOfLBnodes];
-         D.f[dP0M] = &DD[dM0P * numberOfLBnodes];
-         D.f[d0MM] = &DD[d0PP * numberOfLBnodes];
-         D.f[d0PP] = &DD[d0MM * numberOfLBnodes];
-         D.f[d0MP] = &DD[d0PM * numberOfLBnodes];
-         D.f[d0PM] = &DD[d0MP * numberOfLBnodes];
-         D.f[d000] = &DD[d000 * numberOfLBnodes];
-         D.f[dPPP] = &DD[dMMM * numberOfLBnodes];
-         D.f[dMMP] = &DD[dPPM * numberOfLBnodes];
-         D.f[dPMP] = &DD[dMPM * numberOfLBnodes];
-         D.f[dMPP] = &DD[dPMM * numberOfLBnodes];
-         D.f[dPPM] = &DD[dMMP * numberOfLBnodes];
-         D.f[dMMM] = &DD[dPPP * numberOfLBnodes];
-         D.f[dPMM] = &DD[dMPP * numberOfLBnodes];
-         D.f[dMPM] = &DD[dPMP * numberOfLBnodes];
-      }
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //set Pointer for Buffer Fs
-      Distributions27 Dbuff;
-      Dbuff.f[dP00] = &bufferFs[dP00 * buffmax];
-      Dbuff.f[dM00] = &bufferFs[dM00 * buffmax];
-      Dbuff.f[d0P0] = &bufferFs[d0P0 * buffmax];
-      Dbuff.f[d0M0] = &bufferFs[d0M0 * buffmax];
-      Dbuff.f[d00P] = &bufferFs[d00P * buffmax];
-      Dbuff.f[d00M] = &bufferFs[d00M * buffmax];
-      Dbuff.f[dPP0] = &bufferFs[dPP0 * buffmax];
-      Dbuff.f[dMM0] = &bufferFs[dMM0 * buffmax];
-      Dbuff.f[dPM0] = &bufferFs[dPM0 * buffmax];
-      Dbuff.f[dMP0] = &bufferFs[dMP0 * buffmax];
-      Dbuff.f[dP0P] = &bufferFs[dP0P * buffmax];
-      Dbuff.f[dM0M] = &bufferFs[dM0M * buffmax];
-      Dbuff.f[dP0M] = &bufferFs[dP0M * buffmax];
-      Dbuff.f[dM0P] = &bufferFs[dM0P * buffmax];
-      Dbuff.f[d0PP] = &bufferFs[d0PP * buffmax];
-      Dbuff.f[d0MM] = &bufferFs[d0MM * buffmax];
-      Dbuff.f[d0PM] = &bufferFs[d0PM * buffmax];
-      Dbuff.f[d0MP] = &bufferFs[d0MP * buffmax];
-      Dbuff.f[d000] = &bufferFs[d000 * buffmax];
-      Dbuff.f[dPPP] = &bufferFs[dPPP * buffmax];
-      Dbuff.f[dMMP] = &bufferFs[dMMP * buffmax];
-      Dbuff.f[dPMP] = &bufferFs[dPMP * buffmax];
-      Dbuff.f[dMPP] = &bufferFs[dMPP * buffmax];
-      Dbuff.f[dPPM] = &bufferFs[dPPM * buffmax];
-      Dbuff.f[dMMM] = &bufferFs[dMMM * buffmax];
-      Dbuff.f[dPMM] = &bufferFs[dPMM * buffmax];
-      Dbuff.f[dMPM] = &bufferFs[dMPM * buffmax];
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //copy from buffer
-      (D.f[dP00])[ke   ] = (Dbuff.f[dP00])[k];
-      (D.f[dM00])[kw   ] = (Dbuff.f[dM00])[k];
-      (D.f[d0P0])[kn   ] = (Dbuff.f[d0P0])[k];
-      (D.f[d0M0])[ks   ] = (Dbuff.f[d0M0])[k];
-      (D.f[d00P])[kt   ] = (Dbuff.f[d00P])[k];
-      (D.f[d00M])[kb   ] = (Dbuff.f[d00M])[k];
-      (D.f[dPP0])[kne  ] = (Dbuff.f[dPP0])[k];
-      (D.f[dMM0])[ksw  ] = (Dbuff.f[dMM0])[k];
-      (D.f[dPM0])[kse  ] = (Dbuff.f[dPM0])[k];
-      (D.f[dMP0])[knw  ] = (Dbuff.f[dMP0])[k];
-      (D.f[dP0P])[kte  ] = (Dbuff.f[dP0P])[k];
-      (D.f[dM0M])[kbw  ] = (Dbuff.f[dM0M])[k];
-      (D.f[dP0M])[kbe  ] = (Dbuff.f[dP0M])[k];
-      (D.f[dM0P])[ktw  ] = (Dbuff.f[dM0P])[k];
-      (D.f[d0PP])[ktn  ] = (Dbuff.f[d0PP])[k];
-      (D.f[d0MM])[kbs  ] = (Dbuff.f[d0MM])[k];
-      (D.f[d0PM])[kbn  ] = (Dbuff.f[d0PM])[k];
-      (D.f[d0MP])[kts  ] = (Dbuff.f[d0MP])[k];
-      (D.f[d000])[kzero] = (Dbuff.f[d000])[k];
-      (D.f[dPPP])[ktne ] = (Dbuff.f[dPPP])[k];
-      (D.f[dMMP])[ktsw ] = (Dbuff.f[dMMP])[k];
-      (D.f[dPMP])[ktse ] = (Dbuff.f[dPMP])[k];
-      (D.f[dMPP])[ktnw ] = (Dbuff.f[dMPP])[k];
-      (D.f[dPPM])[kbne ] = (Dbuff.f[dPPM])[k];
-      (D.f[dMMM])[kbsw ] = (Dbuff.f[dMMM])[k];
-      (D.f[dPMM])[kbse ] = (Dbuff.f[dPMM])[k];
-      (D.f[dMPM])[kbnw ] = (Dbuff.f[dMPM])[k];
-   }
+   copyFromBuffer(bufferReferences, index, populations);
+   vf::gpu::setPreCollisionDistribution(populationReferences, indices, populations);
 }
 
 
@@ -820,14 +210,14 @@ __global__ void setRecvFsPre27(real* DD,
 void GetSendFsPreDev27(
     real* DD,
     real* bufferFs,
-    int* sendIndex,
-    int buffmax,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep,
-    unsigned int numberOfThreads,
+    const int* sendIndex,
+    const int buffmax,
+    const uint* neighborX,
+    const uint* neighborY,
+    const uint* neighborZ,
+    const unsigned long long numberOfLBnodes,
+    const bool isEvenTimestep,
+    const unsigned int numberOfThreads,
     cudaStream_t stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
@@ -848,14 +238,14 @@ void GetSendFsPreDev27(
 void GetSendFsPostDev27(
     real* DD,
     real* bufferFs,
-    int* sendIndex,
-    int buffmax,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep,
-    unsigned int numberOfThreads,
+    const int* sendIndex,
+    const int buffmax,
+    const uint* neighborX,
+    const uint* neighborY,
+    const uint* neighborZ,
+    const unsigned long long numberOfLBnodes,
+    const bool isEvenTimestep,
+    const unsigned int numberOfThreads,
     cudaStream_t stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
@@ -876,14 +266,14 @@ void GetSendFsPostDev27(
 void SetRecvFsPreDev27(
     real* DD,
     real* bufferFs,
-    int* recvIndex,
-    int buffmax,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep,
-    unsigned int numberOfThreads,
+    const int* recvIndex,
+    const int buffmax,
+    const uint* neighborX,
+    const uint* neighborY,
+    const uint* neighborZ,
+    const unsigned long long numberOfLBnodes,
+    const bool isEvenTimestep,
+    const unsigned int numberOfThreads,
     cudaStream_t stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
@@ -904,14 +294,14 @@ void SetRecvFsPreDev27(
 void SetRecvFsPostDev27(
     real* DD,
     real* bufferFs,
-    int* recvIndex,
-    int buffmax,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep,
-    unsigned int numberOfThreads,
+    const int* recvIndex,
+    const int buffmax,
+    const uint* neighborX,
+    const uint* neighborY,
+    const uint* neighborZ,
+    const unsigned long long numberOfLBnodes,
+    const bool isEvenTimestep,
+    const unsigned int numberOfThreads,
     cudaStream_t stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
