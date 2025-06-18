@@ -46,7 +46,6 @@
 #include "Cuda/CudaStreamManager.h"
 #include "GridScaling/GridScalingKernelManager.h"
 #include "GridScaling/RefinementStrategy.h"
-#include "Kernel/ADKernelManager.h"
 #include "Kernel/Kernel.h"
 #include "PostProcessor/MacroscopicQuantities.cuh"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
@@ -100,10 +99,8 @@ void UpdateGrid27::collisionAllNodes(int level, unsigned int t)
 {
     kernels.at(level)->run();
 
-    //////////////////////////////////////////////////////////////////////////
-
     if (para->getDiffOn())
-        collisionAdvectionDiffusion(level);
+        kernelsAD.at(level)->run();
 }
 
 void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *taggedFluidNodeIndices, uint numberOfTaggedFluidNodes, CollisionTemplate collisionTemplate, CudaStreamIndex stream)
@@ -116,12 +113,7 @@ void UpdateGrid27::collisionUsingIndices(int level, unsigned int t, uint *tagged
     //////////////////////////////////////////////////////////////////////////
 
     if (para->getDiffOn())
-        collisionAdvectionDiffusion(level);
-}
-
-void UpdateGrid27::collisionAdvectionDiffusion(int level)
-{
-    this->adKernelManager->runADcollisionKernel(level);
+        kernelsAD.at(level)->runOnIndices(taggedFluidNodeIndices, numberOfTaggedFluidNodes, collisionTemplate, stream);
 }
 
 void UpdateGrid27::prepareExchangeMultiGPU(int level, CudaStreamIndex streamIndex)
@@ -317,15 +309,14 @@ void UpdateGrid27::exchangeData(int level)
 
 UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &comm, SPtr<CudaMemoryManager> cudaMemoryManager,
                            std::vector<SPtr<Kernel>>& kernels,
-                           std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels, const BoundaryConditionFactory* bcFactory,
+                           std::vector<SPtr<AdvectionDiffusionKernel>>& kernelsAD, const BoundaryConditionFactory* bcFactory,
                            SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory)
-    : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), kernels(kernels)
+    : para(para), comm(comm), cudaMemoryManager(cudaMemoryManager), kernels(kernels), kernelsAD(kernelsAD)
 {
     this->collision = getFunctionForCollisionAndExchange(para->getUseStreams(), para->getNumprocs(), para->getKernelNeedsFluidNodeIndicesToRun());
     this->refinement = getFunctionForRefinementAndExchange(para->getUseStreams(), para->getNumprocs(), para->getMaxLevel(), para->useReducedCommunicationAfterFtoC);
 
     this->bcKernelManager = std::make_shared<BoundaryConditionKernelManager>(para, bcFactory);
-    this->adKernelManager = std::make_shared<ADKernelManager>(para, adkernels);
     this->gridScalingKernelManager = std::make_shared<GridScalingKernelManager>(para, scalingFactory);
     this->tmManager = std::make_shared<TurbulenceModelManager>(para, tmFactory);
 }
