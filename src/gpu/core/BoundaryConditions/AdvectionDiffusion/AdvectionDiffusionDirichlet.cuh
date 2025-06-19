@@ -73,7 +73,7 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
 
     switch (bcType) {
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackSlip:
-            loopDirections([&](auto direction) {
+            forEachNonRestDirection([&](auto direction) {
                 const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
                 if (subgridDistance < c0o1 || subgridDistance > c1o1)
                     return;
@@ -83,7 +83,7 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
             });
             break;
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip:
-            loopDirections([&](auto direction) {
+            forEachNonRestDirection([&](auto direction) {
                 const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
                 if (subgridDistance < c0o1 || subgridDistance > c1o1)
                     return;
@@ -98,7 +98,7 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
             const real vx1 = velocityX[k_000];
             const real vx2 = velocityY[k_000];
             const real vx3 = velocityZ[k_000];
-            loopDirections([&](auto direction) {
+            forEachNonRestDirection([&](auto direction) {
                 const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
                 if (subgridDistance < c0o1 || subgridDistance > c1o1)
                     return;
@@ -110,7 +110,7 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
         } break;
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletInterpolatedNoSlip: {
             const real concentrationNode = vf::lbm::getDensity(populations);
-            loopDirections([&](auto direction) {
+            forEachNonRestDirection([&](auto direction) {
                 const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
                 if (subgridDistance < c0o1 || subgridDistance > c1o1)
                     return;
