@@ -47,7 +47,7 @@ void findEdgeNodesYZ(LBMSimulationParameter& parameterLB);
 void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,
                    const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
                    std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes);
-std::optional<std::pair<int, int>> findIndexInSendNodes(const int nodeIndex,
+std::optional<std::pair<uint, uint>> findIndexInSendNodes(uint nodeIndex,
                                                         const std::vector<ProcessNeighbor27> &sendProcessNeighbor);
 
 void findEdgeNodesCommMultiGPU(Parameter& parameter)
@@ -81,8 +81,8 @@ void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,
                    const std::vector<ProcessNeighbor27> &sendProcessNeighbor,
                    std::vector<LBMSimulationParameter::EdgeNodePositions> &edgeNodes)
 {
-    for (uint neighbor = 0; neighbor < (unsigned int)(recvProcessNeighbor.size()); neighbor++) {
-        for (int index = 0; index < recvProcessNeighbor[neighbor].numberOfNodes; index++) {
+    for (uint neighbor = 0; neighbor < uint(recvProcessNeighbor.size()); neighbor++) {
+        for (uint index = 0; index < recvProcessNeighbor[neighbor].numberOfNodes; index++) {
             if (auto sendIndices = findIndexInSendNodes(recvProcessNeighbor[neighbor].index[index], sendProcessNeighbor)) {
                 edgeNodes.emplace_back(neighbor, index, sendIndices->first, sendIndices->second);
             }
@@ -90,13 +90,13 @@ void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,
     }
 }
 
-std::optional<std::pair<int, int>> findIndexInSendNodes(const int nodeIndex,
+std::optional<std::pair<uint, uint>> findIndexInSendNodes(const uint nodeIndex,
                                                         const std::vector<ProcessNeighbor27> &sendProcessNeighbor)
 {
-    for (uint neighbor = 0; neighbor < (unsigned int)sendProcessNeighbor.size(); neighbor++) {
-        for (int node = 0; node < sendProcessNeighbor[neighbor].numberOfNodes; node++) {
+    for (uint neighbor = 0; neighbor < uint(sendProcessNeighbor.size()); neighbor++) {
+        for (uint node = 0; node < sendProcessNeighbor[neighbor].numberOfNodes; node++) {
             if (sendProcessNeighbor[neighbor].index[node] == nodeIndex) {
-                return std::pair<int, int>(neighbor, node);
+                return std::pair<uint, uint>(neighbor, node);
             }
         }
     }

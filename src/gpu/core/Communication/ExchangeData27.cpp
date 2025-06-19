@@ -50,11 +50,11 @@ using namespace vf::lbm::dir;
 // 3D domain decomposition: functions used by all directions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void collectNodesInSendBufferGPU(Parameter* para, int level, CudaStreamIndex streamIndex,
-                                 std::vector<ProcessNeighbor27>& sendProcessNeighbor)
+                                 std::vector<ProcessNeighbor27>& sendProcessNeighborsDevice)
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
 
-    for (auto& neighbor : sendProcessNeighbor) {
+    for (auto& neighbor : sendProcessNeighborsDevice) {
         GetSendFsPostDev27(para->getParD(level)->distributions.f[0],
                            neighbor.f[0],
                            neighbor.index,
@@ -82,10 +82,10 @@ void collectNodesInSendBufferGPU(Parameter* para, int level, CudaStreamIndex str
 }
 
 void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex streamIndex,
-                                   std::vector<ProcessNeighbor27>& recvProcessNeighborDev)
+                                   std::vector<ProcessNeighbor27>& recvProcessNeighborsDevice)
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
-    for (auto& neighbor : recvProcessNeighborDev) {
+    for (auto& neighbor : recvProcessNeighborsDevice) {
         SetRecvFsPostDev27(para->getParD(level)->distributions.f[0], 
                            neighbor.f[0], 
                            neighbor.index, 
@@ -141,10 +141,10 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeN
 {
 #pragma omp parallel for
     for (int i=0; i< int(edgeNodes.size()); i++) {
-        const int indexInSubdomainRecv = edgeNodes[i].indexOfProcessNeighborRecv;
-        const int indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
-        const int numNodesInBufferRecv = recvProcessNeighborHost[indexInSubdomainRecv].numberOfNodes;
-        const int numNodesInBufferSend = sendProcessNeighborHost[indexInSubdomainSend].numberOfNodes;
+        const uint indexInSubdomainRecv = edgeNodes[i].indexOfProcessNeighborRecv;
+        const uint indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
+        const uint numNodesInBufferRecv = recvProcessNeighborHost[indexInSubdomainRecv].numberOfNodes;
+        const uint numNodesInBufferSend = sendProcessNeighborHost[indexInSubdomainSend].numberOfNodes;
         if (edgeNodes[i].indexInSendBuffer >= numNodesInBufferSend)
             // for reduced communication after fine to coarse: only copy send nodes which are not part of the reduced comm
             continue;

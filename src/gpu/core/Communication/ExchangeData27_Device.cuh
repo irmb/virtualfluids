@@ -40,19 +40,19 @@
 
 #include <basics/DataTypes.h>
 
-void GetSendFsPreDev27(real* DD, real* bufferFs, const int* sendIndex, int buffmax, const uint* neighborX,
+void GetSendFsPreDev27(real* DD, real* bufferFs, const uint* sendIndex, uint buffmax, const uint* neighborX,
                        const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
                        bool isEvenTimestep, uint numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
 
-void GetSendFsPostDev27(real* DD, real* bufferFs, const int* sendIndex, int buffmax, const uint* neighborX,
+void GetSendFsPostDev27(real* DD, real* bufferFs, const uint* sendIndex, uint buffmax, const uint* neighborX,
                         const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
                         bool isEvenTimestep, uint numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
 
-void SetRecvFsPreDev27(real* DD, real* bufferFs, const int* recvIndex, int buffmax, const uint* neighborX,
+void SetRecvFsPreDev27(real* DD, real* bufferFs, const uint* recvIndex, uint buffmax, const uint* neighborX,
                        const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
                        bool isEvenTimestep, uint numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
 
-void SetRecvFsPostDev27(real* DD, real* bufferFs, const int* recvIndex, int buffmax, const uint* neighborX,
+void SetRecvFsPostDev27(real* DD, real* bufferFs, const uint* recvIndex, uint buffmax, const uint* neighborX,
                         const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
                         bool isEvenTimestep, uint numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
 #endif

@@ -66,7 +66,7 @@ public:
     std::string getBoundaryCondition();
     void setBoundarys(std::vector<std::vector<std::vector<real> > > &qs) const;
     void setValues(real* velo, unsigned int level, unsigned int column) const;
-    void initIndex(/*unsigned*/ int *ptr, unsigned int level);
+    void initIndex(uint *ptr, unsigned int level);
 
     void setProcNeighbor(bool pN);
     bool getProcNeighbor();

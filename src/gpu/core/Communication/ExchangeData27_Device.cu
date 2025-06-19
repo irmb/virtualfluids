@@ -52,7 +52,7 @@ using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 using namespace vf::gpu;
 
-__global__ void getSendFsPost27(real* DD, real* bufferFs, const int* sendIndex, const int buffmax, const uint* neighborX,
+__global__ void getSendFsPost27(real* DD, real* bufferFs, const uint* sendIndex, const uint buffmax, const uint* neighborX,
                                 const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
                                 const bool isEvenTimestep)
 {
@@ -69,7 +69,7 @@ __global__ void getSendFsPost27(real* DD, real* bufferFs, const int* sendIndex, 
         [&](auto dir) { (bufferReferences.f[dir])[index] = readFromInverseDirection<dir>(indices, populationReferences); });
 }
 
-__global__ void setRecvFsPost27(real* DD, real* bufferFs, const int* recvIndex, const int buffmax, const uint* neighborX,
+__global__ void setRecvFsPost27(real* DD, real* bufferFs, const uint* recvIndex, const uint buffmax, const uint* neighborX,
                                 const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
                                 const bool isEvenTimestep)
 {
@@ -86,7 +86,7 @@ __global__ void setRecvFsPost27(real* DD, real* bufferFs, const int* recvIndex, 
         [&](auto dir) { writeInInverseDirection<dir>((bufferReferences.f[dir])[index], indices, populationReferences); });
 }
 
-__global__ void getSendFsPre27(real* DD, real* bufferFs, const int* sendIndex, const int buffmax, const uint* neighborX,
+__global__ void getSendFsPre27(real* DD, real* bufferFs, const uint* sendIndex, const uint buffmax, const uint* neighborX,
                                const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
                                const bool isEvenTimestep)
 {
@@ -103,7 +103,7 @@ __global__ void getSendFsPre27(real* DD, real* bufferFs, const int* sendIndex, c
         [&](auto dir) { (bufferReferences.f[dir])[index] = readFromSameDirection<dir>(indices, populationReferences); });
 }
 
-__global__ void setRecvFsPre27(real* DD, real* bufferFs, const int* recvIndex, const int buffmax, const uint* neighborX,
+__global__ void setRecvFsPre27(real* DD, real* bufferFs, const uint* recvIndex, const uint buffmax, const uint* neighborX,
                                const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
                                const bool isEvenTimestep)
 {
@@ -120,7 +120,7 @@ __global__ void setRecvFsPre27(real* DD, real* bufferFs, const int* recvIndex, c
         [&](auto dir) { writeInSameDirection<dir>((bufferReferences.f[dir])[index], indices, populationReferences); });
 }
 
-void GetSendFsPreDev27(real* DD, real* bufferFs, const int* sendIndex, const int buffmax, const uint* neighborX,
+void GetSendFsPreDev27(real* DD, real* bufferFs, const uint* sendIndex, const uint buffmax, const uint* neighborX,
                        const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
                        const bool isEvenTimestep, const unsigned int numberOfThreads, cudaStream_t stream)
 {
@@ -131,7 +131,7 @@ void GetSendFsPreDev27(real* DD, real* bufferFs, const int* sendIndex, const int
     getLastCudaError("getSendFsPre27 execution failed");
 }
 
-void GetSendFsPostDev27(real* DD, real* bufferFs, const int* sendIndex, const int buffmax, const uint* neighborX,
+void GetSendFsPostDev27(real* DD, real* bufferFs, const uint* sendIndex, const uint buffmax, const uint* neighborX,
                         const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
                         const bool isEvenTimestep, const unsigned int numberOfThreads, cudaStream_t stream)
 {
@@ -142,7 +142,7 @@ void GetSendFsPostDev27(real* DD, real* bufferFs, const int* sendIndex, const in
     getLastCudaError("getSendFsPost27 execution failed");
 }
 
-void SetRecvFsPreDev27(real* DD, real* bufferFs, const int* recvIndex, const int buffmax, const uint* neighborX,
+void SetRecvFsPreDev27(real* DD, real* bufferFs, const uint* recvIndex, const uint buffmax, const uint* neighborX,
                        const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
                        const bool isEvenTimestep, const unsigned int numberOfThreads, cudaStream_t stream)
 {
@@ -153,7 +153,7 @@ void SetRecvFsPreDev27(real* DD, real* bufferFs, const int* recvIndex, const int
     getLastCudaError("setRecvFsPre27 execution failed");
 }
 
-void SetRecvFsPostDev27(real* DD, real* bufferFs, const int* recvIndex, const int buffmax, const uint* neighborX,
+void SetRecvFsPostDev27(real* DD, real* bufferFs, const uint* recvIndex, const uint buffmax, const uint* neighborX,
                         const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
                         const bool isEvenTimestep, const unsigned int numberOfThreads, cudaStream_t stream)
 {

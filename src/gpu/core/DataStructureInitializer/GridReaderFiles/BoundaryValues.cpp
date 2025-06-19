@@ -227,7 +227,7 @@ void BoundaryValues::setValues(real* velo, unsigned int level, unsigned int colu
         velo[index] = values[level][column][index];
 }
 
-void BoundaryValues::initIndex(/*unsigned*/ int *ptr, unsigned int level)
+void BoundaryValues::initIndex(uint *ptr, unsigned int level)
 {
     for (std::size_t i = 0; i < indices[level].size(); i++)
         ptr[i] = indices[level][i];

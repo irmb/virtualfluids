@@ -94,24 +94,24 @@ protected:
     uint reorderSendIndicesForCommAfterFtoC(ProcessNeighbor27& sendNeighbor, int direction,
                                             int level, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
     //! \brief Check if a sparse index occurs in the coarse nodes for the interpolation from fine to coarse
-    bool isSparseIndexInCoarseIndexForFtoC(uint numberOfCoarseNodesForFtoC, int sparseIndexSend, int level) const;
+    bool isSparseIndexInCoarseIndexForFtoC(uint numberOfCoarseNodesForFtoC, uint sparseIndexSend, int level) const;
     //! \brief Aggregate all nodes in the coarse cells for the interpolation in coarse to fine
     //! \details For the coarse cells in the interpolation from coarse to fine only one node is stored. This methods
     //! looks for the other nodes of each cell and puts them into vector. Duplicate nodes are only stored once.
     void aggregateCoarseNodesForCtoF(int level, std::vector<uint> &nodesCFC) const;
     //! \brief Add index to sendIndicesAfterFtoC and sendIndicesForCommAfterFtoCPositions, but omit indices which are already in sendIndicesAfterFtoC
-    void addUniqueIndexToCommunicationVectors(std::vector<int> &sendIndicesAfterFtoC, int &sparseIndexSend,
+    void addUniqueIndexToCommunicationVectors(std::vector<uint> &sendIndicesAfterFtoC, uint &sparseIndexSend,
                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions,
                                               uint &posInSendIndices) const;
     //! \brief Find if a sparse index is a send index. If true, call addUniqueIndexToCommunicationVectors()
     void
-    findIfSparseIndexIsInSendIndicesAndAddToCommVectors(int sparseIndex, const int *sendIndices, uint numberOfSendIndices,
-                                                        std::vector<int> &sendIndicesAfterFtoC,
+    findIfSparseIndexIsInSendIndicesAndAddToCommVectors(uint sparseIndex, const uint *sendIndices, uint numberOfSendIndices,
+                                                        std::vector<uint> &sendIndicesAfterFtoC,
                                                         std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
     //! \brief Find all indices which are not part of the communication after the interpolation from fine to coarse
-    static void findIndicesNotInCommAfterFtoC(const uint &numberOfSendOrRecvIndices, const int *sendOrReceiveIndices,
-                                              std::vector<int> &sendOrReceiveIndicesAfterFtoC,
-                                              std::vector<int> &sendOrIndicesOther);
+    static void findIndicesNotInCommAfterFtoC(const uint &numberOfSendOrRecvIndices, const uint *sendOrReceiveIndices,
+                                              std::vector<uint> &sendOrReceiveIndicesAfterFtoC,
+                                              std::vector<uint> &sendOrIndicesOther);
 
     //! \brief Reorder the receive indices in the same way that the send indices were reordered.
     //! \details When the send indices are reordered, the receive indices need to be reordered accordingly.

@@ -135,9 +135,9 @@ uint IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
         VF_LOG_CRITICAL("reorderSendIndicesForCommAfterFtoC(): para->getParH(level)->intCF needs to be initialized "
                         "before calling this function");
 
-    int sparseIndexSend;
-    std::vector<int> sendIndicesAfterFtoC;
-    std::vector<int> sendIndicesOther;
+    uint sparseIndexSend;
+    std::vector<uint> sendIndicesAfterFtoC;
+    std::vector<uint> sendIndicesOther;
     uint numberOfSendIndices = builder->getNumberOfSendIndices(direction, level);
 
     // coarse cells of interpolation fine to coarse (iCellFCC)
@@ -177,11 +177,9 @@ uint IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
     return numberOfNodes;
 }
 
-bool IndexRearrangementForStreams::isSparseIndexInCoarseIndexForFtoC(uint numberOfCoarseNodesForFtoC, int sparseIndex, int level) const
+bool IndexRearrangementForStreams::isSparseIndexInCoarseIndexForFtoC(uint numberOfCoarseNodesForFtoC, uint sparseIndex, int level) const
 {
     for (uint j = 0; j < numberOfCoarseNodesForFtoC; j++) {
-        if (sparseIndex < 0)
-            return false;
         if (para->getParH(level)->fineToCoarse.coarseCellIndices[j] == (uint)sparseIndex) {
             return true;
         }
@@ -215,7 +213,7 @@ void IndexRearrangementForStreams::aggregateCoarseNodesForCtoF(int level, std::v
 }
 
 void IndexRearrangementForStreams::addUniqueIndexToCommunicationVectors(
-    std::vector<int> &sendIndicesAfterFtoC, int &sparseIndexSend,
+    std::vector<uint> &sendIndicesAfterFtoC, uint &sparseIndexSend,
     std::vector<uint> &sendIndicesForCommAfterFtoCPositions, uint &posInSendIndices) const
 {
     // add index to corresponding vectors, but omit indices which are already in sendIndicesAfterFtoC
@@ -227,10 +225,10 @@ void IndexRearrangementForStreams::addUniqueIndexToCommunicationVectors(
 }
 
 void IndexRearrangementForStreams::findIfSparseIndexIsInSendIndicesAndAddToCommVectors(
-    int sparseIndex, const int *sendIndices, uint numberOfSendIndices, std::vector<int> &sendIndicesAfterFtoC,
+    uint sparseIndex, const uint *sendIndices, uint numberOfSendIndices, std::vector<uint> &sendIndicesAfterFtoC,
     std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const
 {
-    int sparseIndexSend;
+    uint sparseIndexSend;
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
         sparseIndexSend = sendIndices[posInSendIndices];
         if (sparseIndex == sparseIndexSend) {
@@ -242,9 +240,9 @@ void IndexRearrangementForStreams::findIfSparseIndexIsInSendIndicesAndAddToCommV
 }
 
 void IndexRearrangementForStreams::findIndicesNotInCommAfterFtoC(const uint &numberOfSendOrRecvIndices,
-                                                                 const int *sendOrReceiveIndices,
-                                                                 std::vector<int> &sendOrReceiveIndicesAfterFtoC,
-                                                                 std::vector<int> &sendOrIndicesOther)
+                                                                 const uint *sendOrReceiveIndices,
+                                                                 std::vector<uint> &sendOrReceiveIndicesAfterFtoC,
+                                                                 std::vector<uint> &sendOrIndicesOther)
 {
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendOrRecvIndices; posInSendIndices++) {
         const int sparseIndexSend = sendOrReceiveIndices[posInSendIndices];
@@ -265,8 +263,8 @@ uint IndexRearrangementForStreams::reorderRecvIndicesForCommAfterFtoC(
         VF_LOG_WARNING("ReorderRecvIndicesForCommAfterFtoC(): sendIndicesForCommAfterFtoCPositions is empty.");
 
     uint numberOfRecvIndices = builder->getNumberOfReceiveIndices(direction, level);
-    std::vector<int> recvIndicesAfterFtoC;
-    std::vector<int> recvIndicesOther;
+    std::vector<uint> recvIndicesAfterFtoC;
+    std::vector<uint> recvIndicesOther;
 
     // find recvIndices for Communication after fine to coarse
     for (uint vectorPos : sendIndicesForCommAfterFtoCPositions)

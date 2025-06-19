@@ -227,12 +227,12 @@ struct LBMSimulationParameter {
     ////////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition: position (index in array) of corner nodes in ProcessNeighbor27
     struct EdgeNodePositions {
-        int indexOfProcessNeighborRecv;
-        int indexInRecvBuffer;
-        int indexOfProcessNeighborSend;
-        int indexInSendBuffer;
-        EdgeNodePositions(int indexOfProcessNeighborRecv, int indexInRecvBuffer, int indexOfProcessNeighborSend,
-                          int indexInSendBuffer)
+        uint indexOfProcessNeighborRecv;
+        uint indexInRecvBuffer;
+        uint indexOfProcessNeighborSend;
+        uint indexInSendBuffer;
+        EdgeNodePositions(uint indexOfProcessNeighborRecv, uint indexInRecvBuffer, uint indexOfProcessNeighborSend,
+                          uint indexInSendBuffer)
             : indexOfProcessNeighborRecv(indexOfProcessNeighborRecv), indexInRecvBuffer(indexInRecvBuffer),
               indexOfProcessNeighborSend(indexOfProcessNeighborSend), indexInSendBuffer(indexInSendBuffer)
         {

@@ -85,11 +85,11 @@ public:
         return 0;
     }
 
-    void getSendIndices(int *sendIndices, int direction, int level) override
+    void getSendIndices(uint *sendIndices, int direction, int level) override
     {
     }
 
-    void getReceiveIndices(int *sendIndices, int direction, int level) override
+    void getReceiveIndices(uint *recvIndices, int direction, int level) override
     {
     }
 };

@@ -111,14 +111,14 @@ void writeEdgeNodesXZ_Recv(SPtr<Parameter> para, int processID = 0)
 
     int nodeCount = 0;
     for (int level = 0; level < para->getMaxLevel(); level++) {
-        for (int u = 0; u < numberOfNodes; u++) {
-            int indexOfProcessNeighborRecv = para->getParH(level)->edgeNodesXtoZ[u].indexOfProcessNeighborRecv;
-            int indexInRecvBuffer = para->getParH(level)->edgeNodesXtoZ[u].indexInRecvBuffer;
-            int sparseIndex = para->getParH(level)->recvProcessNeighborsX[indexOfProcessNeighborRecv].index[indexInRecvBuffer];
+        for (uint u = 0; u < numberOfNodes; u++) {
+            uint indexOfProcessNeighborRecv = para->getParH(level)->edgeNodesXtoZ[u].indexOfProcessNeighborRecv;
+            uint indexInRecvBuffer = para->getParH(level)->edgeNodesXtoZ[u].indexInRecvBuffer;
+            uint sparseIndex = para->getParH(level)->recvProcessNeighborsX[indexOfProcessNeighborRecv].index[indexInRecvBuffer];
             nodedata[0][nodeCount] = sparseIndex;
             nodedata[1][nodeCount] = indexOfProcessNeighborRecv;
             nodedata[2][nodeCount] = indexInRecvBuffer;
-            nodedata[3][nodeCount] = double(indexInRecvBuffer < int(para->getParH(level)->recvProcessNeighborsX[indexOfProcessNeighborRecv].numberOfNodes));
+            nodedata[3][nodeCount] = double(indexInRecvBuffer < para->getParH(level)->recvProcessNeighborsX[indexOfProcessNeighborRecv].numberOfNodes);
 
             addCoordinatesToNodeVector(para->getParH(level), nodesVec, nodeCount, sparseIndex);
 

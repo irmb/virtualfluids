@@ -53,9 +53,9 @@ class Communicator;
 // functions used for all directions
 
 //! \brief Collect the send nodes in a buffer on the gpu
-void collectNodesInSendBufferGPU(Parameter* para, int level, CudaStreamIndex streamIndex, std::vector<ProcessNeighbor27>& sendProcessNeighbor);
+void collectNodesInSendBufferGPU(Parameter* para, int level, CudaStreamIndex streamIndex, std::vector<ProcessNeighbor27>& sendProcessNeighborsDevice);
 //! \brief Distribute the receive nodes from the buffer on the gpu
-void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex streamIndex, std::vector<ProcessNeighbor27>& sendProcessNeighbor);
+void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex streamIndex, std::vector<ProcessNeighbor27>& recvProcessNeighborsDevice);
 //! \brief Copy nodes which are part of the communication in multiple directions
 //! \details The nodes are copied from the receive buffer in one direction to the send buffer in another direction. The
 //! copy operation is conducted on the cpu.
@@ -66,8 +66,8 @@ void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex s
 //! \param recvProcessNeighborHost is a reference to the receive buffer on the host, nodes are copied from here
 //! \param sendProcessNeighborHost is a reference to the send buffer on the host, nodes are copied to here
 void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeNodes,
-                   std::vector<ProcessNeighbor27>& recvProcessNeighborHost,
-                   std::vector<ProcessNeighbor27>& sendProcessNeighborHost);
+                   std::vector<ProcessNeighbor27>& recvProcessNeighborsHost,
+                   std::vector<ProcessNeighbor27>& sendProcessNeighborsHost);
 //! \brief Exchange routine for simulations on multiple gpus
 //! \details Send and receive the nodes from the communication buffers on the gpus.
 //! \param Communicator is needed for the communication between the processes with mpi
@@ -76,10 +76,10 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeN
 //! send and receive arrays, both on the device and the host
 void exchangeCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
                            CudaStreamIndex streamIndex, 
-                           std::vector<ProcessNeighbor27>& sendProcessNeighborDev,
-                           std::vector<ProcessNeighbor27>& recvProcessNeighborDev,
-                           std::vector<ProcessNeighbor27>& sendProcessNeighborHost,
-                           std::vector<ProcessNeighbor27>& recvProcessNeighborHost);
+                           std::vector<ProcessNeighbor27>& sendProcessNeighborsDevice,
+                           std::vector<ProcessNeighbor27>& recvProcessNeighborsDevice,
+                           std::vector<ProcessNeighbor27>& sendProcessNeighborsHost,
+                           std::vector<ProcessNeighbor27>& recvProcessNeighborsHost);
 //////////////////////////////////////////////////////////////////////////
 // x
 

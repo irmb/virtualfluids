@@ -209,7 +209,7 @@ struct ProcessNeighbor27
    real* f[27];
    real* fAD[27];
    size_t memsizeFs;
-   int* index;
+   uint* index;
    size_t memsizeIndex;
    uint rankNeighbor;
    uint numberOfNodes;

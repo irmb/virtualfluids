@@ -166,8 +166,8 @@ public:
 
     virtual uint getNumberOfSendIndices(int direction, uint level)             = 0;
     virtual uint getNumberOfReceiveIndices(int direction, uint level)          = 0;
-    virtual void getSendIndices(int *sendIndices, int direction, int level)    = 0;
-    virtual void getReceiveIndices(int *sendIndices, int direction, int level) = 0;
+    virtual void getSendIndices(uint *sendIndices, int direction, int level)    = 0;
+    virtual void getReceiveIndices(uint *sendIndices, int direction, int level) = 0;
 
     virtual void findFluidNodes(bool splitDomain) = 0;
 

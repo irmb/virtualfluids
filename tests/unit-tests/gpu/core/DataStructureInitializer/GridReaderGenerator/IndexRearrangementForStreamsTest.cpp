@@ -123,7 +123,7 @@ using namespace index_rearrangement_tests;
 
 struct SendIndicesForCommAfterFtoCX {
     // data to work on
-    std::vector<int> sendIndices = { 10, 11, 12, 13, 14, 15, 16 };
+    std::vector<uint> sendIndices = { 10, 11, 12, 13, 14, 15, 16 };
     const int level = 0;
     const int direction = communication_directions::MX;
     const int numberOfProcessNeighbors = 1;
@@ -142,7 +142,7 @@ struct SendIndicesForCommAfterFtoCX {
 
     // expected data
     const std::vector<uint> sendIndicesForCommAfterFtoCPositions_expected = { 4, 6, 0, 2 };
-    const std::vector<int> sendProcessNeighborX_expected = { 14, 16, 10, 12, 11, 13, 15 };
+    const std::vector<uint> sendProcessNeighborX_expected = { 14, 16, 10, 12, 11, 13, 15 };
     const int numberOfSendNodesAfterFtoC_expected = (int)sendIndicesForCommAfterFtoCPositions_expected.size();
 };
 
@@ -354,7 +354,7 @@ TEST_F(IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoC, recvInd
 
 struct RecvIndicesForCommAfterFtoC {
     // data to work on
-    std::vector<int> recvIndices = { 10, 11, 12, 13, 14, 15, 16 };
+    std::vector<uint> recvIndices = { 10, 11, 12, 13, 14, 15, 16 };
     std::vector<uint> sendIndicesForCommAfterFtoCPositions = {};
     const int level = 0;
     const int direction = communication_directions::MX;
@@ -404,7 +404,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndices, noSendIndicesForComm
 {
     ri.sendIndicesForCommAfterFtoCPositions = {};
     auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
-    std::vector<int> recvIndices_expected = { 10, 11, 12, 13, 14, 15, 16 };
+    std::vector<uint> recvIndices_expected = { 10, 11, 12, 13, 14, 15, 16 };
 
     act();
     EXPECT_THAT(ri.numberOfRecvNodesAfterFtoC, testing::Eq(numberOfRecvNodesAfterFtoC_expected));
@@ -415,7 +415,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndices, someSendIndicesForCo
 {
     ri.sendIndicesForCommAfterFtoCPositions = { 0, 2, 4, 6 };
     auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
-    std::vector<int> recvIndices_expected = { 10, 12, 14, 16, 11, 13, 15 };
+    std::vector<uint> recvIndices_expected = { 10, 12, 14, 16, 11, 13, 15 };
 
     act();
     EXPECT_THAT(ri.numberOfRecvNodesAfterFtoC, testing::Eq(numberOfRecvNodesAfterFtoC_expected));
@@ -426,7 +426,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndices, allIndicesAreSendInd
 {
     ri.sendIndicesForCommAfterFtoCPositions = { 0, 1, 2, 3, 4, 5, 6 };
     auto numberOfRecvNodesAfterFtoC_expected = ri.sendIndicesForCommAfterFtoCPositions.size();
-    std::vector<int> recvIndices_expected = { 10, 11, 12, 13, 14, 15, 16 };
+    std::vector<uint> recvIndices_expected = { 10, 11, 12, 13, 14, 15, 16 };
 
     act();
     EXPECT_THAT(ri.numberOfRecvNodesAfterFtoC, testing::Eq(numberOfRecvNodesAfterFtoC_expected));
