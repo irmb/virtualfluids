@@ -738,7 +738,7 @@ void writeInterfaceCFC_Recv(Parameter *para, int processID = 0)
 
 void addToNodesVector(const int level, const uint pos, std::vector<UbTupleFloat3> &nodesVec, Parameter *para)
 {
-    nodesVec.push_back(makeUbTuple(para->getParH(level)->coordinateX[pos], para->getParH(level)->coordinateY[pos], para->getParH(level)->coordinateZ[pos]));
+    nodesVec.push_back(makeUbTuple(float(para->getParH(level)->coordinateX[pos]), float(para->getParH(level)->coordinateY[pos]), float(para->getParH(level)->coordinateZ[pos])));
 }
 
 void writeSendNodesStream(Parameter *para, int processID = 0)
