@@ -91,7 +91,7 @@ void findEdgeNodes(const std::vector<ProcessNeighbor27> &recvProcessNeighbor,
 }
 
 std::optional<std::pair<uint, uint>> findIndexInSendNodes(const uint nodeIndex,
-                                                        const std::vector<ProcessNeighbor27> &sendProcessNeighbor)
+                                                          const std::vector<ProcessNeighbor27> &sendProcessNeighbor)
 {
     for (uint neighbor = 0; neighbor < uint(sendProcessNeighbor.size()); neighbor++) {
         for (uint node = 0; node < sendProcessNeighbor[neighbor].numberOfNodes; node++) {
