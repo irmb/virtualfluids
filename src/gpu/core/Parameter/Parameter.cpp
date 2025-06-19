@@ -152,12 +152,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Diffusivity"))
         this->setDiffusivity(configData.getValue<real>("Diffusivity"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("Concentration"))
-        this->setConcentrationInit(configData.getValue<real>("Concentration"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("ConcentrationBC"))
-        this->setConcentrationBC(configData.getValue<real>("ConcentrationBC"));
 
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Viscosity_LB"))
@@ -463,6 +457,8 @@ void Parameter::setDiffOn(bool isDiff)
 void Parameter::setBuoyancyEnabled(bool buoyancyEnabled)
 {
     this->buoyancyEnabled = buoyancyEnabled;
+    if(!this->isBodyForce)
+        VF_LOG_WARNING("Need to enable body force for buoyancy!");
 }
 void Parameter::setD3Qxx(int d3qxx)
 {
@@ -550,14 +546,7 @@ void Parameter::setDiffusivity(real Diffusivity)
 {
     this->Diffusivity = Diffusivity;
 }
-void Parameter::setConcentrationInit(real concentrationInit)
-{
-    this->concentrationInit = concentrationInit;
-}
-void Parameter::setConcentrationBC(real concentrationBC)
-{
-    this->concentrationBC = concentrationBC;
-}
+
 void Parameter::setViscosityLB(real Viscosity)
 {
     this->vis = Viscosity;
@@ -780,22 +769,6 @@ void Parameter::setMaxCoordY(std::vector<real> MaxCoordY)
 void Parameter::setMaxCoordZ(std::vector<real> MaxCoordZ)
 {
     this->maxCoordZ = MaxCoordZ;
-}
-void Parameter::setConcentrationNoSlipBCHost(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost)
-{
-    this->concentrationNoSlipBCHost = concentrationNoSlipBCHost;
-}
-void Parameter::setConcentrationNoSlipBCDevice(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCDevice)
-{
-    this->concentrationNoSlipBCDevice = concentrationNoSlipBCDevice;
-}
-void Parameter::setConcentrationDirichletBCHost(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost)
-{
-    this->concentrationDirichletBCHost = concentrationDirichletBCHost;
-}
-void Parameter::setConcentrationDirichletBCDevice(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCDevice)
-{
-    this->concentrationDirichletBCDevice = concentrationDirichletBCDevice;
 }
 void Parameter::setgeoVec(std::string geoVec)
 {
@@ -1424,14 +1397,6 @@ real Parameter::getDiffusivity()
 {
     return this->Diffusivity;
 }
-real Parameter::getConcentrationInit()
-{
-    return this->concentrationInit;
-}
-real Parameter::getConcentrationBC()
-{
-    return this->concentrationBC;
-}
 real Parameter::getViscosity() const
 {
     return this->vis;
@@ -1527,22 +1492,6 @@ std::vector<real> Parameter::getMaxCoordY()
 std::vector<real> Parameter::getMaxCoordZ()
 {
     return this->maxCoordZ;
-}
-AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCHost()
-{
-    return this->concentrationNoSlipBCHost;
-}
-AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCDevice()
-{
-    return this->concentrationNoSlipBCDevice;
-}
-AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCHost()
-{
-    return this->concentrationDirichletBCHost;
-}
-AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCDevice()
-{
-    return this->concentrationDirichletBCDevice;
 }
 std::string Parameter::getgeoVec()
 {

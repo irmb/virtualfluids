@@ -1853,73 +1853,229 @@ void CudaMemoryManager::cudaFreeLocalReferenceTemperature(int lev)
     checkCudaErrors(cudaFreeHost(parameter->getParH(lev)->localReferenceTemperature));
     checkCudaErrors(cudaFree(parameter->getParD(lev)->localReferenceTemperature));
 }
-
-void CudaMemoryManager::cudaAllocConcentrationDirichletBC(int lev)
+//////////////////////////////////////////////////////////////////////////
+void CudaMemoryManager::cudaAllocConcentrationNoFluxBC(int lev)
 {
-    unsigned int mem_size_TempVel_k = sizeof(int)*parameter->getParH(lev)->AdvectionDiffusionDirichletBC.numberOfBcNodes;
-    unsigned int mem_size_TempVel_q = sizeof(real)*parameter->getParH(lev)->AdvectionDiffusionDirichletBC.numberOfBcNodes;
+    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNoFluxBC;
+    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNoFluxBC;
+    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
+    const size_t memSizeReal = sizeof(real) * bcParamsH->numberOfBCnodes;
 
-    printf("mem_size_TempVel_k = %d,  mem_size_TempVel_q = %d \n", mem_size_TempVel_k, mem_size_TempVel_q);
     // Host Memory
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentration,   mem_size_TempVel_q ));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentrationBC, mem_size_TempVel_q ));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->AdvectionDiffusionDirichletBC.k,               mem_size_TempVel_k ));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->BCNodeIndices, memSizeInt));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal));
 
     // Device Memory
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->AdvectionDiffusionDirichletBC.concentration,   mem_size_TempVel_q));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->AdvectionDiffusionDirichletBC.concentrationBC, mem_size_TempVel_q));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->AdvectionDiffusionDirichletBC.k,               mem_size_TempVel_k));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->BCNodeIndices, memSizeInt));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
+    
     //////////////////////////////////////////////////////////////////////////
-    double tmp = (double)(3.0 * mem_size_TempVel_q) + (double)(mem_size_TempVel_k);
+    double tmp = double(parameter->getD3Qxx()*memSizeReal+memSizeInt);
+    setMemsizeGPU(tmp, false);
+}
+void CudaMemoryManager::cudaCopyConcentrationNoFluxBCHostToDevice(int lev)
+{
+    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNoFluxBC;
+    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNoFluxBC;
+    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
+    const size_t memSizeReal = sizeof(int) * bcParamsH->numberOfBCnodes;
+
+    checkCudaErrors(cudaMemcpy(bcParamsD->BCNodeIndices, bcParamsH->BCNodeIndices, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->q27[0], bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal, cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaFreeConcentrationNoFluxBC(int lev)
+{
+    const auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNoFluxBC;
+    const auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNoFluxBC;
+    checkCudaErrors(cudaFreeHost(bcParamsH->BCNodeIndices));
+    checkCudaErrors(cudaFreeHost(bcParamsH->q27[0]));
+    checkCudaErrors(cudaFree(bcParamsD->BCNodeIndices));
+    checkCudaErrors(cudaFree(bcParamsD->q27[0]));
+}
+//////////////////////////////////////////////////////////////////////////
+void CudaMemoryManager::cudaAllocConcentrationFluxBC(int lev)
+{
+    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionFluxBC;
+    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionFluxBC;
+    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
+    const size_t memSizeReal = sizeof(real) * bcParamsH->numberOfBCnodes;
+
+    // Host Memory
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->BCNodeIndices, memSizeInt));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->normalX, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->normalY, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->normalZ, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->gradient, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal));
+
+    // Device Memory
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->BCNodeIndices, memSizeInt));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsD->normalX, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsD->normalY, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsD->normalZ, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsD->gradient, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
+    
+    //////////////////////////////////////////////////////////////////////////
+    double tmp = double((parameter->getD3Qxx()+4)*memSizeReal+memSizeInt);
+    setMemsizeGPU(tmp, false);
+}
+void CudaMemoryManager::cudaCopyConcentrationFluxBCHostToDevice(int lev)
+{
+    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionFluxBC;
+    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionFluxBC;
+    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
+    const size_t memSizeReal = sizeof(int) * bcParamsH->numberOfBCnodes;
+
+    checkCudaErrors(cudaMemcpy(bcParamsD->BCNodeIndices, bcParamsH->BCNodeIndices, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->normalX, bcParamsH->normalX, memSizeReal, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->normalY, bcParamsH->normalY, memSizeReal, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->normalZ, bcParamsH->normalZ, memSizeReal, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->gradient, bcParamsH->gradient, memSizeReal, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->q27[0], bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal, cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaFreeConcentrationFluxBC(int lev)
+{
+    const auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionFluxBC;
+    const auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionFluxBC;
+    checkCudaErrors(cudaFreeHost(bcParamsH->BCNodeIndices));
+    checkCudaErrors(cudaFreeHost(bcParamsH->normalX));
+    checkCudaErrors(cudaFreeHost(bcParamsH->normalY));
+    checkCudaErrors(cudaFreeHost(bcParamsH->normalZ));
+    checkCudaErrors(cudaFreeHost(bcParamsH->gradient));
+    checkCudaErrors(cudaFreeHost(bcParamsH->q27[0]));
+
+    checkCudaErrors(cudaFree(bcParamsD->BCNodeIndices));
+    checkCudaErrors(cudaFree(bcParamsD->normalX));
+    checkCudaErrors(cudaFree(bcParamsD->normalY));
+    checkCudaErrors(cudaFree(bcParamsD->normalZ));
+    checkCudaErrors(cudaFree(bcParamsD->gradient));
+    checkCudaErrors(cudaFree(bcParamsD->q27[0]));
+}
+void CudaMemoryManager::cudaAllocConcentrationDirichletBC(int lev)
+{
+    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionDirichletBC;
+    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionDirichletBC;
+    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
+    const size_t memSizeReal = sizeof(real) * bcParamsH->numberOfBCnodes;
+
+    // Host Memory
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->concentration, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vx, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vy, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vz, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->BCNodeIndices, memSizeInt));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal));
+
+    // Device Memory
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->concentration, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vx, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vy, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vz, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->BCNodeIndices, memSizeInt));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
+
+    //////////////////////////////////////////////////////////////////////////
+    double tmp = double((parameter->getD3Qxx()+4)*memSizeReal + memSizeInt);
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyConcentrationDirichletBCHostToDevice(int lev)
 {
-    unsigned int mem_size_TempVel_k = sizeof(int)*parameter->getParH(lev)->AdvectionDiffusionDirichletBC.numberOfBcNodes;
-    unsigned int mem_size_TempVel_q = sizeof(real)*parameter->getParH(lev)->AdvectionDiffusionDirichletBC.numberOfBcNodes;
+    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionDirichletBC;
+    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionDirichletBC;
+    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
+    const size_t memSizeReal = sizeof(real) * bcParamsH->numberOfBCnodes;
 
-    printf("mem_size_TempVel_k = %d,  mem_size_TempVel_q = %d \n", mem_size_TempVel_k, mem_size_TempVel_q);
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->AdvectionDiffusionDirichletBC.concentration,   parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentration,   mem_size_TempVel_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->AdvectionDiffusionDirichletBC.concentrationBC, parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentrationBC, mem_size_TempVel_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->AdvectionDiffusionDirichletBC.k,               parameter->getParH(lev)->AdvectionDiffusionDirichletBC.k,               mem_size_TempVel_k,  cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->concentration, bcParamsH->concentration, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vx, bcParamsH->vx, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vy, bcParamsH->vy, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vz, bcParamsH->vz, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->q27[0], bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->BCNodeIndices, bcParamsH->BCNodeIndices, memSizeReal, cudaMemcpyHostToDevice));
 }
 void CudaMemoryManager::cudaFreeConcentrationDirichletBC(int lev)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentration     ));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->AdvectionDiffusionDirichletBC.concentrationBC));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->AdvectionDiffusionDirichletBC.k        ));
+    auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionDirichletBC;
+    auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionDirichletBC;
+
+    checkCudaErrors(cudaFreeHost(bcParamsH->concentration));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vx));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vy));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vz));
+    checkCudaErrors(cudaFreeHost(bcParamsH->q27[0]));
+    checkCudaErrors(cudaFreeHost(bcParamsH->BCNodeIndices));
+    
+    checkCudaErrors(cudaFree(bcParamsD->concentration));
+    checkCudaErrors(cudaFree(bcParamsD->vx));
+    checkCudaErrors(cudaFree(bcParamsD->vy));
+    checkCudaErrors(cudaFree(bcParamsD->vz));
+    checkCudaErrors(cudaFree(bcParamsD->q27[0]));
+    checkCudaErrors(cudaFree(bcParamsD->BCNodeIndices));
 }
 //////////////////////////////////////////////////////////////////////////
-void CudaMemoryManager::cudaAllocConcentrationNoSlipBC(int lev)
+
+void CudaMemoryManager::cudaAllocConcentrationNeumannBC(int lev)
 {
-    unsigned int mem_size_Temp_k = sizeof(int)*parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.numberOfBcNodes;
-    unsigned int mem_size_Temp_q = sizeof(real)*parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.numberOfBcNodes;
+    const auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNeumannBC;
+    const auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNeumannBC;
+    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
+    const size_t memSizeReal = sizeof(real) * bcParamsH->numberOfBCnodes;
 
     // Host Memory
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration, mem_size_Temp_q ));
-    checkCudaErrors( cudaMallocHost((void**) &parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.k,             mem_size_Temp_k ));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->gradient, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vx, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vy, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->vz, memSizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->BCNodeIndices, memSizeInt));
+    checkCudaErrors(cudaMallocHost((void**)&bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal));
 
     // Device Memory
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->AdvectionDiffusionNoSlipBC.concentration, mem_size_Temp_q));
-    checkCudaErrors( cudaMalloc((void**) &parameter->getParD(lev)->AdvectionDiffusionNoSlipBC.k,             mem_size_Temp_k));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->gradient, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vx, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vy, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->vz, memSizeReal));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->BCNodeIndices, memSizeInt));
+    checkCudaErrors(cudaMalloc((void**)&bcParamsD->q27[0], parameter->getD3Qxx()*memSizeReal));
+
     //////////////////////////////////////////////////////////////////////////
-    double tmp = (double)(mem_size_Temp_q) + (double)(mem_size_Temp_k);
+    double tmp = double((parameter->getD3Qxx()+4)*memSizeReal + memSizeInt);
     setMemsizeGPU(tmp, false);
 }
-void CudaMemoryManager::cudaCopyConcentrationNoSlipBCHD(int lev)
+void CudaMemoryManager::cudaCopyConcentrationNeumannBCHostToDevice(int lev)
 {
-    unsigned int mem_size_Temp_k = sizeof(int)*parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.numberOfBcNodes;
-    unsigned int mem_size_Temp_q = sizeof(real)*parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.numberOfBcNodes;
+    const auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNeumannBC;
+    const auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNeumannBC;
+    const size_t memSizeInt = sizeof(int) * bcParamsH->numberOfBCnodes;
+    const size_t memSizeReal = sizeof(real) * bcParamsH->numberOfBCnodes;
 
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->AdvectionDiffusionNoSlipBC.concentration, parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration, mem_size_Temp_q,  cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->AdvectionDiffusionNoSlipBC.k,             parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.k,             mem_size_Temp_k,  cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->gradient, bcParamsH->gradient, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vx, bcParamsH->vx, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vy, bcParamsH->vy, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->vz, bcParamsH->vz, memSizeInt, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->q27[0], bcParamsH->q27[0], parameter->getD3Qxx()*memSizeReal, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(bcParamsD->BCNodeIndices, bcParamsH->BCNodeIndices, memSizeReal, cudaMemcpyHostToDevice));
 }
-void CudaMemoryManager::cudaFreeConcentrationNoSlipBC(int lev)
+void CudaMemoryManager::cudaFreeConcentrationNeumannBC(int lev)
 {
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->AdvectionDiffusionNoSlipBC.k   ));
+    const auto* bcParamsH = &parameter->getParH(lev)->AdvectionDiffusionNeumannBC;
+    const auto* bcParamsD = &parameter->getParD(lev)->AdvectionDiffusionNeumannBC;
+
+    checkCudaErrors(cudaFreeHost(bcParamsH->gradient));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vx));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vy));
+    checkCudaErrors(cudaFreeHost(bcParamsH->vz));
+    checkCudaErrors(cudaFreeHost(bcParamsH->q27[0]));
+    checkCudaErrors(cudaFreeHost(bcParamsH->BCNodeIndices));
+    
+    checkCudaErrors(cudaFree(bcParamsD->gradient));
+    checkCudaErrors(cudaFree(bcParamsD->vx));
+    checkCudaErrors(cudaFree(bcParamsD->vy));
+    checkCudaErrors(cudaFree(bcParamsD->vz));
+    checkCudaErrors(cudaFree(bcParamsD->q27[0]));
+    checkCudaErrors(cudaFree(bcParamsD->BCNodeIndices));
 }
 //////////////////////////////////////////////////////////////////////////
+
 void CudaMemoryManager::cudaAllocMeanOutAD(int lev)
 {
     //Host

@@ -57,6 +57,8 @@ static constexpr char BC_NOSLIP  = 24;
 static constexpr char BC_OUTFLOW = 25;
 static constexpr char BC_STRESS   = 26;
 
+static constexpr char BC_AD = 28;
+
 static constexpr char STOPPER_OUT_OF_GRID          = 30;
 static constexpr char STOPPER_COARSE_UNDER_FINE    = 31;
 static constexpr char STOPPER_SOLID                = 32;

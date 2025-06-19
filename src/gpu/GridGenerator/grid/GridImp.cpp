@@ -2227,16 +2227,24 @@ void GridImp::addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndices
     std::copy(_fluidNodeIndicesAllFeatures.begin(), _fluidNodeIndicesAllFeatures.end(), std::back_inserter(this->fluidNodeIndicesAllFeatures));
 }
 
+void GridImp::addAllFluidNodeIndicesToAllFeatures()
+{
+    this->fluidNodeIndicesAllFeatures.clear();
+    this->fluidNodeIndicesApplyBodyForce.clear();
+    this->fluidNodeIndicesMacroVars.clear();
+    this->fluidNodeIndicesAllFeatures.swap(this->fluidNodeIndices);
+}
+
 void GridImp::sortFluidNodeIndicesMacroVars()
 {
-    if(this->fluidNodeIndicesMacroVars.size()>0)
+    if(!this->fluidNodeIndicesMacroVars.empty())
     {
         sort(this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end());
         // Remove duplicates
         this->fluidNodeIndicesMacroVars.erase( unique( this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end() ), this->fluidNodeIndicesMacroVars.end() );
 
          // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndicesMacroVars
-        if(this->fluidNodeIndicesAllFeatures.size()>0)
+        if(!this->fluidNodeIndicesAllFeatures.empty())
         {
             this->fluidNodeIndicesMacroVars.erase(   std::remove_if(   this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end(),
                                                     [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
@@ -2244,7 +2252,7 @@ void GridImp::sortFluidNodeIndicesMacroVars()
         }
 
         // Remove all indices in fluidNodeIndicesBorder from fluidNodeIndicesApplyBodyForce
-        if(this->fluidNodeIndicesBorder.size()>0)
+        if(!this->fluidNodeIndicesBorder.empty())
         {
             this->fluidNodeIndicesMacroVars.erase(  std::remove_if(   this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end(),
                                                     [&](auto x){return binary_search(fluidNodeIndicesBorder.begin(),fluidNodeIndicesBorder.end(),x);} ),
@@ -2260,14 +2268,14 @@ void GridImp::sortFluidNodeIndicesMacroVars()
 
 void GridImp::sortFluidNodeIndicesApplyBodyForce()
 {
-    if(this->fluidNodeIndicesApplyBodyForce.size()>0)
+    if(!this->fluidNodeIndicesApplyBodyForce.empty())
     {
         sort(this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end());
         // Remove duplicates
         this->fluidNodeIndicesApplyBodyForce.erase( unique( this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end() ), this->fluidNodeIndicesApplyBodyForce.end() );
 
          // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndicesApplyBodyForce
-        if(this->fluidNodeIndicesAllFeatures.size()>0)
+        if(!this->fluidNodeIndicesAllFeatures.empty())
         {
             this->fluidNodeIndicesApplyBodyForce.erase( std::remove_if(   this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end(),
                                                         [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
@@ -2275,7 +2283,7 @@ void GridImp::sortFluidNodeIndicesApplyBodyForce()
         }
 
         // Remove all indices in fluidNodeIndicesBorder from fluidNodeIndicesApplyBodyForce
-        if(this->fluidNodeIndicesBorder.size()>0)
+        if(!this->fluidNodeIndicesBorder.empty())
         {
             this->fluidNodeIndicesApplyBodyForce.erase( std::remove_if(   this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end(),
                                                         [&](auto x){return binary_search(fluidNodeIndicesBorder.begin(),fluidNodeIndicesBorder.end(),x);} ),
@@ -2291,14 +2299,14 @@ void GridImp::sortFluidNodeIndicesApplyBodyForce()
 
 void GridImp::sortFluidNodeIndicesAllFeatures()
 {
-    if(this->fluidNodeIndicesAllFeatures.size()>0)
+    if(!this->fluidNodeIndicesAllFeatures.empty())
     {
         sort(this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end());
         // Remove duplicates
         this->fluidNodeIndicesAllFeatures.erase( unique( this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end() ), this->fluidNodeIndicesAllFeatures.end() );
 
         // Remove all indices in fluidNodeIndicesBorder from fluidNodeIndicesAllFeatures
-        if(this->fluidNodeIndicesBorder.size()>0)
+        if(!this->fluidNodeIndicesBorder.empty())
         {
             this->fluidNodeIndicesAllFeatures.erase(    std::remove_if(   this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end(),
                                                         [&](auto x){return binary_search(fluidNodeIndicesBorder.begin(),fluidNodeIndicesBorder.end(),x);} ),
@@ -2345,6 +2353,15 @@ std::vector<SideType> GridImp::getBCAlreadySet() {
 void GridImp::addBCalreadySet(SideType side)
 {
     this->bcAlreadySet.push_back(side);
+}
+
+std::vector<SideType> GridImp::getADBCAlreadySet() {
+    return this->adBCAlreadySet;
+}
+
+void GridImp::addADBCalreadySet(SideType side)
+{
+    this->adBCAlreadySet.push_back(side);
 }
 
 

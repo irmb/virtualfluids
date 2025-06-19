@@ -124,6 +124,7 @@ private:
     bool enableFixRefinementIntoTheWall;
 
     std::vector<SideType> bcAlreadySet;
+    std::vector<SideType> adBCAlreadySet;
 
 protected:
     Field field;
@@ -184,6 +185,8 @@ public:
 
     std::vector<SideType> getBCAlreadySet() override;
     void addBCalreadySet(SideType side) override;
+    std::vector<SideType> getADBCAlreadySet() override;
+    void addADBCalreadySet(SideType side) override;
 
 public:
     Distribution distribution;
@@ -373,6 +376,8 @@ public:
     void addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars) override;
     void addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce) override;
     void addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) override;
+    void addAllFluidNodeIndicesToAllFeatures() override;
+
     void sortFluidNodeIndicesMacroVars() override;
     void sortFluidNodeIndicesApplyBodyForce() override;
     void sortFluidNodeIndicesAllFeatures() override;

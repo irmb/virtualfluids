@@ -58,15 +58,6 @@ public:
     //! \brief calculate the state of the next time step of the advection diffusion distributions
     void runADcollisionKernel(int level) const;
 
-    //! \brief calls the device function of the geometry boundary condition for advection diffusion
-    void runADgeometryBCKernel(int level) const;
-
-    //! \brief calls the device function of the velocity boundary condition for advection diffusion
-    void runADDirichletBCKernel(int level) const;
-
-    //! \brief calls the device function of the slip boundary condition for advection diffusion
-    void runADslipBCKernel(int level) const;
-
 private:
     SPtr<Parameter> para;
     std::vector<SPtr<AdvectionDiffusionKernel>> adkernels;
