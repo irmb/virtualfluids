@@ -46,7 +46,7 @@ class Probe;
 class PlanarAverageProbe;
 class VelocitySetter;
 class PrecursorWriter;
-class BuoyancyProvider;
+class BuoyancyProviderPlanarAverage;
 
 class CudaMemoryManager
 {
@@ -335,15 +335,17 @@ public:
     void cudaFreeSphereIndices(ActuatorFarm* actuatorFarm);
 
     // BuoyancyProvider
-    void cudaAllocBuoyancyProviderProfileParameters(BuoyancyProvider* buoyancyProvider, int level);
-    void cudaCopyBuoyancyProviderProfileParametersHtoD(BuoyancyProvider* buoyancyProvider, int level);
-    void cudaCopyBuoyancyProviderProfileParametersDtoH(BuoyancyProvider* buoyancyProvider, int level);
-    void cudaFreeBuoyancyProviderProfileParameters(BuoyancyProvider* buoyancyProvider, int level);
+    void cudaAllocBuoyancyProviderProfileParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderProfileParametersHtoD(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderProfileParametersDtoH(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaFreeBuoyancyProviderProfileParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderReferenceTemperaturesDtoHAsync(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderReferenceTemperaturesHtoDAsync(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
 
-    void cudaAllocBuoyancyProviderReductionParameters(BuoyancyProvider* buoyancyProvider, int level);
-    void cudaCopyBuoyancyProviderReductionParametersHtoD(BuoyancyProvider* buoyancyProvider, int level);
-    void cudaCopyBuoyancyProviderReductionParametersDtoH(BuoyancyProvider* buoyancyProvider, int level);
-    void cudaFreeBuoyancyProviderReductionParameters(BuoyancyProvider* buoyancyProvider, int level);
+    void cudaAllocBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderReductionParametersHtoD(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderReductionParametersDtoH(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaFreeBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
     // Probes
     void cudaAllocProbeData(Probe* probe, int level);
     void cudaCopyProbeDataHtoD(Probe* probe, int level);

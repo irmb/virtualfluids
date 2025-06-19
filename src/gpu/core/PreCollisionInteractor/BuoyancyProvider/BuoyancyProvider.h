@@ -43,18 +43,41 @@
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
 
-#include "gpu/core/Cuda/CudaMemoryManager.h"
-#include "gpu/core/PreCollisionInteractor/PreCollisionInteractor.h"
 #include "gpu/core/Parameter/Parameter.h"
+#include "gpu/core/PreCollisionInteractor/PreCollisionInteractor.h"
 
-class BuoyancyProvider : public PreCollisionInteractor
+class GridProvider;
+class CudaMemoryManager;
+
+class BuoyancyProviderConstantValue : public PreCollisionInteractor
 {
+
 public:
-    BuoyancyProvider(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager) : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
+    BuoyancyProviderConstantValue(std::shared_ptr<Parameter> parameter, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
+        : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
     {
         if (!para->getBuoyancyEnabled())
             throw std::runtime_error("BuoyancyProvider: buoyancy needs to be enabled in Parameter!");
     }
+    ~BuoyancyProviderConstantValue() override = default;
+
+    void init() override {};
+    void interact(int level, uint /**/) override;
+    void getTaggedFluidNodes(GridProvider* /**/) override {};
+};
+
+class BuoyancyProviderPlanarAverage : public PreCollisionInteractor
+{
+public:
+    BuoyancyProviderPlanarAverage(std::shared_ptr<Parameter> parameter,
+                                  std::shared_ptr<CudaMemoryManager> cudaMemoryManager);
+
+    ~BuoyancyProviderPlanarAverage() override;
+
+    void init() override;
+    void interact(int level, uint /**/) override;
+    void getTaggedFluidNodes(GridProvider* /**/) override {};
+
     struct ProfileParameters
     {
         uint numberOfPlanes;
@@ -76,68 +99,21 @@ public:
         }
     };
 
-    ReductionParameters* getReductionParameter(int level)
+    ProfileParameters& getProfileParameter(int level)
     {
-        return &reductionParameters[level];
+        return profileParameters[level];
     }
-    ProfileParameters* getProfileParameter(int level)
+    ReductionParameters& getReductionParameter(int level)
     {
-        return &profileParameters[level];
+        return reductionParameters[level];
     }
 
+private:
     void initializeProfileParameters();
-
-protected:
+    uint numberOfInitialReferenceValues;
+    int streamIndex;
     std::vector<ProfileParameters> profileParameters;
     std::vector<ReductionParameters> reductionParameters;
-};
-
-class BuoyancyProviderConstantValue : public BuoyancyProvider
-{
-
-public:
-    using BuoyancyProvider::BuoyancyProvider;
-    ~BuoyancyProviderConstantValue() override = default;
-
-    void init() override;
-    void interact(int level, uint t) override;
-    void getTaggedFluidNodes(GridProvider*) override {};
-
-private:
-    int streamIndex;
-};
-
-class BuoyancyProviderPlanarAverage : public BuoyancyProvider
-{
-public:
-    BuoyancyProviderPlanarAverage(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager);
-
-    ~BuoyancyProviderPlanarAverage() override;
-
-    void init() override;
-    void interact(int level, uint t) override;
-    void getTaggedFluidNodes(GridProvider* /**/) override {};
-
-private:
-    uint numberOfInitialReferenceValues;
-    int streamIndex;
-};
-
-class BuoyancyProviderPlanarAverageMultiGPU : public BuoyancyProvider
-{
-public:
-    BuoyancyProviderPlanarAverageMultiGPU(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager);
-
-    ~BuoyancyProviderPlanarAverageMultiGPU() override;
-
-    void init() override;
-    void interact(int level, uint t) override;
-    void getTaggedFluidNodes(GridProvider* /**/) override {};
-
-private:
-    uint numberOfInitialReferenceValues;
-    int streamIndex;
-    std::vector<std::vector<uint>> totalNumberOfNodesPerPlane;
 };
 
 #endif

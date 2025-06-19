@@ -2514,63 +2514,91 @@ void CudaMemoryManager::cudaCopySphereIndicesHtoD(ActuatorFarm* actuatorFarm)
 
 void CudaMemoryManager::cudaFreeSphereIndices(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaFreeHost(actuatorFarm->boundingSphereIndicesH) );
-    checkCudaErrors( cudaFree(actuatorFarm->boundingSphereIndicesD) );
+    checkCudaErrors(cudaFreeHost(actuatorFarm->boundingSphereIndicesH));
+    checkCudaErrors(cudaFree(actuatorFarm->boundingSphereIndicesD));
 }
-void CudaMemoryManager::cudaAllocBuoyancyProviderProfileParameters(BuoyancyProvider* buoyancyProvider, int level)
+void CudaMemoryManager::cudaAllocBuoyancyProviderProfileParameters(BuoyancyProviderPlanarAverage* buoyancyProvider,
+                                                                   int level)
 {
-    auto* profileParams = buoyancyProvider->getProfileParameter(level);
-    const size_t memSizeIndices = sizeof(size_t)*(profileParams->numberOfPlanes+1);
-    const size_t memSizeTemperature = sizeof(real)*profileParams->numberOfPlanes;
+    auto& profileParameters = buoyancyProvider->getProfileParameter(level);
+    const size_t memSizeIndices = sizeof(size_t) * (profileParameters.numberOfPlanes + 1);
+    const size_t memSizeTemperature = sizeof(real) * profileParameters.numberOfPlanes;
 
-    checkCudaErrors( cudaMalloc(&profileParams->indicesDevice, memSizeIndices));
-    checkCudaErrors( cudaMallocHost(&profileParams->indicesHost, memSizeIndices));
-    checkCudaErrors( cudaMalloc(&profileParams->referenceTemperaturesDevice, memSizeTemperature) );
-    checkCudaErrors( cudaMallocHost(&profileParams->referenceTemperaturesHost, memSizeTemperature) );
+    checkCudaErrors(cudaMalloc(&profileParameters.indicesDevice, memSizeIndices));
+    checkCudaErrors(cudaMallocHost(&profileParameters.indicesHost, memSizeIndices));
+    checkCudaErrors(cudaMalloc(&profileParameters.referenceTemperaturesDevice, memSizeTemperature));
+    checkCudaErrors(cudaMallocHost(&profileParameters.referenceTemperaturesHost, memSizeTemperature));
     setMemsizeGPU(memSizeIndices + memSizeTemperature, false);
 }
 
-void CudaMemoryManager::cudaCopyBuoyancyProviderProfileParametersHtoD(BuoyancyProvider* buoyancyProvider, int level)
+void CudaMemoryManager::cudaCopyBuoyancyProviderProfileParametersHtoD(BuoyancyProviderPlanarAverage* buoyancyProvider,
+                                                                      int level)
 {
-    auto* profileParams = buoyancyProvider->getProfileParameter(level);
-    checkCudaErrors( cudaMemcpy(profileParams->indicesDevice, profileParams->indicesHost, sizeof(size_t)*(profileParams->numberOfPlanes+1), cudaMemcpyHostToDevice) );
+    auto& profileParameters = buoyancyProvider->getProfileParameter(level);
+    checkCudaErrors(cudaMemcpy(profileParameters.indicesDevice, profileParameters.indicesHost,
+                               sizeof(size_t) * (profileParameters.numberOfPlanes + 1), cudaMemcpyHostToDevice));
 }
 
-void CudaMemoryManager::cudaFreeBuoyancyProviderProfileParameters(BuoyancyProvider* buoyancyProvider, int level)
+void CudaMemoryManager::cudaCopyBuoyancyProviderReferenceTemperaturesDtoHAsync(
+    BuoyancyProviderPlanarAverage* buoyancyProvider, int level)
 {
-    auto* profileParams = buoyancyProvider->getProfileParameter(level);
-    checkCudaErrors( cudaFree(profileParams->referenceTemperaturesDevice) );
-    checkCudaErrors( cudaFreeHost(profileParams->referenceTemperaturesHost) );
-    checkCudaErrors( cudaFree(profileParams->indicesDevice) );
-    checkCudaErrors( cudaFreeHost(profileParams->indicesHost) );
+    auto& profileParams = buoyancyProvider->getProfileParameter(level);
+    auto* stream = parameter->getStreamManager()->getStream(CudaStreamIndex::BuoyancyProvider);
+    
+    checkCudaErrors(cudaMemcpyAsync(profileParams.referenceTemperaturesHost, profileParams.referenceTemperaturesDevice,
+                                    profileParams.numberOfPlanes, cudaMemcpyDeviceToHost, stream));
+}
+void CudaMemoryManager::cudaCopyBuoyancyProviderReferenceTemperaturesHtoDAsync(
+    BuoyancyProviderPlanarAverage* buoyancyProvider, int level)
+{
+    auto& profileParams = buoyancyProvider->getProfileParameter(level);
+    auto* stream = parameter->getStreamManager()->getStream(CudaStreamIndex::BuoyancyProvider);
+    
+    checkCudaErrors(cudaMemcpyAsync(profileParams.referenceTemperaturesDevice, profileParams.referenceTemperaturesHost,
+                                    profileParams.numberOfPlanes, cudaMemcpyHostToDevice, stream));
 }
 
-void CudaMemoryManager::cudaAllocBuoyancyProviderReductionParameters(BuoyancyProvider* buoyancyProvider, int level)
+void CudaMemoryManager::cudaFreeBuoyancyProviderProfileParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level)
 {
-    auto* reductionParams = buoyancyProvider->getReductionParameter(level);
+    auto& profileParameters = buoyancyProvider->getProfileParameter(level);
 
-    const size_t memSize = sizeof(int)*reductionParams->numberOfPlanes;
-
-    checkCudaErrors( cudaMalloc(&reductionParams->numberOfNodesPerPlaneDevice, memSize) );
-    checkCudaErrors( cudaMallocHost(&reductionParams->numberOfNodesPerPlaneHost, memSize) );
-    checkCudaErrors( cudaMalloc(&reductionParams->temporaryMemory, reductionParams->sizeOfTemporaryMemory) );
-
-    setMemsizeGPU(reductionParams->sizeOfTemporaryMemory + memSize, false);
+    checkCudaErrors(cudaFree(profileParameters.referenceTemperaturesDevice));
+    checkCudaErrors(cudaFreeHost(profileParameters.referenceTemperaturesHost));
+    checkCudaErrors(cudaFree(profileParameters.indicesDevice));
+    checkCudaErrors(cudaFreeHost(profileParameters.indicesHost));
 }
 
-void CudaMemoryManager::cudaCopyBuoyancyProviderReductionParametersHtoD(BuoyancyProvider* buoyancyProvider, int level)
+void CudaMemoryManager::cudaAllocBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider,
+                                                                     int level)
 {
-    auto* reductionParams = buoyancyProvider->getReductionParameter(level);
-    checkCudaErrors( cudaMemcpy(reductionParams->numberOfNodesPerPlaneDevice, reductionParams->numberOfNodesPerPlaneHost, sizeof(int)*reductionParams->numberOfPlanes, cudaMemcpyHostToDevice) );
+    auto& reductionParameters = buoyancyProvider->getReductionParameter(level);
+    const size_t memSize = sizeof(int) * reductionParameters.numberOfPlanes;
+
+    checkCudaErrors(cudaMalloc(&reductionParameters.numberOfNodesPerPlaneDevice, memSize));
+    checkCudaErrors(cudaMallocHost(&reductionParameters.numberOfNodesPerPlaneHost, memSize));
+    checkCudaErrors(cudaMalloc(&reductionParameters.temporaryMemory, reductionParameters.sizeOfTemporaryMemory));
+
+    setMemsizeGPU(reductionParameters.sizeOfTemporaryMemory + memSize, false);
 }
 
-void CudaMemoryManager::cudaFreeBuoyancyProviderReductionParameters(BuoyancyProvider* buoyancyProvider, int level)
+void CudaMemoryManager::cudaCopyBuoyancyProviderReductionParametersHtoD(BuoyancyProviderPlanarAverage* buoyancyProvider,
+                                                                        int level)
 {
-    auto* reductionParams = buoyancyProvider->getReductionParameter(level);
+    auto& reductionParameters = buoyancyProvider->getReductionParameter(level);
 
-    checkCudaErrors( cudaFree(reductionParams->temporaryMemory) );
-    checkCudaErrors( cudaFree(reductionParams->numberOfNodesPerPlaneDevice) );
-    checkCudaErrors( cudaFreeHost(reductionParams->numberOfNodesPerPlaneHost) );
+    checkCudaErrors(cudaMemcpy(reductionParameters.numberOfNodesPerPlaneDevice,
+                               reductionParameters.numberOfNodesPerPlaneHost,
+                               sizeof(int) * reductionParameters.numberOfPlanes, cudaMemcpyHostToDevice));
+}
+
+void CudaMemoryManager::cudaFreeBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider,
+                                                                    int level)
+{
+    auto& reductionParameters = buoyancyProvider->getReductionParameter(level);
+
+    checkCudaErrors(cudaFree(reductionParameters.temporaryMemory));
+    checkCudaErrors(cudaFree(reductionParameters.numberOfNodesPerPlaneDevice));
+    checkCudaErrors(cudaFreeHost(reductionParameters.numberOfNodesPerPlaneHost));
 }
 ////////////////////////////////////////////////////////////////////////////////////
 //  Probe
