@@ -2572,10 +2572,10 @@ void CudaMemoryManager::cudaAllocBuoyancyProviderReductionParameters(BuoyancyPro
                                                                      int level)
 {
     auto& reductionParameters = buoyancyProvider->getReductionParameter(level);
-    const size_t memSize = sizeof(int) * reductionParameters.numberOfPlanes;
+    const size_t memSize = sizeof(uint) * reductionParameters.numberOfPlanes;
 
-    checkCudaErrors(cudaMalloc(&reductionParameters.numberOfNodesPerPlaneDevice, memSize));
     checkCudaErrors(cudaMallocHost(&reductionParameters.numberOfNodesPerPlaneHost, memSize));
+    checkCudaErrors(cudaMalloc(&reductionParameters.numberOfNodesPerPlaneDevice, memSize));
     checkCudaErrors(cudaMalloc(&reductionParameters.temporaryMemory, reductionParameters.sizeOfTemporaryMemory));
 
     setMemsizeGPU(reductionParameters.sizeOfTemporaryMemory + memSize, false);
@@ -2588,7 +2588,7 @@ void CudaMemoryManager::cudaCopyBuoyancyProviderReductionParametersHtoD(Buoyancy
 
     checkCudaErrors(cudaMemcpy(reductionParameters.numberOfNodesPerPlaneDevice,
                                reductionParameters.numberOfNodesPerPlaneHost,
-                               sizeof(int) * reductionParameters.numberOfPlanes, cudaMemcpyHostToDevice));
+                               sizeof(uint) * reductionParameters.numberOfPlanes, cudaMemcpyHostToDevice));
 }
 
 void CudaMemoryManager::cudaFreeBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider,
