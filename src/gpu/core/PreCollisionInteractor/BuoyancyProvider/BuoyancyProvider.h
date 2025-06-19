@@ -69,8 +69,12 @@ public:
 class BuoyancyProviderPlanarAverage : public PreCollisionInteractor
 {
 public:
-    BuoyancyProviderPlanarAverage(std::shared_ptr<Parameter> parameter,
-                                  std::shared_ptr<CudaMemoryManager> cudaMemoryManager);
+    BuoyancyProviderPlanarAverage(std::shared_ptr<Parameter> parameter, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
+        : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
+    {
+        if (!para->getBuoyancyEnabled())
+            throw std::runtime_error("BuoyancyProvider: buoyancy needs to be enabled in Parameter!");
+    }
 
     ~BuoyancyProviderPlanarAverage() override;
 
