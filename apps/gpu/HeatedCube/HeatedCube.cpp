@@ -38,15 +38,18 @@
 #include <basics/DataTypes.h>
 #include <basics/config/ConfigurationFile.h>
 #include <basics/constants/NumericConstants.h>
+#include <basics/geometry3d/Axis.h>
 
 #include <logger/Logger.h>
 
 #include <parallel/MPICommunicator.h>
 
-#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
-#include "GridGenerator/grid/BoundaryConditions/Side.h"
-#include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
-#include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+#include "gpu/GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
+#include "gpu/GridGenerator/grid/BoundaryConditions/Side.h"
+#include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
+#include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+#include "gpu/GridGenerator/grid/GridDimensions.h"
+#include "gpu/GridGenerator/grid/MultipleGridBuilderFacade.h"
 
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 #include "gpu/core/Calculation/Simulation.h"
@@ -57,9 +60,9 @@
 #include "gpu/core/Kernel/KernelTypes.h"
 #include "gpu/core/Output/FileWriter.h"
 #include "gpu/core/Parameter/Parameter.h"
+#include "gpu/core/PreCollisionInteractor/BuoyancyProvider/BuoyancyProvider.h"
 #include "gpu/core/Samplers/Probe.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
-#include "gpu/core/PreCollisionInteractor/BuoyancyProvider/BuoyancyProvider.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const std::string simulationName("HeatedCube");
@@ -99,7 +102,6 @@ void run(const vf::basics::ConfigurationFile& config)
     const real tOut = config.getValue<real>("tOut");
     const real tEnd = config.getValue<real>("tEnd"); // total time of simulation
 
-
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
     VF_LOG_INFO("dt   = {}", deltaT);
     VF_LOG_INFO("dx   = {}", deltaX);
@@ -111,16 +113,23 @@ void run(const vf::basics::ConfigurationFile& config)
     VF_LOG_INFO("T_hot = {}", temperatureHotSide);
     VF_LOG_INFO("thermal_diffusion_velocity = {}", thermalDiffusionVelocity);
 
+    vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Grid and boundary conditions
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
+    auto gridBuilder = std::make_unique<MultipleGridBuilderFacade>(
+        std::make_shared<GridDimensions>(-c1o2 * sideLength, c1o2 * sideLength, -c1o2 * sideLength, c1o2 * sideLength,
+                                         -c1o2 * sideLength, c1o2 * sideLength, deltaX),
+        c2o1 * deltaX);
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
-    gridBuilder->addCoarseGrid(-c1o2 * sideLength, -c1o2 * sideLength, -c1o2 * sideLength, c1o2 * sideLength,
-                               c1o2 * sideLength, c1o2 * sideLength, deltaX);
+
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-    gridBuilder->buildGrids(false); // buildGrids() has to be called before setting the BCs!!!!
+    for (int iProcess = 1; iProcess < communicator.getNumberOfProcesses(); iProcess++)
+        gridBuilder->addDomainSplit(c0o1, Axis::x);
+
+    gridBuilder->createGrids(communicator.getProcessID()); // buildGrids() has to be called before setting the BCs!!!!
 
     const real vxADBC = c0o1;
     const real vyADBC = c0o1;
@@ -132,7 +141,7 @@ void run(const vf::basics::ConfigurationFile& config)
     gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
     gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
     gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
-    
+
     // only using all kinds of Bc as showcase
     gridBuilder->setADDirichletBoundaryCondition(SideType::MX, temperatureHotSide, vxADBC, vyADBC, vzADBC);
     gridBuilder->setADDirichletBoundaryCondition(SideType::PX, temperatureColdSide, vxADBC, vyADBC, vzADBC);
@@ -143,14 +152,16 @@ void run(const vf::basics::ConfigurationFile& config)
     gridBuilder->setADFluxBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1, c0o1, deltaX);
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityBounceBack);
     bcFactory.setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC::NoSlipDelayBounceBack);
-    bcFactory.setAdvectionDiffusionDirichletBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip);
-    bcFactory.setAdvectionDiffusionNeumannBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip);
-    bcFactory.setAdvectionDiffusionNoFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoFluxBounceBack);
+    bcFactory.setAdvectionDiffusionDirichletBoundaryCondition(
+        BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackNoSlip);
+    bcFactory.setAdvectionDiffusionNeumannBoundaryCondition(
+        BoundaryConditionFactory::AdvectionDiffusionNeumannBC::NeumannAntiBounceBackNoSlip);
+    bcFactory.setAdvectionDiffusionNoFluxBoundaryCondition(
+        BoundaryConditionFactory::AdvectionDiffusionNoFluxBC::NoFluxBounceBack);
     bcFactory.setAdvectionDiffusionFluxBoundaryCondition(BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxBounceBack);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
     auto para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(), &config);
     auto memoryManager = std::make_shared<CudaMemoryManager>(para);
     para->setInitialCondition([&](real, real, real, real& rho, real& vx, real& vy, real& vz) {
@@ -186,8 +197,8 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setADKernel(vf::advectionDiffusionKernel::compressible::F16);
     para->setDiffusivity(diffusivityLB);
     para->setBuoyancyFactor(thermalExpansion * gravity * (deltaT * deltaT / deltaX));
-    auto buyoancyProvider = std::make_shared<BuoyancyProviderConstantValue>(para, memoryManager);
-    para->addInteractor(buyoancyProvider);
+    // auto buyoancyProvider = std::make_shared<BuoyancyProviderPlanarAverage>(para, memoryManager);
+    // para->addInteractor(buyoancyProvider);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto midPlane = std::make_shared<Probe>(para, memoryManager, para->getOutputPath(), "midPlane", 0, uint(tOut / deltaT),
@@ -197,8 +208,9 @@ void run(const vf::basics::ConfigurationFile& config)
     para->addSampler(midPlane);
 
     auto sidePlane = std::make_shared<Probe>(para, memoryManager, para->getOutputPath(), "sidePlane", 0, uint(tOut / deltaT),
-                                            0, uint(tOut / deltaT), false, false, true);
-    sidePlane->addProbePlane(c1o2 * sideLength-deltaX, -c1o2*sideLength, -c1o2 * sideLength, deltaX, sideLength, sideLength);
+                                             0, uint(tOut / deltaT), false, false, true);
+    sidePlane->addProbePlane(c1o2 * sideLength - deltaX, -c1o2 * sideLength, -c1o2 * sideLength, deltaX, sideLength,
+                             sideLength);
     sidePlane->addAllAvailableStatistics();
     para->addSampler(sidePlane);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -206,7 +218,7 @@ void run(const vf::basics::ConfigurationFile& config)
     auto tmFactory = std::make_shared<TurbulenceModelFactory>(para);
     tmFactory->readConfigFile(config);
 
-    Simulation sim(para, memoryManager, gridBuilder, &bcFactory, tmFactory);
+    Simulation sim(para, memoryManager, gridBuilder->getGridBuilder(), &bcFactory, tmFactory);
     sim.run();
 }
 
