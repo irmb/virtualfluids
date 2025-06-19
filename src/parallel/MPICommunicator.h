@@ -242,7 +242,7 @@ void MPICommunicator::allGather(std::vector<T> &svalues, std::vector<T> &rvalues
 template <class T>
 void MPICommunicator::allReduceSum(std::vector<T> &values)
 {
-    MPI_Allreduce(MPI_IN_PLACE, &values, int(values.size()), getDataType<T>(), MPI_SUM, comm);
+    MPI_Allreduce(MPI_IN_PLACE, values.data(), int(values.size()), getDataType<T>(), MPI_SUM, comm);
 }
 //////////////////////////////////////////////////////////////////////////
 
