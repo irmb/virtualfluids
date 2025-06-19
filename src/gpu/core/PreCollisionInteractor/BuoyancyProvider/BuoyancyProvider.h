@@ -35,13 +35,13 @@
 #ifndef BUOYANCY_PROVIDER_H
 #define BUOYANCY_PROVIDER_H
 
-#include <functional>
-#include <iostream>
 #include <utility>
 #include <vector>
 
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
+
+#include <logger/Logger.h>
 
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/PreCollisionInteractor/PreCollisionInteractor.h"
@@ -56,6 +56,8 @@ public:
     BuoyancyProviderConstantValue(std::shared_ptr<Parameter> parameter, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
         : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
     {
+        VF_LOG_INFO("Using BuoyancyProviderConstantValue");
+
         if (!para->getBuoyancyEnabled())
             throw std::runtime_error("BuoyancyProvider: buoyancy needs to be enabled in Parameter!");
     }
@@ -72,6 +74,7 @@ public:
     BuoyancyProviderPlanarAverage(std::shared_ptr<Parameter> parameter, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
         : PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
     {
+        VF_LOG_INFO("Using BuoyancyProviderPlanarAverage");
         if (!para->getBuoyancyEnabled())
             throw std::runtime_error("BuoyancyProvider: buoyancy needs to be enabled in Parameter!");
     }
@@ -113,7 +116,6 @@ public:
     }
 
 private:
-    void initializeProfileParameters();
     uint numberOfInitialReferenceValues;
     int streamIndex;
     std::vector<ProfileParameters> profileParameters;
