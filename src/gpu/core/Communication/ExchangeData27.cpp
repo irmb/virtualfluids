@@ -98,17 +98,17 @@ void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex s
                            para->getParD(level)->numberofthreads, 
                            stream);
         if(para->getDiffOn())
-        SetRecvFsPostDev27(para->getParD(level)->distributionsAD.f[0], 
-                           neighbor.fAD[0], 
-                           neighbor.index, 
-                           neighbor.numberOfNodes,
-                           para->getParD(level)->neighborX, 
-                           para->getParD(level)->neighborY, 
-                           para->getParD(level)->neighborZ,
-                           para->getParD(level)->numberOfNodes, 
-                           para->getParD(level)->isEvenTimestep,
-                           para->getParD(level)->numberofthreads, 
-                           stream);
+            SetRecvFsPostDev27(para->getParD(level)->distributionsAD.f[0], 
+                            neighbor.fAD[0], 
+                            neighbor.index, 
+                            neighbor.numberOfNodes,
+                            para->getParD(level)->neighborX, 
+                            para->getParD(level)->neighborY, 
+                            para->getParD(level)->neighborZ,
+                            para->getParD(level)->numberOfNodes, 
+                            para->getParD(level)->isEvenTimestep,
+                            para->getParD(level)->numberofthreads, 
+                            stream);
     }
 }
 
@@ -116,12 +116,9 @@ void startBlockingMpiSend(vf::parallel::Communicator& comm, std::vector<ProcessN
 {
     for (auto& neighbor : sendProcessNeighborHost)
     {
+        comm.send(neighbor.f[0], neighbor.numberOfFs, neighbor.rankNeighbor);
         if(diffOn)
-        {
-            comm.sendNonBlocking(neighbor.f[0], neighbor.numberOfFs, neighbor.rankNeighbor);
             comm.send(neighbor.fAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
-        } else 
-            comm.send(neighbor.f[0], neighbor.numberOfFs, neighbor.rankNeighbor);
     }
 }
 
@@ -136,24 +133,24 @@ void startNonBlockingMpiReceive(vf::parallel::Communicator& comm, std::vector<Pr
 }
 
 void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeNodes,
-                   std::vector<ProcessNeighbor27>& recvProcessNeighborHost,
-                   std::vector<ProcessNeighbor27>& sendProcessNeighborHost)
+                   std::vector<ProcessNeighbor27>& recvProcessNeighborsHost,
+                   std::vector<ProcessNeighbor27>& sendProcessNeighborsHost)
 {
 #pragma omp parallel for
     for (int i=0; i< int(edgeNodes.size()); i++) {
         const uint indexInSubdomainRecv = edgeNodes[i].indexOfProcessNeighborRecv;
         const uint indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
-        const uint numNodesInBufferRecv = recvProcessNeighborHost[indexInSubdomainRecv].numberOfNodes;
-        const uint numNodesInBufferSend = sendProcessNeighborHost[indexInSubdomainSend].numberOfNodes;
+        const uint numNodesInBufferRecv = recvProcessNeighborsHost[indexInSubdomainRecv].numberOfNodes;
+        const uint numNodesInBufferSend = sendProcessNeighborsHost[indexInSubdomainSend].numberOfNodes;
         if (edgeNodes[i].indexInSendBuffer >= numNodesInBufferSend)
             // for reduced communication after fine to coarse: only copy send nodes which are not part of the reduced comm
             continue;
 
         // copy fs for all directions
         for (size_t direction = 0; direction <= ENDDIR; direction++) {
-            (sendProcessNeighborHost[indexInSubdomainSend].f[0] +
+            (sendProcessNeighborsHost[indexInSubdomainSend].f[0] +
              (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] =
-                (recvProcessNeighborHost[indexInSubdomainRecv].f[0] +
+                (recvProcessNeighborsHost[indexInSubdomainRecv].f[0] +
                  (direction * numNodesInBufferRecv))[edgeNodes[i].indexInRecvBuffer];
         }
     }
