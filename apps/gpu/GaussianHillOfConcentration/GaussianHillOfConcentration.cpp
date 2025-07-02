@@ -47,13 +47,15 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-
+#include "GridGenerator/grid/MultipleGridBuilderFacade.h"
+#include "GridGenerator/grid/GridDimensions.h"
 //////////////////////////////////////////////////////////////////////////
 
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 #include "gpu/core/Calculation/Simulation.h"
 #include "gpu/core/DataStructureInitializer/GridProvider.h"
 #include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+
 #include "gpu/core/Kernel/KernelTypes.h"
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
@@ -109,16 +111,20 @@ void run(const vf::basics::ConfigurationFile& config)
     VF_LOG_INFO("tEnd = {}", time);
     VF_LOG_INFO("Number of Timesteps = {}", numberOfTimesteps);
 
-    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
-    gridBuilder->addCoarseGrid(-c1o2 * domainSize, -c1o2 * domainSize, -c1o2 * domainSize, c1o2 * domainSize,
-                               c1o2 * domainSize, c1o2 * domainSize, deltaX);
+    vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
+
+    auto grid = std::make_shared<GridDimensions>(-c1o2 * domainSize, c1o2 * domainSize, -c1o2 * domainSize,
+                                                 c1o2 * domainSize, -c1o2 * domainSize, c1o2 * domainSize, deltaX);
+    auto gridBuilder = std::make_shared<MultipleGridBuilderFacade>(grid, c2o1 * deltaX);
 
     gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+    for (int iProcess = 1; iProcess < communicator.getNumberOfProcesses(); iProcess++)
+        gridBuilder->addDomainSplit(c0o1, Axis::x);
 
-    gridBuilder->buildGrids(false);
+    gridBuilder->createGrids(communicator.getProcessID());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    SPtr<Parameter> para = std::make_shared<Parameter>(&config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(),&config);
 
     para->setInitialCondition([&](real, real, real, real& rho, real& vx, real& vy, real& vz) {
         rho = c0o1;
@@ -138,7 +144,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setOutputPrefix(simulationName);
 
     para->setPrintFiles(true);
-    para->worldLength = domainSize+2*deltaX;
+    para->worldLength = domainSize + 2 * deltaX;
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio(deltaX / deltaT);
@@ -152,6 +158,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     para->setDiffOn(true);
     para->setIsBodyForce(true);
+    para->setUseStreams(true);
     para->setADKernel(vf::advectionDiffusionKernel::compressible::F16);
     para->setDiffusivity(diffusivityLB);
 
@@ -160,7 +167,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
-    Simulation sim(para, gridBuilder, &bcFactory, tmFactory);
+    Simulation sim(para, gridBuilder->getGridBuilder(), &bcFactory, tmFactory);
     sim.run();
 }
 

@@ -54,7 +54,7 @@ class ExchangeData27Test_CopyEdgeNodesXZTest : public testing::Test
 protected:
     SPtr<Parameter> para;
     int level    = 0;
-    int numNodes = 10;
+    uint numNodes = 10;
     std::vector<real> recvFs;
     std::vector<real> sendFs;
     std::vector<ProcessNeighbor27> sendProcessNeighborHost;
@@ -74,7 +74,7 @@ protected:
         para->getParH(level)->edgeNodesXtoZ.emplace_back(0, 7, 0, 8);
     }
 
-    void setUpRecvProcessNeighbors(int numberOfNodesInRecv)
+    void setUpRecvProcessNeighbors(uint numberOfNodesInRecv)
     {
         recvFs.resize(numberOfNodesInRecv);
         std::fill(recvFs.begin(), recvFs.end(), 0.5); // 0.5s should not be copied
@@ -91,7 +91,7 @@ protected:
         recvProcessNeighborHost[0].numberOfNodes = numberOfNodesInRecv;
     }
 
-    void setUpSendProcessNeighbors(int numberOfNodesInSend)
+    void setUpSendProcessNeighbors(uint numberOfNodesInSend)
     {
         sendFs.resize(27 * numberOfNodesInSend);
         std::fill(sendFs.begin(), sendFs.end(), 0.0);
@@ -104,7 +104,7 @@ protected:
 
 TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAfterFtoC_recvVectorFullSize)
 {
-    int numNodesAfterFtoC = 5; // indexInSend < 5 --> mode is in AfterFToC
+    const uint numNodesAfterFtoC = 5; // indexInSend < 5 --> mode is in AfterFToC
     setUpRecvProcessNeighbors(numNodes);
     setUpSendProcessNeighbors(numNodesAfterFtoC);
 
@@ -126,7 +126,7 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAft
 
 TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAfterFtoC_recvVectorShort)
 {
-    int numNodesAfterFtoC = 5; // indexInSend < 5 --> mode is in AfterFToC
+    const uint numNodesAfterFtoC = 5; // indexInSend < 5 --> mode is in AfterFToC
     setUpRecvProcessNeighbors(numNodesAfterFtoC);
     setUpSendProcessNeighbors(numNodesAfterFtoC);
 

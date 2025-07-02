@@ -39,7 +39,6 @@ class AdvectionDiffusionKernel : public KernelImp
 public:
     virtual ~AdvectionDiffusionKernel() = default;
     virtual void run() = 0;
-    virtual void runOnIndicesAD(const uint* indices, uint size_indices, CudaStreamIndex streamIdx = CudaStreamIndex::Legacy) { throw std::runtime_error("runOnIndices not implemented"); };
 };
 #endif
 

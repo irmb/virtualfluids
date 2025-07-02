@@ -207,12 +207,17 @@ struct MeasurePoints
 struct ProcessNeighbor27
 {
    real* f[27];
-   uint memsizeFs;
-   int* index;
-   uint memsizeIndex;
+   real* fAD[27];
+   size_t memsizeFs;
+   uint* index;
+   size_t memsizeIndex;
    uint rankNeighbor;
-   int numberOfNodes;
-   int numberOfFs;
+   uint numberOfNodes;
+   uint numberOfFs;
+   ProcessNeighbor27()= default;
+   ProcessNeighbor27(uint numberOfNodes, uint rankNeighbor) : 
+      memsizeFs(numberOfNodes*sizeof(real)*27), memsizeIndex(numberOfNodes*sizeof(real)), rankNeighbor(rankNeighbor), numberOfNodes(numberOfNodes), numberOfFs(numberOfNodes*27)
+   {}
 };
 
 
