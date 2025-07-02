@@ -138,9 +138,9 @@ void IndexRearrangementForStreams::setNumberOfNodes(ProcessNeighbor27& neighborA
 uint IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
     ProcessNeighbor27& sendNeighbor, int direction, int level, std::vector<uint>& sendIndicesForCommAfterFtoCPositions) const
 {
-    ICells& coarseToFine = para->getParH(level)->coarseToFine;
+    ICells& fineToCoarse = para->getParH(level)->fineToCoarse;
     VF_LOG_INFO("Reorder send indices for communication after fine to coarse: level: {} direction: {}", level, direction);
-    if (coarseToFine.numberOfCells == 0 || para->getParH(level)->fineToCoarse.numberOfCells == 0)
+    if (para->getParH(level)->coarseToFine.numberOfCells == 0 || fineToCoarse.numberOfCells == 0)
         VF_LOG_CRITICAL("reorderSendIndicesForCommAfterFtoC(): para->getParH(level)->intCF needs to be initialized "
                         "before calling this function");
     std::vector<uint> sendIndicesAfterFtoC;
@@ -150,7 +150,7 @@ uint IndexRearrangementForStreams::reorderSendIndicesForCommAfterFtoC(
     // coarse cells of interpolation fine to coarse (iCellFCC)
     for (uint posInSendIndices = 0; posInSendIndices < numberOfSendIndices; posInSendIndices++) {
         const uint sparseIndexSend = sendNeighbor.index[posInSendIndices];
-        if (indexInArray(coarseToFine.coarseCellIndices, coarseToFine.numberOfCells, sparseIndexSend)) {
+        if (indexInArray(fineToCoarse.coarseCellIndices, fineToCoarse.numberOfCells, sparseIndexSend)) {
             addUniqueIndexToCommunicationVectors(sendIndicesAfterFtoC, sparseIndexSend, sendIndicesForCommAfterFtoCPositions,
                                                  posInSendIndices);
         }
