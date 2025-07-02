@@ -641,58 +641,75 @@ void GridGenerator::initalValuesDomainDecompostion()
                     ProcessNeighbor27 sendNeighborAfterFtoCDevice;
                     ProcessNeighbor27 recvNeighborAfterFtoCDevice;
                     indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarse(
-                        sendNeighborHost, sendNeighborDevice, sendNeighborAfterFtoCHost, sendNeighborAfterFtoCDevice, recvNeighborHost,recvNeighborDevice,  recvNeighborAfterFtoCHost,recvNeighborAfterFtoCDevice, level, direction);
-                    if (direction == communication_directions::MX || direction == communication_directions::PX)
-                    {
-                        parH.sendProcessNeighborsAfterFtoCX.push_back(sendNeighborAfterFtoCHost);
-                        parH.recvProcessNeighborsAfterFtoCX.push_back(recvNeighborAfterFtoCHost);
-                    }
-                    else if (direction == communication_directions::MY || direction == communication_directions::PY)
-                    {
-                        parH.sendProcessNeighborsAfterFtoCY.push_back(sendNeighborAfterFtoCHost);
-                        parH.recvProcessNeighborsAfterFtoCY.push_back(recvNeighborAfterFtoCHost);
-                    }
-                    else if (direction == communication_directions::MZ || direction == communication_directions::PZ)
-                    {
-                        parH.sendProcessNeighborsAfterFtoCZ.push_back(sendNeighborAfterFtoCHost);
-                        parH.recvProcessNeighborsAfterFtoCZ.push_back(recvNeighborAfterFtoCHost);
+                        sendNeighborHost, sendNeighborDevice, sendNeighborAfterFtoCHost, sendNeighborAfterFtoCDevice,
+                        recvNeighborHost, recvNeighborDevice, recvNeighborAfterFtoCHost, recvNeighborAfterFtoCDevice, level,
+                        direction);
+                    switch (direction) {
+                        case communication_directions::MX:
+                        case communication_directions::PX: {
+                            parH.sendProcessNeighborsAfterFtoCX.push_back(sendNeighborAfterFtoCHost);
+                            parH.recvProcessNeighborsAfterFtoCX.push_back(recvNeighborAfterFtoCHost);
+                            parD.sendProcessNeighborsAfterFtoCX.push_back(sendNeighborAfterFtoCDevice);
+                            parD.recvProcessNeighborsAfterFtoCX.push_back(recvNeighborAfterFtoCDevice);
+                        } break;
+                        case communication_directions::MY:
+                        case communication_directions::PY: {
+                            parH.sendProcessNeighborsAfterFtoCY.push_back(sendNeighborAfterFtoCHost);
+                            parH.recvProcessNeighborsAfterFtoCY.push_back(recvNeighborAfterFtoCHost);
+                            parD.sendProcessNeighborsAfterFtoCY.push_back(sendNeighborAfterFtoCDevice);
+                            parD.recvProcessNeighborsAfterFtoCY.push_back(recvNeighborAfterFtoCDevice);
+                        } break;
+                        case communication_directions::MZ:
+                        case communication_directions::PZ: {
+                            parH.sendProcessNeighborsAfterFtoCZ.push_back(sendNeighborAfterFtoCHost);
+                            parH.recvProcessNeighborsAfterFtoCZ.push_back(recvNeighborAfterFtoCHost);
+                            parD.sendProcessNeighborsAfterFtoCZ.push_back(sendNeighborAfterFtoCDevice);
+                            parD.recvProcessNeighborsAfterFtoCZ.push_back(recvNeighborAfterFtoCDevice);
+                        } break;
                     }
                 }
                 cudaMemoryManager->cudaCopyProcessNeighborIndex(sendNeighborHost, sendNeighborDevice, recvNeighborHost,
                                                                 recvNeighborDevice);
-                if (direction == communication_directions::MX || direction == communication_directions::PX) {
-                    parH.sendProcessNeighborsX.push_back(sendNeighborHost);
-                    parD.sendProcessNeighborsX.push_back(sendNeighborDevice);
+                switch (direction) {
+                    case communication_directions::MX:
+                    case communication_directions::PX: {
+                        parH.sendProcessNeighborsX.push_back(sendNeighborHost);
+                        parD.sendProcessNeighborsX.push_back(sendNeighborDevice);
 
-                    parH.recvProcessNeighborsX.push_back(recvNeighborHost);
-                    parD.recvProcessNeighborsX.push_back(recvNeighborDevice);
-                    ////////////////////////////////////////////////////////////////////////////////////////
-                    VF_LOG_INFO("size of Data for X send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
-                                nSendIndices, rankNeighbor);
-                    VF_LOG_INFO("size of Data for X receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
-                                nRecvIndices, rankNeighbor);
-                } else if (direction == communication_directions::MY || direction == communication_directions::PY) {
-                    parH.sendProcessNeighborsY.push_back(sendNeighborHost);
-                    parD.sendProcessNeighborsY.push_back(sendNeighborDevice);
+                        parH.recvProcessNeighborsX.push_back(recvNeighborHost);
+                        parD.recvProcessNeighborsX.push_back(recvNeighborDevice);
+                        ////////////////////////////////////////////////////////////////////////////////////////
+                        VF_LOG_INFO("size of Data for X send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nSendIndices, rankNeighbor);
+                        VF_LOG_INFO("size of Data for X receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nRecvIndices, rankNeighbor);
+                    } break;
+                    case communication_directions::MY:
+                    case communication_directions::PY: {
+                        parH.sendProcessNeighborsY.push_back(sendNeighborHost);
+                        parD.sendProcessNeighborsY.push_back(sendNeighborDevice);
 
-                    parH.recvProcessNeighborsY.push_back(recvNeighborHost);
-                    parD.recvProcessNeighborsY.push_back(recvNeighborDevice);
-                    ////////////////////////////////////////////////////////////////////////////////////////
-                    VF_LOG_INFO("size of Data for Y send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
-                                nSendIndices, rankNeighbor);
-                    VF_LOG_INFO("size of Data for Y receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
-                                nRecvIndices, rankNeighbor);
-                } else if (direction == communication_directions::MZ || direction == communication_directions::PZ) {
-                    parH.sendProcessNeighborsZ.push_back(sendNeighborHost);
-                    parD.sendProcessNeighborsZ.push_back(sendNeighborDevice);
+                        parH.recvProcessNeighborsY.push_back(recvNeighborHost);
+                        parD.recvProcessNeighborsY.push_back(recvNeighborDevice);
+                        ////////////////////////////////////////////////////////////////////////////////////////
+                        VF_LOG_INFO("size of Data for Y send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nSendIndices, rankNeighbor);
+                        VF_LOG_INFO("size of Data for Y receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nRecvIndices, rankNeighbor);
+                    } break;
+                    case communication_directions::MZ:
+                    case communication_directions::PZ: {
+                        parH.sendProcessNeighborsZ.push_back(sendNeighborHost);
+                        parD.sendProcessNeighborsZ.push_back(sendNeighborDevice);
 
-                    parH.recvProcessNeighborsZ.push_back(recvNeighborHost);
-                    parD.recvProcessNeighborsZ.push_back(recvNeighborDevice);
-                    ////////////////////////////////////////////////////////////////////////////////////////
-                    VF_LOG_INFO("size of Data for Z send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
-                                nSendIndices, rankNeighbor);
-                    VF_LOG_INFO("size of Data for Z receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
-                                nRecvIndices, rankNeighbor);
+                        parH.recvProcessNeighborsZ.push_back(recvNeighborHost);
+                        parD.recvProcessNeighborsZ.push_back(recvNeighborDevice);
+                        ////////////////////////////////////////////////////////////////////////////////////////
+                        VF_LOG_INFO("size of Data for Z send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nSendIndices, rankNeighbor);
+                        VF_LOG_INFO("size of Data for Z receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nRecvIndices, rankNeighbor);
+                    } break;
                 }
             }
         }
