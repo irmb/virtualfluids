@@ -93,16 +93,14 @@ protected:
     //! \param sendIndicesForCommAfterFtoCPositions stores each sendIndex's positions before reordering
     uint reorderSendIndicesForCommAfterFtoC(ProcessNeighbor27& sendNeighbor, int direction,
                                             int level, std::vector<uint> &sendIndicesForCommAfterFtoCPositions) const;
-    //! \brief Check if a sparse index occurs in the coarse nodes for the interpolation from fine to coarse
-    bool isSparseIndexInCoarseIndexForFtoC(uint numberOfCoarseNodesForFtoC, uint sparseIndexSend, int level) const;
     //! \brief Aggregate all nodes in the coarse cells for the interpolation in coarse to fine
     //! \details For the coarse cells in the interpolation from coarse to fine only one node is stored. This methods
     //! looks for the other nodes of each cell and puts them into vector. Duplicate nodes are only stored once.
     void aggregateCoarseNodesForCtoF(int level, std::vector<uint> &nodesCFC) const;
     //! \brief Add index to sendIndicesAfterFtoC and sendIndicesForCommAfterFtoCPositions, but omit indices which are already in sendIndicesAfterFtoC
-    void addUniqueIndexToCommunicationVectors(std::vector<uint> &sendIndicesAfterFtoC, uint &sparseIndexSend,
+    void addUniqueIndexToCommunicationVectors(std::vector<uint> &sendIndicesAfterFtoC, uint sparseIndexSend,
                                               std::vector<uint> &sendIndicesForCommAfterFtoCPositions,
-                                              uint &posInSendIndices) const;
+                                              uint posInSendIndices) const;
     //! \brief Find if a sparse index is a send index. If true, call addUniqueIndexToCommunicationVectors()
     void
     findIfSparseIndexIsInSendIndicesAndAddToCommVectors(uint sparseIndex, const uint *sendIndices, uint numberOfSendIndices,
