@@ -94,6 +94,7 @@ __global__ void computeBuoyancyPlanarAverage(BuoyancyProviderPlanarAverage::Prof
 
     const real newReferenceTemperature = profileParameters.referenceTemperaturesDevice[planeIndex] / numberOfNodesInPlane;
     referenceTemperature[nodeIndex] = newReferenceTemperature;
+
     forceZ[nodeIndex] += computeBuoyancyForce(factor, newReferenceTemperature, temperature[nodeIndex]);
 }
 
@@ -114,7 +115,6 @@ void findFirstIndicesInZDirection(std::vector<uint>& referenceStateIndices, std:
     }
     referenceStateIndices.push_back(para->getParH(level)->numberOfNodes);
 }
-
 
 std::vector<uint> countNodesPerPlane(LBMSimulationParameter* para, const uint* indices, uint numberOfPlanes)
 {
@@ -148,6 +148,18 @@ void BuoyancyProviderPlanarAverage::init()
         std::vector<real> referenceStateCoordsZ;
         findFirstIndicesInZDirection(referenceStateIndices, referenceStateCoordsZ, para.get(), level);
         const uint numberOfPlanes = uint(referenceStateIndices.size()) - 1;
+        if (communicator->getNumberOfProcesses() > 1) {
+            std::vector<real> otherCoords;
+            communicator->allGather(referenceStateCoordsZ, otherCoords);
+            for (uint plane = 0; plane < numberOfPlanes; plane++) {
+                for (int proc = 0; proc < communicator->getNumberOfProcesses(); proc++) {
+                    if (referenceStateCoordsZ[plane] != otherCoords[proc * numberOfPlanes + plane]) {
+                        throw std::runtime_error(
+                            "BuoyancyProviderPlanarAverage: not all processes have planes at same z coordinates");
+                    }
+                }
+            }
+        }
 
         profileParameters.emplace_back(numberOfPlanes);
 
@@ -164,7 +176,6 @@ void BuoyancyProviderPlanarAverage::init()
             para->getParD(level)->concentration, profileParameters[level].referenceTemperaturesDevice,
             reductionParameters[level].numberOfPlanes, profileParameters[level].indicesDevice,
             profileParameters[level].indicesDevice + 1));
-
 
         cudaMemoryManager->cudaAllocBuoyancyProviderReductionParameters(this, level);
 

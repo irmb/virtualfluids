@@ -88,8 +88,8 @@ public:
     struct ProfileParameters
     {
         uint numberOfPlanes;
-        real *referenceTemperaturesHost, *referenceTemperaturesDevice = nullptr;
-        uint *indicesHost, *indicesDevice = nullptr;
+        real *referenceTemperaturesHost = nullptr, *referenceTemperaturesDevice = nullptr;
+        uint *indicesHost = nullptr, *indicesDevice = nullptr;
         ProfileParameters(uint numberOfPlanes) : numberOfPlanes(numberOfPlanes)
         {
         }
