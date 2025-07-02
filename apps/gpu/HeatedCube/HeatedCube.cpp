@@ -197,8 +197,8 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setADKernel(vf::advectionDiffusionKernel::compressible::F16);
     para->setDiffusivity(diffusivityLB);
     para->setBuoyancyFactor(thermalExpansion * gravity * (deltaT * deltaT / deltaX));
-    // auto buyoancyProvider = std::make_shared<BuoyancyProviderPlanarAverage>(para, memoryManager);
-    // para->addInteractor(buyoancyProvider);
+    auto buyoancyProvider = std::make_shared<BuoyancyProviderConstantValue>(para, memoryManager);
+    para->addInteractor(buyoancyProvider);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto midPlane = std::make_shared<Probe>(para, memoryManager, para->getOutputPath(), "midPlane", 0, uint(tOut / deltaT),
