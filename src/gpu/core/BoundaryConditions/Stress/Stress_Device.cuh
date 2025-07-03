@@ -34,103 +34,148 @@
 #ifndef Stress_Device_H
 #define Stress_Device_H
 
+#include <basics/DataTypes.h>
+#include <basics/constants/NumericConstants.h>
+
+#include <cuda_helper/CudaIndexCalculation.h>
+
+#include <lbm/MacroscopicQuantities.h>
+#include <lbm/collision/TurbulentViscosity.h>
+
+#include "BoundaryConditions/BoundaryConditionFactory.h"
 #include "Calculation/Calculation.h"
+#include "Utilities/KernelUtilities.h"
 
-__global__ void StressCompressible_Device(
-    real* DD,
-    int* k_Q,
-    int* k_N,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    real* turbViscosity,
-    real* vx,
-    real* vy,
-    real* vz,
-    real* normalX,
-    real* normalY,
-    real* normalZ,
-    real* vx_bc,
-    real* vy_bc,
-    real* vz_bc,
-    real* vx1,
-    real* vy1,
-    real* vz1,
-    int* samplingOffset,
-    real* z0,
-    bool  hasWallModelMonitor,
-    real* u_star_monitor,
-    real* Fx_monitor,
-    real* Fy_monitor,
-    real* Fz_monitor,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+#include "Stress.h"
+#include "inverseMomentumExchange.cuh"
+#include "wallModelMoninObukhov.h"
 
-__global__ void StressBounceBackCompressible_Device(
-    real* DD,
-    int* k_Q,
-    int* k_N,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real* vx,
-    real* vy,
-    real* vz,
-    real* normalX,
-    real* normalY,
-    real* normalZ,
-    real* vx_bc,
-    real* vy_bc,
-    real* vz_bc,
-    real* vx1,
-    real* vy1,
-    real* vz1,
-    int* samplingOffset,
-    real* z0,
-    bool  hasWallModelMonitor,
-    real* u_star_monitor,
-    real* Fx_monitor,
-    real* Fy_monitor,
-    real* Fz_monitor,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+template <BoundaryConditionFactory::StressBC stressBCType>
+__global__ void StressDevice27(GridParameter gridParams, BoundaryParameter boundaryParams,
+                               WallModelParameters wallModelParams)
+{
+    using namespace vf::basics::constant;
+    using namespace vf::lbm::dir;
+    using StressBC = BoundaryConditionFactory::StressBC;
 
-__global__ void StressBounceBackPressureCompressible_Device(
-    real* DD,
-    int* k_Q,
-    int* k_N,
-    real* QQ,
-    unsigned int  numberOfBCnodes,
-    real* vx,
-    real* vy,
-    real* vz,
-    real* normalX,
-    real* normalY,
-    real* normalZ,
-    real* vx_el,
-    real* vy_el,
-    real* vz_el,
-    real* vx_w_mean,
-    real* vy_w_mean,
-    real* vz_w_mean,
-    int* samplingOffset,
-    real* z0,
-    bool  hasWallModelMonitor,
-    real* u_star_monitor,
-    real* Fx_monitor,
-    real* Fy_monitor,
-    real* Fz_monitor,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+    const real filterFrequency = 1e-3;
 
+    const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
+
+    if (nodeIndex >= boundaryParams.numberOfBCNodes)
+        return;
+
+    //////////////////////////////////////////////////////////////////////////
+    // Load inputs
+    //////////////////////////////////////////////////////////////////////////
+
+    const Distributions27 populationReferences =
+        vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes, gridParams.isEvenTimestep);
+
+    SubgridDistances27 subgridDistances;
+    vf::gpu::getPointersToSubgridDistances(subgridDistances, boundaryParams.subgridDistances,
+                                           boundaryParams.numberOfBCNodes);
+
+    const uint k_000 = boundaryParams.indices[nodeIndex];
+    const vf::gpu::ListIndices listIndices(k_000, gridParams.neighborX, gridParams.neighborY, gridParams.neighborZ);
+
+    real populations[27];
+    vf::gpu::getPostCollisionDistribution(populations, populationReferences, listIndices);
+
+    real drho;
+    real3 velocityNode;
+    vf::lbm::getCompressibleMacroscopicValues(populations, drho, velocityNode.x, velocityNode.y,
+                                              velocityNode.z);
+    const real density = c1o1;
+
+    const real3 wallNormal { boundaryParams.normalX[nodeIndex], boundaryParams.normalY[nodeIndex],
+                             boundaryParams.normalZ[nodeIndex] };
+
+    const real3 velocityNodeWallParallel = computeWallParallelVector(velocityNode, wallNormal);
+
+    const real3 velocityNodeMean {
+        smoothAndSaveMean(velocityNode.x, filterFrequency, wallModelParams.velocityNodeX[nodeIndex]),
+        smoothAndSaveMean(velocityNode.y, filterFrequency, wallModelParams.velocityNodeY[nodeIndex]),
+        smoothAndSaveMean(velocityNode.z, filterFrequency, wallModelParams.velocityNodeZ[nodeIndex])
+    };
+
+    const real velocityNodeMeanWallParallelMagnitude = computeWallParallelVelocityMagnitude(velocityNodeMean, wallNormal);
+
+    const uint samplingIndex = wallModelParams.samplingIndices[nodeIndex];
+    const real3 velocityExchangeLocation { gridParams.velocityX[samplingIndex], gridParams.velocityY[samplingIndex],
+                                           gridParams.velocityZ[samplingIndex] };
+
+    const real3 velocityExchangeLocationMean {
+        smoothAndSaveMean(velocityExchangeLocation.x, filterFrequency, wallModelParams.velocityExchangeLocationX[nodeIndex]),
+        smoothAndSaveMean(velocityExchangeLocation.y, filterFrequency, wallModelParams.velocityExchangeLocationY[nodeIndex]),
+        smoothAndSaveMean(velocityExchangeLocation.z, filterFrequency, wallModelParams.velocityExchangeLocationZ[nodeIndex])
+    };
+
+    const real velocityExchangeLocationMeanWallParallelMagnitude =
+        computeWallParallelVelocityMagnitude(velocityExchangeLocationMean, wallNormal);
+
+    //////////////////////////////////////////////////////////////////////////
+    // load wall model parameters and compute wall shear stress
+    //////////////////////////////////////////////////////////////////////////
+
+    const real samplingDistance = wallModelParams.samplingDistance[nodeIndex];
+    const real roughnessLength = wallModelParams.roughnessLength[nodeIndex];
+    const real vonKarmanConstant = wallModelParams.vonKarmanConstant[nodeIndex];
+    const real frictionVelocity =
+        computeFrictionVelocity(velocityExchangeLocationMeanWallParallelMagnitude, vonKarmanConstant, samplingDistance, roughnessLength, c0o1);
+    const real3 wallShearStress =
+        computeWallShearStress(frictionVelocity, velocityNodeWallParallel, velocityNodeMeanWallParallelMagnitude, density);
+
+    //////////////////////////////////////////////////////////////////////////
+    // apply inverse Momentum exchange
+    //////////////////////////////////////////////////////////////////////////
+
+    real populationsBouncedBack[27];
+    bool linkIsCut[27];
+
+    switch (stressBCType) {
+        case StressBC::StressBounceBackCompressible:
+            computeBouncedBackDistributionsBB(subgridDistances, populations, linkIsCut,
+                                              populationsBouncedBack, nodeIndex);
+            break;
+        case StressBC::StressBounceBackPressureCompressible:
+            computeBouncedBackDistributionsBBPressure(subgridDistances, drho, populations, linkIsCut,
+                                                      populationsBouncedBack, nodeIndex);
+            break;
+        case StressBC::StressCompressible: {
+            const real relaxationFrequency = vf::lbm::calculateOmegaWithTurbulentViscosity(
+                gridParams.relaxationFrequency, gridParams.turbulentViscosity[k_000]);
+            computeBouncedBackDistributionsInterpolated(subgridDistances, velocityNode, drho, relaxationFrequency,
+                                                        populations, linkIsCut, populationsBouncedBack,
+                                                        nodeIndex);
+        } break;
+    }
+
+    const real3 wallMomentumBounceBack =
+        computeWallMomentumBounceBack(linkIsCut, populationsBouncedBack, populations);
+
+    const real wallArea = c1o1;
+    const real subgridDistance = (subgridDistances.q[d00M])[nodeIndex];
+    const real interpolationFactor = stressBCType == StressBC::StressCompressible ? c1o1 + subgridDistance : c1o1;
+
+    const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocityExchangeLocation, wallShearStress, density,
+                                                           interpolationFactor, wallArea, wallMomentumBounceBack);
+
+    const real3 wallMomentumVelocity = writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack,
+                                                          fakeWallVelocity, density, interpolationFactor, listIndices);
+    // const Distributions27 outgoingDistributions =
+    //     vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes, !gridParams.isEvenTimestep);
+
+    // const real3 wallMomentumVelocity = writeDistributionsHalfWayBB(outgoingDistributions, linkIsCut, distributionsBouncedBack,
+    //                                                       fakeWallVelocity, density, interpolationFactor, listIndices);
+
+    if (wallModelParams.hasMonitor) {
+        wallModelParams.frictionVelocity[nodeIndex] = frictionVelocity;
+        wallModelParams.forceX[nodeIndex] = wallMomentumBounceBack.x + wallMomentumVelocity.x;
+        wallModelParams.forceY[nodeIndex] = wallMomentumBounceBack.y + wallMomentumVelocity.y;
+        wallModelParams.forceZ[nodeIndex] = wallMomentumBounceBack.z + wallMomentumVelocity.z;
+    }
+}
 #endif
 
 //! \}
