@@ -203,7 +203,7 @@ PrecursorBoundaryConditionKernel BoundaryConditionFactory::getPrecursorBoundaryC
     }
 }
 
-BoundaryConditionWithParameterKernel BoundaryConditionFactory::getStressBoundaryConditionPost() const
+BoundaryConditionKernel BoundaryConditionFactory::getStressBoundaryConditionPost() const
 {
     switch (this->stressBoundaryCondition) {
         case StressBC::StressBounceBackCompressible:

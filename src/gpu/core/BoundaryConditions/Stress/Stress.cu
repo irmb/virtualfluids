@@ -31,132 +31,62 @@
 //! \{
 //! \author Martin Schoenherr
 //=======================================================================================
-#include <cuda_runtime.h>
-#include <helper_functions.h>
+#include "Stress.h"
 #include <helper_cuda.h>
 
 #include "Calculation/Calculation.h"
 #include <cuda_helper/CudaGrid.h>
 
 #include "BoundaryConditions/Stress/Stress_Device.cuh"
+#include "BoundaryConditions/BoundaryConditionFactory.h"
 #include "Parameter/Parameter.h"
 
-void StressCompressible(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
-{
-    dim3 grid = vf::cuda::getCudaGrid(  para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
-    dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
+using StressBC = BoundaryConditionFactory::StressBC;
 
-    StressCompressible_Device<<< grid, threads >>> (
-        para->getParD(level)->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->q27[0],
-        boundaryCondition->numberOfBCnodes,
-        para->getParD(level)->omega,
-        para->getParD(level)->turbulentViscosity,
-        para->getParD(level)->velocityX,
-        para->getParD(level)->velocityY,
-        para->getParD(level)->velocityY,
-        boundaryCondition->normalX,
-        boundaryCondition->normalY,
-        boundaryCondition->normalZ,
-        boundaryCondition->Vx,
-        boundaryCondition->Vy,
-        boundaryCondition->Vz,
-        boundaryCondition->Vx1,
-        boundaryCondition->Vy1,
-        boundaryCondition->Vz1,
-        para->getParD(level)->wallModel.samplingOffset,
-        para->getParD(level)->wallModel.z0,
-        para->getHasWallModelMonitor(),
-        para->getParD(level)->wallModel.u_star,
-        para->getParD(level)->wallModel.Fx,
-        para->getParD(level)->wallModel.Fy,
-        para->getParD(level)->wallModel.Fz,
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep);
-    getLastCudaError("StressCompressible_Device execution failed");
+GridParameter getStressBCGridParameter(LBMSimulationParameter* parameterDevice)
+{
+    return { parameterDevice->distributions.f[0], parameterDevice->omega,         parameterDevice->turbulentDiffusivity,
+             parameterDevice->turbulentViscosity,      parameterDevice->velocityX,     parameterDevice->velocityY,
+             parameterDevice->velocityZ,          parameterDevice->neighborX,     parameterDevice->neighborY,
+             parameterDevice->neighborZ,          parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep };
 }
 
-//////////////////////////////////////////////////////////////////////////
-void StressBounceBackCompressible(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
+BoundaryParameter getBoundaryParameter(QforBoundaryConditions* boundaryCondition)
 {
-    dim3 grid = vf::cuda::getCudaGrid( para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
-    dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
-
-    StressBounceBackCompressible_Device<<< grid, threads >>> (
-        para->getParD(level)->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->q27[0],
-        boundaryCondition->numberOfBCnodes,
-        para->getParD(level)->velocityX,
-        para->getParD(level)->velocityY,
-        para->getParD(level)->velocityY,
-        boundaryCondition->normalX,
-        boundaryCondition->normalY,
-        boundaryCondition->normalZ,
-        boundaryCondition->Vx,
-        boundaryCondition->Vy,
-        boundaryCondition->Vz,
-        boundaryCondition->Vx1,
-        boundaryCondition->Vy1,
-        boundaryCondition->Vz1,
-        para->getParD(level)->wallModel.samplingOffset,
-        para->getParD(level)->wallModel.z0,
-        para->getHasWallModelMonitor(),
-        para->getParD(level)->wallModel.u_star,
-        para->getParD(level)->wallModel.Fx,
-        para->getParD(level)->wallModel.Fy,
-        para->getParD(level)->wallModel.Fz,
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep);
-    getLastCudaError("StressBounceBackCompressible_Device execution failed");
+    return { boundaryCondition->k,       boundaryCondition->kN,
+             boundaryCondition->q27[0],  boundaryCondition->numberOfBCnodes,
+             boundaryCondition->normalX, boundaryCondition->normalY,
+             boundaryCondition->normalZ };
 }
 
-//////////////////////////////////////////////////////////////////////////
-void StressBounceBackPressureCompressible(Parameter *para,  QforBoundaryConditions* boundaryCondition, const int level)
+void StressCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
-    dim3 grid = vf::cuda::getCudaGrid( para->getParD(level)->numberofthreads, boundaryCondition->numberOfBCnodes);
-    dim3 threads(para->getParD(level)->numberofthreads, 1, 1 );
+    const vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
 
-    StressBounceBackPressureCompressible_Device<<< grid, threads >>> (
-        para->getParD(level)->distributions.f[0],
-        boundaryCondition->k,
-        boundaryCondition->kN,
-        boundaryCondition->q27[0],
-        boundaryCondition->numberOfBCnodes,
-        para->getParD(level)->velocityX,
-        para->getParD(level)->velocityY,
-        para->getParD(level)->velocityY,
-        boundaryCondition->normalX,
-        boundaryCondition->normalY,
-        boundaryCondition->normalZ,
-        boundaryCondition->Vx,
-        boundaryCondition->Vy,
-        boundaryCondition->Vz,
-        boundaryCondition->Vx1,
-        boundaryCondition->Vy1,
-        boundaryCondition->Vz1,
-        para->getParD(level)->wallModel.samplingOffset,
-        para->getParD(level)->wallModel.z0,
-        para->getHasWallModelMonitor(),
-        para->getParD(level)->wallModel.u_star,
-        para->getParD(level)->wallModel.Fx,
-        para->getParD(level)->wallModel.Fy,
-        para->getParD(level)->wallModel.Fz,
-        para->getParD(level)->neighborX,
-        para->getParD(level)->neighborY,
-        para->getParD(level)->neighborZ,
-        para->getParD(level)->numberOfNodes,
-        para->getParD(level)->isEvenTimestep);
-    getLastCudaError("BBStressPressureDevice27 execution failed");
+    StressDevice27<StressBC::StressCompressible>
+        <<<grid.grid, grid.threads>>>(getStressBCGridParameter(parameterDevice), getBoundaryParameter(boundaryCondition),
+                                      parameterDevice->momentumWallModel);
+    getLastCudaError("StressDevice27<StressBC::InterpolatedBounceBackWithPressure> execution failed");
+}
+
+void StressBounceBackCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+    const vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+
+    StressDevice27<StressBC::StressBounceBackCompressible><<<grid.grid, grid.threads>>>(getStressBCGridParameter(parameterDevice),
+                                                                                getBoundaryParameter(boundaryCondition),
+                                                                                parameterDevice->momentumWallModel);
+    getLastCudaError("StressDevice27<StressBC::SimpleBounceBack> execution failed");
+}
+
+void StressBounceBackPressureCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+    const vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+
+    StressDevice27<StressBC::StressBounceBackPressureCompressible>
+        <<<grid.grid, grid.threads>>>(getStressBCGridParameter(parameterDevice), getBoundaryParameter(boundaryCondition),
+                                      parameterDevice->momentumWallModel);
+    getLastCudaError("StressDevice27<StressBC::SimpleBounceBackWithPressure> execution failed");
 }
 
 //! \}

@@ -345,7 +345,7 @@ void BoundaryConditionKernelManager::runPressureBCKernelPre(int level) const
 void BoundaryConditionKernelManager::runStressWallModelKernelPost(int level) const
 {
     if (para->getParD(level)->stressBC.numberOfBCnodes > 0)
-        stressBoundaryConditionPost(para.get(), &(para->getParD(level)->stressBC), level);
+        stressBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->stressBC));
 }
 
 void BoundaryConditionKernelManager::runSlipBCKernelPost(int level) const{

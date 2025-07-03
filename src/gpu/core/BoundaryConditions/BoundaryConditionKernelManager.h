@@ -134,7 +134,7 @@ private:
     BoundaryConditionKernel noSlipBoundaryConditionPost = nullptr;
     BoundaryConditionKernel slipBoundaryConditionPost = nullptr;
     BoundaryConditionKernel geometryBoundaryConditionPost = nullptr;
-    BoundaryConditionWithParameterKernel stressBoundaryConditionPost = nullptr;
+    BoundaryConditionKernel stressBoundaryConditionPost = nullptr;
     PrecursorBoundaryConditionKernel precursorBoundaryConditionPost = nullptr;
     BoundaryConditionKernel pressureBoundaryConditionPre = nullptr;
     DirectionalBoundaryConditionKernel directionalPressureBoundaryConditionPre = nullptr;

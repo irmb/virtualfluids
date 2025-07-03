@@ -208,7 +208,7 @@ public:
     [[nodiscard]] BoundaryConditionKernel getSlipBoundaryConditionPost(bool isGeometryBC = false) const;
     [[nodiscard]] BoundaryConditionKernel getGeometryBoundaryConditionPost() const;
     [[nodiscard]] virtual std::variant<BoundaryConditionKernel, DirectionalBoundaryConditionKernel> getPressureBoundaryConditionPre() const;
-    [[nodiscard]] BoundaryConditionWithParameterKernel getStressBoundaryConditionPost() const;
+    [[nodiscard]] BoundaryConditionKernel getStressBoundaryConditionPost() const;
     [[nodiscard]] PrecursorBoundaryConditionKernel getPrecursorBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionNoFluxBoundaryConditionKernel getAdvectionDiffusionNoFluxBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionFluxBoundaryConditionKernel getAdvectionDiffusionFluxBoundaryConditionPost() const;
