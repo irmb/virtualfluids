@@ -57,6 +57,11 @@ constexpr real3 operator+(real3 a, real3 b)
     return { a.x + b.x, a.y + b.y, a.z + b.z };
 }
 
+constexpr void operator+=(real3 a, real3 b)
+{
+    a.x += b.x; a.y += b.y; a.z += b.z;
+}
+
 constexpr real3 operator-(real3 a, real3 b)
 {
     return { a.x - b.x, a.y - b.y, a.z - b.z };
