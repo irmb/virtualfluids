@@ -84,10 +84,6 @@ protected:
     void addIndices(SPtr<Grid> grid, SPtr<grid_generator::BoundaryCondition> boundaryCondition, std::string coord, real constant,
                            real startInner, real endInner, real startOuter, real endOuter);
 
-    static void setPressureNeighborIndices(SPtr<grid_generator::BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index);
-
-    static void setStressSamplingIndices(SPtr<grid_generator::BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index);
-
     void setQs(SPtr<Grid> grid, SPtr<grid_generator::BoundaryCondition> boundaryCondition, uint index);
 
     virtual void correctNeighborForPeriodicBoundaries(const Grid *grid, std::array<real, 3>& coords, std::array<real, 3>& neighbors) const;

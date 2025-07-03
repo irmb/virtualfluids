@@ -86,10 +86,9 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                 if(boundaryCondition->getType() != vf::gpu::BC_AD)
                     grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
-                setPressureNeighborIndices(boundaryCondition, grid, index);
-                setStressSamplingIndices(boundaryCondition, grid, index);
-                // if(grid->getFieldEntry(index)==26) printf("index = %u, v1 = %f, v2 = %f, field entry=%u \n", index, v1, v2, grid->getFieldEntry(index) );
+                boundaryCondition->setNeighborIndices(grid, index);
                 setQs(grid, boundaryCondition, index);
+                boundaryCondition->setSamplingIndices(grid, index);
                 boundaryCondition->patches.push_back(0);
             }
         }
@@ -102,54 +101,6 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
             grid->addBCalreadySet(currentBCSide);
         else
             grid->addADBCalreadySet(currentBCSide);
-    }
-}
-
-void Side::setPressureNeighborIndices(SPtr<BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index)
-{
-    auto pressureBoundaryCondition = std::dynamic_pointer_cast<PressureBoundaryCondition>(boundaryCondition);
-    if (pressureBoundaryCondition)
-    {
-        real x, y, z;
-        grid->transIndexToCoords(index, x, y, z);
-
-        real nx = x;
-        real ny = y;
-        real nz = z;
-
-        if (boundaryCondition->side->getCoordinate() == X_INDEX)
-            nx = -boundaryCondition->side->getDirection() * grid->getDelta() + x;
-        if (boundaryCondition->side->getCoordinate() == Y_INDEX)
-            ny = -boundaryCondition->side->getDirection() * grid->getDelta() + y;
-        if (boundaryCondition->side->getCoordinate() == Z_INDEX)
-            nz = -boundaryCondition->side->getDirection() * grid->getDelta() + z;
-
-        int neighborIndex = grid->transCoordToIndex(nx, ny, nz);
-        pressureBoundaryCondition->neighborIndices.push_back(neighborIndex);
-    }
-}
-
-void Side::setStressSamplingIndices(SPtr<BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index)
-{
-    auto stressBoundaryCondition = std::dynamic_pointer_cast<StressBoundaryCondition>(boundaryCondition);
-    if (stressBoundaryCondition)
-    {
-        real x, y, z;
-        grid->transIndexToCoords(index, x, y, z);
-
-        real nx = x;
-        real ny = y;
-        real nz = z;
-
-        if (boundaryCondition->side->getCoordinate() == X_INDEX)
-            nx = -boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + x;
-        if (boundaryCondition->side->getCoordinate() == Y_INDEX)
-            ny = -boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + y;
-        if (boundaryCondition->side->getCoordinate() == Z_INDEX)
-            nz = -boundaryCondition->side->getDirection() * stressBoundaryCondition->samplingOffset * grid->getDelta() + z;
-
-        uint samplingIndex = grid->transCoordToIndex(nx, ny, nz);
-        stressBoundaryCondition->velocitySamplingIndices.push_back(samplingIndex);
     }
 }
 
