@@ -84,8 +84,8 @@ public:
      ~LevelGridBuilder() override;
 
     virtual void setSlipBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ);
-    virtual void setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ,
-                                                                 uint samplingOffset, real z0, real dx);
+    virtual void setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset,
+                                            real vonKarmanConstant, real roughnessLength, real deltaX);
     virtual void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
     virtual void setPressureBoundaryCondition(SideType sideType, real rho);
     virtual void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
@@ -131,11 +131,10 @@ public:
     virtual void getSlipQs(real* qs[27], int level) const override;
 
     uint getStressSize(int level) const override;
-    virtual void getStressValues(  real* normalX, real* normalY, real* normalZ,
-                                                        real* vx,      real* vy,      real* vz,
-                                                        real* vx1,     real* vy1,     real* vz1,
-                                                        int* indices, int* samplingIndices, int* samplingOffsets, real* z0, int level) const override;
-    virtual void getStressQs(real* qs[27], int level) const override;
+    void getStressValues(real* normalX, real* normalY, real* normalZ,
+                         int* indices, int* samplingIndices, real* samplingDistances, real* vonKarmanConstants,
+                         real* roughnessLengths, int level) const override;
+    void getStressQs(real* qs[27], int level) const override;
 
     uint getVelocitySize(int level) const override;
     virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const override;

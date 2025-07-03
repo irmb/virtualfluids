@@ -179,7 +179,7 @@ public:
     void cudaFreePrecursorData(int lev);
 
     void cudaAllocWallModel(int lev, bool hasWallModelMonitor);
-    void cudaCopyWallModel(int lev, bool hasWallModelMonitor);
+    void cudaCopyWallModel(int lev);
     void cudaFreeWallModel(int lev, bool hasWallModelMonitor);
 
     void cudaAllocGeomValuesBC(int lev);

@@ -114,7 +114,6 @@ struct QforBoundaryConditions
    unsigned int numberOfBCnodes=0;
    int kArray;
    real *Vx,      *Vy,      *Vz;
-   real *Vx1,     *Vy1,     *Vz1;
    real *deltaVz, *RhoBC;
    real *normalX, *normalY, *normalZ;
 };
@@ -183,13 +182,21 @@ struct AdvectionDiffusionFluxBoundaryConditions
 // Settings for wall model used in StressBC
 struct WallModelParameters
 {
-   real* z0;
-   int* samplingOffset;
+   real* roughnessLength;
+   real* samplingDistance;
+   real* vonKarmanConstant;
+   uint* samplingIndices;
    bool hasMonitor;
-   real* u_star;
-   real* Fx;
-   real* Fy;
-   real* Fz;
+   real* frictionVelocity;
+   real* velocityNodeX;
+   real* velocityNodeY;
+   real* velocityNodeZ;
+   real* velocityExchangeLocationX;
+   real* velocityExchangeLocationY;
+   real* velocityExchangeLocationZ;
+   real* forceX;
+   real* forceY;
+   real* forceZ;
 };
 
 

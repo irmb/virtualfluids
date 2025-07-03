@@ -34,6 +34,7 @@
 #ifndef BoundaryCondition_H
 #define BoundaryCondition_H
 
+#include <algorithm>
 #include <vector>
 #include <functional>
 
@@ -68,6 +69,9 @@ public:
     real getQ(uint index, uint dir) { return this->qs[index][dir]; }
 
     void getCoords( SPtr<Grid> grid, std::vector<real>& x, std::vector<real>& y, std::vector<real>& z);
+    virtual void setNeighborIndices(const SPtr<Grid>& grid, uint index) {};
+    virtual void setSamplingIndices(const SPtr<Grid>& grid, uint index) {};
+
 };
 
 }
@@ -99,6 +103,7 @@ public:
     {
         return this->rho;
     }
+    void setNeighborIndices(const SPtr<Grid> &grid, uint index) override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -146,69 +151,52 @@ public:
 class StressBoundaryCondition : public grid_generator::BoundaryCondition
 {
 public:
-    static SPtr<StressBoundaryCondition> make(real normalX, real normalY, real normalZ, uint samplingOffset, real z0)
+    static SPtr<StressBoundaryCondition> make(real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant, real roughnessLength)
     {
-        return SPtr<StressBoundaryCondition>(new StressBoundaryCondition(normalX, normalY, normalZ, samplingOffset, z0));
+        return SPtr<StressBoundaryCondition>(new StressBoundaryCondition(normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength));
     }
 
-    real normalX, normalY, normalZ;
-    uint samplingOffset;
-    real z0;
+    const real normalX, normalY, normalZ;
+    const uint samplingOffset;
+    const real vonKarmanConstant, roughnessLength;
     std::vector<real> normalXList, normalYList, normalZList;
-    std::vector<uint> samplingOffsetList;
-    std::vector<real> z0List;
-    std::vector<uint> velocitySamplingIndices;
+    std::vector<real> samplingDistanceList;
+    std::vector<real> roughnessLengthList;
+    std::vector<uint> samplingIndices;
 
 protected:
-    StressBoundaryCondition(real normalX, real normalY, real normalZ, uint samplingOffset, real z0) :   normalX(normalX), normalY(normalY), normalZ(normalZ), samplingOffset(samplingOffset), z0(z0){ }
+    StressBoundaryCondition(real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant, real roughnessLength) : normalX(normalX), normalY(normalY), normalZ(normalZ), samplingOffset(samplingOffset), vonKarmanConstant(vonKarmanConstant), roughnessLength(roughnessLength){ }
 
 public:
-    virtual char getType() const override
+    char getType() const override
     {
         return vf::gpu::BC_STRESS;
     }
     
-    void fillStressNormalLists()
+    void fillLists()
     {
-        for (uint index : this->indices) {
-            (void)index;
-            this->normalXList.push_back(normalX);
-            this->normalYList.push_back(normalY);
-            this->normalZList.push_back(normalZ);
-        }
+        std::fill_n(std::back_inserter(this->normalXList), this->indices.size(), normalX);
+        std::fill_n(std::back_inserter(this->normalYList), this->indices.size(), normalY);
+        std::fill_n(std::back_inserter(this->normalZList), this->indices.size(), normalZ);
+        std::fill_n(std::back_inserter(this->roughnessLengthList), this->indices.size(), roughnessLength);
     }
 
-    void fillZ0Lists()
-    {
-        for (uint index : this->indices) {
-            (void)index;
-            this->z0List.push_back(z0);
-        }
-    }
+    real getNormalx() const { return this->normalX; }
+    real getNormaly() const { return this->normalY; }
+    real getNormalz() const { return this->normalZ; }
 
-    void fillSamplingOffsetLists()
-    {
-        for (uint index : this->indices) {
-            (void)index;
-            this->samplingOffsetList.push_back(samplingOffset);
-        }
-    }
+    real getNormalx(uint index) const { return this->normalXList[index]; }
+    real getNormaly(uint index) const { return this->normalYList[index]; }
+    real getNormalz(uint index) const { return this->normalZList[index]; }
 
-    real getNormalx() { return this->normalX; }
-    real getNormaly() { return this->normalY; }
-    real getNormalz() { return this->normalZ; }
+    uint getSamplingOffset() const { return this->samplingOffset; }
+    uint getSamplingIndex(uint index) const { return this->samplingIndices[index]; }
+    real getRoughnessLength() const { return this->roughnessLength; }
+    real getRoughnessLength(uint index) const { return this->roughnessLengthList[index]; }
+    real getSamplingDistance(uint index) const { return this->samplingDistanceList[index]; }
+    real getVonKarmanConstant() const {return vonKarmanConstant;}
 
-    real getNormalx(uint index) { return this->normalXList[index]; }
-    real getNormaly(uint index) { return this->normalYList[index]; }
-    real getNormalz(uint index) { return this->normalZList[index]; }
-
-    uint getSamplingOffset() { return this->samplingOffset; }
-    uint getSamplingOffset(uint index) { return this->samplingOffsetList[index]; }
-
-    real getZ0() { return this->z0; }
-    real getZ0(uint index) { return this->z0List[index]; }
-
-    void fillSamplingIndices(std::vector<SPtr<Grid> > grid, uint level, uint samplingOffset);
+    void setSamplingIndices(const SPtr<Grid>& grid, uint index) override;
 
 };
 
@@ -437,10 +425,10 @@ public:
 
     void fillBoundaryValueLists()
     {
-            std::fill_n(std::back_inserter(this->vxList), this->indices.size(), vx);
-            std::fill_n(std::back_inserter(this->vyList), this->indices.size(), vy);
-            std::fill_n(std::back_inserter(this->vzList), this->indices.size(), vz);
-            std::fill_n(std::back_inserter(this->BCvalueList), this->indices.size(), BCvalue);
+        std::fill_n(std::back_inserter(this->vxList), this->indices.size(), vx);
+        std::fill_n(std::back_inserter(this->vyList), this->indices.size(), vy);
+        std::fill_n(std::back_inserter(this->vzList), this->indices.size(), vz);
+        std::fill_n(std::back_inserter(this->BCvalueList), this->indices.size(), BCvalue);
     }
 
     real getBCvalue() const { return this->BCvalue; }

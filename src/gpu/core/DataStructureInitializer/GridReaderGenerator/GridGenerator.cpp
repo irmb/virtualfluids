@@ -341,23 +341,22 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfStressValues = int(builder->getStressSize(level));
         VF_LOG_INFO("size stress level {}: {}", level, numberOfStressValues);
+        auto& parH = para->getParHostAsReference(level);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->stressBC.numberOfBCnodes = 0;
+        parH.stressBC.numberOfBCnodes = 0;
         if (numberOfStressValues > 1)
         {
             para->getParH(level)->stressBC.numberOfBCnodes = numberOfStressValues;
             cudaMemoryManager->cudaAllocStressBC(level);
             cudaMemoryManager->cudaAllocWallModel(level, para->getHasWallModelMonitor());
-            builder->getStressValues(   para->getParH(level)->stressBC.normalX,  para->getParH(level)->stressBC.normalY,  para->getParH(level)->stressBC.normalZ,
-                                        para->getParH(level)->stressBC.Vx,       para->getParH(level)->stressBC.Vy,       para->getParH(level)->stressBC.Vz,
-                                        para->getParH(level)->stressBC.Vx1,      para->getParH(level)->stressBC.Vy1,      para->getParH(level)->stressBC.Vz1,
-                                        para->getParH(level)->stressBC.k,        para->getParH(level)->stressBC.kN,
-                                        para->getParH(level)->wallModel.samplingOffset, para->getParH(level)->wallModel.z0,
+            builder->getStressValues(   parH.stressBC.normalX,  parH.stressBC.normalY,  parH.stressBC.normalZ,
+                                        parH.stressBC.k,        parH.stressBC.kN,
+                                        parH.momentumWallModel.samplingDistance, parH.momentumWallModel.vonKarmanConstant, parH.momentumWallModel.roughnessLength,
                                         level);
 
             cudaMemoryManager->cudaCopyStressBC(level);
-            cudaMemoryManager->cudaCopyWallModel(level, para->getHasWallModelMonitor());
+            cudaMemoryManager->cudaCopyWallModel(level);
         }
         para->getParD(level)->stressBC.numberOfBCnodes = para->getParH(level)->stressBC.numberOfBCnodes;
     }

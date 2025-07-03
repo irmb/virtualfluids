@@ -359,10 +359,10 @@ void MultipleGridBuilderFacade::setSlipBoundaryCondition(SideType sideType, real
 }
 
 void MultipleGridBuilderFacade::setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ,
-                                                           uint samplingOffset, real z0, real dx) const
+                                                           uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX) const
 {
     setBoundaryCondition(sideType, [&]() {
-        gridBuilder->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+        gridBuilder->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, deltaX);
     });
 }
 

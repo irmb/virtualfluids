@@ -33,7 +33,9 @@
 #include "BoundaryCondition.h"
 
 #include <cmath>
+#include <stdexcept>
 
+#include "DataTypes.h"
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/Grid.h"
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
@@ -109,20 +111,70 @@ void GeometryBoundaryCondition::setTangentialVelocityForPatch(SPtr<Grid> grid, u
 
 //////////////////////////////////////////////////////////////////////////
 
-void StressBoundaryCondition::fillSamplingIndices(std::vector<SPtr<Grid> > grid, uint level, uint samplingOffset)
+void StressBoundaryCondition::setSamplingIndices(const SPtr<Grid>& grid, const uint index)
 {
-    for( uint i = 0; i < this->indices.size(); i++ )
-    {
-        real x, y, z;
-        grid[level]->transIndexToCoords(this->indices[i], x, y, z);
+    using namespace vf::lbm::dir;
+    real nodeX, nodeY, nodeZ;
+    grid->transIndexToCoords(index, nodeX, nodeY, nodeZ);
+    const auto normal = side->getNormal();
+    const real samplingOffsetFromNode = static_cast<real>(getSamplingOffset() - 1);
+    const real samplingX = nodeX - normal[0] * grid->getDelta() * samplingOffsetFromNode;
+    const real samplingY = nodeY - normal[1] * grid->getDelta() * samplingOffsetFromNode;
+    const real samplingZ = nodeZ - normal[2] * grid->getDelta() * samplingOffsetFromNode;
+    const uint samplingIndex = grid->transCoordToIndex(samplingX, samplingY, samplingZ);
+    if(samplingIndex == INVALID_INDEX)
+        throw std::runtime_error("StressBoundaryCondition::setSamplingIndices could not find sampling index");
+    samplingIndices.push_back(samplingIndex);
 
-        const real xSampling = x + this->getNormalx(i)*samplingOffset*grid[level]->getDelta();
-        const real ySampling = y + this->getNormaly(i)*samplingOffset*grid[level]->getDelta();
-        const real zSampling = z + this->getNormalz(i)*samplingOffset*grid[level]->getDelta();
-
-        this->velocitySamplingIndices.push_back( grid[level]->transCoordToIndex(xSampling, ySampling, zSampling) );
+    const auto qNode = qs.back();
+    real distanceNodeToWall;
+    switch (side->whoAmI()) {
+        case SideType::PX:
+            distanceNodeToWall = qNode[dP00];
+            break;
+        case SideType::MX:
+            distanceNodeToWall = qNode[dM00];
+            break;
+        case SideType::PY:
+            distanceNodeToWall = qNode[d0P0];
+            break;
+        case SideType::MY:
+            distanceNodeToWall = qNode[d0M0];
+            break;
+        case SideType::PZ:
+            distanceNodeToWall = qNode[d00P];
+            break;
+        case SideType::MZ:
+            distanceNodeToWall = qNode[d00M];
+            break;
+        default:
+            throw std::runtime_error("Side type not implemented!");
     }
-    
+
+    const real samplingDistance =
+        std::hypot(samplingX - nodeX, samplingY - nodeY, samplingZ - nodeZ) / grid->getDelta() + distanceNodeToWall;
+    samplingDistanceList.push_back(samplingDistance);
+}
+
+void PressureBoundaryCondition::setNeighborIndices(const SPtr<Grid> &grid, uint index)
+{
+
+    real x, y, z;
+    grid->transIndexToCoords(index, x, y, z);
+
+    real nx = x;
+    real ny = y;
+    real nz = z;
+
+    if (side->getCoordinate() == X_INDEX)
+        nx = -side->getDirection() * grid->getDelta() + x;
+    if (side->getCoordinate() == Y_INDEX)
+        ny = -side->getDirection() * grid->getDelta() + y;
+    if (side->getCoordinate() == Z_INDEX)
+        nz = -side->getDirection() * grid->getDelta() + z;
+
+    uint neighborIndex = grid->transCoordToIndex(nx, ny, nz);
+    neighborIndices.push_back(neighborIndex);
 }
 
 void ADNeumannBoundaryCondition::fillBoundaryValueLists()

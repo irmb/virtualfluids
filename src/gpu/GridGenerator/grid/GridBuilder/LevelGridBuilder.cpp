@@ -123,25 +123,22 @@ void LevelGridBuilder::setSlipGeometryBoundaryCondition(real normalX, real norma
 //=======================================================================================
 //! \brief Set stress boundary concdition using iMEM
 //! \param samplingOffset number of grid points above boundary where velocity for wall model is sampled
-//! \param z0 roughness length [m]
-//! \param dx dx of level 0 [m]
+//! \param roughnessLength [m]
+//! \param deltaX grid spacing of level 0 [m]
 //!
 void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
                                                     real nomalX, real normalY, real normalZ,
-                                                    uint samplingOffset, real z0, real dx)
+                                                    uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX)
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, z0*pow(2.0f,level)/dx);
+        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength*std::exp2(level)/deltaX);
         auto side = SideFactory::make(sideType);
 
         stressBoundaryCondition->side = side;
         stressBoundaryCondition->side->addIndices(grids, level, stressBoundaryCondition);
 
-        stressBoundaryCondition->fillStressNormalLists();
-        stressBoundaryCondition->fillSamplingOffsetLists();
-        stressBoundaryCondition->fillZ0Lists();
-        // stressBoundaryCondition->fillSamplingIndices(grids, 0, samplingOffset); //redundant with Side::setStressSamplingIndices but potentially a better approach for cases with complex geometries
+        stressBoundaryCondition->fillLists();
 
         boundaryConditions[level]->stressBoundaryConditions.push_back(stressBoundaryCondition);
 
@@ -626,25 +623,24 @@ uint LevelGridBuilder::getStressSize(int level) const
 }
 
 void LevelGridBuilder::getStressValues( real* normalX, real* normalY, real* normalZ,
-                                        real* vx,      real* vy,      real* vz,
-                                        real* vx1,     real* vy1,     real* vz1,
-                                        int* indices, int* samplingIndices, int* samplingOffset, real* z0, int level) const
+                                        int* indices, int* samplingIndices, real* samplingDistances, real* vonKarmanConstants, real* roughnessLengths, int level) const
 {
 
-    int allIndicesCounter = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
+    uint allIndicesCounter = 0;
+    for (const auto& boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
     {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++)
         {
             indices[allIndicesCounter]          = grids[level]->getSparseIndex(boundaryCondition->indices[index]) + 1;
-            samplingIndices[allIndicesCounter]  = grids[level]->getSparseIndex(boundaryCondition->velocitySamplingIndices[index]) + 1;
+            samplingIndices[allIndicesCounter]  = grids[level]->getSparseIndex(boundaryCondition->getSamplingIndex(index)) + 1;
 
             normalX[allIndicesCounter] = boundaryCondition->getNormalx(index);
             normalY[allIndicesCounter] = boundaryCondition->getNormaly(index);
             normalZ[allIndicesCounter] = boundaryCondition->getNormalz(index);
 
-            samplingOffset[allIndicesCounter] = boundaryCondition->getSamplingOffset(index);
-            z0[allIndicesCounter] = boundaryCondition->getZ0(index);
+            samplingDistances[allIndicesCounter] = boundaryCondition->getSamplingDistance(index);
+            roughnessLengths[allIndicesCounter] = boundaryCondition->getRoughnessLength(index);
+            vonKarmanConstants[allIndicesCounter] = boundaryCondition->getVonKarmanConstant();
             allIndicesCounter++;
         }
     }
