@@ -132,7 +132,7 @@ constexpr real3 computeWallMomentumBounceBack(const bool* linkIsCut, const real*
     return wallMomentum;
 }
 
-constexpr real3 computeFakeWallVelocity(const real3 wallNormal, const real3 velocityForClipping, const real3 wallShearStress, const real density,
+inline __device__ real3 computeFakeWallVelocity(const real3 wallNormal, const real3 velocityForClipping, const real3 wallShearStress, const real density,
                                         const real interpolationFactor, const real wallArea, const real3 wallMomentum)
 {
 

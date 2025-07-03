@@ -58,7 +58,6 @@ constexpr real3 computeWallParallelVector(real3 quantity, real3 normal)
     return quantity - normal * dot(quantity, normal);
 }
 
-
 inline __device__ real computeWallParallelVelocityMagnitude(real3 quantity, real3 normal)
 {
     return std::sqrt(square(computeWallParallelVector(quantity, normal)));
@@ -69,7 +68,8 @@ struct StabilityCorrections
     real momentum, temperature;
 };
 
-inline __device__ real computeFrictionVelocity(const real velocity, const real vonKarmanConstant, const real coordZ, const real roughnessLength, const real stabilityCorrection)
+inline __device__ real computeFrictionVelocity(const real velocity, const real vonKarmanConstant, const real coordZ,
+                                               const real roughnessLength, const real stabilityCorrection)
 {
     return velocity * vonKarmanConstant / (std::log(coordZ / roughnessLength) - stabilityCorrection);
 }
@@ -84,7 +84,8 @@ constexpr real3 computeWallShearStress(const real frictionVelocity, const real3 
 }
 
 constexpr real computeStabilityParameter(const real height, const real gravity, const real temperatureScale,
-                                         const real frictionVelocity, const real referenceTemperature, real vonKarmanConstant)
+                                         const real frictionVelocity, const real referenceTemperature,
+                                         real vonKarmanConstant)
 {
     using namespace vf::basics::constant;
     if (temperatureScale == c0o1)
@@ -98,12 +99,12 @@ constexpr real computeStabilityParameter(const real height, const real gravity, 
 // Compute stability parameters according to <a
 // href="https://shop.elsevier.com/books/introduction-to-micrometeorology/holton/978-0-12-059354-5"><b>[p. 223, Arya 2001,
 //! ISBN:9780120593545 ]</b></a>
-constexpr StabilityCorrections computeStabilityCorrectionsUnstable(real stabilityParameter)
+inline __device__ __host__ StabilityCorrections computeStabilityCorrectionsUnstable(real stabilityParameter)
 {
     using namespace vf::basics::constant;
     const real tmp = std::sqrt(std::sqrt(c1o1 - c15o1 * stabilityParameter));
     const real momentum =
-        std::log(c1o2 * (c1o1 + tmp * tmp) * c1o2 * (c1o1 + tmp) * c1o2 * (c1o1 + tmp)) - c2o1 * std::atan(tmp) + cPi*c1o2;
+        std::log(c1o2 * (c1o1 + tmp * tmp) * c1o2 * (c1o1 + tmp) * c1o2 * (c1o1 + tmp)) - c2o1 * std::atan(tmp) + cPi * c1o2;
     const real temperature = c2o1 * std::log(c1o2 * (c1o1 + tmp * tmp));
     return { momentum, temperature };
 }
@@ -113,10 +114,9 @@ constexpr StabilityCorrections computeStabilityCorrectionsStable(real stabilityP
 }
 
 // follows
-constexpr real computeStabilityParameterFromSurfaceTemperature(const real coordZ, const real roughnessLength,
-                                                               const real roughnessLengthTemperature, const real velocity,
-                                                               const real temperatureDifference,
-                                                               const real referenceTemperature, const real gravity)
+inline __device__ __host__ real computeStabilityParameterFromSurfaceTemperature(
+    const real coordZ, const real roughnessLength, const real roughnessLengthTemperature, const real velocity,
+    const real temperatureDifference, const real referenceTemperature, const real gravity)
 {
     const real logDistanceMomentum = std::log(coordZ / roughnessLength);
     const real logDistanceTemperature = std::log(coordZ / roughnessLengthTemperature);
@@ -129,14 +129,15 @@ constexpr real computeStabilityParameterFromSurfaceTemperature(const real coordZ
     return enumerator / denominator;
 }
 
-constexpr real computeStabilityParameterFromHeatFlux(const real coordZ, const real roughnessLength, const real velocity,
-                                                     const real surfaceHeatFlux, const real referenceTemperature,
-                                                     const real gravity, const real vonKarmanConstant)
+inline __device__ __host__ real computeStabilityParameterFromHeatFlux(const real coordZ, const real roughnessLength,
+                                                                      const real velocity, const real surfaceHeatFlux,
+                                                                      const real referenceTemperature, const real gravity,
+                                                                      const real vonKarmanConstant)
 {
     const real logDistance = std::log(coordZ / roughnessLength);
     const real b1 = -gravity * coordZ * surfaceHeatFlux /
-                    (vonKarmanConstant * vonKarmanConstant * velocity * velocity * velocity * referenceTemperature) * logDistance *
-                    logDistance * logDistance;
+                    (vonKarmanConstant * vonKarmanConstant * velocity * velocity * velocity * referenceTemperature) *
+                    logDistance * logDistance * logDistance;
     const real b2 = stabilityFactorMomentum / logDistance;
     const real sqrtB1B2 = std::sqrt(c3o1 * b1 * b2 * b2 * b2);
     return c2o1 / sqrtB1B2 * std::cos(c1o3 * std::acos(-c3o2 / b2 * sqrtB1B2 - c2Pi * c1o3)) - c1o1 / b2;
