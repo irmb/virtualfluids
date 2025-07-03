@@ -69,8 +69,7 @@ public:
     real getQ(uint index, uint dir) { return this->qs[index][dir]; }
 
     void getCoords( SPtr<Grid> grid, std::vector<real>& x, std::vector<real>& y, std::vector<real>& z);
-    virtual void setNeighborIndices(const SPtr<Grid>& grid, uint index) {};
-    virtual void setSamplingIndices(const SPtr<Grid>& grid, uint index) {};
+    virtual void setAdditionalIndices(const SPtr<Grid>& /*grid*/, uint /*index*/) {};
 
 };
 
@@ -99,11 +98,11 @@ public:
         return vf::gpu::BC_PRESSURE;
     }
 
-    real getRho()
+    real getRho() const 
     {
         return this->rho;
     }
-    void setNeighborIndices(const SPtr<Grid> &grid, uint index) override;
+    void setAdditionalIndices(const SPtr<Grid> &grid, uint index) override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -122,7 +121,7 @@ protected:
     SlipBoundaryCondition(real normalX, real normalY, real normalZ) : normalX(normalX), normalY(normalY), normalZ(normalZ) { }
 
 public:
-    virtual char getType() const override
+    char getType() const override
     {
         return vf::gpu::BC_SLIP;
     }
@@ -137,9 +136,9 @@ public:
         }
     }
 
-    real getNormalx() { return this->normalX; }
-    real getNormaly() { return this->normalY; }
-    real getNormalz() { return this->normalZ; }
+    real getNormalx() const { return this->normalX; }
+    real getNormaly() const { return this->normalY; }
+    real getNormalz() const { return this->normalZ; }
 
     real getNormalx(uint index) { return this->normalXList[index]; }
     real getNormaly(uint index) { return this->normalYList[index]; }
@@ -196,7 +195,7 @@ public:
     real getSamplingDistance(uint index) const { return this->samplingDistanceList[index]; }
     real getVonKarmanConstant() const {return vonKarmanConstant;}
 
-    void setSamplingIndices(const SPtr<Grid>& grid, uint index) override;
+    void setAdditionalIndices(const SPtr<Grid>& grid, uint index) override;
 
 };
 
@@ -216,7 +215,7 @@ protected:
     VelocityBoundaryCondition(real vx, real vy, real vz) : vx(vx), vy(vy), vz(vz) { }
 
 public:
-    virtual char getType() const override
+    char getType() const override
     {
         return vf::gpu::BC_VELOCITY;
     }
@@ -231,9 +230,9 @@ public:
         }
     }
 
-    real getVx() { return this->vx; }
-    real getVy() { return this->vy; }
-    real getVz() { return this->vz; }
+    real getVx() const { return this->vx; }
+    real getVy() const { return this->vy; }
+    real getVz() const { return this->vz; }
 
     real getVx(uint index) { return this->vxList[index]; }
     real getVy(uint index) { return this->vyList[index]; }
@@ -296,9 +295,9 @@ public:
         }
     }
 
-    real getVx() { return this->vx; }
-    real getVy() { return this->vy; }
-    real getVz() { return this->vz; }
+    real getVx() const { return this->vx; }
+    real getVy() const { return this->vy; }
+    real getVz() const { return this->vz; }
 
     real getVx(uint index) { return this->vxList[index]; }
     real getVy(uint index) { return this->vyList[index]; }
@@ -315,9 +314,9 @@ public:
         }
     }
 
-    real getNormalx() { return this->normalX; }
-    real getNormaly() { return this->normalY; }
-    real getNormalz() { return this->normalZ; }
+    real getNormalx() const { return this->normalX; }
+    real getNormaly() const { return this->normalY; }
+    real getNormalz() const { return this->normalZ; }
 
     real getNormalx(uint index) { return this->normalXList[index]; }
     real getNormaly(uint index) { return this->normalYList[index]; }
@@ -333,13 +332,13 @@ public:
     }
 
     SPtr<TransientBCInputFileReader> getReader(){ return reader; }
-    real getVelocityX() { return velocityX; }
-    real getVelocityY() { return velocityY; }
-    real getVelocityZ() { return velocityZ; }
+    real getVelocityX() const { return velocityX; }
+    real getVelocityY() const { return velocityY; }
+    real getVelocityZ() const { return velocityZ; }
 
 private:
     PrecursorBoundaryCondition(SPtr<TransientBCInputFileReader> _reader, uint _timeStepsBetweenReads, real vx, real vy, real vz) : timeStepsBetweenReads(_timeStepsBetweenReads), velocityX(vx), velocityY(vy), velocityZ(vz), reader(_reader) { };
-    virtual char getType() const override
+    char getType() const override
     {
         return vf::gpu::BC_VELOCITY;
     }

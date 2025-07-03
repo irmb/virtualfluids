@@ -111,7 +111,7 @@ void GeometryBoundaryCondition::setTangentialVelocityForPatch(SPtr<Grid> grid, u
 
 //////////////////////////////////////////////////////////////////////////
 
-void StressBoundaryCondition::setSamplingIndices(const SPtr<Grid>& grid, const uint index)
+void StressBoundaryCondition::setAdditionalIndices(const SPtr<Grid>& grid, const uint index)
 {
     using namespace vf::lbm::dir;
     real nodeX, nodeY, nodeZ;
@@ -123,7 +123,7 @@ void StressBoundaryCondition::setSamplingIndices(const SPtr<Grid>& grid, const u
     const real samplingZ = nodeZ - normal[2] * grid->getDelta() * samplingOffsetFromNode;
     const uint samplingIndex = grid->transCoordToIndex(samplingX, samplingY, samplingZ);
     if(samplingIndex == INVALID_INDEX)
-        throw std::runtime_error("StressBoundaryCondition::setSamplingIndices could not find sampling index");
+        throw std::runtime_error("StressBoundaryCondition::setAdditionalIndices could not find sampling index");
     samplingIndices.push_back(samplingIndex);
 
     const auto qNode = qs.back();
@@ -156,7 +156,7 @@ void StressBoundaryCondition::setSamplingIndices(const SPtr<Grid>& grid, const u
     samplingDistanceList.push_back(samplingDistance);
 }
 
-void PressureBoundaryCondition::setNeighborIndices(const SPtr<Grid> &grid, uint index)
+void PressureBoundaryCondition::setAdditionalIndices(const SPtr<Grid> &grid, uint index)
 {
 
     real x, y, z;

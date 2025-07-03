@@ -86,9 +86,8 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                 if(boundaryCondition->getType() != vf::gpu::BC_AD)
                     grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
-                boundaryCondition->setNeighborIndices(grid, index);
                 setQs(grid, boundaryCondition, index);
-                boundaryCondition->setSamplingIndices(grid, index);
+                boundaryCondition->setAdditionalIndices(grid, index);
                 boundaryCondition->patches.push_back(0);
             }
         }
