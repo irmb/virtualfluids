@@ -69,12 +69,11 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
     // Load inputs
     //////////////////////////////////////////////////////////////////////////
 
-    const Distributions27 populationReferences =
+    Distributions27 populationReferences =
         vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes, gridParams.isEvenTimestep);
 
     SubgridDistances27 subgridDistances;
-    vf::gpu::getPointersToSubgridDistances(subgridDistances, boundaryParams.q27[0],
-                                           boundaryParams.numberOfBCnodes);
+    vf::gpu::getPointersToSubgridDistances(subgridDistances, boundaryParams.q27[0], boundaryParams.numberOfBCnodes);
 
     const uint k_000 = boundaryParams.k[nodeIndex];
     const vf::gpu::ListIndices listIndices(k_000, gridParams.neighborX, gridParams.neighborY, gridParams.neighborZ);
@@ -136,11 +135,11 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
         case StressBC::StressBounceBackCompressible:
             computeBouncedBackDistributionsBB(subgridDistances, populations, linkIsCut, populationsBouncedBack, nodeIndex);
             break;
-        case StressBC::StressBounceBackPressureCompressible:
+        case StressBC::StressBounceBackWithPressureCompressible:
             computeBouncedBackDistributionsBBPressure(subgridDistances, drho, populations, linkIsCut, populationsBouncedBack,
                                                       nodeIndex);
             break;
-        case StressBC::StressCompressible: {
+        case StressBC::StressInterpolatedCompressible: {
             const real relaxationFrequency = vf::lbm::calculateOmegaWithTurbulentViscosity(
                 gridParams.relaxationFrequency, gridParams.turbulentViscosity[k_000]);
             computeBouncedBackDistributionsInterpolated(subgridDistances, velocityNode, drho, relaxationFrequency,
@@ -148,32 +147,27 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
         } break;
     }
 
-    real3 wallMomentum = computeWallMomentumBounceBack(linkIsCut, populationsBouncedBack, populations);
+    const real3 wallMomentumBounceBack = computeWallMomentumBounceBack(linkIsCut, populationsBouncedBack, populations);
 
     const real wallArea = c1o1;
     const real subgridDistance = (subgridDistances.q[d00M])[nodeIndex];
-    const real interpolationFactor = stressBCType == StressBC::StressCompressible ? c1o1 + subgridDistance : c1o1;
+    const real interpolationFactor =
+        stressBCType == StressBC::StressInterpolatedCompressible ? c1o1 + subgridDistance : c1o1;
 
     const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocityExchangeLocation, wallShearStress, density,
-                                                           interpolationFactor, wallArea, wallMomentum);
-    if (delayed) {
-        wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity,
-                                             density, interpolationFactor, listIndices);
-    }
-
-    else {
-        const Distributions27 outgoingDistributions = vf::gpu::getDistributionReferences27(
-            gridParams.distributions, gridParams.numberOfNodes, !gridParams.isEvenTimestep);
-
-        wallMomentum += writeDistributionsBB(outgoingDistributions, linkIsCut, populationsBouncedBack, fakeWallVelocity,
-                                             density, interpolationFactor, listIndices);
+                                                           interpolationFactor, wallArea, wallMomentumBounceBack);
+    if (!delayed) {
+        populationReferences = vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes,
+                                                                    !gridParams.isEvenTimestep);
     };
 
+    const real3 wallMomentumVelocity = writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity, density,
+                                         interpolationFactor, listIndices);
     if (wallModelParams.hasMonitor) {
         wallModelParams.frictionVelocity[nodeIndex] = frictionVelocity;
-        wallModelParams.forceX[nodeIndex] = wallMomentum.x;
-        wallModelParams.forceY[nodeIndex] = wallMomentum.y;
-        wallModelParams.forceZ[nodeIndex] = wallMomentum.z;
+        wallModelParams.forceX[nodeIndex] = wallMomentumBounceBack.x + wallMomentumVelocity.x;
+        wallModelParams.forceY[nodeIndex] = wallMomentumBounceBack.y + wallMomentumVelocity.y;
+        wallModelParams.forceZ[nodeIndex] = wallMomentumBounceBack.z + wallMomentumVelocity.z;
     }
 }
 #endif

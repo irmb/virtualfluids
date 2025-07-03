@@ -209,11 +209,11 @@ BoundaryConditionKernel BoundaryConditionFactory::getStressBoundaryConditionPost
         case StressBC::StressBounceBackCompressible:
             return StressBounceBackCompressible;
             break;
-        case StressBC::StressBounceBackPressureCompressible:
-            return StressBounceBackPressureCompressible;
+        case StressBC::StressBounceBackWithPressureCompressible:
+            return StressBounceBackWithPressureCompressible;
             break;
-        case StressBC::StressCompressible:
-            return StressCompressible;
+        case StressBC::StressInterpolatedCompressible:
+            return StressInterpolatedCompressible;
             break;
         default:
             return nullptr;

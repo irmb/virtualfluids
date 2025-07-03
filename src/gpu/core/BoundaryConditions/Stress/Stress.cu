@@ -51,31 +51,31 @@ GridParameter getStressBCGridParameter(LBMSimulationParameter* parameterDevice)
              parameterDevice->neighborZ,          parameterDevice->numberOfNodes, parameterDevice->isEvenTimestep };
 }
 
-void StressCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
-{
-    const vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
-
-    StressDevice27<StressBC::StressCompressible, false><<<grid.grid, grid.threads>>>(
-        getStressBCGridParameter(parameterDevice), *boundaryCondition, parameterDevice->momentumWallModel);
-    getLastCudaError("StressDevice27<StressBC::InterpolatedBounceBackWithPressure> execution failed");
-}
-
 void StressBounceBackCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
     const vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
 
     StressDevice27<StressBC::StressBounceBackCompressible, false><<<grid.grid, grid.threads>>>(
         getStressBCGridParameter(parameterDevice), *boundaryCondition, parameterDevice->momentumWallModel);
-    getLastCudaError("StressDevice27<StressBC::SimpleBounceBack> execution failed");
+    getLastCudaError("StressDevice27<StressBC::StressBounceBackCompressible> execution failed");
 }
 
-void StressBounceBackPressureCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+void StressBounceBackWithPressureCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
     const vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
 
-    StressDevice27<StressBC::StressBounceBackPressureCompressible, false><<<grid.grid, grid.threads>>>(
+    StressDevice27<StressBC::StressBounceBackWithPressureCompressible, false><<<grid.grid, grid.threads>>>(
         getStressBCGridParameter(parameterDevice), *boundaryCondition, parameterDevice->momentumWallModel);
-    getLastCudaError("StressDevice27<StressBC::SimpleBounceBackWithPressure> execution failed");
+    getLastCudaError("StressDevice27<StressBC::StressBounceBackWithPressureCompressible> execution failed");
+}
+
+void StressInterpolatedCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
+{
+    const vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+
+    StressDevice27<StressBC::StressInterpolatedCompressible, false><<<grid.grid, grid.threads>>>(
+        getStressBCGridParameter(parameterDevice), *boundaryCondition, parameterDevice->momentumWallModel);
+    getLastCudaError("StressDevice27<StressBC::StressInterpolatedCompressible> execution failed");
 }
 
 //! \}

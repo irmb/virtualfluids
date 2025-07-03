@@ -51,13 +51,11 @@ struct GridParameter
 };
 GridParameter getStressBCGridParameter(LBMSimulationParameter* parameterDevice);
 
-
-void StressCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
-
 void StressBounceBackCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
-void StressBounceBackPressureCompressible(LBMSimulationParameter* parameterDevice,
-                                          QforBoundaryConditions* boundaryCondition);
+void StressBounceBackWithPressureCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+
+void StressInterpolatedCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 #endif
 

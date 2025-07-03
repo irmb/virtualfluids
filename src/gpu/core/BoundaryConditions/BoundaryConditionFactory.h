@@ -115,12 +115,12 @@ public:
 
     //! \brief An enumeration for selecting a stress boundary condition
     enum class StressBC {
-        //! - StressCompressible
-        StressCompressible,
-        //! - StressBounceBack
+        //! - StressBounceBackCompressible
         StressBounceBackCompressible,
-        //! - StressPressureBounceBack
-        StressBounceBackPressureCompressible,
+        //! - StressBounceBackWithPressureCompressible
+        StressBounceBackWithPressureCompressible,
+        //! - StressInterpolatedCompressible
+        StressInterpolatedCompressible,
         //! - NotSpecified =  the user did not set a boundary condition
         NotSpecified
     };
