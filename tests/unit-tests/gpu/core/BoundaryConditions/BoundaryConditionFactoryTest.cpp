@@ -290,11 +290,17 @@ TEST(BoundaryConditionFactoryTest, stressBoundaryConditions)
     EXPECT_TRUE(*bcTarget == StressBounceBackCompressible)
         << "The returned boundary condition is not the expected function StressBounceBackCompressible.";
 
-    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressCompressible);
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackWithPressureCompressible);
     bc = bcFactory.getStressBoundaryConditionPost();
     bcTarget = *bc.target<bcFunction>();
-    EXPECT_TRUE(*bcTarget == StressCompressible)
-        << "The returned boundary condition is not the expected function StressCompressible.";
+    EXPECT_TRUE(*bcTarget == StressBounceBackWithPressureCompressible)
+        << "The returned boundary condition is not the expected function StressBounceBackWithPressureCompressible.";
+
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressInterpolatedCompressible);
+    bc = bcFactory.getStressBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == StressInterpolatedCompressible)
+        << "The returned boundary condition is not the expected function StressInterpolatedCompressible.";
 }
 
 TEST(BoundaryConditionFactoryTest, hasDirectionalPressureBoundaryCondition_whenDirectionalBC_returnsTrue)
