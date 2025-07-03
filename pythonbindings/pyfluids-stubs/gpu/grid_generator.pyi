@@ -90,9 +90,9 @@ class LevelGridBuilder(GridBuilder):
         normal_y: float,
         normal_z: float,
         sampling_offset: int,
-        z0: float,
-        dx: float,
-        q: float = ...,
+        von_karman_constant: float,
+        roughness_length: float,
+        delta_x: float,
     ) -> None: ...
     def set_velocity_boundary_condition(self, side_type: gpu.SideType, vx: float, vy: float, vz: float) -> None: ...
     def set_periodic_shift_on_x_boundary_in_y_direction(self, shift: float) -> None: ...
