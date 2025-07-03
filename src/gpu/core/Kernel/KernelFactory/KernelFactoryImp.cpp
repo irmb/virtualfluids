@@ -108,6 +108,9 @@ std::shared_ptr<Kernel> KernelFactoryImp::makeKernel(std::shared_ptr<Parameter> 
             case lbm::TurbulenceModel::Smagorinsky:
                 newKernel = K17CompressibleNavierStokes<lbm::TurbulenceModel::Smagorinsky>::getNewInstance(para, level);
                 break;
+            case lbm::TurbulenceModel::AMDStratified:
+                newKernel = K17CompressibleNavierStokes<lbm::TurbulenceModel::AMDStratified>::getNewInstance(para, level);
+                break;
             case lbm::TurbulenceModel::QR:
                 newKernel = K17CompressibleNavierStokes<lbm::TurbulenceModel::QR>::getNewInstance(para, level);
                 break;
