@@ -50,7 +50,7 @@
 #include "inverseMomentumExchange.cuh"
 #include "wallModelMoninObukhov.h"
 
-template <BoundaryConditionFactory::StressBC stressBCType>
+template <BoundaryConditionFactory::StressBC stressBCType, bool delayed>
 __global__ void StressDevice27(GridParameter gridParams, BoundaryParameter boundaryParams,
                                WallModelParameters wallModelParams)
 {
@@ -84,8 +84,7 @@ __global__ void StressDevice27(GridParameter gridParams, BoundaryParameter bound
 
     real drho;
     real3 velocityNode;
-    vf::lbm::getCompressibleMacroscopicValues(populations, drho, velocityNode.x, velocityNode.y,
-                                              velocityNode.z);
+    vf::lbm::getCompressibleMacroscopicValues(populations, drho, velocityNode.x, velocityNode.y, velocityNode.z);
     const real density = c1o1;
 
     const real3 wallNormal { boundaryParams.normalX[nodeIndex], boundaryParams.normalY[nodeIndex],
@@ -121,8 +120,8 @@ __global__ void StressDevice27(GridParameter gridParams, BoundaryParameter bound
     const real samplingDistance = wallModelParams.samplingDistance[nodeIndex];
     const real roughnessLength = wallModelParams.roughnessLength[nodeIndex];
     const real vonKarmanConstant = wallModelParams.vonKarmanConstant[nodeIndex];
-    const real frictionVelocity =
-        computeFrictionVelocity(velocityExchangeLocationMeanWallParallelMagnitude, vonKarmanConstant, samplingDistance, roughnessLength, c0o1);
+    const real frictionVelocity = computeFrictionVelocity(velocityExchangeLocationMeanWallParallelMagnitude,
+                                                          vonKarmanConstant, samplingDistance, roughnessLength, c0o1);
     const real3 wallShearStress =
         computeWallShearStress(frictionVelocity, velocityNodeWallParallel, velocityNodeMeanWallParallelMagnitude, density);
 
@@ -135,45 +134,45 @@ __global__ void StressDevice27(GridParameter gridParams, BoundaryParameter bound
 
     switch (stressBCType) {
         case StressBC::StressBounceBackCompressible:
-            computeBouncedBackDistributionsBB(subgridDistances, populations, linkIsCut,
-                                              populationsBouncedBack, nodeIndex);
+            computeBouncedBackDistributionsBB(subgridDistances, populations, linkIsCut, populationsBouncedBack, nodeIndex);
             break;
         case StressBC::StressBounceBackPressureCompressible:
-            computeBouncedBackDistributionsBBPressure(subgridDistances, drho, populations, linkIsCut,
-                                                      populationsBouncedBack, nodeIndex);
+            computeBouncedBackDistributionsBBPressure(subgridDistances, drho, populations, linkIsCut, populationsBouncedBack,
+                                                      nodeIndex);
             break;
         case StressBC::StressCompressible: {
             const real relaxationFrequency = vf::lbm::calculateOmegaWithTurbulentViscosity(
                 gridParams.relaxationFrequency, gridParams.turbulentViscosity[k_000]);
             computeBouncedBackDistributionsInterpolated(subgridDistances, velocityNode, drho, relaxationFrequency,
-                                                        populations, linkIsCut, populationsBouncedBack,
-                                                        nodeIndex);
+                                                        populations, linkIsCut, populationsBouncedBack, nodeIndex);
         } break;
     }
 
-    const real3 wallMomentumBounceBack =
-        computeWallMomentumBounceBack(linkIsCut, populationsBouncedBack, populations);
+    real3 wallMomentum = computeWallMomentumBounceBack(linkIsCut, populationsBouncedBack, populations);
 
     const real wallArea = c1o1;
     const real subgridDistance = (subgridDistances.q[d00M])[nodeIndex];
     const real interpolationFactor = stressBCType == StressBC::StressCompressible ? c1o1 + subgridDistance : c1o1;
 
     const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocityExchangeLocation, wallShearStress, density,
-                                                           interpolationFactor, wallArea, wallMomentumBounceBack);
+                                                           interpolationFactor, wallArea, wallMomentum);
+    if (delayed)
+        wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack,
+                                                                fakeWallVelocity, density, interpolationFactor, listIndices);
+                                                                
+    else {
+        const Distributions27 outgoingDistributions = vf::gpu::getDistributionReferences27(
+            gridParams.distributions, gridParams.numberOfNodes, !gridParams.isEvenTimestep);
 
-    const real3 wallMomentumVelocity = writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack,
-                                                          fakeWallVelocity, density, interpolationFactor, listIndices);
-    // const Distributions27 outgoingDistributions =
-    //     vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes, !gridParams.isEvenTimestep);
-
-    // const real3 wallMomentumVelocity = writeDistributionsHalfWayBB(outgoingDistributions, linkIsCut, distributionsBouncedBack,
-    //                                                       fakeWallVelocity, density, interpolationFactor, listIndices);
+        wallMomentum += writeDistributionsBB(outgoingDistributions, linkIsCut, populationsBouncedBack,
+                                                                fakeWallVelocity, density, interpolationFactor, listIndices);
+    };
 
     if (wallModelParams.hasMonitor) {
         wallModelParams.frictionVelocity[nodeIndex] = frictionVelocity;
-        wallModelParams.forceX[nodeIndex] = wallMomentumBounceBack.x + wallMomentumVelocity.x;
-        wallModelParams.forceY[nodeIndex] = wallMomentumBounceBack.y + wallMomentumVelocity.y;
-        wallModelParams.forceZ[nodeIndex] = wallMomentumBounceBack.z + wallMomentumVelocity.z;
+        wallModelParams.forceX[nodeIndex] = wallMomentum.x;
+        wallModelParams.forceY[nodeIndex] = wallMomentum.y;
+        wallModelParams.forceZ[nodeIndex] = wallMomentum.z;
     }
 }
 #endif

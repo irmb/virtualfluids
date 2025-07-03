@@ -63,7 +63,7 @@ void StressCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryCon
 {
     const vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
 
-    StressDevice27<StressBC::StressCompressible>
+    StressDevice27<StressBC::StressCompressible, false>
         <<<grid.grid, grid.threads>>>(getStressBCGridParameter(parameterDevice), getBoundaryParameter(boundaryCondition),
                                       parameterDevice->momentumWallModel);
     getLastCudaError("StressDevice27<StressBC::InterpolatedBounceBackWithPressure> execution failed");
@@ -73,7 +73,7 @@ void StressBounceBackCompressible(LBMSimulationParameter* parameterDevice, QforB
 {
     const vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
 
-    StressDevice27<StressBC::StressBounceBackCompressible><<<grid.grid, grid.threads>>>(getStressBCGridParameter(parameterDevice),
+    StressDevice27<StressBC::StressBounceBackCompressible, false><<<grid.grid, grid.threads>>>(getStressBCGridParameter(parameterDevice),
                                                                                 getBoundaryParameter(boundaryCondition),
                                                                                 parameterDevice->momentumWallModel);
     getLastCudaError("StressDevice27<StressBC::SimpleBounceBack> execution failed");
@@ -83,7 +83,7 @@ void StressBounceBackPressureCompressible(LBMSimulationParameter* parameterDevic
 {
     const vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
 
-    StressDevice27<StressBC::StressBounceBackPressureCompressible>
+    StressDevice27<StressBC::StressBounceBackPressureCompressible, false>
         <<<grid.grid, grid.threads>>>(getStressBCGridParameter(parameterDevice), getBoundaryParameter(boundaryCondition),
                                       parameterDevice->momentumWallModel);
     getLastCudaError("StressDevice27<StressBC::SimpleBounceBackWithPressure> execution failed");
