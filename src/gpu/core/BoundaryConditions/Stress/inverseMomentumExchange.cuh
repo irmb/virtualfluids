@@ -43,23 +43,6 @@
 #include "Calculation/Calculation.h"
 #include "Utilities/KernelUtilities.h"
 
-constexpr real smoothAndSaveMean(real instantaneous, real filterFrequency, real& mean)
-{
-    const real smoothed = filterFrequency * instantaneous + (vf::basics::constant::c1o1 - filterFrequency) * mean;
-    mean = smoothed;
-    return smoothed;
-}
-
-constexpr real3 computeWallParallelVector(real3 quantity, real3 normal)
-{
-    return quantity - normal * dot(quantity, normal);
-}
-
-inline __device__ real computeWallParallelVelocityMagnitude(real3 quantity, real3 normal)
-{
-    return std::sqrt(square(computeWallParallelVector(quantity, normal)));
-}
-
 constexpr void findCutLinks(bool* cutQs, const SubgridDistances27& subgridD, const uint nodeIndex)
 {
     forEachNonRestDirection([&](auto dir) {
@@ -68,8 +51,8 @@ constexpr void findCutLinks(bool* cutQs, const SubgridDistances27& subgridD, con
     });
 }
 
-constexpr void computeBouncedBackDistributionsBB(const SubgridDistances27& subgridD, const real* distributionsPostCollision,
-                                                 bool* linkIsCut, real* distributionsBouncedBack, const uint nodeIndex)
+constexpr void computeBouncedBackDistributionsBB(const SubgridDistances27& subgridD, const real* populations,
+                                                 bool* linkIsCut, real* populationsBouncedBack, const uint nodeIndex)
 {
     findCutLinks(linkIsCut, subgridD, nodeIndex);
 
@@ -77,13 +60,13 @@ constexpr void computeBouncedBackDistributionsBB(const SubgridDistances27& subgr
         if (!linkIsCut[dir])
             return;
         const size_t inverseDirection = vf::lbm::dir::inverseDir<dir>();
-        distributionsBouncedBack[inverseDirection] = distributionsPostCollision[dir];
+        populationsBouncedBack[inverseDirection] = populations[dir];
     });
 }
 
 constexpr void computeBouncedBackDistributionsBBPressure(const SubgridDistances27& subgridD, const real drho,
-                                                         const real* distributionsPostCollision, bool* linkIsCut,
-                                                         real* distributionsBouncedBack, const uint nodeIndex)
+                                                         const real* populations, bool* linkIsCut,
+                                                         real* populationsBouncedBack, const uint nodeIndex)
 {
     findCutLinks(linkIsCut, subgridD, nodeIndex);
 
@@ -92,13 +75,13 @@ constexpr void computeBouncedBackDistributionsBBPressure(const SubgridDistances2
             return;
         const size_t inverseDirection = vf::lbm::dir::inverseDir<dir>();
         const real weight = vf::lbm::dir::getWeight<dir>();
-        distributionsBouncedBack[inverseDirection] = distributionsPostCollision[dir] - weight * drho;
+        populationsBouncedBack[inverseDirection] = populations[dir] - weight * drho;
     });
 }
 
 constexpr void computeBouncedBackDistributionsInterpolated(const SubgridDistances27& subgridD, real3 velocity, real drho,
-                                                           real relaxationFrequency, const real* distributionsPostCollision,
-                                                           bool* linkIsCut, real* distributionsBouncedBack, uint nodeIndex)
+                                                           real relaxationFrequency, const real* populations,
+                                                           bool* linkIsCut, real* populationsBouncedBack, uint nodeIndex)
 {
     using namespace vf::lbm::dir;
     forEachNonRestDirection([&](auto dir) {
@@ -113,27 +96,24 @@ constexpr void computeBouncedBackDistributionsInterpolated(const SubgridDistance
         const real weight = getWeight<dir>();
         const size_t inverseDirection = inverseDir<dir>();
         const real cu = getVelocity<dir>(velocity.x, velocity.y, velocity.z);
-        const real cu_sq =
-            c3o2 * (velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z) * (c1o1 + drho);
-        const real populationPostCollision = distributionsPostCollision[dir];
+        const real cu_sq = c3o2 * square(velocity) * (c1o1 + drho);
         const real feq = vf::gpu::getEquilibriumForBC(drho, cu, cu_sq, weight);
-        const real fInverse = distributionsPostCollision[inverseDirection];
 
-        const real fBouncedBack = vf::gpu::getInterpolatedDistributionForNoSlipWithPressureBC(
-            subgridDistance, populationPostCollision, fInverse, feq, relaxationFrequency, drho, weight);
+        const real populationBouncedBack = vf::gpu::getInterpolatedDistributionForNoSlipWithPressureBC(
+            subgridDistance, populations[dir], populations[inverseDirection], feq, relaxationFrequency, drho, weight);
 
-        distributionsBouncedBack[inverseDirection] = fBouncedBack;
+        populationsBouncedBack[inverseDirection] = populationBouncedBack;
     });
 }
 
 template <size_t direction>
-constexpr void addWallMomentum(const bool* linkIsCut, const real* distributionsBouncedBack,
-                               const real* distributionsPostCollision, real3& wallMomentum)
+constexpr void addWallMomentum(const bool* linkIsCut, const real* populationsBouncedBack, const real* populations,
+                               real3& wallMomentum)
 {
 }
 
-constexpr real3 computeWallMomentumBounceBack(const bool* linkIsCut, const real* distributionsBouncedBack,
-                                              const real* distributionsPostCollision)
+constexpr real3 computeWallMomentumBounceBack(const bool* linkIsCut, const real* populationsBouncedBack,
+                                              const real* populations)
 {
     using namespace vf::lbm::dir;
     real3 wallMomentum {};
@@ -142,7 +122,7 @@ constexpr real3 computeWallMomentumBounceBack(const bool* linkIsCut, const real*
         if (!linkIsCut[dir])
             return;
         const size_t inverseDirection = inverseDir<dir>();
-        const real momentum = distributionsPostCollision[dir] + distributionsBouncedBack[inverseDirection];
+        const real momentum = populations[dir] + populationsBouncedBack[inverseDirection];
 
         wallMomentum.x += momentum * getComponentX<dir>();
         wallMomentum.y += momentum * getComponentY<dir>();
@@ -157,7 +137,7 @@ constexpr real3 computeFakeWallVelocity(real3 wallNormal, real3 velocityForClipp
 {
 
     const real3 wallModelForce = wallShearStress * wallArea;
-    const real3 wallParallelMomentum = computeWallParallelVector(wallMomentum, wallNormal);
+    const real3 wallParallelMomentum = wallMomentum - wallNormal * dot(wallMomentum, wallNormal);
 
     const real3 force = wallModelForce - wallParallelMomentum;
 
@@ -173,13 +153,11 @@ constexpr real3 computeFakeWallVelocity(real3 wallNormal, real3 velocityForClipp
              std::clamp(-c1o1 * force.z * interpolationFactor / density, -clipVelocity.z, clipVelocity.z) };
 }
 
-constexpr real3 writeDistributionsBB(const Distributions27& distributionReferences, const bool* linkIsCut,
-                                     const real* distributionsBouncedBack, real3 velocity, real density,
+constexpr real3 writeDistributionsBB(const Distributions27& populationReferences, const bool* linkIsCut,
+                                     const real* populationsBouncedBack, const real3 velocity, const real density,
                                      real interpolationFactor, const vf::gpu::ListIndices& listIndices)
 {
     using namespace vf::lbm::dir;
-
-    velocity /= interpolationFactor;
 
     real3 wallMomentumAdded {};
 
@@ -187,11 +165,10 @@ constexpr real3 writeDistributionsBB(const Distributions27& distributionReferenc
         if (!linkIsCut[dir])
             return;
         const size_t inverseDirection = inverseDir<dir>();
-        const real addedMomentum = -c6o1 * density * getWeight<dir>() * getVelocity<dir>(velocity.x, velocity.y, velocity.z);
-        const auto writeIndex = listIndices.getIndex<inverseDirection>();
-
-        (distributionReferences.f[inverseDirection])[writeIndex] =
-            distributionsBouncedBack[inverseDirection] + addedMomentum;
+        const real addedMomentum =
+            -c6o1 * density * getWeight<dir>() * getVelocity<dir>(velocity.x, velocity.y, velocity.z) / interpolationFactor;
+        vf::gpu::writeInInverseDirection<dir>(populationsBouncedBack[inverseDirection] + addedMomentum, listIndices,
+                                              populationReferences);
 
         wallMomentumAdded.x += addedMomentum * getComponentX<dir>();
         wallMomentumAdded.y += addedMomentum * getComponentY<dir>();

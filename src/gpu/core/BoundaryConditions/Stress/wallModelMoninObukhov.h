@@ -46,6 +46,24 @@
 static constexpr real stabilityFactorMomentum = 4.8F;
 static constexpr real stabilityFactorTemperature = 7.8F;
 
+constexpr real smoothAndSaveMean(real instantaneous, real filterFrequency, real& mean)
+{
+    const real smoothed = filterFrequency * instantaneous + (vf::basics::constant::c1o1 - filterFrequency) * mean;
+    mean = smoothed;
+    return smoothed;
+}
+
+constexpr real3 computeWallParallelVector(real3 quantity, real3 normal)
+{
+    return quantity - normal * dot(quantity, normal);
+}
+
+
+inline __device__ real computeWallParallelVelocityMagnitude(real3 quantity, real3 normal)
+{
+    return std::sqrt(square(computeWallParallelVector(quantity, normal)));
+}
+
 struct StabilityCorrections
 {
     real momentum, temperature;
