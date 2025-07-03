@@ -132,7 +132,7 @@ public:
 
     uint getStressSize(int level) const override;
     void getStressValues(real* normalX, real* normalY, real* normalZ,
-                         int* indices, int* samplingIndices, real* samplingDistances, real* vonKarmanConstants,
+                         int* indices, uint* samplingIndices, real* samplingDistances, real* vonKarmanConstants,
                          real* roughnessLengths, int level) const override;
     void getStressQs(real* qs[27], int level) const override;
 

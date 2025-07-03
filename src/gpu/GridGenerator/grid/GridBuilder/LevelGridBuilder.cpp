@@ -623,7 +623,7 @@ uint LevelGridBuilder::getStressSize(int level) const
 }
 
 void LevelGridBuilder::getStressValues( real* normalX, real* normalY, real* normalZ,
-                                        int* indices, int* samplingIndices, real* samplingDistances, real* vonKarmanConstants, real* roughnessLengths, int level) const
+                                        int* indices, uint* samplingIndices, real* samplingDistances, real* vonKarmanConstants, real* roughnessLengths, int level) const
 {
 
     uint allIndicesCounter = 0;
@@ -632,7 +632,7 @@ void LevelGridBuilder::getStressValues( real* normalX, real* normalY, real* norm
         for (uint index = 0; index < boundaryCondition->indices.size(); index++)
         {
             indices[allIndicesCounter]          = grids[level]->getSparseIndex(boundaryCondition->indices[index]) + 1;
-            samplingIndices[allIndicesCounter]  = grids[level]->getSparseIndex(boundaryCondition->getSamplingIndex(index)) + 1;
+            samplingIndices[allIndicesCounter]  = static_cast<uint>(grids[level]->getSparseIndex(boundaryCondition->getSamplingIndex(index)) + 1);
 
             normalX[allIndicesCounter] = boundaryCondition->getNormalx(index);
             normalY[allIndicesCounter] = boundaryCondition->getNormaly(index);

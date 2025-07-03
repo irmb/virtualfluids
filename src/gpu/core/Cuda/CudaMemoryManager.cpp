@@ -1013,7 +1013,6 @@ void CudaMemoryManager::cudaAllocStressBC(int lev)
     // Host
     checkCudaErrors(cudaMallocHost((void**)&(parH.stressBC.q27[0]), parameter->getD3Qxx() * memSizeReal));
     checkCudaErrors(cudaMallocHost((void**)&(parH.stressBC.k), memSizeInt));
-    checkCudaErrors(cudaMallocHost((void**)&(parH.stressBC.kN), memSizeInt));
     checkCudaErrors(cudaMallocHost((void**)&(parH.stressBC.normalX), memSizeReal));
     checkCudaErrors(cudaMallocHost((void**)&(parH.stressBC.normalY), memSizeReal));
     checkCudaErrors(cudaMallocHost((void**)&(parH.stressBC.normalZ), memSizeReal));
@@ -1021,7 +1020,6 @@ void CudaMemoryManager::cudaAllocStressBC(int lev)
     // Device
     checkCudaErrors(cudaMalloc((void**)&(parD.stressBC.q27[0]), parameter->getD3Qxx() * memSizeReal));
     checkCudaErrors(cudaMalloc((void**)&(parD.stressBC.k), memSizeInt));
-    checkCudaErrors(cudaMalloc((void**)&(parD.stressBC.kN), memSizeInt));
     checkCudaErrors(cudaMalloc((void**)&(parD.stressBC.normalX), memSizeReal));
     checkCudaErrors(cudaMalloc((void**)&(parD.stressBC.normalY), memSizeReal));
     checkCudaErrors(cudaMalloc((void**)&(parD.stressBC.normalZ), memSizeReal));
@@ -1039,7 +1037,6 @@ void CudaMemoryManager::cudaCopyStressBC(int lev)
 
     checkCudaErrors( cudaMemcpy(parD.stressBC.q27[0],  parH.stressBC.q27[0], parameter->getD3Qxx()* memSizeReal,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parD.stressBC.k,       parH.stressBC.k,                             memSizeInt,       cudaMemcpyHostToDevice));
-    checkCudaErrors( cudaMemcpy(parD.stressBC.kN,      parH.stressBC.kN,                            memSizeInt,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parD.stressBC.normalX, parH.stressBC.normalX,                       memSizeReal,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parD.stressBC.normalY, parH.stressBC.normalY,                       memSizeReal,       cudaMemcpyHostToDevice));
     checkCudaErrors( cudaMemcpy(parD.stressBC.normalZ, parH.stressBC.normalZ,                       memSizeReal,       cudaMemcpyHostToDevice));
@@ -1049,7 +1046,6 @@ void CudaMemoryManager::cudaFreeStressBC(int lev)
 {
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->stressBC.q27[0]));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->stressBC.k));
-    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->stressBC.kN));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->stressBC.normalX));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->stressBC.normalY));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->stressBC.normalZ));

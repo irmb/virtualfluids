@@ -351,7 +351,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
             cudaMemoryManager->cudaAllocStressBC(level);
             cudaMemoryManager->cudaAllocWallModel(level, para->getHasWallModelMonitor());
             builder->getStressValues(   parH.stressBC.normalX,  parH.stressBC.normalY,  parH.stressBC.normalZ,
-                                        parH.stressBC.k,        parH.stressBC.kN,
+                                        parH.stressBC.k,        parH.momentumWallModel.samplingIndices,
                                         parH.momentumWallModel.samplingDistance, parH.momentumWallModel.vonKarmanConstant, parH.momentumWallModel.roughnessLength,
                                         level);
 
