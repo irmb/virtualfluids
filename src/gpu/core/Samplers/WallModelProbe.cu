@@ -196,6 +196,7 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
     if (nPoints < 1)
         return;
     auto paraDevice = para->getParD(level);
+    auto wallModel = para->getParD(level)->momentumWallModel;
     const int numberOfQuantities = getNumberOfInstantaneousQuantities();
 
     data->timestepTime.push_back(t * para->getScaledTimeRatio(level));
@@ -208,19 +209,19 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
     const real stressFactor = para->getScaledStressRatio(level);
     const real forceFactor = para->getScaledForceRatio(level);
 
-    computeAndSaveMean(paraDevice->stressBC.Vx, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(paraDevice->stressBC.Vy, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(paraDevice->stressBC.Vz, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(wallModel.velocityNodeX, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(wallModel.velocityNodeY, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(wallModel.velocityNodeZ, nPoints, newInstantaneous, velocityFactor);
 
-    computeAndSaveMean(paraDevice->stressBC.Vx1, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(paraDevice->stressBC.Vy1, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(paraDevice->stressBC.Vz1, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(wallModel.velocityExchangeLocationX, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(wallModel.velocityExchangeLocationY, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(wallModel.velocityExchangeLocationZ, nPoints, newInstantaneous, velocityFactor);
 
-    computeAndSaveMean(paraDevice->wallModel.u_star, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(wallModel.frictionVelocity, nPoints, newInstantaneous, velocityFactor);
 
-    computeAndSaveMean(paraDevice->wallModel.Fx, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
-    computeAndSaveMean(paraDevice->wallModel.Fy, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
-    computeAndSaveMean(paraDevice->wallModel.Fz, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
+    computeAndSaveMean(wallModel.forceX, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
+    computeAndSaveMean(wallModel.forceY, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
+    computeAndSaveMean(wallModel.forceZ, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
 
     if (this->evaluatePressureGradient) {
         computeAndSaveIndexBasedMean(paraDevice->forceX_SP, paraDevice->typeOfGridNode, paraDevice->numberOfNodes,
@@ -250,7 +251,7 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
 
 void WallModelProbe::write(int level)
 {
-    auto data = &levelData[level];
+    auto* data = &levelData[level];
 
     if (data->timestepTime.empty())
         return;
