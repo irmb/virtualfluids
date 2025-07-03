@@ -91,6 +91,8 @@ public:
 
     //! \brief An enumeration for selecting a slip boundary condition
     enum class SlipBC {
+        //! SlipBounceBack = slip boundary condition based on bounce back
+        SlipBounceBack,
         //! - SlipCompressible = interpolated slip boundary condition, based on subgrid distances
         SlipCompressible,
         //! With turbulent viscosity -> para->setUseTurbulentViscosity(true) has to be set to true

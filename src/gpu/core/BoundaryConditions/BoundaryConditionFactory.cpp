@@ -152,6 +152,9 @@ BoundaryConditionKernel BoundaryConditionFactory::getSlipBoundaryConditionPost(b
 
     // for descriptions of the boundary conditions refer to the header
     switch (boundaryCondition) {
+        case SlipBC::SlipBounceBack:
+            return SlipBounceBack;
+            break;
         case SlipBC::SlipCompressible:
             return SlipCompressible;
             break;
