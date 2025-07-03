@@ -94,7 +94,7 @@ namespace grid_generator
         .def("set_periodic_boundary_condition", &LevelGridBuilder::setPeriodicBoundaryCondition, py::arg("periodic_x"), py::arg("periodic_y"), py::arg("periodic_z"))
         .def("set_no_slip_boundary_condition", &LevelGridBuilder::setNoSlipBoundaryCondition, py::arg("side_type"))
         .def("set_precursor_boundary_condition", &LevelGridBuilder::setPrecursorBoundaryCondition, py::arg("side_type"), py::arg("file_collection"), py::arg("n_t_read"), py::arg("velocity_x")=c0o1, py::arg("velocity_y")=c0o1, py::arg("velocity_z")=c0o1, py::arg("file_level_to_grid_level_map")=std::vector<uint>())
-        .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("z0"), py::arg("dx"))
+        .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("von_karman_constant"), py::arg("roughness_length"), py::arg("delta_x"))
         .def("set_AD_dirichlet_boundary_condition", &LevelGridBuilder::setADDirichletBoundaryCondition, py::arg("side_type"), py::arg("value"), py::arg("vx"), py::arg("vy"), py::arg("vz"))
         .def("set_AD_neumann_boundary_condition", &LevelGridBuilder::setADNeumannBoundaryCondition, py::arg("side_type"), py::arg("gradient"), py::arg("vx"), py::arg("vy"), py::arg("vz"), py::arg("dx"))
         .def("set_AD_no_flux_boundary_condition", &LevelGridBuilder::setADNoFluxBoundaryCondition, py::arg("side_type"))
