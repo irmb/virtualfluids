@@ -34,34 +34,23 @@
 #ifndef Stress_H
 #define Stress_H
 
-#include "Calculation/Calculation.h"
+#include <basics/DataTypes.h>
 
 struct LBMSimulationParameter;
-class Parameter;
+struct QforBoundaryConditions;
 
-struct LBMSimulationParameter;
 struct GridParameter
 {
     real* distributions;
     real relaxationFrequency;
-    real *turbulentDiffusivity;
-    const real *turbulentViscosity;
-    real *velocityX, *velocityY, *velocityZ;
+    const real* turbulentViscosity;
+    const real *velocityX, *velocityY, *velocityZ;
     const uint *neighborX, *neighborY, *neighborZ;
     unsigned long long numberOfNodes;
     bool isEvenTimestep;
 };
 GridParameter getStressBCGridParameter(LBMSimulationParameter* parameterDevice);
 
-struct BoundaryParameter
-{
-    const int *indices;
-    const int *neighborIndices;
-    real* subgridDistances;
-    uint numberOfBCNodes;
-    const real *normalX, *normalY, *normalZ;
-};
-BoundaryParameter getBoundaryParameter(QforBoundaryConditions* boundaryCondition);
 
 void StressCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 

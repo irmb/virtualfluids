@@ -110,9 +110,7 @@ struct QforBoundaryConditions
    int* k;
    int* kN;
    real* q27[27];
-   real* q19[19];
-   unsigned int numberOfBCnodes=0;
-   int kArray;
+   uint numberOfBCnodes=0;
    real *Vx,      *Vy,      *Vz;
    real *deltaVz, *RhoBC;
    real *normalX, *normalY, *normalZ;
@@ -197,6 +195,22 @@ struct WallModelParameters
    real* forceX;
    real* forceY;
    real* forceZ;
+};
+
+// Struct for surface layer wall model
+struct TemperatureWallModelParameters{
+   real* temperatureExchangeLocation;
+   real* temperatureFirstFluidNode;
+   real* surfaceHeatFlux;
+   real* surfaceTemperature;
+   real* temperatureScale;
+   real* roughnessLength;
+   real* invObukhovLength;
+   real* heatingRate;
+};
+struct SurfaceLayerWallModelParameters{
+   WallModelParameters momentumParameters;
+   TemperatureWallModelParameters temperatureParameters;
 };
 
 

@@ -51,7 +51,7 @@
 #include "wallModelMoninObukhov.h"
 
 template <BoundaryConditionFactory::StressBC stressBCType, bool delayed>
-__global__ void StressDevice27(GridParameter gridParams, BoundaryParameter boundaryParams,
+__global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions boundaryParams,
                                WallModelParameters wallModelParams)
 {
     using namespace vf::basics::constant;
@@ -62,7 +62,7 @@ __global__ void StressDevice27(GridParameter gridParams, BoundaryParameter bound
 
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
 
-    if (nodeIndex >= boundaryParams.numberOfBCNodes)
+    if (nodeIndex >= boundaryParams.numberOfBCnodes)
         return;
 
     //////////////////////////////////////////////////////////////////////////
@@ -73,10 +73,10 @@ __global__ void StressDevice27(GridParameter gridParams, BoundaryParameter bound
         vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes, gridParams.isEvenTimestep);
 
     SubgridDistances27 subgridDistances;
-    vf::gpu::getPointersToSubgridDistances(subgridDistances, boundaryParams.subgridDistances,
-                                           boundaryParams.numberOfBCNodes);
+    vf::gpu::getPointersToSubgridDistances(subgridDistances, boundaryParams.q27[0],
+                                           boundaryParams.numberOfBCnodes);
 
-    const uint k_000 = boundaryParams.indices[nodeIndex];
+    const uint k_000 = boundaryParams.k[nodeIndex];
     const vf::gpu::ListIndices listIndices(k_000, gridParams.neighborX, gridParams.neighborY, gridParams.neighborZ);
 
     real populations[27];
@@ -156,16 +156,17 @@ __global__ void StressDevice27(GridParameter gridParams, BoundaryParameter bound
 
     const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocityExchangeLocation, wallShearStress, density,
                                                            interpolationFactor, wallArea, wallMomentum);
-    if (delayed)
-        wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack,
-                                                                fakeWallVelocity, density, interpolationFactor, listIndices);
-                                                                
+    if (delayed) {
+        wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity,
+                                             density, interpolationFactor, listIndices);
+    }
+
     else {
         const Distributions27 outgoingDistributions = vf::gpu::getDistributionReferences27(
             gridParams.distributions, gridParams.numberOfNodes, !gridParams.isEvenTimestep);
 
-        wallMomentum += writeDistributionsBB(outgoingDistributions, linkIsCut, populationsBouncedBack,
-                                                                fakeWallVelocity, density, interpolationFactor, listIndices);
+        wallMomentum += writeDistributionsBB(outgoingDistributions, linkIsCut, populationsBouncedBack, fakeWallVelocity,
+                                             density, interpolationFactor, listIndices);
     };
 
     if (wallModelParams.hasMonitor) {
