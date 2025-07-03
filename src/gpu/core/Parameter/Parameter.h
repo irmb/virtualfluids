@@ -157,7 +157,7 @@ struct LBMSimulationParameter {
     real *forcing;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores parameters for a wall model
-    WallModelParameters wallModel;
+    WallModelParameters momentumWallModel;
     //////////////////////////////////////////////////////////////////////////
     //! \brief allows reading values for a boundary condition from a file
     std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
