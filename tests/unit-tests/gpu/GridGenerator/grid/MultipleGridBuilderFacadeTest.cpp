@@ -96,7 +96,7 @@ public:
 
     MOCK_METHOD(void, setNoSlipBoundaryCondition, (SideType side), (override));
     MOCK_METHOD(void, setStressBoundaryCondition,
-                (SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real z0, real dx),
+                (SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX),
                 (override));
     MOCK_METHOD(void, setVelocityBoundaryCondition, (SideType sideType, real vx, real vy, real vz), (override));
     MOCK_METHOD(void, setPressureBoundaryCondition, (SideType sideType, real rho), (override));
@@ -452,45 +452,46 @@ TEST_F(MultipleGridBuilderFacadeTest_24subdomains, noSlipPX)
 TEST_F(MultipleGridBuilderFacadeTest_24subdomains, stressMX)
 {
     SideType sideType = SideType::MX;
-    real normalX = 0.1;
-    real normalY = 0.2;
-    real normalZ = 0.3;
-    uint samplingOffset = 1;
-    real z0 = 0.5;
-    real dx = 0.7;
+    const real normalX = 0.1;
+    const real normalY = 0.2;
+    const real normalZ = 0.3;
+    const uint samplingOffset = 1;
+    const real roughnessLength = 0.5;
+    const real vonKarmanConstant = 0.4;
+    const real dx = 0.7;
 
     // process index
     EXPECT_CALL(*mockGridBuilder,
-                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx));
+                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx));
     sut->createGrids(0);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
 
     // process index 9
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder, setStressBoundaryCondition).Times(0);
     sut->createGrids(9);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
 
     // process index 18
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder,
-                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx));
+                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx));
     sut->createGrids(18);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
 
     // process index 23
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder, setStressBoundaryCondition).Times(0);
     sut->createGrids(23);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
 
     EXPECT_CALL(*mockGridBuilder,
-                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx))
+                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx))
         .Times(12);
     for (int i = 0; i < 24; i++) {
         this->createNewSut();
         sut->createGrids(i);
-        sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+        sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
     }
 }
 

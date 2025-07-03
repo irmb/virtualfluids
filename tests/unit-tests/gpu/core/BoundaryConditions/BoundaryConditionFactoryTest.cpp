@@ -96,7 +96,7 @@ TEST(BoundaryConditionFactoryTest, defaultStressBC)
     auto bcFactory = BoundaryConditionFactory();
     auto bc = bcFactory.getStressBoundaryConditionPost();
     EXPECT_THAT(bc, testing::Eq(nullptr));
-    EXPECT_THROW(bc(nullptr, nullptr, 0), std::bad_function_call);
+    EXPECT_THROW(bc(nullptr, nullptr), std::bad_function_call);
 }
 
 TEST(BoundaryConditionFactoryTest, defaultADNoFluxBC)
@@ -286,13 +286,13 @@ TEST(BoundaryConditionFactoryTest, stressBoundaryConditions)
 
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackCompressible);
     auto bc = bcFactory.getStressBoundaryConditionPost();
-    auto bcTarget = *bc.target<bcFunctionParameter>();
+    auto bcTarget = *bc.target<bcFunction>();
     EXPECT_TRUE(*bcTarget == StressBounceBackCompressible)
         << "The returned boundary condition is not the expected function StressBounceBackCompressible.";
 
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressCompressible);
     bc = bcFactory.getStressBoundaryConditionPost();
-    bcTarget = *bc.target<bcFunctionParameter>();
+    bcTarget = *bc.target<bcFunction>();
     EXPECT_TRUE(*bcTarget == StressCompressible)
         << "The returned boundary condition is not the expected function StressCompressible.";
 }
