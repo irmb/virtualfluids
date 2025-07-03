@@ -43,7 +43,7 @@
 #include "Calculation/Calculation.h"
 #include "Utilities/KernelUtilities.h"
 
-constexpr void findCutLinks(bool* cutQs, const SubgridDistances27& subgridD, const uint nodeIndex)
+constexpr void findCutLinks(bool* const cutQs, const SubgridDistances27& subgridD, const uint nodeIndex)
 {
     forEachNonRestDirection([&](auto dir) {
         const real subgridDistance = (subgridD.q[dir])[nodeIndex];
@@ -52,7 +52,7 @@ constexpr void findCutLinks(bool* cutQs, const SubgridDistances27& subgridD, con
 }
 
 constexpr void computeBouncedBackDistributionsBB(const SubgridDistances27& subgridD, const real* populations,
-                                                 bool* linkIsCut, real* populationsBouncedBack, const uint nodeIndex)
+                                                 bool* const linkIsCut, real* populationsBouncedBack, const uint nodeIndex)
 {
     findCutLinks(linkIsCut, subgridD, nodeIndex);
 
@@ -65,7 +65,7 @@ constexpr void computeBouncedBackDistributionsBB(const SubgridDistances27& subgr
 }
 
 constexpr void computeBouncedBackDistributionsBBPressure(const SubgridDistances27& subgridD, const real drho,
-                                                         const real* populations, bool* linkIsCut,
+                                                         const real* populations, bool* const linkIsCut,
                                                          real* populationsBouncedBack, const uint nodeIndex)
 {
     findCutLinks(linkIsCut, subgridD, nodeIndex);
@@ -81,7 +81,7 @@ constexpr void computeBouncedBackDistributionsBBPressure(const SubgridDistances2
 
 constexpr void computeBouncedBackDistributionsInterpolated(const SubgridDistances27& subgridD, real3 velocity, real drho,
                                                            real relaxationFrequency, const real* populations,
-                                                           bool* linkIsCut, real* populationsBouncedBack, uint nodeIndex)
+                                                           bool* const linkIsCut, real* populationsBouncedBack, uint nodeIndex)
 {
     using namespace vf::lbm::dir;
     forEachNonRestDirection([&](auto dir) {
@@ -132,8 +132,8 @@ constexpr real3 computeWallMomentumBounceBack(const bool* linkIsCut, const real*
     return wallMomentum;
 }
 
-constexpr real3 computeFakeWallVelocity(real3 wallNormal, real3 velocityForClipping, real3 wallShearStress, real density,
-                                        real interpolationFactor, real wallArea, real3 wallMomentum)
+constexpr real3 computeFakeWallVelocity(const real3 wallNormal, const real3 velocityForClipping, const real3 wallShearStress, const real density,
+                                        const real interpolationFactor, const real wallArea, const real3 wallMomentum)
 {
 
     const real3 wallModelForce = wallShearStress * wallArea;
@@ -155,7 +155,7 @@ constexpr real3 computeFakeWallVelocity(real3 wallNormal, real3 velocityForClipp
 
 constexpr real3 writeDistributionsBB(const Distributions27& populationReferences, const bool* linkIsCut,
                                      const real* populationsBouncedBack, const real3 velocity, const real density,
-                                     real interpolationFactor, const vf::gpu::ListIndices& listIndices)
+                                     const real interpolationFactor, const vf::gpu::ListIndices& listIndices)
 {
     using namespace vf::lbm::dir;
 
