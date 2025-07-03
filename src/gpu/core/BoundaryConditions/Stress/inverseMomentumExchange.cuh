@@ -81,7 +81,8 @@ constexpr void computeBouncedBackDistributionsBBPressure(const SubgridDistances2
 
 constexpr void computeBouncedBackDistributionsInterpolated(const SubgridDistances27& subgridD, real3 velocity, real drho,
                                                            real relaxationFrequency, const real* populations,
-                                                           bool* const linkIsCut, real* populationsBouncedBack, uint nodeIndex)
+                                                           bool* const linkIsCut, real* populationsBouncedBack,
+                                                           uint nodeIndex)
 {
     using namespace vf::lbm::dir;
     forEachNonRestDirection([&](auto dir) {
@@ -132,8 +133,10 @@ constexpr real3 computeWallMomentumBounceBack(const bool* linkIsCut, const real*
     return wallMomentum;
 }
 
-inline __device__ real3 computeFakeWallVelocity(const real3 wallNormal, const real3 velocityForClipping, const real3 wallShearStress, const real density,
-                                        const real interpolationFactor, const real wallArea, const real3 wallMomentum)
+inline __device__ real3 computeFakeWallVelocity(const real3 wallNormal, const real3 velocityForClipping,
+                                                const real3 wallShearStress, const real density,
+                                                const real interpolationFactor, const real wallArea,
+                                                const real3 wallMomentum)
 {
 
     const real3 wallModelForce = wallShearStress * wallArea;
@@ -155,7 +158,7 @@ inline __device__ real3 computeFakeWallVelocity(const real3 wallNormal, const re
 
 constexpr real3 writeDistributionsBB(const Distributions27& populationReferences, const bool* linkIsCut,
                                      const real* populationsBouncedBack, const real3 velocity, const real density,
-                                     const real interpolationFactor, const vf::gpu::ListIndices& listIndices)
+                                     const vf::gpu::ListIndices& listIndices)
 {
     using namespace vf::lbm::dir;
 
@@ -165,8 +168,32 @@ constexpr real3 writeDistributionsBB(const Distributions27& populationReferences
         if (!linkIsCut[dir])
             return;
         const size_t inverseDirection = inverseDir<dir>();
-        const real addedMomentum =
-            -c6o1 * density * getWeight<dir>() * getVelocity<dir>(velocity.x, velocity.y, velocity.z) / interpolationFactor;
+        const real addedMomentum = -c6o1 * density * getWeight<dir>() * getVelocity<dir>(velocity.x, velocity.y, velocity.z);
+        vf::gpu::writeInInverseDirection<dir>(populationsBouncedBack[inverseDirection] + addedMomentum, listIndices,
+                                              populationReferences);
+
+        wallMomentumAdded.x += addedMomentum * getComponentX<dir>();
+        wallMomentumAdded.y += addedMomentum * getComponentY<dir>();
+        wallMomentumAdded.z += addedMomentum * getComponentZ<dir>();
+    });
+    return wallMomentumAdded;
+}
+
+constexpr real3 writeDistributionsInterpolatedBB(const Distributions27& populationReferences, const bool* linkIsCut,
+                                                 const real* populationsBouncedBack, const real3 velocity,
+                                                 const real density, const SubgridDistances27& subgridDistances,
+                                                 const vf::gpu::ListIndices& listIndices, const uint nodeIndex)
+{
+    using namespace vf::lbm::dir;
+
+    real3 wallMomentumAdded {};
+
+    forEachNonRestDirection([&](auto dir) {
+        if (!linkIsCut[dir])
+            return;
+        const size_t inverseDirection = inverseDir<dir>();
+        const real microVelocity = getVelocity<dir>(velocity.x, velocity.y, velocity.z);
+        const real addedMomentum = -c6o1 * density * getWeight<dir>() * microVelocity / subgridDistances.q[dir][nodeIndex];
         vf::gpu::writeInInverseDirection<dir>(populationsBouncedBack[inverseDirection] + addedMomentum, listIndices,
                                               populationReferences);
 

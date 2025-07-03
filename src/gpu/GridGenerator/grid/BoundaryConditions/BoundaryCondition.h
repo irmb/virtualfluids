@@ -35,6 +35,7 @@
 #define BoundaryCondition_H
 
 #include <algorithm>
+#include <iterator>
 #include <vector>
 #include <functional>
 
@@ -197,6 +198,75 @@ public:
 
     void setAdditionalIndices(const SPtr<Grid>& grid, uint index) override;
 
+};
+
+class SurfaceLayerBoundaryCondition : public StressBoundaryCondition
+{
+public:
+    static SPtr<SurfaceLayerBoundaryCondition> make(real normalX, real normalY, real normalZ, uint samplingOffset,
+                                                    real vonKarmanConstant, real roughnessLength,
+                                                    real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate)
+    {
+        return SPtr<SurfaceLayerBoundaryCondition>(
+            new SurfaceLayerBoundaryCondition(normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength,
+                                              roughnessLengthTemperature, surfaceHeatFlux, surfaceTemperature, heatingRate));
+    }
+
+    real roughnessLengthTemperature, surfaceHeatFlux, surfaceTemperature, heatingRate;
+    std::vector<real> roughnessLengthTemperatureList, surfaceHeatFluxList, surfaceTemperatureList, heatingRateList;
+
+protected:
+    SurfaceLayerBoundaryCondition(real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
+                                  real roughnessLength, real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature,
+                                  real heatingRate)
+        : StressBoundaryCondition(normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength),
+          roughnessLengthTemperature(roughnessLengthTemperature), surfaceHeatFlux(surfaceHeatFlux), surfaceTemperature(surfaceTemperature), heatingRate(heatingRate)
+    {
+    }
+
+public:
+    void fillLists()
+    {
+        StressBoundaryCondition::fillLists();
+        std::fill_n(std::back_inserter(roughnessLengthTemperatureList), indices.size(), roughnessLengthTemperature);
+        std::fill_n(std::back_inserter(surfaceHeatFluxList), indices.size(), surfaceHeatFlux);
+        std::fill_n(std::back_inserter(surfaceTemperatureList), indices.size(), surfaceTemperature);
+        std::fill_n(std::back_inserter(heatingRateList), indices.size(), heatingRate);
+        std::fill_n(std::back_inserter(roughnessLengthTemperatureList), indices.size(), roughnessLengthTemperature);
+    }
+
+    real getRoughnessLengthTemperature() const
+    {
+        return this->roughnessLengthTemperature;
+    }
+    real getRoughnessLengthTemperature(uint index)
+    {
+        return this->roughnessLengthTemperatureList[index];
+    }
+    real getSurfaceHeatFlux() const
+    {
+        return this->surfaceHeatFlux;
+    }
+    real getSurfaceHeatFlux(uint index)
+    {
+        return this->surfaceHeatFluxList[index];
+    }
+    real getSurfaceTemperature() const
+    {
+        return this->surfaceTemperature;
+    }
+    real getSurfaceTemperature(uint index)
+    {
+        return this->surfaceTemperatureList[index];
+    }
+    real getHeatingRate() const
+    {
+        return this->heatingRate;
+    }
+    real getHeatingRate(uint index)
+    {
+        return this->heatingRateList[index];
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -33,6 +33,7 @@
 //=======================================================================================
 #include "LevelGridBuilder.h"
 
+#include <numeric>
 #include <stdio.h>
 #include <iostream>
 #include <algorithm>
@@ -143,6 +144,47 @@ void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
         boundaryConditions[level]->stressBoundaryConditions.push_back(stressBoundaryCondition);
 
         VF_LOG_INFO("Set Stress BC on level {} with {}", level, stressBoundaryCondition->indices.size());
+    }
+}
+//=======================================================================================
+//! \brief Set surface layer boundary concdition using iMEM
+//! \param normalX x-component of normal vector pointing into the fluid domain
+//! \param normalY y-component of normal vector pointing into the fluid domain
+//! \param normalZ z-component of normal vector pointing into the fluid domain
+//! \param samplingOffset number of grid points above boundary where velocity for wall model is sampled. First node off the wall is 1
+//! \param roughnessLength roughness length [m]
+//! \param roughnessLengthTemperature roughness length for temperature profile [m]
+//! \param surfaceHeatFlux desired heat flux normalized by density and specific heat capacity [Km/s]
+//! \param surfaceTemperature initial temperature on the surface, relative to reference temperature [K]
+//! \param heatingRate heating rate at boundary [K/s]
+//! \param deltaX grid spacing of level 0 [m]
+//! \param deltaT time step size of level 0 [s]
+void LevelGridBuilder::setSurfaceLayerBoundaryCondition(SideType sideType, real normalX,
+                                                        real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
+                                                        real roughnessLength, real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate,
+                                                        real deltaX, real deltaT)
+{
+    for (uint level = 0; level < getNumberOfGridLevels(); level++) {
+        const real deltaXLevel = deltaX * std::exp2(-static_cast<int>(level));
+        const real deltaTLevel = deltaT * std::exp2(-static_cast<int>(level));
+        const real normalizedRoughnessLength = roughnessLength / deltaXLevel;
+        const real normalizedRoughnessLengthTemperature = roughnessLengthTemperature / deltaXLevel;
+        const real normalizedSurfaceHeatFlux = surfaceHeatFlux * deltaT / deltaX;
+        const real normalizedHeatingRate = heatingRate * deltaTLevel;
+
+        SPtr<SurfaceLayerBoundaryCondition> surfaceLayerBoundaryCondition = SurfaceLayerBoundaryCondition::make(
+            normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, normalizedRoughnessLength, normalizedRoughnessLengthTemperature,
+            normalizedSurfaceHeatFlux, surfaceTemperature, normalizedHeatingRate);
+        auto side = SideFactory::make(sideType);
+
+        surfaceLayerBoundaryCondition->side = side;
+        surfaceLayerBoundaryCondition->side->addIndices(grids, level, surfaceLayerBoundaryCondition);
+
+        surfaceLayerBoundaryCondition->fillLists();
+
+        boundaryConditions[level]->surfaceLayerBoundaryConditions.push_back(surfaceLayerBoundaryCondition);
+
+        VF_LOG_INFO("Set SurfaceLayer BC on level {} with {}", level, surfaceLayerBoundaryCondition->indices.size());
     }
 }
 
@@ -661,6 +703,66 @@ void LevelGridBuilder::getStressQs(real* qs[27], int level) const
         }
     }
 }
+uint LevelGridBuilder::getSurfaceLayerSize(int level) const
+{
+    uint size = 0;
+    for (auto& boundaryCondition : boundaryConditions[level]->surfaceLayerBoundaryConditions)
+    {
+        size += uint(boundaryCondition->indices.size());
+    }
+    return size;
+}
+
+void LevelGridBuilder::getSurfaceLayerValues(real* normalX, real* normalY, real* normalZ, int* indices,
+                                             real* samplingDistances, uint* samplingIndices, real* vonKaramnConstants, real* roughnessLengths,
+                                             real* roughnessLengthsTemperature,
+                                             real* surfaceHeatFluxes,
+                                             real* surfaceTemperatures,
+                                             real* heatingRates, int level) const
+{
+
+    uint allIndicesCounter = 0;
+    for (auto& boundaryCondition : boundaryConditions[level]->surfaceLayerBoundaryConditions)
+    {
+        for (uint index = 0; index < boundaryCondition->indices.size(); index++)
+        {
+            indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[index]) + 1;
+
+            normalX[allIndicesCounter] = boundaryCondition->getNormalx(index);
+            normalY[allIndicesCounter] = boundaryCondition->getNormaly(index);
+            normalZ[allIndicesCounter] = boundaryCondition->getNormalz(index);
+
+            samplingDistances[allIndicesCounter] = boundaryCondition->getSamplingDistance(index);
+            samplingIndices[allIndicesCounter]  = grids[level]->getSparseIndex(boundaryCondition->getSamplingIndex(index)) + 1;
+            vonKaramnConstants[allIndicesCounter] = boundaryCondition->getVonKarmanConstant();
+            roughnessLengths[allIndicesCounter] = boundaryCondition->getRoughnessLength(index);
+            roughnessLengthsTemperature[allIndicesCounter] = boundaryCondition->getRoughnessLengthTemperature(index);
+            surfaceHeatFluxes[allIndicesCounter] = boundaryCondition->getSurfaceHeatFlux(index);
+            surfaceTemperatures[allIndicesCounter] = boundaryCondition->getSurfaceTemperature(index);
+            heatingRates[allIndicesCounter] = boundaryCondition->getHeatingRate(index);
+
+            allIndicesCounter++;
+        }
+    }
+}
+
+void LevelGridBuilder::getSurfaceLayerQs(real* qs[27], int level) const
+{
+    uint allIndicesCounter = 0;
+    for (auto& boundaryCondition : boundaryConditions[level]->surfaceLayerBoundaryConditions)
+    {
+        for (uint index = 0; index < boundaryCondition->indices.size(); index++)
+        {
+            for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
+            {
+                qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
+            }
+            allIndicesCounter++;
+        }
+    }
+}
+
+
 
 uint LevelGridBuilder::getVelocitySize(int level) const
 {

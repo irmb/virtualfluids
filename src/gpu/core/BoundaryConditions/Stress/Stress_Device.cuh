@@ -58,7 +58,7 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
     using namespace vf::lbm::dir;
     using StressBC = BoundaryConditionFactory::StressBC;
 
-    const real filterFrequency = 1e-3;
+    const real filterFrequency = 1e-3F;
 
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
 
@@ -147,7 +147,7 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
         } break;
     }
 
-    const real3 wallMomentumBounceBack = computeWallMomentumBounceBack(linkIsCut, populationsBouncedBack, populations);
+    real3 wallMomentum = computeWallMomentumBounceBack(linkIsCut, populationsBouncedBack, populations);
 
     const real wallArea = c1o1;
     const real subgridDistance = (subgridDistances.q[d00M])[nodeIndex];
@@ -155,19 +155,24 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
         stressBCType == StressBC::StressInterpolatedCompressible ? c1o1 + subgridDistance : c1o1;
 
     const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocityExchangeLocation, wallShearStress, density,
-                                                           interpolationFactor, wallArea, wallMomentumBounceBack);
+                                                           interpolationFactor, wallArea, wallMomentum);
     if (!delayed) {
         populationReferences = vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes,
                                                                     !gridParams.isEvenTimestep);
     };
 
-    const real3 wallMomentumVelocity = writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity, density,
-                                         interpolationFactor, listIndices);
+    if (stressBCType == StressBC::StressInterpolatedCompressible)
+        wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity,
+                                             density, listIndices);
+    else
+        wallMomentum +=
+            writeDistributionsInterpolatedBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity,
+                                             density, subgridDistances, listIndices, nodeIndex);
     if (wallModelParams.hasMonitor) {
         wallModelParams.frictionVelocity[nodeIndex] = frictionVelocity;
-        wallModelParams.forceX[nodeIndex] = wallMomentumBounceBack.x + wallMomentumVelocity.x;
-        wallModelParams.forceY[nodeIndex] = wallMomentumBounceBack.y + wallMomentumVelocity.y;
-        wallModelParams.forceZ[nodeIndex] = wallMomentumBounceBack.z + wallMomentumVelocity.z;
+        wallModelParams.forceX[nodeIndex] = wallMomentum.x;
+        wallModelParams.forceY[nodeIndex] = wallMomentum.y;
+        wallModelParams.forceZ[nodeIndex] = wallMomentum.z;
     }
 }
 #endif

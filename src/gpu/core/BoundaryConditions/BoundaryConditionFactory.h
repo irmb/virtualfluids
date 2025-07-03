@@ -182,6 +182,13 @@ public:
         NotSpecified
     };
 
+    //! \brief Enum to differentiate between setting heatlfux or surfaceTemperature in SurfaceLayer BC
+    enum class SurfaceLayerBC {
+        HeatFlux,
+        SurfaceTemperature,
+        NotSpecified
+    };
+
     void setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC boundaryConditionType);
     void setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC boundaryConditionType);
     void setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC boundaryConditionType);
@@ -202,6 +209,7 @@ public:
     void setAdvectionDiffusionFluxBoundaryCondition(AdvectionDiffusionFluxBC boundaryConditionType);
     void setAdvectionDiffusionDirichletBoundaryCondition(AdvectionDiffusionDirichletBC boundaryConditionType);
     void setAdvectionDiffusionNeumannBoundaryCondition(AdvectionDiffusionNeumannBC boundaryConditionType);
+    void setSurfaceLayerBoundaryCondition(StressBC momentumBoundaryConditionType, SurfaceLayerBC surfaceLayerBoundaryConditionType);
     // void setOutflowBoundaryCondition(...); // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
@@ -216,6 +224,7 @@ public:
     [[nodiscard]] AdvectionDiffusionFluxBoundaryConditionKernel getAdvectionDiffusionFluxBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionDirichletBoundaryConditionKernel getAdvectionDiffusionDirichletBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionNeumannBoundaryConditionKernel getAdvectionDiffusionNeumannBoundaryConditionPost() const;
+    [[nodiscard]] BoundaryConditionKernel getSurfaceLayerBoundaryConditionPost() const;
     [[nodiscard]] virtual bool hasDirectionalPressureBoundaryCondition() const;
 
 private:
@@ -230,6 +239,7 @@ private:
     AdvectionDiffusionFluxBC advectionDiffusionFluxBoundaryCondition = AdvectionDiffusionFluxBC::NotSpecified;
     AdvectionDiffusionDirichletBC advectionDiffusionDirichletBoundaryCondition = AdvectionDiffusionDirichletBC::NotSpecified;
     AdvectionDiffusionNeumannBC advectionDiffusionNeumannBoundaryCondition = AdvectionDiffusionNeumannBC::NotSpecified;
+    std::pair<StressBC, SurfaceLayerBC> surfaceLayerBoundaryCondition = {StressBC::NotSpecified, SurfaceLayerBC::NotSpecified};
 
     // OutflowBoundaryConditon outflowBC // TODO: https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 };

@@ -45,6 +45,7 @@
 #include "BoundaryConditions/Stress/Stress.h"
 #include "BoundaryConditions/Velocity/Velocity.h"
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h"
+#include "BoundaryConditions/Stress/SurfaceLayer.h"
 #include "Parameter/Parameter.h"
 
 void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryConditionType)
@@ -286,6 +287,23 @@ AdvectionDiffusionNeumannBoundaryConditionKernel BoundaryConditionFactory::getAd
         default:
             return nullptr;
     };
+}
+
+BoundaryConditionKernel BoundaryConditionFactory::getSurfaceLayerBoundaryConditionPost() const
+{
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackCompressible, SurfaceLayerBC::HeatFlux))
+        return SurfaceLayerBounceBackCompressibleHeatFlux;
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackWithPressureCompressible, SurfaceLayerBC::HeatFlux))
+        return SurfaceLayerBounceBackWithPressureCompressibleHeatFlux;
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressInterpolatedCompressible, SurfaceLayerBC::HeatFlux))
+        return SurfaceLayerInterpolatedCompressibleHeatFlux;
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackCompressible, SurfaceLayerBC::SurfaceTemperature))
+        return SurfaceLayerBounceBackCompressibleSurfaceTemperature;
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackWithPressureCompressible, SurfaceLayerBC::SurfaceTemperature))
+        return SurfaceLayerBounceBackWithPressureCompressibleSurfaceTemperature;
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressInterpolatedCompressible, SurfaceLayerBC::SurfaceTemperature))
+        return SurfaceLayerInterpolatedCompressibleSurfaceTemperature;
+    return nullptr;
 }
 
 

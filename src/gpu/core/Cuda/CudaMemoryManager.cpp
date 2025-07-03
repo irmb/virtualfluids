@@ -1050,13 +1050,65 @@ void CudaMemoryManager::cudaFreeStressBC(int lev)
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->stressBC.normalY));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->stressBC.normalZ));
 }
-// Wall model
-void CudaMemoryManager::cudaAllocWallModel(int lev, bool hasWallModelMonitor)
+
+void CudaMemoryManager::cudaAllocSurfaceLayerBC(int lev)
 {
-    auto& wallModelHost = parameter->getParH(lev)->momentumWallModel;
-    auto& wallModelDevice = parameter->getParD(lev)->momentumWallModel;
-    const uint memSizeInt = sizeof(int) *  parameter->getParH(lev)->stressBC.numberOfBCnodes;
-    const uint memSizeReal = sizeof(real) *  parameter->getParH(lev)->stressBC.numberOfBCnodes;
+    const size_t memSizeInt      = sizeof(int)*parameter->getParH(lev)->surfaceLayerBC.numberOfBCnodes;
+    const size_t memSizeReal      = sizeof(real)*parameter->getParH(lev)->surfaceLayerBC.numberOfBCnodes;
+
+    //Host
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->surfaceLayerBC.q27[0]), parameter->getD3Qxx()*memSizeReal      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->surfaceLayerBC.k),                            memSizeInt      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->surfaceLayerBC.kN),                           memSizeInt     ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->surfaceLayerBC.normalX),                      memSizeReal      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->surfaceLayerBC.normalY),                      memSizeReal      ));
+    checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->surfaceLayerBC.normalZ),                      memSizeReal      ));
+
+    //Device
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->surfaceLayerBC.q27[0]),     parameter->getD3Qxx()* memSizeReal     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->surfaceLayerBC.k),                                 memSizeInt     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->surfaceLayerBC.kN),                                memSizeInt    ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->surfaceLayerBC.normalX),                           memSizeReal     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->surfaceLayerBC.normalY),                           memSizeReal     ));
+    checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->surfaceLayerBC.normalZ),                           memSizeReal     ));
+    //////////////////////////////////////////////////////////////////////////
+    const double tmp = static_cast<double>(2*memSizeInt + parameter->getD3Qxx()*memSizeReal + 9*memSizeReal);
+    setMemsizeGPU(tmp, false);
+}
+
+void CudaMemoryManager::cudaCopySurfaceLayerBC(int lev)
+{
+    const size_t memSizeInt = sizeof(int)*parameter->getParH(lev)->surfaceLayerBC.numberOfBCnodes;
+    const size_t memSizeReal = sizeof(real)*parameter->getParH(lev)->surfaceLayerBC.numberOfBCnodes;
+
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->surfaceLayerBC.q27[0],  parameter->getParH(lev)->surfaceLayerBC.q27[0], parameter->getD3Qxx()* memSizeReal,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->surfaceLayerBC.k,       parameter->getParH(lev)->surfaceLayerBC.k,                             memSizeInt,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->surfaceLayerBC.kN,      parameter->getParH(lev)->surfaceLayerBC.kN,                            memSizeInt,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->surfaceLayerBC.normalX, parameter->getParH(lev)->surfaceLayerBC.normalX,                       memSizeReal,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->surfaceLayerBC.normalY, parameter->getParH(lev)->surfaceLayerBC.normalY,                       memSizeReal,       cudaMemcpyHostToDevice));
+    checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->surfaceLayerBC.normalZ, parameter->getParH(lev)->surfaceLayerBC.normalZ,                       memSizeReal,       cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaFreeSurfaceLayerBC(int lev)
+{
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->surfaceLayerBC.q27[0]));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->surfaceLayerBC.k));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->surfaceLayerBC.kN));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->surfaceLayerBC.normalX));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->surfaceLayerBC.normalY));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->surfaceLayerBC.normalZ));
+
+    checkCudaErrors( cudaFree(parameter->getParD(lev)->surfaceLayerBC.q27[0]));
+    checkCudaErrors( cudaFree(parameter->getParD(lev)->surfaceLayerBC.k));
+    checkCudaErrors( cudaFree(parameter->getParD(lev)->surfaceLayerBC.kN));
+    checkCudaErrors( cudaFree(parameter->getParD(lev)->surfaceLayerBC.normalX));
+    checkCudaErrors( cudaFree(parameter->getParD(lev)->surfaceLayerBC.normalY));
+    checkCudaErrors( cudaFree(parameter->getParD(lev)->surfaceLayerBC.normalZ));
+}
+// Wall model
+void CudaMemoryManager::cudaAllocWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice, uint numberOfNodes, bool hasWallModelMonitor)
+{
+    const uint memSizeInt = sizeof(int) *  numberOfNodes;
+    const uint memSizeReal = sizeof(real) *  numberOfNodes;
 
     //Host
     checkCudaErrors(cudaMallocHost((void**)&(wallModelHost.samplingIndices), memSizeInt));
@@ -1102,23 +1154,18 @@ void CudaMemoryManager::cudaAllocWallModel(int lev, bool hasWallModelMonitor)
         tmp += double(4*memSizeReal);
     setMemsizeGPU(tmp, false);
 }
-void CudaMemoryManager::cudaCopyWallModel(int lev)
+void CudaMemoryManager::cudaCopyWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice, uint numberOfNodes)
 {
-    auto& wallModelHost = parameter->getParH(lev)->momentumWallModel;
-    auto& wallModelDevice = parameter->getParD(lev)->momentumWallModel;
-    const uint memSizeInt = sizeof(int) *  parameter->getParH(lev)->stressBC.numberOfBCnodes;
-    const uint memSizeReal = sizeof(real) *  parameter->getParH(lev)->stressBC.numberOfBCnodes;
+    const uint memSizeInt = sizeof(int) * numberOfNodes;
+    const uint memSizeReal = sizeof(real) * numberOfNodes;
 
     checkCudaErrors(cudaMemcpy(wallModelDevice.samplingDistance, wallModelHost.samplingDistance, memSizeReal, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(wallModelDevice.roughnessLength, wallModelHost.roughnessLength, memSizeReal, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(wallModelDevice.samplingIndices, wallModelHost.samplingIndices, memSizeInt, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(wallModelDevice.vonKarmanConstant, wallModelHost.vonKarmanConstant, memSizeReal, cudaMemcpyHostToDevice));
 }
-void CudaMemoryManager::cudaFreeWallModel(int lev, bool hasWallModelMonitor)
+void CudaMemoryManager::cudaFreeWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice, bool hasWallModelMonitor)
 {
-
-    auto& wallModelHost = parameter->getParH(lev)->momentumWallModel;
-    auto& wallModelDevice = parameter->getParD(lev)->momentumWallModel;
     checkCudaErrors(cudaFreeHost(wallModelHost.samplingIndices));
     checkCudaErrors(cudaFreeHost(wallModelHost.samplingDistance));
     checkCudaErrors(cudaFreeHost(wallModelHost.vonKarmanConstant));
@@ -1157,6 +1204,76 @@ void CudaMemoryManager::cudaFreeWallModel(int lev, bool hasWallModelMonitor)
     }
 }
 
+
+void CudaMemoryManager::cudaAllocTemperatureWallModel(TemperatureWallModelParameters& wallModelHost,
+                                                      TemperatureWallModelParameters& wallModelDevice, uint numberOfNodes)
+{
+    const size_t memSize = sizeof(real) * numberOfNodes;
+
+    // Host
+    checkCudaErrors(cudaMallocHost((void**)&(wallModelHost.temperatureExchangeLocation), memSize));
+    checkCudaErrors(cudaMallocHost((void**)&(wallModelHost.temperatureFirstFluidNode), memSize));
+    checkCudaErrors(cudaMallocHost((void**)&(wallModelHost.surfaceHeatFlux), memSize));
+    checkCudaErrors(cudaMallocHost((void**)&(wallModelHost.surfaceTemperature), memSize));
+    checkCudaErrors(cudaMallocHost((void**)&(wallModelHost.temperatureScale), memSize));
+    checkCudaErrors(cudaMallocHost((void**)&(wallModelHost.roughnessLength), memSize));
+    checkCudaErrors(cudaMallocHost((void**)&(wallModelHost.invObukhovLength), memSize));
+    checkCudaErrors(cudaMallocHost((void**)&(wallModelHost.heatingRate), memSize));
+
+    // Device
+    checkCudaErrors(cudaMalloc((void**)&(wallModelDevice.temperatureExchangeLocation), memSize));
+    checkCudaErrors(cudaMalloc((void**)&(wallModelDevice.temperatureFirstFluidNode), memSize));
+    checkCudaErrors(cudaMalloc((void**)&(wallModelDevice.surfaceHeatFlux), memSize));
+    checkCudaErrors(cudaMalloc((void**)&(wallModelDevice.surfaceTemperature), memSize));
+    checkCudaErrors(cudaMalloc((void**)&(wallModelDevice.temperatureScale), memSize));
+    checkCudaErrors(cudaMalloc((void**)&(wallModelDevice.roughnessLength), memSize));
+    checkCudaErrors(cudaMalloc((void**)&(wallModelDevice.invObukhovLength), memSize));
+    checkCudaErrors(cudaMalloc((void**)&(wallModelDevice.heatingRate), memSize));
+
+    //////////////////////////////////////////////////////////////////////////
+    const double tmp = static_cast<double>(9 * memSize);
+    setMemsizeGPU(tmp, false);
+}
+
+void CudaMemoryManager::cudaCopyTemperatureWallModel(TemperatureWallModelParameters& wallModelHost,
+                                                     TemperatureWallModelParameters& wallModelDevice, uint numberOfNodes)
+{
+    const size_t memSize = sizeof(real) * numberOfNodes;
+
+    checkCudaErrors(cudaMemcpy(wallModelDevice.temperatureExchangeLocation, wallModelHost.temperatureExchangeLocation, memSize,
+                               cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(wallModelDevice.temperatureFirstFluidNode, wallModelHost.temperatureFirstFluidNode, memSize,
+                               cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(wallModelDevice.surfaceHeatFlux, wallModelHost.surfaceHeatFlux, memSize, cudaMemcpyHostToDevice));
+    checkCudaErrors(
+        cudaMemcpy(wallModelDevice.surfaceTemperature, wallModelHost.surfaceTemperature, memSize, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(wallModelDevice.temperatureScale, wallModelHost.temperatureScale, memSize, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(wallModelDevice.roughnessLength, wallModelHost.roughnessLength, memSize, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(wallModelDevice.invObukhovLength, wallModelHost.invObukhovLength, memSize, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(wallModelDevice.heatingRate, wallModelHost.heatingRate, memSize, cudaMemcpyHostToDevice));
+}
+
+void CudaMemoryManager::cudaFreeTemperatureWallModel(TemperatureWallModelParameters& wallModelHost,
+                                                     TemperatureWallModelParameters& wallModelDevice)
+{
+    checkCudaErrors(cudaFreeHost(wallModelHost.temperatureExchangeLocation));
+    checkCudaErrors(cudaFreeHost(wallModelHost.temperatureFirstFluidNode));
+    checkCudaErrors(cudaFreeHost(wallModelHost.surfaceHeatFlux));
+    checkCudaErrors(cudaFreeHost(wallModelHost.surfaceTemperature));
+    checkCudaErrors(cudaFreeHost(wallModelHost.temperatureScale));
+    checkCudaErrors(cudaFreeHost(wallModelHost.roughnessLength));
+    checkCudaErrors(cudaFreeHost(wallModelHost.invObukhovLength));
+    checkCudaErrors(cudaFreeHost(wallModelHost.heatingRate));
+
+    checkCudaErrors(cudaFree(wallModelDevice.temperatureExchangeLocation));
+    checkCudaErrors(cudaFree(wallModelDevice.temperatureFirstFluidNode));
+    checkCudaErrors(cudaFree(wallModelDevice.surfaceHeatFlux));
+    checkCudaErrors(cudaFree(wallModelDevice.surfaceTemperature));
+    checkCudaErrors(cudaFree(wallModelDevice.temperatureScale));
+    checkCudaErrors(cudaFree(wallModelDevice.roughnessLength));
+    checkCudaErrors(cudaFree(wallModelDevice.invObukhovLength));
+    checkCudaErrors(cudaFree(wallModelDevice.heatingRate));
+}
 
 //Precursor BC
 void CudaMemoryManager::cudaAllocPrecursorBC(int lev)

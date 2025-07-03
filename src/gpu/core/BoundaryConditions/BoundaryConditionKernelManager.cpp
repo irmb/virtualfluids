@@ -95,6 +95,8 @@ BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> p
                            "AdvectionDiffusionDirichletBoundaryConditionPost");
     checkBoundaryCondition(this->ADNeumannBoundaryConditionPost, this->para->getParD(0)->AdvectionDiffusionNeumannBC,
                            "AdvectionDiffusionNeumannBoundaryConditionPost");
+    checkBoundaryCondition(this->surfaceLayerBoundaryConditionPost, this->para->getParD(0)->surfaceLayerBC,
+                           "surfaceLayerBoundaryConditionPost");
 }
 
 void BoundaryConditionKernelManager::runVelocityBCKernelPre(int level) const
@@ -356,6 +358,11 @@ void BoundaryConditionKernelManager::runSlipBCKernelPost(int level) const{
 void BoundaryConditionKernelManager::runNoSlipBCKernelPost(int level) const{
     if (para->getParD(level)->noSlipBC.numberOfBCnodes > 0)
         noSlipBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->noSlipBC));
+}
+
+void BoundaryConditionKernelManager::runSurfaceLayerBCKernelPost(const int level) const{
+    if (para->getParD(level)->surfaceLayerBC.numberOfBCnodes > 0)
+        surfaceLayerBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->surfaceLayerBC));
 }
 
 void BoundaryConditionKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager)
