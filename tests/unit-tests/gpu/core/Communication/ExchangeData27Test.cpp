@@ -115,7 +115,7 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAft
     setUpFsByCopyingF0(expectedFs, numNodesAfterFtoC);
 
     // act
-    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost);
+    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost, false);
 
     // convert result to std::vector
     std::vector<real> result;
@@ -137,7 +137,7 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAft
     setUpFsByCopyingF0(expectedFs, numNodesAfterFtoC);
 
     // act
-    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost);
+    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost, false);
 
     // convert result to std::vector
     std::vector<real> result;
@@ -160,7 +160,7 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicateAll)
     setUpFsByCopyingF0(expectedFs, numNodes);
 
     // act
-    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost);
+    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost, false);
 
     // convert result to std::vector
     std::vector<real> result;

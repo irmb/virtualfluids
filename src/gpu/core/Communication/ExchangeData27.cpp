@@ -39,8 +39,10 @@
 
 #include <parallel/Communicator.h>
 
+#include "Calculation/Calculation.h"
 #include "Cuda/CudaStreamManager.h"
 #include "ExchangeData27_Device.cuh"
+#include "Utilities/KernelUtilities.h"
 
 using namespace vf::lbm::dir;
 
@@ -68,7 +70,7 @@ void collectNodesInSendBufferGPU(Parameter* para, int level, CudaStreamIndex str
                            stream);
         if(para->getDiffOn())
             GetSendFsPostDev27(para->getParD(level)->distributionsAD.f[0],
-                           neighbor.fAD[0],
+                           neighbor.populationsAD[0],
                            neighbor.index,
                            neighbor.numberOfNodes,
                            para->getParD(level)->neighborX,
@@ -99,7 +101,7 @@ void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex s
                            stream);
         if(para->getDiffOn())
         SetRecvFsPostDev27(para->getParD(level)->distributionsAD.f[0], 
-                           neighbor.fAD[0], 
+                           neighbor.populationsAD[0], 
                            neighbor.index, 
                            neighbor.numberOfNodes,
                            para->getParD(level)->neighborX, 
@@ -118,7 +120,7 @@ void startBlockingMpiSend(vf::parallel::Communicator& comm, std::vector<ProcessN
     for (auto& neighbor : sendProcessNeighborHost) {
         comm.send(neighbor.populations[0], neighbor.numberOfFs, neighbor.rankNeighbor);
         if (diffOn)
-            comm.send(neighbor.fAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
+            comm.send(neighbor.populationsAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
     }
 }
 
@@ -128,13 +130,13 @@ void startNonBlockingMpiReceive(vf::parallel::Communicator& comm, std::vector<Pr
     for (auto& neighbor : recvProcessNeighborHost) {
         comm.receiveNonBlocking(neighbor.populations[0], neighbor.numberOfFs, neighbor.rankNeighbor);
         if (diffOn)
-            comm.receiveNonBlocking(neighbor.fAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
+            comm.receiveNonBlocking(neighbor.populationsAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
     }
 }
 
 void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeNodes,
                    std::vector<ProcessNeighbor27>& recvProcessNeighborsHost,
-                   std::vector<ProcessNeighbor27>& sendProcessNeighborsHost)
+                   std::vector<ProcessNeighbor27>& sendProcessNeighborsHost, bool diffOn)
 {
 #pragma omp parallel for
     for (int i=0; i< int(edgeNodes.size()); i++) {
@@ -142,16 +144,28 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeN
         const uint indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
         const uint numNodesInBufferRecv = recvProcessNeighborsHost[indexInSubdomainRecv].numberOfNodes;
         const uint numNodesInBufferSend = sendProcessNeighborsHost[indexInSubdomainSend].numberOfNodes;
-        if (edgeNodes[i].indexInSendBuffer >= numNodesInBufferSend)
+        const uint indexInSend = edgeNodes[i].indexInSendBuffer;
+        const uint indexInRecv = edgeNodes[i].indexInRecvBuffer;
+        if (indexInSend >= numNodesInBufferSend)
             // for reduced communication after fine to coarse: only copy send nodes which are not part of the reduced comm
             continue;
 
-        // copy fs for all directions
-        for (size_t direction = 0; direction <= ENDDIR; direction++) {
-            (sendProcessNeighborsHost[indexInSubdomainSend].populations[0] +
-             (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] =
-                (recvProcessNeighborsHost[indexInSubdomainRecv].populations[0] +
-                 (direction * numNodesInBufferRecv))[edgeNodes[i].indexInRecvBuffer];
+        Distributions27 populationsSend = vf::gpu::getDistributionReferences27(
+            sendProcessNeighborsHost[indexInSubdomainSend].populations[0], numNodesInBufferSend, true);
+        Distributions27 populationsRecv = vf::gpu::getDistributionReferences27(
+            recvProcessNeighborsHost[indexInSubdomainRecv].populations[0], numNodesInBufferRecv, true);
+        forEachDirection([&](auto direction) {
+            (populationsSend.f[direction])[indexInSend] = (populationsRecv.f[direction])[indexInRecv];
+        });
+        if (diffOn) {
+            Distributions27 populationsADSend = vf::gpu::getDistributionReferences27(
+                sendProcessNeighborsHost[indexInSubdomainSend].populationsAD[0], numNodesInBufferSend, true);
+            Distributions27 populationsADRecv = vf::gpu::getDistributionReferences27(
+                recvProcessNeighborsHost[indexInSubdomainRecv].populationsAD[0], numNodesInBufferRecv, true);
+
+            forEachDirection([&](auto direction) {
+                (populationsADSend.f[direction])[indexInSend] = (populationsADRecv.f[direction])[indexInRecv];
+            });
         }
     }
 }
