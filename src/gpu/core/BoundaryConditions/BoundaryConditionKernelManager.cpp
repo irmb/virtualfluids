@@ -64,6 +64,8 @@ BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> p
     this->ADDirichletBoundaryConditionPost = bcFactory->getAdvectionDiffusionDirichletBoundaryConditionPost();
     this->ADNeumannBoundaryConditionPost = bcFactory->getAdvectionDiffusionNeumannBoundaryConditionPost();
 
+    this->surfaceLayerBoundaryConditionPost = bcFactory->getSurfaceLayerBoundaryConditionPost();
+
     if (bcFactory->hasDirectionalPressureBoundaryCondition())
         this->directionalPressureBoundaryConditionPre =
             std::get<DirectionalBoundaryConditionKernel>(bcFactory->getPressureBoundaryConditionPre());

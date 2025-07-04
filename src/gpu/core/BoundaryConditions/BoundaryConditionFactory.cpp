@@ -78,6 +78,11 @@ void BoundaryConditionFactory::setStressBoundaryCondition(StressBC boundaryCondi
     this->stressBoundaryCondition = boundaryConditionType;
 }
 
+void BoundaryConditionFactory::setSurfaceLayerBoundaryCondition(StressBC momentumBoundaryConditionType, SurfaceLayerBC surfaceLayerBoundaryConditionType)
+{
+    this->surfaceLayerBoundaryCondition = {momentumBoundaryConditionType, surfaceLayerBoundaryConditionType};
+}
+
 void BoundaryConditionFactory::setPrecursorBoundaryCondition(PrecursorBC boundaryConditionType)
 {
     this->precursorBoundaryCondition = boundaryConditionType;

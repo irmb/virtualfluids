@@ -221,6 +221,8 @@ void UpdateGrid27::postCollisionBC(int level, uint t)
         this->bcKernelManager->runADFluxBCKernel(level);
         this->bcKernelManager->runADDirichletBCKernel(level);
         this->bcKernelManager->runADNeumannBCKernel(level);
+        this->bcKernelManager->runSurfaceLayerBCKernelPost(level);
+
     }
 }
 
