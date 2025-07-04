@@ -250,7 +250,7 @@ void GridGenerator::sortFluidNodeTags() {
     VF_LOG_INFO("Start sorting tagged fluid nodes...");
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
     {
-        if(para->getDiffOn())
+        if(para->getAllNodesAllFeatures())
             builder->addAllFluidNodeIndicesToAllFeatures(level);
         builder->sortFluidNodeIndicesAllFeatures(level); //has to be called first!
         builder->sortFluidNodeIndicesMacroVars(level);

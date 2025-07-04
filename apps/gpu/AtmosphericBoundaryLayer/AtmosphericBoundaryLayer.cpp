@@ -31,6 +31,7 @@
 //! \{
 //! \author Henry Korb, Henrik Asmuth
 //=======================================================================================
+#include <memory>
 #include <numeric>
 
 #include <basics/DataTypes.h>
@@ -56,6 +57,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
+#include "PreCollisionInteractor/CoriolisForce.h"
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 #include "gpu/core/Calculation/Simulation.h"
 #include "gpu/core/Cuda/CudaMemoryManager.h"
@@ -67,6 +69,8 @@
 #include "gpu/core/Samplers/Probe.h"
 #include "gpu/core/Samplers/WallModelProbe.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
+#include "grid/Grid.h"
+#include "grid/GridDimensions.h"
 
 using namespace vf::basics::constant;
 
@@ -82,14 +86,14 @@ void run(const vf::basics::ConfigurationFile& config)
     const real viscosity = 1.56e-5;
     const real machNumber = 0.1;
 
-    const real boundaryLayerHeight = config.getValue("boundaryLayerHeight", 1000.0);
+    const real boundaryLayerHeight = config.getValue("BoundaryLayerHeight", 1000.0);
 
     const real lengthX = 6 * boundaryLayerHeight;
     const real lengthY = 4 * boundaryLayerHeight;
     const real lengthZ = boundaryLayerHeight;
 
-    const real roughnessLength = config.getValue("z0", c1o10);
-    const real frictionVelocity = config.getValue("u_star", c4o10);
+    const real roughnessLength = config.getValue("RoughnessLength", c1o10);
+    real frictionVelocity = config.getValue("FrictionVelocity", c4o10);
     const real vonKarmanConstant = config.getValue("vonKarmanConstant", c4o10);
 
     const uint nodesPerBoundaryLyerHeight = config.getValue<uint>("NodesPerBoundaryLayerHeight", 64);
@@ -97,6 +101,10 @@ void run(const vf::basics::ConfigurationFile& config)
     const float periodicShift = config.getValue<float>("PeriodicShift", c0o1);
 
     const bool writePrecursor = config.getValue("WritePrecursor", false);
+    const bool useCoriolisForce = config.getValue("UseCoriolisForce", false);
+    const real geostrophicWindSpeed = config.getValue("GeostrophicWindSpeed", c8o1);
+    const real geostrophicWindDirection = config.getValue("GeostrophicWindDirection", c0o1);
+    const real coriolisParameter = config.getValue("CoriolisParameter", 1e-4F);
 
     const bool useDistributionsForPrecursor = config.getValue<bool>("UseDistributions", false);
     std::string precursorDirectory = config.getValue<std::string>("PrecursorDirectory", "precursor/");
@@ -125,6 +133,8 @@ void run(const vf::basics::ConfigurationFile& config)
     //////////////////////////////////////////////////////////////////////////
     // compute parameters in lattice units
     //////////////////////////////////////////////////////////////////////////
+    if (useCoriolisForce)
+        frictionVelocity = geostrophicWindSpeed * vonKarmanConstant / std::log(boundaryLayerHeight / roughnessLength + c1o1);
     const auto velocityProfile = [&](real coordZ) {
         return frictionVelocity / vonKarmanConstant * std::log(coordZ / roughnessLength + c1o1);
     };
@@ -148,6 +158,8 @@ void run(const vf::basics::ConfigurationFile& config)
     const uint timeStepOutProbe = uint(timeOutProbe / deltaT);
 
     const uint timeStepStartPrecursor = uint(timeStartPrecursor / deltaT);
+
+    VF_LOG_INFO("Friction velocity [m/s] {}", frictionVelocity);
 
     //////////////////////////////////////////////////////////////////////////
     // create grid
@@ -183,13 +195,12 @@ void run(const vf::basics::ConfigurationFile& config)
     //////////////////////////////////////////////////////////////////////////
     // set parameters
     //////////////////////////////////////////////////////////////////////////
-    auto para = std::make_shared<Parameter>(numberOfProcesses, communicator.getProcessID(), &config);
+    auto para = std::make_shared<Parameter>(numberOfProcesses, processID, &config);
 
     para->setOutputPrefix(simulationName);
-
     para->setPrintFiles(true);
 
-    if (!usePrecursorInflow)
+    if (!usePrecursorInflow && !useCoriolisForce)
         para->setForcing(pressureGradientLB, 0, 0);
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
@@ -209,7 +220,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setDevices(devices);
     para->setMaxDev(numberOfProcesses);
     if (usePrecursorInflow) {
-        para->setInitialCondition([&](real /**/, real /**/, real coordZ, real& rho, real& vx, real& vy, real& vz) {
+        para->setInitialCondition([&](real, real, real coordZ, real& rho, real& vx, real& vy, real& vz) {
             rho = c0o1;
             vx = velocityProfile(coordZ) * deltaT / deltaX;
             vy = c0o1;
@@ -262,12 +273,21 @@ void run(const vf::basics::ConfigurationFile& config)
         bcFactory.setPrecursorBoundaryCondition(BoundaryConditionFactory::PrecursorBC::PrecursorNonReflectiveCompressible);
     }
 
+    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
+
+    if (useCoriolisForce) {
+        para->setIsBodyForce(true);
+        para->setAllNodesAllFeatures(true);
+        auto coriolisForce = std::make_shared<CoriolisForce>(para, cudaMemoryManager, geostrophicWindSpeed*std::cos(geostrophicWindDirection),
+                                                             geostrophicWindDirection*std::sin(geostrophicWindDirection), coriolisParameter);
+        para->addInteractor(coriolisForce);
+    }
+
     //////////////////////////////////////////////////////////////////////////
     // add probes
     //////////////////////////////////////////////////////////////////////////
-    auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
-    if (!usePrecursorInflow && (processID == 0)) {
+    if (!usePrecursorInflow && processID == 0) {
         const auto planarAverageProbe =
             std::make_shared<PlanarAverageProbe>(para, cudaMemoryManager, para->getOutputPath(), "planarAverageProbe",
                                                  timeStepStartAveraging, timeStepStartTemporalAveraging, timeStepAveraging,
@@ -329,7 +349,8 @@ void run(const vf::basics::ConfigurationFile& config)
     VF_LOG_INFO("process parameters:");
     VF_LOG_INFO("Number of Processes {} process ID {}", numberOfProcesses, processID);
     printf("\n");
-
+    
+    para->worldLength = lengthX + c2o1*deltaX;
     Simulation simulation(para, cudaMemoryManager, gridBuilderFacade->getGridBuilder(), &bcFactory, tmFactory, &scalingFactory);
     simulation.run();
 }

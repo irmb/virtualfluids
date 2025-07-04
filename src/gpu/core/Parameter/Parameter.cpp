@@ -740,6 +740,10 @@ void Parameter::setIsBodyForce(bool isBodyForce)
 {
     this->isBodyForce = isBodyForce;
 }
+void Parameter::setAllNodesAllFeatures(bool allNodesAllFeatures)
+{
+    this->allNodesAllFeatures = allNodesAllFeatures;
+}
 
 void Parameter::setGridX(std::vector<int> GridX)
 {
@@ -1289,6 +1293,11 @@ bool Parameter::getDiffOn()
 bool Parameter::getBuoyancyEnabled() const
 {
     return buoyancyEnabled;
+}
+
+bool Parameter::getAllNodesAllFeatures() const
+{
+    return allNodesAllFeatures;
 }
 int Parameter::getFactorNZ()
 {

@@ -153,6 +153,7 @@ static constexpr double c10eM30 = 1e-30;
 static constexpr double c10eM10 = 1e-10;
 static constexpr double cSmallSingle = 0.0000000002;
 
+
 #ifndef __CUDACC__
 static const double cPi = 4.0 * std::atan(1.0);               // 3.1415926535
 static const double c2Pi = 8.0 * std::atan(1.0);              // 6.2831853071

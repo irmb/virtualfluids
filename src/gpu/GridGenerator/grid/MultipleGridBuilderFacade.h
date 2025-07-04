@@ -80,9 +80,6 @@ class FileCollection;
 //!
 //! - 4. set boundary conditions
 //!
-
-using namespace vf::basics::constant;
-
 class MultipleGridBuilderFacade
 {
 public:
@@ -127,7 +124,7 @@ public:
     void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     void setPeriodicBoundaryCondition(const std::array<bool, 3>& periodicity);
     void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, bool cycleFiles,
-                                       real velocityX = c0o1, real velocityY = c0o1, real velocityZ = c0o1, 
+                                       real velocityX = vf::basics::constant::c0o1, real velocityY = vf::basics::constant::c0o1, real velocityZ = vf::basics::constant::c0o1, 
                                        std::vector<uint> fileLevelToGridLevelMap = {}) const;
     void setADNoFluxBoundaryCondition(SideType sideType);
     void setADFluxBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX);

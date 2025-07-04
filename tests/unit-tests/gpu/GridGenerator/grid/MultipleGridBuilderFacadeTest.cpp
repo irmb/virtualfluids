@@ -44,6 +44,8 @@
 #include "utilities/communication.h"
 #include "grid/GridBuilder/MultipleGridBuilder.h"
 
+using namespace vf::basics::constant;
+
 class MultipleGridBuilderFacadeTest : public MultipleGridBuilderFacade
 {public:
     MultipleGridBuilderFacadeTest(SPtr<MultipleGridBuilder> gridBuilder, UPtr<GridDimensions> gridDimensions, std::optional<real> overlapOfSubdomains =  std::nullopt)
