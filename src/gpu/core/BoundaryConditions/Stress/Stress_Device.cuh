@@ -48,6 +48,7 @@
 
 #include "Stress.h"
 #include "inverseMomentumExchange.cuh"
+#include "lbm/constants/D3Q27.h"
 #include "wallModelMoninObukhov.h"
 
 template <BoundaryConditionFactory::StressBC stressBCType, bool delayed>
@@ -78,12 +79,13 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
     const uint k_000 = boundaryParams.k[nodeIndex];
     const vf::gpu::ListIndices listIndices(k_000, gridParams.neighborX, gridParams.neighborY, gridParams.neighborZ);
 
-    real populations[27];
+    real populations[NUMBER_Of_DIRECTIONS];
     vf::gpu::getPostCollisionDistribution(populations, populationReferences, listIndices);
 
-    real drho;
-    real3 velocityNode;
-    vf::lbm::getCompressibleMacroscopicValues(populations, drho, velocityNode.x, velocityNode.y, velocityNode.z);
+    const real drho = vf::lbm::getDensity(populations);
+    const real3 velocityNode = { vf::lbm::getCompressibleVelocityX1(populations, drho),
+                                 vf::lbm::getCompressibleVelocityX2(populations, drho),
+                                 vf::lbm::getCompressibleVelocityX3(populations, drho) };
     const real density = c1o1;
 
     const real3 wallNormal { boundaryParams.normalX[nodeIndex], boundaryParams.normalY[nodeIndex],
@@ -128,8 +130,8 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
     // apply inverse Momentum exchange
     //////////////////////////////////////////////////////////////////////////
 
-    real populationsBouncedBack[27];
-    bool linkIsCut[27];
+    real populationsBouncedBack[NUMBER_Of_DIRECTIONS];
+    bool linkIsCut[NUMBER_Of_DIRECTIONS];
 
     switch (stressBCType) {
         case StressBC::StressBounceBackCompressible:
@@ -162,12 +164,13 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
     };
 
     if (stressBCType == StressBC::StressInterpolatedCompressible)
-        wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity,
-                                             density, listIndices);
-    else
         wallMomentum +=
             writeDistributionsInterpolatedBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity,
                                              density, subgridDistances, listIndices, nodeIndex);
+    else
+        wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity,
+                                             density, listIndices);
+
     if (wallModelParams.hasMonitor) {
         wallModelParams.frictionVelocity[nodeIndex] = frictionVelocity;
         wallModelParams.forceX[nodeIndex] = wallMomentum.x;
