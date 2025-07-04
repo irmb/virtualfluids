@@ -103,7 +103,7 @@ public:
     MOCK_METHOD(void, setSlipBoundaryCondition, (SideType sideType, real normalX, real normalY, real normalZ),
                 (override));
     MOCK_METHOD(void, setPrecursorBoundaryCondition,
-                (SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, real velocityX,
+                (SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, bool cycleFiles, real velocityX,
                  real velocityY, real velocityZ, std::vector<uint> fileLevelToGridLevelMap),
                 (override));
     MOCK_METHOD(void, setPeriodicBoundaryCondition, (bool periodic_X, bool periodic_Y, bool periodic_Z), (override));
@@ -616,34 +616,35 @@ TEST_F(MultipleGridBuilderFacadeTest_24subdomains, precursorMZ)
     real velocityX = c1o2;
     real velocityY = c1o3;
     real velocityZ = c1o4;
+    bool cycleFiles = false;
     std::vector<uint> fileLevelToGridLevelMap = { 0 };
 
     EXPECT_CALL(*mockGridBuilder,
-                setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY,
+                setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY,
                                               velocityZ, fileLevelToGridLevelMap));
     sut->createGrids(0);
-    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY, velocityZ,
+    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY, velocityZ,
                                        fileLevelToGridLevelMap);
 
     // process index 17
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder, setPrecursorBoundaryCondition).Times(0);
     sut->createGrids(17);
-    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY, velocityZ,
+    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY, velocityZ,
                                        fileLevelToGridLevelMap);
 
     // process index 18
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder, setPrecursorBoundaryCondition).Times(0);
     sut->createGrids(18);
-    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY, velocityZ,
+    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY, velocityZ,
                                        fileLevelToGridLevelMap);
 
     EXPECT_CALL(*mockGridBuilder, setPrecursorBoundaryCondition).Times(6);
     for (int i = 0; i < 24; i++) {
         this->createNewSut();
         sut->createGrids(i);
-        sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY,
+        sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY,
                                            velocityZ, fileLevelToGridLevelMap);
     }
 }
