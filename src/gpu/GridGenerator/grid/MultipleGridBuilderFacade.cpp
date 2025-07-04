@@ -365,7 +365,16 @@ void MultipleGridBuilderFacade::setStressBoundaryCondition(SideType sideType, re
         gridBuilder->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, deltaX);
     });
 }
-
+void MultipleGridBuilderFacade::setSurfaceLayerBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ,
+                                                                 uint samplingOffset, real vonKarmanConstant, real roughnessLength,
+                                                                 real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate,
+                                                                 real deltaX, real deltaT) const
+{
+    setBoundaryCondition(sideType, [&]() {
+        gridBuilder->setSurfaceLayerBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength,
+                                                      roughnessLengthTemperature, surfaceHeatFlux, surfaceTemperature, heatingRate, deltaX, deltaT);
+    });
+}
 void MultipleGridBuilderFacade::setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection,
                                                               int timeStepsBetweenReads, real velocityX, real velocityY,
                                                               real velocityZ,

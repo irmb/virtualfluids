@@ -118,6 +118,9 @@ public:
     void setSlipBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ) const;
     void setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
                                     real roughnessLength, real deltaX) const;
+    void setSurfaceLayerBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
+                                          real roughnessLength, real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate,
+                                          real deltaX, real deltaT) const;
     void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz) const;
     void setPressureBoundaryCondition(SideType sideType, real rho) const;
     void setNoSlipBoundaryCondition(SideType sideType) const;
