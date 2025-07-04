@@ -44,6 +44,7 @@
 #include <gpu/core/BoundaryConditions/Pressure/Pressure.h>
 #include <gpu/core/BoundaryConditions/Slip/Slip.h>
 #include <gpu/core/BoundaryConditions/Stress/Stress.h>
+#include <gpu/core/BoundaryConditions/Stress/SurfaceLayer.h>
 #include <gpu/core/BoundaryConditions/Velocity/Velocity.h>
 #include <gpu/core/BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h>
 
@@ -211,6 +212,57 @@ TEST(BoundaryConditionFactoryTest, slipBC)
     EXPECT_TRUE( *(getSlipBcTarget(bcFactory)) == SlipTurbulentViscosityCompressible)
         << "The returned boundary condition is not the expected function QSlipDevCompTurbulentViscosity27.";
 }
+
+
+bcFunction getSurfaceLayerBcTarget(BoundaryConditionFactory &bcFactory)
+{
+    auto bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    void (*bcTarget)(LBMSimulationParameter *, QforBoundaryConditions *) =
+        (*bc.target<void (*)(LBMSimulationParameter *, QforBoundaryConditions *)>());
+    return bcTarget;
+}
+
+TEST(BoundaryConditionFactoryTest, surfaceLayerBoundaryCondition)
+{
+    auto bcFactory = BoundaryConditionFactory();
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackCompressible, BoundaryConditionFactory::SurfaceLayerBC::HeatFlux);
+    auto bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    auto bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerBounceBackCompressibleHeatFlux)
+        << "The returned boundary condition is not the expected function SurfaceLayerBounceBackCompressibleHeatFlux.";
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackWithPressureCompressible, BoundaryConditionFactory::SurfaceLayerBC::HeatFlux);
+    bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerBounceBackWithPressureCompressibleHeatFlux)
+        << "The returned boundary condition is not the expected function SurfaceLayerBounceBackWithPressureCompressibleHeatFlux.";
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressInterpolatedCompressible, BoundaryConditionFactory::SurfaceLayerBC::HeatFlux);
+    bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerInterpolatedCompressibleHeatFlux)
+        << "The returned boundary condition is not the expected function SurfaceLayerInterpolatedCompressibleHeatFlux.";
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceTemperature);
+    bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerBounceBackCompressibleSurfaceTemperature)
+        << "The returned boundary condition is not the expected function SurfaceLayerBounceBackCompressibleSurfaceTemperature.";
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackWithPressureCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceTemperature);
+    bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerBounceBackWithPressureCompressibleSurfaceTemperature)
+        << "The returned boundary condition is not the expected function SurfaceLayerBounceBackWithPressureCompressibleSurfaceTemperature.";
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressInterpolatedCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceTemperature);
+    bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerInterpolatedCompressibleSurfaceTemperature)
+        << "The returned boundary condition is not the expected function SurfaceLayerInterpolatedCompressibleSurfaceTemperature.";
+}
+
 
 bcFunctionDirectional getDirectionalPressureBcTarget(BoundaryConditionFactory &bcFactory)
 {
