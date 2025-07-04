@@ -56,8 +56,8 @@
 #include <gpu/core/Kernel/KernelTypes.h>
 #include <gpu/core/Parameter/Parameter.h>
 #include <gpu/core/PreCollisionInteractor/BuoyancyProvider/BuoyancyProvider.h>
+#include <gpu/core/PreCollisionInteractor/CoriolisForce.h>
 #include <gpu/core/PreCollisionInteractor/DampingLayer/DampingLayer.h>
-// #include <gpu/core/PreCollisionInteractor/WindDirectionController.h>
 #include <gpu/core/Samplers/PlanarAverageProbe.h>
 #include <gpu/core/Samplers/Probe.h>
 #include <gpu/core/Samplers/WallModelProbe.h>
@@ -357,17 +357,17 @@ void run(const vf::basics::ConfigurationFile& config)
 
     para->addInteractor(std::make_shared<BuoyancyProviderPlanarAverage>(para, cudaMemoryManager));
 
-    // if (useWindDirectionController)
-    //     para->addInteractor(std::make_shared<WindDirectionController>(
-    //         para, cudaMemoryManager, windDirectionReferenceHeight, windDirection, geostrophicWind * deltaT / deltaX,
-    //         windDirectionControllerRotationTime / deltaT, uint(windDirectionControllerUpdateInterval / deltaT)));
+    if (useCoriolis)
+        para->addInteractor(
+            std::make_shared<CoriolisForce>(para, cudaMemoryManager, geostrophicWindX, geostrophicWindY, coriolisParameter));
 
     if (useRayleighDamping) {
         const auto dampingFunction = [&](real zNormalized) -> real {
             return dampingFactor * deltaT * std::sin(cPi * c1o2 * zNormalized) * std::sin(cPi * c1o2 * zNormalized);
         };
         para->addInteractor(std::make_shared<DampingLayer>(para, cudaMemoryManager, DampingLayer::DampingLayerType::Rayleigh,
-                                                           Axis::z, dampingFunction, dampingLayerStartHeight, lengthZ + deltaX));
+                                                           Axis::z, dampingFunction, dampingLayerStartHeight,
+                                                           lengthZ + deltaX));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
