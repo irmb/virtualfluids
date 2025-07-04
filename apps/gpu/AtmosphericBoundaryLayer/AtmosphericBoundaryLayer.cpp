@@ -51,6 +51,7 @@
 #include "GridGenerator/grid/BoundaryConditions/Side.h"
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
+#include "GridGenerator/grid/MultipleGridBuilderFacade.h"
 #include "GridGenerator/utilities/communication.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -125,7 +126,7 @@ void run(const vf::basics::ConfigurationFile& config)
     // compute parameters in lattice units
     //////////////////////////////////////////////////////////////////////////
     const auto velocityProfile = [&](real coordZ) {
-        return frictionVelocity / vonKarmanConstant * log(coordZ / roughnessLength + c1o1);
+        return frictionVelocity / vonKarmanConstant * std::log(coordZ / roughnessLength + c1o1);
     };
     const real velocity = c1o2 * velocityProfile(boundaryLayerHeight);
 
@@ -156,72 +157,28 @@ void run(const vf::basics::ConfigurationFile& config)
 
     const int numberOfProcesses = communicator.getNumberOfProcesses();
     const int processID = communicator.getProcessID();
-    const bool isMultiGPU = numberOfProcesses > 1;
+    const auto dimensions = std::make_shared<GridDimensions>(c0o1, lengthX, c0o1, lengthY, c0o1, lengthZ, deltaX);
+    auto gridBuilderFacade = std::make_shared<MultipleGridBuilderFacade>(dimensions, c8o1 * deltaX);
 
-    const real lengthXPerProcess = lengthX / numberOfProcesses;
-    const real overlap = 8.0 * deltaX;
+    // for (int process = 1; process < numberOfProcesses; process++)
+    //     gridBuilderFacade->addDomainSplit(process * lengthX / numberOfProcesses, Axis::x);
 
-    const real xMin = processID * lengthXPerProcess;
-    const real xMax = (processID + 1) * lengthXPerProcess;
-    real xGridMin = processID * lengthXPerProcess;
-    real xGridMax = (processID + 1) * lengthXPerProcess;
-
-    const real yMin = c0o1;
-    const real yMax = lengthY;
-    const real zMin = c0o1;
-    const real zMax = lengthZ;
-
-    const bool isFirstSubDomain = isMultiGPU && (processID == 0);
-    const bool isLastSubDomain = isMultiGPU && (processID == numberOfProcesses - 1);
-    const bool isMidSubDomain = isMultiGPU && !(isFirstSubDomain || isLastSubDomain);
-
-    if (isFirstSubDomain) {
-        xGridMax += overlap;
-    }
-    if (isFirstSubDomain && !usePrecursorInflow) {
-        xGridMin -= overlap;
-    }
-
-    if (isLastSubDomain) {
-        xGridMin -= overlap;
-    }
-
-    if (isLastSubDomain && !usePrecursorInflow) {
-        xGridMax += overlap;
-    }
-
-    if (isMidSubDomain) {
-        xGridMax += overlap;
-        xGridMin -= overlap;
-    }
-
-    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
+    gridBuilderFacade->setPeriodicBoundaryCondition(!usePrecursorInflow, true, false);
     auto scalingFactory = GridScalingFactory();
 
-    gridBuilder->addCoarseGrid(xGridMin, c0o1, c0o1, xGridMax, lengthY, lengthZ, deltaX);
-
     if (useRefinement) {
-        gridBuilder->setNumberOfLayers(4, 0);
-        real xMaxRefinement = xGridMax;
-        if (usePrecursorInflow) {
-            xMaxRefinement = xGridMax - boundaryLayerHeight;
-        }
-        gridBuilder->addGrid(std::make_shared<Cuboid>(xGridMin, c0o1, c0o1, xMaxRefinement, lengthY, c1o2 * lengthZ), 1);
+        gridBuilderFacade->setNumberOfLayersForRefinement(4, 0);
+        real lengthRefinement = lengthX;
+        if (usePrecursorInflow)
+            lengthRefinement -= boundaryLayerHeight;
+        gridBuilderFacade->addFineGrid(std::make_shared<Cuboid>(c0o1, c0o1, c0o1, lengthRefinement, lengthY, c1o2 * lengthZ),
+                                       1);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }
+    if (!usePrecursorInflow)
+        gridBuilderFacade->setPeriodicShiftOnXBoundaryInYDirection(periodicShift);
 
-    if (numberOfProcesses > 1) {
-        gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>(xMin, xMax, yMin, yMax, zMin, zMax));
-        gridBuilder->setPeriodicBoundaryCondition(false, true, false);
-    } else {
-        gridBuilder->setPeriodicBoundaryCondition(!usePrecursorInflow, true, false);
-    }
-
-    if (!usePrecursorInflow) {
-        gridBuilder->setPeriodicShiftOnXBoundaryInYDirection(periodicShift);
-    }
-
-    gridBuilder->buildGrids(true); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilderFacade->createGrids(processID);
 
     //////////////////////////////////////////////////////////////////////////
     // set parameters
@@ -252,7 +209,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setDevices(devices);
     para->setMaxDev(numberOfProcesses);
     if (usePrecursorInflow) {
-        para->setInitialCondition([&](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) {
+        para->setInitialCondition([&](real /**/, real /**/, real coordZ, real& rho, real& vx, real& vy, real& vz) {
             rho = c0o1;
             vx = velocityProfile(coordZ) * deltaT / deltaX;
             vy = c0o1;
@@ -264,59 +221,35 @@ void run(const vf::basics::ConfigurationFile& config)
             const real relativeY = coordY / lengthY;
             const real relativeZ = coordZ / lengthZ;
 
-            const real horizontalPerturbation = sin(cPi * c16o1 * relativeX);
-            const real verticalPerturbation = sin(cPi * c8o1 * relativeZ) / (pow(relativeZ, c2o1) + c1o1);
+            const real horizontalPerturbation = std::sin(cPi * c16o1 * relativeX);
+            const real verticalPerturbation = std::sin(cPi * c8o1 * relativeZ) / (std::pow(relativeZ, c2o1) + c1o1);
             const real perturbation = c2o1 * horizontalPerturbation * verticalPerturbation;
 
             rho = c0o1;
-            vx = (velocityProfile(coordZ) + perturbation) * (c1o1 - c1o10 * abs(relativeY - c1o2)) * deltaT / deltaX;
+            vx = (velocityProfile(coordZ) + perturbation) * (c1o1 - c1o10 * std::abs(relativeY - c1o2)) * deltaT / deltaX;
             vy = perturbation * deltaT / deltaX;
             vz = c8o1 * frictionVelocity / vonKarmanConstant *
-                 (sin(cPi * c8o1 * coordY / boundaryLayerHeight) * sin(cPi * c8o1 * relativeZ) +
-                  sin(cPi * c8o1 * relativeX)) /
-                 (pow(c1o2 * lengthZ - coordZ, c2o1) + c1o1) * deltaT / deltaX;
+                 (std::sin(cPi * c8o1 * coordY / boundaryLayerHeight) * std::sin(cPi * c8o1 * relativeZ) +
+                  std::sin(cPi * c8o1 * relativeX)) /
+                 (std::pow(c1o2 * lengthZ - coordZ, c2o1) + c1o1) * deltaT / deltaX;
         });
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    if (numberOfProcesses > 1) {
-        if (isFirstSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(communication_directions::PX);
-            gridBuilder->setCommunicationProcess(communication_directions::PX, processID + 1);
-        }
-
-        if (isLastSubDomain || isMidSubDomain) {
-            gridBuilder->findCommunicationIndices(communication_directions::MX, true);
-            gridBuilder->setCommunicationProcess(communication_directions::MX, processID - 1);
-        }
-
-        if (isFirstSubDomain && !usePrecursorInflow) {
-            gridBuilder->findCommunicationIndices(communication_directions::MX);
-            gridBuilder->setCommunicationProcess(communication_directions::MX, numberOfProcesses - 1);
-        }
-
-        if (isLastSubDomain && !usePrecursorInflow) {
-            gridBuilder->findCommunicationIndices(communication_directions::PX);
-            gridBuilder->setCommunicationProcess(communication_directions::PX, 0);
-        }
-    }
-
     if (usePrecursorInflow) {
-        if (!isMultiGPU || isFirstSubDomain) {
-            auto precursor = createFileCollection(precursorDirectory + "precursor", TransientBCFileType::VTK);
-            gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, timestepsBetweenReadsPrecursor);
+        if (processID == 0) {
+            auto precursor = createFileCollection(precursorDirectory , "precursor", TransientBCFileType::VTK);
+            gridBuilderFacade->setPrecursorBoundaryCondition(SideType::MX, precursor, timestepsBetweenReadsPrecursor, false);
         }
 
-        if (!isMultiGPU || isLastSubDomain) {
-            gridBuilder->setPressureBoundaryCondition(SideType::PX, c0o1);
-        }
+        if (processID == numberOfProcesses - 1)
+            gridBuilderFacade->setPressureBoundaryCondition(SideType::PX, c0o1);
+
     }
 
-    gridBuilder->setStressBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, samplingOffsetWallModel, vonKarmanConstant,
+    gridBuilderFacade->setStressBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, samplingOffsetWallModel, vonKarmanConstant,
                                             roughnessLength, deltaX);
 
-    gridBuilder->setSlipBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1);
+    gridBuilderFacade->setSlipBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1);
 
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityInterpolatedCompressible);
@@ -334,7 +267,7 @@ void run(const vf::basics::ConfigurationFile& config)
     //////////////////////////////////////////////////////////////////////////
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
-    if (!usePrecursorInflow && (isFirstSubDomain || !isMultiGPU)) {
+    if (!usePrecursorInflow && (processID == 0)) {
         const auto planarAverageProbe =
             std::make_shared<PlanarAverageProbe>(para, cudaMemoryManager, para->getOutputPath(), "planarAverageProbe",
                                                  timeStepStartAveraging, timeStepStartTemporalAveraging, timeStepAveraging,
@@ -346,7 +279,7 @@ void run(const vf::basics::ConfigurationFile& config)
         const auto wallModelProbe = std::make_shared<WallModelProbe>(
             para, cudaMemoryManager, para->getOutputPath(), "wallModelProbe", timeStepStartAveraging,
             timeStepStartTemporalAveraging, timeStepAveraging / 4, timeStepStartOutProbe, timeStepOutProbe, false, true,
-            true, para->getIsBodyForce());
+            true, para->getIsBodyForce(), false);
 
         para->addSampler(wallModelProbe);
 
@@ -393,17 +326,11 @@ void run(const vf::basics::ConfigurationFile& config)
     auto tmFactory = std::make_shared<TurbulenceModelFactory>(para);
     tmFactory->readConfigFile(config);
 
-    VF_LOG_INFO("process parameter:");
+    VF_LOG_INFO("process parameters:");
     VF_LOG_INFO("Number of Processes {} process ID {}", numberOfProcesses, processID);
-    if (isFirstSubDomain)
-        VF_LOG_INFO("Process ID {} is the first subdomain");
-    if (isLastSubDomain)
-        VF_LOG_INFO("Process ID {} is the last subdomain");
-    if (isMidSubDomain)
-        VF_LOG_INFO("Process ID {} is a mid subdomain");
     printf("\n");
 
-    Simulation simulation(para, cudaMemoryManager, gridBuilder, &bcFactory, tmFactory, &scalingFactory);
+    Simulation simulation(para, cudaMemoryManager, gridBuilderFacade->getGridBuilder(), &bcFactory, tmFactory, &scalingFactory);
     simulation.run();
 }
 
