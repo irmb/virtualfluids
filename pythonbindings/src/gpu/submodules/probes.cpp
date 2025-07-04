@@ -54,8 +54,8 @@ namespace probes
         py::class_<Probe, Sampler, std::shared_ptr<Probe>>(probeProbeModule, "Probe")
         .def(py::init<  SPtr<Parameter>,
                         SPtr<CudaMemoryManager>,
-                        const std::string,
-                        const std::string,
+                        const std::string&,
+                        const std::string&,
                         uint,
                         uint, 
                         uint,
@@ -90,8 +90,8 @@ namespace probes
         py::class_<PlanarAverageProbe, Sampler, std::shared_ptr<PlanarAverageProbe>>(planarAverageProbeModule, "PlanarAverageProbe")
         .def(py::init<  SPtr<Parameter>,
                         SPtr<CudaMemoryManager>,
-                        const std::string,
-                        const std::string,
+                        const std::string&,
+                        const std::string&,
                         uint,
                         uint,
                         uint,
@@ -122,8 +122,8 @@ namespace probes
         py::class_<WallModelProbe, Sampler, std::shared_ptr<WallModelProbe>>(wallModelProbeModule, "WallModelProbe")
         .def(py::init<  SPtr<Parameter>,
                         SPtr<CudaMemoryManager>,
-                        const std::string,
-                        const std::string,
+                        const std::string&,
+                        const std::string&,
                         uint,
                         uint, 
                         uint,

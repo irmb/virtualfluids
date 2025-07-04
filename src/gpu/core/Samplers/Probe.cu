@@ -61,13 +61,13 @@
 
 using namespace vf::basics::constant;
 
-Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
-             std::string probeName, uint tStartSampling, uint tBetweenSamples, uint tStartWritingOutput,
+Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, const std::string& outputPath,
+             const std::string& probeName, uint tStartSampling, uint tBetweenSamples, uint tStartWritingOutput,
              uint tBetweenWriting, bool outputTimeSeries, bool sampleEveryTimestep, bool sampleScalar)
     : para(std::move(para)), cudaMemoryManager(std::move(cudaMemoryManager)), tStartSampling(tStartSampling),
       tBetweenSamples(tBetweenSamples), tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting),
       outputTimeSeries(outputTimeSeries), sampleEveryTimestep(sampleEveryTimestep), sampleScalar(sampleScalar),
-      Sampler(std::move(outputPath), std::move(probeName))
+      Sampler(outputPath, probeName)
 {
     if (tStartWritingOutput < tStartSampling)
         throw std::runtime_error("Probe: tStartWritingOutput must be larger than tStartSampling!");

@@ -224,7 +224,7 @@ void PlanarAverageProbe::addStatistic(Statistic statistic)
 }
 
 PlanarAverageProbe::PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager,
-                                       std::string outputPath, std::string probeName, uint tStartSampling,
+                                       const std::string& outputPath, const std::string& probeName, uint tStartSampling,
                                        uint tStartTemporalAveraging, uint tBetweenSamples, uint tStartWritingOutput,
                                        uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages, bool sampleScalar)
     : para(para), cudaMemoryManager(cudaMemoryManager), tStartSampling(tStartSampling),

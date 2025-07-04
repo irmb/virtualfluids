@@ -58,8 +58,8 @@ class Probe : public Sampler
 {
 public:
     enum class Statistic { Instantaneous, Means, Variances };
-    Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
-          std::string probeName, uint tStartSampling, uint tBetweenSamples, uint tStartWritingOutput, uint tBetweenWriting,
+    Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, const std::string& outputPath,
+          const std::string& probeName, uint tStartSampling, uint tBetweenSamples, uint tStartWritingOutput, uint tBetweenWriting,
           bool outputTimeSeries, bool sampleEveryTimestep, bool sampleScalar = false);
     ~Probe() override;
 
