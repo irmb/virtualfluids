@@ -345,68 +345,62 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
         auto& parD = para->getParDeviceAsReference(level);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        parH.stressBC.numberOfBCnodes = 0;
-        if (numberOfStressValues > 1)
-        {
-            para->getParH(level)->stressBC.numberOfBCnodes = numberOfStressValues;
-            cudaMemoryManager->cudaAllocStressBC(level);
-            cudaMemoryManager->cudaAllocWallModel(parH.momentumWallModel, parD.momentumWallModel, numberOfStressValues, para->getHasWallModelMonitor());
-            builder->getStressValues(   parH.stressBC.normalX,  parH.stressBC.normalY,  parH.stressBC.normalZ,
-                                        parH.stressBC.k,        parH.momentumWallModel.samplingIndices,
-                                        parH.momentumWallModel.samplingDistance, parH.momentumWallModel.vonKarmanConstant, parH.momentumWallModel.roughnessLength,
-                                        level);
+        parH.stressBC.numberOfBCnodes = numberOfStressValues;
+        if (numberOfStressValues <= 1) continue;
+        cudaMemoryManager->cudaAllocStressBC(level);
+        cudaMemoryManager->cudaAllocWallModel(parH.momentumWallModel, parD.momentumWallModel, numberOfStressValues, para->getHasWallModelMonitor());
+        builder->getStressValues(   parH.stressBC.normalX,  parH.stressBC.normalY,  parH.stressBC.normalZ,
+                                    parH.stressBC.k,        parH.momentumWallModel.samplingIndices,
+                                    parH.momentumWallModel.samplingDistance, parH.momentumWallModel.vonKarmanConstant, parH.momentumWallModel.roughnessLength,
+                                    level);
 
-            cudaMemoryManager->cudaCopyStressBC(level);
-            cudaMemoryManager->cudaCopyWallModel(parH.momentumWallModel, parD.momentumWallModel, numberOfStressValues);
-        }
+        cudaMemoryManager->cudaCopyStressBC(level);
+        cudaMemoryManager->cudaCopyWallModel(parH.momentumWallModel, parD.momentumWallModel, numberOfStressValues);
+        std::vector<uint> stressIndices(parH.momentumWallModel.samplingIndices, parH.momentumWallModel.samplingIndices + numberOfStressValues);
+        tagFluidNodeIndices(stressIndices, CollisionTemplate::WriteMacroVars, level);
         para->getParD(level)->stressBC.numberOfBCnodes = para->getParH(level)->stressBC.numberOfBCnodes;
     }
 
-     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
+    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const uint numberOfSurfaceLayerValues = builder->getSurfaceLayerSize(level);
         VF_LOG_INFO("size SurfaceLayer level {}: {}", level, numberOfSurfaceLayerValues);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         para->getParH(level)->surfaceLayerBC.numberOfBCnodes = numberOfSurfaceLayerValues;
-        if (numberOfSurfaceLayerValues > 1)
-        {
-            cudaMemoryManager->cudaAllocSurfaceLayerBC(level);
+        if (numberOfSurfaceLayerValues <= 1)
+            continue;
 
-            cudaMemoryManager->cudaAllocWallModel(para->getParH(level)->surfaceLayerWallModel.momentumParameters,
-                                                  para->getParD(level)->surfaceLayerWallModel.momentumParameters,
-                                                  numberOfSurfaceLayerValues, para->getHasWallModelMonitor());
-            cudaMemoryManager->cudaAllocTemperatureWallModel(
-                para->getParH(level)->surfaceLayerWallModel.temperatureParameters,
-                para->getParD(level)->surfaceLayerWallModel.temperatureParameters, numberOfSurfaceLayerValues);
+        cudaMemoryManager->cudaAllocSurfaceLayerBC(level);
+        auto& momentumWallModelH = para->getParH(level)->surfaceLayerWallModel.momentumParameters;
+        auto& momentumWallModelD = para->getParD(level)->surfaceLayerWallModel.momentumParameters;
+        auto& temperatureWallModelH = para->getParH(level)->surfaceLayerWallModel.temperatureParameters;
+        auto& temperatureWallModelD = para->getParD(level)->surfaceLayerWallModel.temperatureParameters;
 
-            builder->getSurfaceLayerValues(
-                para->getParH(level)->surfaceLayerBC.normalX, para->getParH(level)->surfaceLayerBC.normalY,
-                para->getParH(level)->surfaceLayerBC.normalZ, para->getParH(level)->surfaceLayerBC.k,
-                para->getParH(level)->surfaceLayerWallModel.momentumParameters.samplingDistance,
-                para->getParH(level)->surfaceLayerWallModel.momentumParameters.samplingIndices,
-                para->getParH(level)->surfaceLayerWallModel.momentumParameters.frictionVelocity,
-                para->getParH(level)->surfaceLayerWallModel.momentumParameters.roughnessLength,
-                para->getParH(level)->surfaceLayerWallModel.temperatureParameters.roughnessLength,
-                para->getParH(level)->surfaceLayerWallModel.temperatureParameters.surfaceHeatFlux,
-                para->getParH(level)->surfaceLayerWallModel.temperatureParameters.surfaceTemperature,
-                para->getParH(level)->surfaceLayerWallModel.temperatureParameters.heatingRate, level);
+        cudaMemoryManager->cudaAllocWallModel(momentumWallModelH, momentumWallModelD, numberOfSurfaceLayerValues,
+                                              para->getHasWallModelMonitor());
+        cudaMemoryManager->cudaAllocTemperatureWallModel(temperatureWallModelH, temperatureWallModelD,
+                                                         numberOfSurfaceLayerValues);
 
-            cudaMemoryManager->cudaCopySurfaceLayerBC(level);
+        builder->getSurfaceLayerValues(
+            para->getParH(level)->surfaceLayerBC.normalX, para->getParH(level)->surfaceLayerBC.normalY,
+            para->getParH(level)->surfaceLayerBC.normalZ, para->getParH(level)->surfaceLayerBC.k,
+            momentumWallModelH.samplingDistance, momentumWallModelH.samplingIndices, momentumWallModelH.frictionVelocity,
+            momentumWallModelH.roughnessLength, temperatureWallModelH.roughnessLength, temperatureWallModelH.surfaceHeatFlux,
+            temperatureWallModelH.surfaceTemperature, temperatureWallModelH.heatingRate, level);
 
-            cudaMemoryManager->cudaCopyWallModel(para->getParH(level)->surfaceLayerWallModel.momentumParameters,
-                                                 para->getParD(level)->surfaceLayerWallModel.momentumParameters,
-                                                 numberOfSurfaceLayerValues);
-            cudaMemoryManager->cudaCopyTemperatureWallModel(
-                para->getParH(level)->surfaceLayerWallModel.temperatureParameters,
-                para->getParD(level)->surfaceLayerWallModel.temperatureParameters, numberOfSurfaceLayerValues);
+        cudaMemoryManager->cudaCopySurfaceLayerBC(level);
 
-            para->getParH(level)->surfaceLayerWallModel.momentumParameters.hasMonitor = para->getHasWallModelMonitor();
-            para->getParD(level)->surfaceLayerWallModel.momentumParameters.hasMonitor = para->getHasWallModelMonitor();
+        cudaMemoryManager->cudaCopyWallModel(momentumWallModelH, momentumWallModelD, numberOfSurfaceLayerValues);
+        cudaMemoryManager->cudaCopyTemperatureWallModel(temperatureWallModelH, temperatureWallModelD,
+                                                        numberOfSurfaceLayerValues);
 
-            std::vector<uint> surfaceLayerIndices(para->getParH(level)->surfaceLayerWallModel.momentumParameters.samplingIndices, para->getParH(level)->surfaceLayerWallModel.momentumParameters.samplingIndices + numberOfSurfaceLayerValues);
-            tagFluidNodeIndices(surfaceLayerIndices, CollisionTemplate::WriteMacroVars, level);
+        momentumWallModelH.hasMonitor = para->getHasWallModelMonitor();
+        momentumWallModelD.hasMonitor = para->getHasWallModelMonitor();
 
-        }
+        std::vector<uint> surfaceLayerIndices(momentumWallModelH.samplingIndices,
+                                              momentumWallModelH.samplingIndices + numberOfSurfaceLayerValues);
+        tagFluidNodeIndices(surfaceLayerIndices, CollisionTemplate::WriteMacroVars, level);
+
         para->getParD(level)->surfaceLayerBC.numberOfBCnodes = para->getParH(level)->surfaceLayerBC.numberOfBCnodes;
     }
 
