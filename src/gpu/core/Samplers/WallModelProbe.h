@@ -55,15 +55,15 @@ class CudaMemoryManager;
 class WallModelProbe : public Sampler
 {
 public:
-    WallModelProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string outputPath,
-                   const std::string probeName, uint tStartAveraging, uint tStartTemporalAveraging, uint tBetweenAverages,
+    WallModelProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string& outputPath,
+                   const std::string& probeName, uint tStartAveraging, uint tStartTemporalAveraging, uint tBetweenAverages,
                    uint tStartWritingOutput, uint tBetweenWriting, bool averageEveryTimestep, bool computeTemporalAverages,
-                   bool outputStress, bool evaluatePressureGradient)
-        : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging),
+                   bool outputStress, bool evaluatePressureGradient, bool sampleSurfaceLayer)
+        : para(std::move(para)), cudaMemoryManager(std::move(cudaMemoryManager)), tStartAveraging(tStartAveraging),
           tStartTemporalAveraging(tStartTemporalAveraging), tStartWritingOutput(tStartWritingOutput),
           tBetweenAverages(tBetweenAverages), tBetweenWriting(tBetweenWriting), averageEveryTimestep(averageEveryTimestep),
           computeTemporalAverages(computeTemporalAverages), outputStress(outputStress),
-          evaluatePressureGradient(evaluatePressureGradient), Sampler(outputPath, probeName)
+          evaluatePressureGradient(evaluatePressureGradient), sampleSurfaceLayer(sampleSurfaceLayer), Sampler(outputPath, probeName)
     {
         if (tStartTemporalAveraging < tStartAveraging)
             throw std::runtime_error("WallModelProbe: tStartTemporalAveraging must be larger than tStartAveraging!");
@@ -73,7 +73,7 @@ public:
             throw std::runtime_error("WallModelProbe: tBetweenAverages must be larger than 0!");
     }
 
-    ~WallModelProbe() = default;
+    ~WallModelProbe() override = default;
 
     void init() override;
     void sample(int level, uint t) override;
@@ -83,9 +83,12 @@ public:
 
 private:
     std::vector<std::string> getVariableNames();
-    int getNumberOfInstantaneousQuantities() const
+    uint getNumberOfInstantaneousQuantities() const
     {
-        return evaluatePressureGradient ? 13 : 10;
+        uint numberOfQuantities = 10;
+        if(sampleSurfaceLayer) numberOfQuantities += 5;
+        if(evaluatePressureGradient) numberOfQuantities += 3;
+        return numberOfQuantities;
     }
     void calculateQuantities(LevelData* levelData, uint t, int level);
     void write(int level);
@@ -99,6 +102,7 @@ private:
     bool evaluatePressureGradient = false;
     bool computeTemporalAverages = false;
     bool averageEveryTimestep = false;
+    bool sampleSurfaceLayer = false;
     std::vector<LevelData> levelData;
 };
 
@@ -110,7 +114,7 @@ struct WallModelProbe::LevelData
     std::vector<real> timestepTime;
     bool firstWrite = true;
     LevelData(std::string fileName, uint numberOfFluidNodes)
-        : timeseriesFileName(fileName), numberOfFluidNodes(numberOfFluidNodes)
+        : timeseriesFileName(std::move(fileName)), numberOfFluidNodes(numberOfFluidNodes)
     {
     }
 };

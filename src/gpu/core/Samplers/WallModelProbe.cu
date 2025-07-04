@@ -68,6 +68,18 @@ std::vector<std::string> WallModelProbe::getVariableNames()
     variableNames.emplace_back("Fx_spatMean");
     variableNames.emplace_back("Fy_spatMean");
     variableNames.emplace_back("Fz_spatMean");
+    if (evaluatePressureGradient) {
+        variableNames.emplace_back("dpdx_spatMean");
+        variableNames.emplace_back("dpdy_spatMean");
+        variableNames.emplace_back("dpdz_spatMean");
+    }
+    if (sampleSurfaceLayer) {
+        variableNames.emplace_back("temp_el_spatMean");
+        variableNames.emplace_back("temp_1_spatMean");
+        variableNames.emplace_back("frictionTemperature_spatMean");
+        variableNames.emplace_back("surfaceHeatFlux_spatMean");
+        variableNames.emplace_back("surfaceTemperature_spatMean");
+    }
     if (computeTemporalAverages) {
         variableNames.emplace_back("vx_el_spatTmpMean");
         variableNames.emplace_back("vy_el_spatTmpMean");
@@ -79,17 +91,20 @@ std::vector<std::string> WallModelProbe::getVariableNames()
         variableNames.emplace_back("Fx_spatTmpMean");
         variableNames.emplace_back("Fy_spatTmpMean");
         variableNames.emplace_back("Fz_spatTmpMean");
-    }
-    if (evaluatePressureGradient) {
-        variableNames.emplace_back("dpdx_spatMean");
-        variableNames.emplace_back("dpdy_spatMean");
-        variableNames.emplace_back("dpdz_spatMean");
-        if (computeTemporalAverages) {
+        if (evaluatePressureGradient) {
             variableNames.emplace_back("dpdx_spatTmpMean");
             variableNames.emplace_back("dpdy_spatTmpMean");
             variableNames.emplace_back("dpdz_spatTmpMean");
         }
+        if (sampleSurfaceLayer) {
+            variableNames.emplace_back("temp_el_spatTmpMean");
+            variableNames.emplace_back("temp_1_spatTmpMean");
+            variableNames.emplace_back("frictionTemperature_spatTmpMean");
+            variableNames.emplace_back("surfaceHeatFlux_spatTmpMean");
+            variableNames.emplace_back("surfaceTemperature_spatTmpMean");
+        }
     }
+
     return variableNames;
 }
 
@@ -99,7 +114,7 @@ void WallModelProbe::init()
 
     std::vector<std::string> variableNames = getVariableNames();
 
-    const int numberOfQuantities = getNumberOfInstantaneousQuantities();
+    const uint numberOfQuantities = getNumberOfInstantaneousQuantities();
 
     const real x[1] { 0 };
     const real y[1] { 0 };
@@ -110,7 +125,7 @@ void WallModelProbe::init()
         writeTimeseriesFileHeader(fileName, 1, variableNames, x, y, z);
         const uint numberOfFluidNodes = evaluatePressureGradient ? countFluidNodes(level) : 0;
         levelData.emplace_back(fileName, numberOfFluidNodes);
-        levelData.back().averagedData.push_back(std::vector<real>(numberOfQuantities, 0));
+        levelData.back().averagedData.emplace_back(numberOfQuantities, 0);
     }
 }
 
@@ -119,7 +134,7 @@ void WallModelProbe::sample(int level, uint t)
     const uint tLevel = para->getTimeStep(level, t, false);
     const bool isCoarseTimestep = tLevel % t == 0;
 
-    auto data = &levelData[level];
+    auto* data = &levelData[level];
 
     const uint tAfterStartAvg = t - tStartAveraging;
     const uint tAfterStartOut = t - tStartWritingOutput;
@@ -196,8 +211,7 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
     if (nPoints < 1)
         return;
     auto paraDevice = para->getParD(level);
-    auto wallModel = para->getParD(level)->momentumWallModel;
-    const int numberOfQuantities = getNumberOfInstantaneousQuantities();
+    const uint numberOfQuantities = getNumberOfInstantaneousQuantities();
 
     data->timestepTime.push_back(t * para->getScaledTimeRatio(level));
 
@@ -209,19 +223,23 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
     const real stressFactor = para->getScaledStressRatio(level);
     const real forceFactor = para->getScaledForceRatio(level);
 
-    computeAndSaveMean(wallModel.velocityNodeX, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(wallModel.velocityNodeY, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(wallModel.velocityNodeZ, nPoints, newInstantaneous, velocityFactor);
+    const auto momentumWallModel =
+    sampleSurfaceLayer ? paraDevice->surfaceLayerWallModel.momentumParameters : paraDevice->momentumWallModel;
 
-    computeAndSaveMean(wallModel.velocityExchangeLocationX, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(wallModel.velocityExchangeLocationY, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(wallModel.velocityExchangeLocationZ, nPoints, newInstantaneous, velocityFactor);
 
-    computeAndSaveMean(wallModel.frictionVelocity, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(momentumWallModel.velocityNodeX, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(momentumWallModel.velocityNodeY, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(momentumWallModel.velocityNodeZ, nPoints, newInstantaneous, velocityFactor);
 
-    computeAndSaveMean(wallModel.forceX, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
-    computeAndSaveMean(wallModel.forceY, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
-    computeAndSaveMean(wallModel.forceZ, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
+    computeAndSaveMean(momentumWallModel.velocityExchangeLocationX, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(momentumWallModel.velocityExchangeLocationY, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(momentumWallModel.velocityExchangeLocationZ, nPoints, newInstantaneous, velocityFactor);
+
+    computeAndSaveMean(momentumWallModel.frictionVelocity, nPoints, newInstantaneous, velocityFactor);
+
+    computeAndSaveMean(momentumWallModel.forceX, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
+    computeAndSaveMean(momentumWallModel.forceY, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
+    computeAndSaveMean(momentumWallModel.forceZ, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
 
     if (this->evaluatePressureGradient) {
         computeAndSaveIndexBasedMean(paraDevice->forceX_SP, paraDevice->typeOfGridNode, paraDevice->numberOfNodes,
@@ -232,13 +250,22 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
                                      data->numberOfFluidNodes, newInstantaneous, forceFactor);
     }
 
+    if (sampleSurfaceLayer) {
+        const auto temperatureWallModel = paraDevice->surfaceLayerWallModel.temperatureParameters;
+        computeAndSaveMean(temperatureWallModel.temperatureExchangeLocation, nPoints, newInstantaneous, c1o1);
+        computeAndSaveMean(temperatureWallModel.temperatureFirstFluidNode, nPoints, newInstantaneous, c1o1);
+        computeAndSaveMean(temperatureWallModel.temperatureScale, nPoints, newInstantaneous, c1o1);
+        computeAndSaveMean(temperatureWallModel.surfaceHeatFlux, nPoints, newInstantaneous, velocityFactor);
+        computeAndSaveMean(temperatureWallModel.surfaceTemperature, nPoints, newInstantaneous, c1o1);
+    }
+
     if (computeTemporalAverages) {
         if (t > tStartTemporalAveraging) {
             const real inverseNumberOfAveragedValues = c1o1 / real(data->numberOfAveragedValues + 1);
             std::vector<real>& oldAverages = data->averagedData.back();
             std::vector<real> newAverages;
             newAverages.reserve(numberOfQuantities);
-            for (int i = 0; i < numberOfQuantities; i++)
+            for (uint i = 0; i < numberOfQuantities; i++)
                 computeTemporalAverage(newAverages, oldAverages[i], newInstantaneous[i], inverseNumberOfAveragedValues);
             data->averagedData.push_back(newAverages);
             data->numberOfAveragedValues++;

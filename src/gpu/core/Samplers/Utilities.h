@@ -33,6 +33,7 @@
 #ifndef SAMPLE_UTILITIES_H
 #define SAMPLE_UTILITIES_H
 #include <basics/StringUtilities/StringUtil.h>
+#include <basics/DataTypes.h>
 #include <filesystem>
 #include <fstream>
 #include <ios>
