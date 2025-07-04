@@ -407,7 +407,7 @@ void LevelGridBuilder::setNoSlipGeometryBoundaryCondition()
     }
 }
 
-void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads,
+void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, bool cycleFiles,
                                                         real velocityX, real velocityY, real velocityZ, std::vector<uint> fileLevelToGridLevelMap)
 {
     if(fileLevelToGridLevelMap.empty())
@@ -426,7 +426,7 @@ void LevelGridBuilder::setPrecursorBoundaryCondition(SideType sideType, SPtr<Fil
 
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-        auto reader = createReaderForCollection(fileCollection, fileLevelToGridLevelMap[level]);
+        auto reader = createReaderForCollection(fileCollection, fileLevelToGridLevelMap[level], cycleFiles);
         SPtr<PrecursorBoundaryCondition> precursorBoundaryCondition = PrecursorBoundaryCondition::make( reader, timeStepsBetweenReads, velocityX, velocityY, velocityZ);
 
         auto side = SideFactory::make(sideType);

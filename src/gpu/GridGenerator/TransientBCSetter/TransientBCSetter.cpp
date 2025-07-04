@@ -46,24 +46,24 @@
 
 using namespace vf::basics::constant;
 
-SPtr<FileCollection> createFileCollection(std::string prefix, TransientBCFileType type)
+SPtr<FileCollection> createFileCollection(const std::string& path, const std::string& prefix, TransientBCFileType type)
 {
     switch(type)
     {
         case TransientBCFileType::VTK:
-            return std::make_shared<VTKFileCollection>(prefix);
+            return std::make_shared<VTKFileCollection>(path, prefix);
             break;
         default:
             throw std::runtime_error("createFileCollection: Unknown file type");
     }
 }
 
-SPtr<TransientBCInputFileReader> createReaderForCollection(SPtr<FileCollection> fileCollection, uint readLevel)
+SPtr<TransientBCInputFileReader> createReaderForCollection(SPtr<FileCollection> fileCollection, uint readLevel, bool cycleFiles)
 {
     switch(fileCollection->getFileType())
     {
         case TransientBCFileType::VTK:
-            return std::make_shared<VTKReader>(std::static_pointer_cast<VTKFileCollection>(fileCollection), readLevel);
+            return std::make_shared<VTKReader>(std::static_pointer_cast<VTKFileCollection>(fileCollection), readLevel, cycleFiles);
             break;
         default:
             throw std::runtime_error("createReaderForCollection: No reader availabel for this file t");
@@ -82,8 +82,25 @@ std::vector<T> readStringToVector(std::string s)
     }
     return out;
 }
+std::string getTag(std::ifstream& input)
+{
+    //find beginning of tag
+    std::string tag;
+    char firstChar = input.get();
+    while(firstChar != '<')
+        firstChar = input.get();
+    tag += firstChar;
+    char nextChar = input.get();
+    while(nextChar != '>')
+    {
+        tag += nextChar;
+        nextChar = input.get();
+    }
+    tag += nextChar;
+    return tag;
+}
 
-std::string readElement(std::string line)
+std::string readElement(const std::string& line)
 {
     const size_t elemStart = line.find('<')+1;
     // size_t elemEnd = line.find("/>", elemStart);
@@ -103,41 +120,39 @@ void VTKFile::readHeader()
     //TODO make this more flexible
     std::ifstream file(this->fileName);
 
-    std::string line;
+    const std::string firstTag = getTag(file); // VTKFile
+    if(firstTag[1]=='?') getTag(file); // ignore first line if xml version
 
-    getline(file, line); // VTKFile
-    if(line[1]=='?') getline(file, line); // ignore first line if xml version
+    const std::string imageData = getTag(file); // ImageData
+    std::vector<int> wholeExtent = readStringToVector<int>(readAttribute(imageData, "WholeExtent"));
+    std::vector<float> origin = readStringToVector<float>(readAttribute(imageData, "Origin"));
+    std::vector<float> spacing = readStringToVector<float>(readAttribute(imageData, "Spacing"));
 
-    getline(file, line); // ImageData
-    std::vector<int> wholeExtent = readStringToVector<int>(readAttribute(line, "WholeExtent"));
-    std::vector<float> origin = readStringToVector<float>(readAttribute(line, "Origin"));
-    std::vector<float> spacing = readStringToVector<float>(readAttribute(line, "Spacing"));
+    const std::string piece = getTag(file); // Piece 
+    std::vector<int> pieceExtent = readStringToVector<int>(readAttribute(piece, "Extent"));
+    getTag(file); // PointData
 
-    getline(file, line); // Piece 
-    std::vector<int> pieceExtent = readStringToVector<int>(readAttribute(line, "Extent"));
-    getline(file, line); // PointData
-
-    getline(file, line);
-    while(strcmp(readElement(line).c_str(), "DataArray")==0)
+    std::string dataArray = getTag(file);
+    while(strcmp(readElement(dataArray).c_str(), "DataArray")==0)
     {
         Quantity quant = Quantity();
-        quant.name = readAttribute(line, "Name");
-        quant.offset = std::stoi(readAttribute(line, "offset"));
+        quant.name = readAttribute(dataArray, "Name");
+        quant.offset = std::stoi(readAttribute(dataArray, "offset"));
         this->quantities.push_back( quant );
-        getline(file, line);
+        dataArray = getTag(file);
     }
-    getline(file, line); // </Piece
-    getline(file, line); // </ImageData
-    getline(file, line); // AppendedData
-
-    const int offset = int(file.tellg())+sizeof(char)+4; // skip underscore and bytesPerVal
+    getTag(file); // </Piece
+    getTag(file); // </ImageData
+    getTag(file); // AppendedData
+    while(file.get()!='_'){} // go until underscore
+    const int offset = int(file.tellg())+8; // and bytesPerVal
+    file.close();
 
     for(auto& quantity: this->quantities)
     {
         quantity.offset += offset;
     }
 
-    file.close();
 
     this->deltaX = spacing[0];
     this->deltaY = spacing[1];
@@ -235,7 +250,7 @@ void VTKFileCollection::findFiles()
             std::vector<VTKFile> filesWithThisId;
             while (!foundLastPart)
             {
-                const std::string fname = makeFileName((int)files.size(), (int)filesOnThisLevel.size(), (int)filesWithThisId.size());
+                const std::string fname = path + makeFileName((int)files.size(), (int)filesOnThisLevel.size(), (int)filesWithThisId.size());
                 const std::ifstream f(fname);
                 if(f.good())
                     filesWithThisId.emplace_back(fname);
@@ -446,15 +461,24 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
     {
         size_t numberOfFiles = this->nFile[level][id];
 
-        if(!this->fileCollection->files[level][id][numberOfFiles].inZBounds(time))
+        if(!this->fileCollection->files[level][id][numberOfFiles].inZBounds(time-startTime))
         {
             numberOfFiles++;
 
             VF_LOG_INFO("PrecursorBC on level {}: switching to file no. {}", level, numberOfFiles);
             if(numberOfFiles == this->fileCollection->files[level][id].size())
-                throw std::runtime_error("Not enough Precursor Files to read");
+            {
+                if(cycleFiles)
+                {
+                    numberOfFiles = 0;
+                    startTime = time;
+                }
+                else
+                    throw std::runtime_error("Not enough Precursor Files to read");
+            }
 
-            this->fileCollection->files[level][id][numberOfFiles-1].unloadFile();
+            if(numberOfFiles > 0)
+                this->fileCollection->files[level][id][numberOfFiles-1].unloadFile();
             if(numberOfFiles+1<this->fileCollection->files[level][id].size())
             {
                 VTKFile* nextFile = &this->fileCollection->files[level][id][numberOfFiles+1];
@@ -468,7 +492,7 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
     
         VTKFile* file = &this->fileCollection->files[level][id][numberOfFiles];
 
-        const int off = file->getClosestIdxZ(time)*file->getNumberOfPointsInXYPlane();
+        const int off = file->getClosestIdxZ(time-startTime)*file->getNumberOfPointsInXYPlane();
         file->getData(data, numberOfNodes, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
         this->nFile[level][id] = numberOfFiles;
     }

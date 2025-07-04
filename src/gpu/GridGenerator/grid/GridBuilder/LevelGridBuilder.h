@@ -102,7 +102,7 @@ public:
     void setPeriodicShiftOnZBoundaryInYDirection(real shift);
     virtual void setNoSlipBoundaryCondition(SideType sideType);
     virtual void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection,
-                                                                    int timeStepsBetweenReads, real velocityX = vf::basics::constant::c0o1,
+                                                                    int timeStepsBetweenReads, bool cycleFiles, real velocityX = vf::basics::constant::c0o1,
                                                                     real velocityY = vf::basics::constant::c0o1, real velocityZ = vf::basics::constant::c0o1,
                                                                     std::vector<uint> fileLevelToGridLevelMap = {});
     void setADNoFluxBoundaryCondition(SideType sideType);

@@ -126,7 +126,7 @@ public:
     void setNoSlipBoundaryCondition(SideType sideType) const;
     void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     void setPeriodicBoundaryCondition(const std::array<bool, 3>& periodicity);
-    void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads,
+    void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, bool cycleFiles,
                                        real velocityX = c0o1, real velocityY = c0o1, real velocityZ = c0o1, 
                                        std::vector<uint> fileLevelToGridLevelMap = {}) const;
     void setADNoFluxBoundaryCondition(SideType sideType);

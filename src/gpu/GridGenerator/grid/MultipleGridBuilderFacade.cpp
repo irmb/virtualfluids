@@ -376,12 +376,12 @@ void MultipleGridBuilderFacade::setSurfaceLayerBoundaryCondition(SideType sideTy
     });
 }
 void MultipleGridBuilderFacade::setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection,
-                                                              int timeStepsBetweenReads, real velocityX, real velocityY,
+                                                              int timeStepsBetweenReads, bool cycleFiles, real velocityX, real velocityY,
                                                               real velocityZ,
                                                               std::vector<uint> fileLevelToGridLevelMap) const
 {
     setBoundaryCondition(sideType, [&]() {
-        gridBuilder->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY,
+        gridBuilder->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY,
                                                    velocityZ, fileLevelToGridLevelMap);
     });
 }
