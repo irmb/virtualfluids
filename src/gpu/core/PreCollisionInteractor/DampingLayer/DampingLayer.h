@@ -51,15 +51,11 @@ class DampingLayer : public PreCollisionInteractor
 public:
     struct DampingLayerData;
 
-    enum class DampingLayerType
-    {
-        Rayleigh
-    };
+    enum class DampingLayerType { Rayleigh };
 
 public:
     DampingLayer(SPtr<Parameter> parameter, SPtr<CudaMemoryManager> cudaMemoryManager, DampingLayerType dampingLayerType,
-                 Axis direction, std::function<real(real)> dampingFunction,
-                 real startPosition, real endPosition)
+                 Axis direction, std::function<real(real)> dampingFunction, real startPosition, real endPosition)
         : dampingLayerType(dampingLayerType), direction(direction), dampingFunction(std::move(dampingFunction)),
           startPosition(startPosition), endPosition(endPosition),
           PreCollisionInteractor(std::move(parameter), std::move(cudaMemoryManager))
@@ -69,7 +65,17 @@ public:
                 VF_LOG_INFO("Using Rayleigh Damping");
                 break;
         }
-        VF_LOG_INFO("Damping from {} to {} in Z direction", startPosition, endPosition);
+        switch (direction) {
+            case Axis::x:
+                VF_LOG_INFO("Damping from {} to {} in X direction", startPosition, endPosition);
+                break;
+            case Axis::y:
+                VF_LOG_INFO("Damping from {} to {} in Y direction", startPosition, endPosition);
+                break;
+            case Axis::z:
+                VF_LOG_INFO("Damping from {} to {} in Z direction", startPosition, endPosition);
+                break;
+        }
     };
 
     ~DampingLayer() override;
