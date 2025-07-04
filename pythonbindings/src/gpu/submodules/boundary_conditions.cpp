@@ -54,6 +54,7 @@ namespace boundary_conditions
         .def("set_slip_boundary_condition", &BoundaryConditionFactory::setSlipBoundaryCondition, py::arg("boundary_condition_type"))
         .def("set_pressure_boundary_condition", &BoundaryConditionFactory::setPressureBoundaryCondition, py::arg("boundary_condition_type"))
         .def("set_stress_boundary_condition", &BoundaryConditionFactory::setStressBoundaryCondition, py::arg("boundary_condition_type"))
+        .def("set_surface_layer_boundary_condition", &BoundaryConditionFactory::setSurfaceLayerBoundaryCondition, py::arg("stress_boundary_condition_type"), py::arg("surface_layer_boundary_condition_type"))
         .def("set_precursor_boundary_condition", &BoundaryConditionFactory::setPrecursorBoundaryCondition, py::arg("boundary_condition_type"))
         .def("set_geometry_boundary_condition", &BoundaryConditionFactory::setGeometryBoundaryCondition, py::arg("boundary_condition_type"))
         .def("set_advection_diffusion_no_flux_boundary_condition", &BoundaryConditionFactory::setAdvectionDiffusionNoFluxBoundaryCondition, py::arg("boundary_condition_type"))
@@ -89,7 +90,7 @@ namespace boundary_conditions
 
         py::enum_<BoundaryConditionFactory::StressBC>(parentModule, "StressBC")
         .value("StressBounceBackCompressible", BoundaryConditionFactory::StressBC::StressBounceBackCompressible)
-        .value("StressBounceBackPressureCompressible", BoundaryConditionFactory::StressBC::StressBounceBackWithPressureCompressible)
+        .value("StressBounceBackWithPressureCompressible", BoundaryConditionFactory::StressBC::StressBounceBackWithPressureCompressible)
         .value("StressInterpolatedCompressible", BoundaryConditionFactory::StressBC::StressInterpolatedCompressible)
         .value("NotSpecified", BoundaryConditionFactory::StressBC::NotSpecified);
 
@@ -121,6 +122,11 @@ namespace boundary_conditions
         .value("FluxCompressible", BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxCompressible)
         .value("FluxTurbulentViscosityCompressible", BoundaryConditionFactory::AdvectionDiffusionFluxBC::FluxTurbulentViscosityCompressible)
         .value("NotSpecified", BoundaryConditionFactory::AdvectionDiffusionFluxBC::NotSpecified);
+
+        py::enum_<BoundaryConditionFactory::SurfaceLayerBC>(parentModule, "SurfaceLayerBC")
+        .value("SurfaceTemperature", BoundaryConditionFactory::SurfaceLayerBC::SurfaceTemperature)
+        .value("HeatFlux", BoundaryConditionFactory::SurfaceLayerBC::HeatFlux)
+        .value("NotSpecified", BoundaryConditionFactory::SurfaceLayerBC::NotSpecified);
 
 
     }
