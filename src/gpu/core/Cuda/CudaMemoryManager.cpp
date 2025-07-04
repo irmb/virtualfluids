@@ -50,6 +50,7 @@
 #include "Samplers/Probe.h"
 #include "Samplers/PlanarAverageProbe.h"
 #include "Samplers/PrecursorWriter.h"
+#include "PreCollisionInteractor/DampingLayer/DampingLayer.h"
 
 void CudaMemoryManager::cudaCopyPrint(int lev)
 {
@@ -2424,6 +2425,41 @@ void CudaMemoryManager::cudaFreeBuoyancyProviderReductionParameters(BuoyancyProv
     checkCudaErrors(cudaFree(reductionParameters.temporaryMemory));
     checkCudaErrors(cudaFree(reductionParameters.numberOfNodesPerPlaneDevice));
     checkCudaErrors(cudaFreeHost(reductionParameters.numberOfNodesPerPlaneHost));
+}
+
+void CudaMemoryManager::cudaAllocDampingLayerData(DampingLayer* dampingLayer, int level)
+{
+    auto& data = dampingLayer->getDampingLayerData(level);
+
+    const size_t sizeReal = sizeof(real) * data.numberOfNodes;
+    const size_t sizeUint = sizeof(uint) * data.numberOfNodes;
+    checkCudaErrors(cudaMallocHost((void**)&data.dampingCoefficientsH, sizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&data.minimumValueH, sizeReal));
+    checkCudaErrors(cudaMallocHost((void**)&data.indicesH, sizeUint));
+    checkCudaErrors(cudaMalloc((void**)&data.dampingCoefficientsD, sizeReal));
+    checkCudaErrors(cudaMalloc((void**)&data.minimumValueD, sizeReal));
+    checkCudaErrors(cudaMalloc((void**)&data.indicesD, sizeUint));
+    setMemsizeGPU(2 * sizeReal + sizeUint, false);
+}
+
+void CudaMemoryManager::cudaCopyDampingLayerDataHtoD(DampingLayer* dampingLayer, int level)
+{
+    auto& data = dampingLayer->getDampingLayerData(level);
+    const size_t memSizeReal = sizeof(real) * data.numberOfNodes;
+    const size_t memSizeUint = sizeof(uint) * data.numberOfNodes;
+    checkCudaErrors(cudaMemcpy(data.dampingCoefficientsD, data.dampingCoefficientsH, memSizeReal, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(data.minimumValueD, data.minimumValueH, memSizeReal, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(data.indicesD, data.indicesH, memSizeUint, cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaFreeDampingLayerData(DampingLayer* dampingLayer, int level)
+{
+    auto& data = dampingLayer->getDampingLayerData(level);
+    checkCudaErrors(cudaFreeHost(data.dampingCoefficientsH));
+    checkCudaErrors(cudaFreeHost(data.minimumValueH));
+    checkCudaErrors(cudaFreeHost(data.indicesH));
+    checkCudaErrors(cudaFree(data.dampingCoefficientsD));
+    checkCudaErrors(cudaFree(data.minimumValueD));
+    checkCudaErrors(cudaFree(data.indicesD));
 }
 ////////////////////////////////////////////////////////////////////////////////////
 //  Probe

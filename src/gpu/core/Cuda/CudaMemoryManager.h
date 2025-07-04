@@ -47,7 +47,7 @@ class PlanarAverageProbe;
 class VelocitySetter;
 class PrecursorWriter;
 class BuoyancyProviderPlanarAverage;
-
+class DampingLayer;
 class CudaMemoryManager
 {
 public:
@@ -325,6 +325,10 @@ public:
     void cudaCopyBuoyancyProviderReductionParametersHtoD(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
     void cudaCopyBuoyancyProviderReductionParametersDtoH(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
     void cudaFreeBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+
+    void cudaAllocDampingLayerData(DampingLayer* dampingLayer, int level);
+    void cudaCopyDampingLayerDataHtoD(DampingLayer* dampingLayer, int level);
+    void cudaFreeDampingLayerData(DampingLayer* dampingLayer, int level);
     // Probes
     void cudaAllocProbeData(Probe* probe, int level);
     void cudaCopyProbeDataHtoD(Probe* probe, int level);
