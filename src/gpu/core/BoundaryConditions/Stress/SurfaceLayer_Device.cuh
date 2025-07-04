@@ -86,7 +86,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     const uint k_000 = boundaryParams.k[nodeIndex];
     const ListIndices listIndices(k_000, gridParams.neighborX, gridParams.neighborY, gridParams.neighborZ);
 
-    real populationsPostCollision[27];
+    real populationsPostCollision[NUMBER_Of_DIRECTIONS];
     getPostCollisionDistribution(populationsPostCollision, distributionReferences, listIndices);
 
     real drho;
