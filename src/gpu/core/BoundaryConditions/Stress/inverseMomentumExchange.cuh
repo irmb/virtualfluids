@@ -43,18 +43,18 @@
 #include "Calculation/Calculation.h"
 #include "Utilities/KernelUtilities.h"
 
-constexpr void findCutLinks(bool* const cutQs, const SubgridDistances27& subgridD, const uint nodeIndex)
+constexpr void findCutLinks(bool* linkIsCut, const SubgridDistances27& subgridDistances, const uint nodeIndex)
 {
     forEachNonRestDirection([&](auto dir) {
-        const real subgridDistance = (subgridD.q[dir])[nodeIndex];
-        cutQs[dir] = subgridDistance >= c0o1 && subgridDistance <= c1o1;
+        const real subgridDistance = (subgridDistances.q[dir])[nodeIndex];
+        linkIsCut[dir] = subgridDistance >= c0o1 && subgridDistance <= c1o1;
     });
 }
 
-constexpr void computeBouncedBackDistributionsBB(const SubgridDistances27& subgridD, const real* populations,
+constexpr void computeBouncedBackDistributionsBB(const SubgridDistances27& subgridDistances, const real* populations,
                                                  bool* const linkIsCut, real* populationsBouncedBack, const uint nodeIndex)
 {
-    findCutLinks(linkIsCut, subgridD, nodeIndex);
+    findCutLinks(linkIsCut, subgridDistances, nodeIndex);
 
     forEachNonRestDirection([&](auto dir) {
         if (!linkIsCut[dir])
@@ -64,11 +64,11 @@ constexpr void computeBouncedBackDistributionsBB(const SubgridDistances27& subgr
     });
 }
 
-constexpr void computeBouncedBackDistributionsBBPressure(const SubgridDistances27& subgridD, const real drho,
-                                                         const real* populations, bool* const linkIsCut,
+constexpr void computeBouncedBackDistributionsBBPressure(const SubgridDistances27& subgridDistances, const real drho,
+                                                         const real* populations, bool* linkIsCut,
                                                          real* populationsBouncedBack, const uint nodeIndex)
 {
-    findCutLinks(linkIsCut, subgridD, nodeIndex);
+    findCutLinks(linkIsCut, subgridDistances, nodeIndex);
 
     forEachNonRestDirection([&](auto dir) {
         if (!linkIsCut[dir])
@@ -81,8 +81,7 @@ constexpr void computeBouncedBackDistributionsBBPressure(const SubgridDistances2
 
 constexpr void computeBouncedBackDistributionsInterpolated(const SubgridDistances27& subgridD, real3 velocity, real drho,
                                                            real relaxationFrequency, const real* populations,
-                                                           bool* const linkIsCut, real* populationsBouncedBack,
-                                                           uint nodeIndex)
+                                                           bool* linkIsCut, real* populationsBouncedBack, uint nodeIndex)
 {
     using namespace vf::lbm::dir;
     forEachNonRestDirection([&](auto dir) {
@@ -107,19 +106,12 @@ constexpr void computeBouncedBackDistributionsInterpolated(const SubgridDistance
     });
 }
 
-template <size_t direction>
-constexpr void addWallMomentum(const bool* linkIsCut, const real* populationsBouncedBack, const real* populations,
-                               real3& wallMomentum)
-{
-}
-
 constexpr real3 computeWallMomentumBounceBack(const bool* linkIsCut, const real* populationsBouncedBack,
                                               const real* populations)
 {
     using namespace vf::lbm::dir;
     real3 wallMomentum {};
     forEachNonRestDirection([&](auto dir) {
-        using namespace vf::lbm::dir;
         if (!linkIsCut[dir])
             return;
         const size_t inverseDirection = inverseDir<dir>();
@@ -169,9 +161,8 @@ constexpr real3 writeDistributionsBB(const Distributions27& populationReferences
             return;
         const size_t inverseDirection = inverseDir<dir>();
         const real addedMomentum = -c6o1 * density * getWeight<dir>() * getVelocity<dir>(velocity.x, velocity.y, velocity.z);
-        vf::gpu::writeInInverseDirection<dir>(populationsBouncedBack[inverseDirection] + addedMomentum, listIndices,
-                                              populationReferences);
-
+        const real population = populationsBouncedBack[inverseDirection] + addedMomentum;
+        vf::gpu::writeInInverseDirection<dir>(population, listIndices, populationReferences);
         wallMomentumAdded.x += addedMomentum * getComponentX<dir>();
         wallMomentumAdded.y += addedMomentum * getComponentY<dir>();
         wallMomentumAdded.z += addedMomentum * getComponentZ<dir>();
