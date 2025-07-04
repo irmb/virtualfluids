@@ -54,6 +54,7 @@ if(VF_ENABLE_ALL_APPS)
     "apps/gpu/GaussianHillOfConcentration"
     "apps/gpu/HeatedCube"
     "apps/gpu/SphereMultiGPU" 
+    "apps/gpu/StratifiedBoundaryLayer"
     "apps/gpu/TaylorGreenVortex"
     )
 endif()
