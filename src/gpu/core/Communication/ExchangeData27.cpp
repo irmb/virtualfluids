@@ -100,17 +100,17 @@ void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex s
                            para->getParD(level)->numberofthreads, 
                            stream);
         if(para->getDiffOn())
-        SetRecvFsPostDev27(para->getParD(level)->distributionsAD.f[0], 
-                           neighbor.populationsAD[0], 
-                           neighbor.index, 
-                           neighbor.numberOfNodes,
-                           para->getParD(level)->neighborX, 
-                           para->getParD(level)->neighborY, 
-                           para->getParD(level)->neighborZ,
-                           para->getParD(level)->numberOfNodes, 
-                           para->getParD(level)->isEvenTimestep,
-                           para->getParD(level)->numberofthreads, 
-                           stream);
+            SetRecvFsPostDev27(para->getParD(level)->distributionsAD.f[0], 
+                            neighbor.populationsAD[0], 
+                            neighbor.index, 
+                            neighbor.numberOfNodes,
+                            para->getParD(level)->neighborX, 
+                            para->getParD(level)->neighborY, 
+                            para->getParD(level)->neighborZ,
+                            para->getParD(level)->numberOfNodes, 
+                            para->getParD(level)->isEvenTimestep,
+                            para->getParD(level)->numberofthreads, 
+                            stream);
     }
 }
 
@@ -219,7 +219,7 @@ void prepareExchangeCollDataXGPU27AllNodes(Parameter* para, int level, CudaStrea
 void prepareExchangeCollDataXGPU27AfterFtoC(Parameter* para, int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
-    collectNodesInSendBufferGPU(para, level, streamIndex, parD.sendProcessNeighborsAfterFtoCY);
+    collectNodesInSendBufferGPU(para, level, streamIndex, parD.sendProcessNeighborsAfterFtoCX);
 }
 
 void exchangeCollDataXGPU27AllNodes(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
