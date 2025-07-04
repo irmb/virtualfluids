@@ -125,7 +125,7 @@ namespace boundary_conditions
 
         py::enum_<BoundaryConditionFactory::SurfaceLayerBC>(parentModule, "SurfaceLayerBC")
         .value("SurfaceTemperature", BoundaryConditionFactory::SurfaceLayerBC::SurfaceTemperature)
-        .value("HeatFlux", BoundaryConditionFactory::SurfaceLayerBC::HeatFlux)
+        .value("SurfaceHeatFlux", BoundaryConditionFactory::SurfaceLayerBC::SurfaceHeatFlux)
         .value("NotSpecified", BoundaryConditionFactory::SurfaceLayerBC::NotSpecified);
 
 

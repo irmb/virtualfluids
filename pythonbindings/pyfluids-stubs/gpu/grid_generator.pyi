@@ -74,6 +74,7 @@ class LevelGridBuilder(GridBuilder):
         side_type: gpu.SideType,
         file_collection: gpu.FileCollection,
         n_t_read: int,
+        cycle_files: bool,
         velocity_x: float = ...,
         velocity_y: float = ...,
         velocity_z: float = ...,

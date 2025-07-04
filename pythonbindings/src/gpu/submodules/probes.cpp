@@ -132,6 +132,7 @@ namespace probes
                         bool,
                         bool,
                         bool,
+                        bool,
                         bool>(),
                         py::arg("para"),
                         py::arg("cuda_memory_manager"),
@@ -145,7 +146,8 @@ namespace probes
                         py::arg("average_every_timestep"),
                         py::arg("compute_temporal_averages"),
                         py::arg("output_stress"),
-                        py::arg("evaluate_pressure_gradient"));
+                        py::arg("evaluate_pressure_gradient"),
+                        py::arg("sample_surface_layer"));
 
         return probeModule;
     }
