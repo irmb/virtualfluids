@@ -87,7 +87,7 @@ protected:
         setUpFsByCopyingF0(recvFs, numberOfNodesInRecv);
 
         recvProcessNeighborHost.resize(1);
-        recvProcessNeighborHost[0].f[0]          = recvFs.data();
+        recvProcessNeighborHost[0].populations[0]          = recvFs.data();
         recvProcessNeighborHost[0].numberOfNodes = numberOfNodesInRecv;
     }
 
@@ -97,7 +97,7 @@ protected:
         std::fill(sendFs.begin(), sendFs.end(), 0.0);
 
         sendProcessNeighborHost.resize(1);
-        sendProcessNeighborHost[0].f[0]          = sendFs.data();
+        sendProcessNeighborHost[0].populations[0]          = sendFs.data();
         sendProcessNeighborHost[0].numberOfNodes = numberOfNodesInSend;
     }
 };
@@ -119,7 +119,7 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAft
 
     // convert result to std::vector
     std::vector<real> result;
-    result.assign(sendProcessNeighborHost[0].f[0], sendProcessNeighborHost[0].f[0] + 27 * numNodesAfterFtoC);
+    result.assign(sendProcessNeighborHost[0].populations[0], sendProcessNeighborHost[0].populations[0] + 27 * numNodesAfterFtoC);
 
     EXPECT_THAT(result, testing::Eq(expectedFs));
 }
@@ -141,7 +141,7 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAft
 
     // convert result to std::vector
     std::vector<real> result;
-    result.assign(sendProcessNeighborHost[0].f[0], sendProcessNeighborHost[0].f[0] + 27 * numNodesAfterFtoC);
+    result.assign(sendProcessNeighborHost[0].populations[0], sendProcessNeighborHost[0].populations[0] + 27 * numNodesAfterFtoC);
 
     EXPECT_THAT(result, testing::Eq(expectedFs));
 }
@@ -164,7 +164,7 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicateAll)
 
     // convert result to std::vector
     std::vector<real> result;
-    result.assign(sendProcessNeighborHost[0].f[0], sendProcessNeighborHost[0].f[0] + 27 * numNodes);
+    result.assign(sendProcessNeighborHost[0].populations[0], sendProcessNeighborHost[0].populations[0] + 27 * numNodes);
 
     EXPECT_THAT(result, testing::Eq(expectedFs));
 }

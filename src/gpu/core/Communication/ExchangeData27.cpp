@@ -56,7 +56,7 @@ void collectNodesInSendBufferGPU(Parameter* para, int level, CudaStreamIndex str
 
     for (auto& neighbor : sendProcessNeighborsDevice) {
         GetSendFsPostDev27(para->getParD(level)->distributions.f[0],
-                           neighbor.f[0],
+                           neighbor.populations[0],
                            neighbor.index,
                            neighbor.numberOfNodes,
                            para->getParD(level)->neighborX,
@@ -87,7 +87,7 @@ void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex s
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
     for (auto& neighbor : recvProcessNeighborsDevice) {
         SetRecvFsPostDev27(para->getParD(level)->distributions.f[0], 
-                           neighbor.f[0], 
+                           neighbor.populations[0], 
                            neighbor.index, 
                            neighbor.numberOfNodes,
                            para->getParD(level)->neighborX, 
@@ -116,7 +116,7 @@ void startBlockingMpiSend(vf::parallel::Communicator& comm, std::vector<ProcessN
                           bool diffOn)
 {
     for (auto& neighbor : sendProcessNeighborHost) {
-        comm.send(neighbor.f[0], neighbor.numberOfFs, neighbor.rankNeighbor);
+        comm.send(neighbor.populations[0], neighbor.numberOfFs, neighbor.rankNeighbor);
         if (diffOn)
             comm.send(neighbor.fAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
     }
@@ -126,7 +126,7 @@ void startNonBlockingMpiReceive(vf::parallel::Communicator& comm, std::vector<Pr
                                 bool diffOn)
 {
     for (auto& neighbor : recvProcessNeighborHost) {
-        comm.receiveNonBlocking(neighbor.f[0], neighbor.numberOfFs, neighbor.rankNeighbor);
+        comm.receiveNonBlocking(neighbor.populations[0], neighbor.numberOfFs, neighbor.rankNeighbor);
         if (diffOn)
             comm.receiveNonBlocking(neighbor.fAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
     }
@@ -148,9 +148,9 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeN
 
         // copy fs for all directions
         for (size_t direction = 0; direction <= ENDDIR; direction++) {
-            (sendProcessNeighborsHost[indexInSubdomainSend].f[0] +
+            (sendProcessNeighborsHost[indexInSubdomainSend].populations[0] +
              (direction * numNodesInBufferSend))[edgeNodes[i].indexInSendBuffer] =
-                (recvProcessNeighborsHost[indexInSubdomainRecv].f[0] +
+                (recvProcessNeighborsHost[indexInSubdomainRecv].populations[0] +
                  (direction * numNodesInBufferRecv))[edgeNodes[i].indexInRecvBuffer];
         }
     }
