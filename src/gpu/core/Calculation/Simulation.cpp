@@ -755,6 +755,18 @@ Simulation::~Simulation()
         }
     }
 
+
+    //Boundary conditions
+    for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
+        cudaMemoryManager->cudaFreeNoSlipBC(lev);
+        cudaMemoryManager->cudaFreeSlipBC(lev);
+        cudaMemoryManager->cudaFreeVeloBC(lev);
+        cudaMemoryManager->cudaFreeGeomBC(lev);
+        cudaMemoryManager->cudaFreeStressBC(lev);
+        cudaMemoryManager->cudaFreePrecursorBC(lev);
+        cudaMemoryManager->cudaFreeOutflowBC(lev);
+    }
+
     //////////////////////////////////////////////////////////////////////////
     // Temp
     if (para->getDiffOn()) {
@@ -764,6 +776,8 @@ Simulation::~Simulation()
             cudaMemoryManager->cudaFreeConcentrationFluxBC(lev);
             cudaMemoryManager->cudaFreeConcentrationDirichletBC(lev);
             cudaMemoryManager->cudaFreeConcentrationNeumannBC(lev);
+            cudaMemoryManager->cudaFreeSurfaceLayerBC(lev);
+
             if(para->getUseTurbulentDiffusivity())
                 cudaMemoryManager->cudaFreeTurbulentDiffusivity(lev);
             if(para->getBuoyancyEnabled())
