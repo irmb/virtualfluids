@@ -73,14 +73,14 @@ void SurfaceLayer(LBMSimulationParameter* parameterDevice, QforBoundaryCondition
 void SurfaceLayerBounceBackCompressibleHeatFlux(LBMSimulationParameter* parameterDevice,
                                                 QforBoundaryConditions* surfaceLayerBoundaryCondition)
 {
-    SurfaceLayer<StressBC::StressBounceBackCompressible, HeatFluxBC::HeatFlux, false>(parameterDevice,
+    SurfaceLayer<StressBC::StressBounceBackCompressible, HeatFluxBC::SurfaceHeatFlux, false>(parameterDevice,
                                                                                       surfaceLayerBoundaryCondition);
 }
 
 void SurfaceLayerBounceBackWithPressureCompressibleHeatFlux(LBMSimulationParameter* parameterDevice,
                                                             QforBoundaryConditions* surfaceLayerBoundaryCondition)
 {
-    SurfaceLayer<StressBC::StressBounceBackWithPressureCompressible, HeatFluxBC::HeatFlux, false>(
+    SurfaceLayer<StressBC::StressBounceBackWithPressureCompressible, HeatFluxBC::SurfaceHeatFlux, false>(
         parameterDevice, surfaceLayerBoundaryCondition);
 }
 
@@ -88,7 +88,7 @@ void SurfaceLayerBounceBackWithPressureCompressibleHeatFlux(LBMSimulationParamet
 void SurfaceLayerInterpolatedCompressibleHeatFlux(LBMSimulationParameter* parameterDevice,
                                                   QforBoundaryConditions* surfaceLayerBoundaryCondition)
 {
-    SurfaceLayer<StressBC::StressInterpolatedCompressible, HeatFluxBC::HeatFlux, false>(parameterDevice,
+    SurfaceLayer<StressBC::StressInterpolatedCompressible, HeatFluxBC::SurfaceHeatFlux, false>(parameterDevice,
                                                                                         surfaceLayerBoundaryCondition);
 }
 

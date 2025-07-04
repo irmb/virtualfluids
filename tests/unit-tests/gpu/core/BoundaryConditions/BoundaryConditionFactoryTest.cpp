@@ -226,19 +226,19 @@ TEST(BoundaryConditionFactoryTest, surfaceLayerBoundaryCondition)
 {
     auto bcFactory = BoundaryConditionFactory();
 
-    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackCompressible, BoundaryConditionFactory::SurfaceLayerBC::HeatFlux);
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceHeatFlux);
     auto bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
     auto bcTarget = *bc.target<bcFunction>();
     EXPECT_TRUE(*bcTarget == SurfaceLayerBounceBackCompressibleHeatFlux)
         << "The returned boundary condition is not the expected function SurfaceLayerBounceBackCompressibleHeatFlux.";
 
-    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackWithPressureCompressible, BoundaryConditionFactory::SurfaceLayerBC::HeatFlux);
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackWithPressureCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceHeatFlux);
     bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
     bcTarget = *bc.target<bcFunction>();
     EXPECT_TRUE(*bcTarget == SurfaceLayerBounceBackWithPressureCompressibleHeatFlux)
         << "The returned boundary condition is not the expected function SurfaceLayerBounceBackWithPressureCompressibleHeatFlux.";
 
-    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressInterpolatedCompressible, BoundaryConditionFactory::SurfaceLayerBC::HeatFlux);
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressInterpolatedCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceHeatFlux);
     bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
     bcTarget = *bc.target<bcFunction>();
     EXPECT_TRUE(*bcTarget == SurfaceLayerInterpolatedCompressibleHeatFlux)

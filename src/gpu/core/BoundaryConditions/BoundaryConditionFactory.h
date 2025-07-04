@@ -184,7 +184,7 @@ public:
 
     //! \brief Enum to differentiate between setting heatlfux or surfaceTemperature in SurfaceLayer BC
     enum class SurfaceLayerBC {
-        HeatFlux,
+        SurfaceHeatFlux,
         SurfaceTemperature,
         NotSpecified
     };

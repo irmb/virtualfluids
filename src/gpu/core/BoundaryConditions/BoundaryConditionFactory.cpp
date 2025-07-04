@@ -296,11 +296,11 @@ AdvectionDiffusionNeumannBoundaryConditionKernel BoundaryConditionFactory::getAd
 
 BoundaryConditionKernel BoundaryConditionFactory::getSurfaceLayerBoundaryConditionPost() const
 {
-    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackCompressible, SurfaceLayerBC::HeatFlux))
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackCompressible, SurfaceLayerBC::SurfaceHeatFlux))
         return SurfaceLayerBounceBackCompressibleHeatFlux;
-    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackWithPressureCompressible, SurfaceLayerBC::HeatFlux))
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackWithPressureCompressible, SurfaceLayerBC::SurfaceHeatFlux))
         return SurfaceLayerBounceBackWithPressureCompressibleHeatFlux;
-    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressInterpolatedCompressible, SurfaceLayerBC::HeatFlux))
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressInterpolatedCompressible, SurfaceLayerBC::SurfaceHeatFlux))
         return SurfaceLayerInterpolatedCompressibleHeatFlux;
     if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackCompressible, SurfaceLayerBC::SurfaceTemperature))
         return SurfaceLayerBounceBackCompressibleSurfaceTemperature;

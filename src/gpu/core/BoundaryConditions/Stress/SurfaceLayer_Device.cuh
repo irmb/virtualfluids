@@ -147,7 +147,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     ///////////////////////////////////////////////////////////
     real frictionVelocity = computeFrictionVelocity(velocityExchangeLocationMeanWallParallelMagnitude, vonKarmanConstant,
                                                     samplingDistance, roughnessLength, c0o1);
-    real temperatureScale = heatFluxBCtype == HeatFluxBC::HeatFlux
+    real temperatureScale = heatFluxBCtype == HeatFluxBC::SurfaceHeatFlux
                                 ? -temperatureWallModelParams.surfaceHeatFlux[nodeIndex] / frictionVelocity
                                 : computeFrictionVelocity(temperatureDifference, vonKarmanConstant, samplingDistance,
                                                           roughnessLengthTemperature, c0o1);
