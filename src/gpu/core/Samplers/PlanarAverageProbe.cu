@@ -238,6 +238,10 @@ PlanarAverageProbe::PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryMana
         throw std::runtime_error("PlaneAverageProbe: tBetweenWriting must be larger than 0!");
     if (sampleScalar && !para->getDiffOn())
         throw std::runtime_error("PlaneAverageProbe: Scalar can only be sampled if diff is on!");
+    VF_LOG_INFO(
+            "Created planar averaging probe, output path: " + outputPath + ", probe name: " + probeName +
+                " start sampling: {}, time steps between sampling: {}, start writing: {}, time steps between writing: {}",
+            tStartSampling, tBetweenSamples, tStartWritingOutput, tBetweenWriting);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////

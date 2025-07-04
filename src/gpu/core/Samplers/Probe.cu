@@ -64,9 +64,10 @@ using namespace vf::basics::constant;
 Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
              std::string probeName, uint tStartSampling, uint tBetweenSamples, uint tStartWritingOutput,
              uint tBetweenWriting, bool outputTimeSeries, bool sampleEveryTimestep, bool sampleScalar)
-    : para(std::move(para)), cudaMemoryManager(std::move(cudaMemoryManager)), tStartSampling(tStartSampling), tBetweenSamples(tBetweenSamples),
-      tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting), outputTimeSeries(outputTimeSeries),
-      sampleEveryTimestep(sampleEveryTimestep), sampleScalar(sampleScalar), Sampler(std::move(outputPath), std::move(probeName))
+    : para(std::move(para)), cudaMemoryManager(std::move(cudaMemoryManager)), tStartSampling(tStartSampling),
+      tBetweenSamples(tBetweenSamples), tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting),
+      outputTimeSeries(outputTimeSeries), sampleEveryTimestep(sampleEveryTimestep), sampleScalar(sampleScalar),
+      Sampler(std::move(outputPath), std::move(probeName))
 {
     if (tStartWritingOutput < tStartSampling)
         throw std::runtime_error("Probe: tStartWritingOutput must be larger than tStartSampling!");
@@ -74,6 +75,10 @@ Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager>
         VF_LOG_INFO("Probe: sampleEveryTimestep is true, ignoring tBetweenSamples");
     if (sampleScalar && !this->para->getDiffOn())
         throw std::runtime_error("Probe: can only sample scalar if diffusion is enabled in parameter");
+    VF_LOG_INFO(
+        "Created probe, output path: " + outputPath + ", probe name: " + probeName +
+            " start sampling: {}, time steps between sampling: {}, start writing: {}, time steps between writing: {}",
+        tStartSampling, tBetweenSamples, tStartWritingOutput, tBetweenWriting);
 }
 
 void Probe::addProbePlane(real startX, real startY, real startZ, real length, real width, real height)

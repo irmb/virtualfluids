@@ -75,7 +75,7 @@ public:
                        std::string probeName, uint tStartSampling, uint tStartTemporalAveraging, uint tBetweenSamples,
                        uint tStartWritingOutput, uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages,
                        bool sampleScalar);
-    ~PlanarAverageProbe();
+    ~PlanarAverageProbe() override;
 
     void init() override;
     void sample(int level, uint t) override;

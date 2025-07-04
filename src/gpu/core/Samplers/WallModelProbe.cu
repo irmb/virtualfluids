@@ -136,10 +136,10 @@ void WallModelProbe::sample(int level, uint t)
 
     auto* data = &levelData[level];
 
-    const uint tAfterStartAvg = t - tStartAveraging;
+    const uint tAfterStartAvg = t - tStartSampling;
     const uint tAfterStartOut = t - tStartWritingOutput;
 
-    if (t >= tStartAveraging && ((tAfterStartAvg % tBetweenAverages == 0 && isCoarseTimestep) || averageEveryTimestep)) {
+    if (t >= tStartSampling && ((tAfterStartAvg % tBetweenSamples == 0 && isCoarseTimestep) || sampleEveryTimestep)) {
         calculateQuantities(data, tLevel, level);
     }
 

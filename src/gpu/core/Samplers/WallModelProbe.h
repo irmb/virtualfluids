@@ -56,21 +56,25 @@ class WallModelProbe : public Sampler
 {
 public:
     WallModelProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string& outputPath,
-                   const std::string& probeName, uint tStartAveraging, uint tStartTemporalAveraging, uint tBetweenAverages,
-                   uint tStartWritingOutput, uint tBetweenWriting, bool averageEveryTimestep, bool computeTemporalAverages,
+                   const std::string& probeName, uint tStartSampling, uint tStartTemporalAveraging, uint tBetweenSamples,
+                   uint tStartWritingOutput, uint tBetweenWriting, bool sampleEveryTimestep, bool computeTemporalAverages,
                    bool outputStress, bool evaluatePressureGradient, bool sampleSurfaceLayer)
-        : para(std::move(para)), cudaMemoryManager(std::move(cudaMemoryManager)), tStartAveraging(tStartAveraging),
+        : para(std::move(para)), cudaMemoryManager(std::move(cudaMemoryManager)), tStartSampling(tStartSampling),
           tStartTemporalAveraging(tStartTemporalAveraging), tStartWritingOutput(tStartWritingOutput),
-          tBetweenAverages(tBetweenAverages), tBetweenWriting(tBetweenWriting), averageEveryTimestep(averageEveryTimestep),
+          tBetweenSamples(tBetweenSamples), tBetweenWriting(tBetweenWriting), sampleEveryTimestep(sampleEveryTimestep),
           computeTemporalAverages(computeTemporalAverages), outputStress(outputStress),
           evaluatePressureGradient(evaluatePressureGradient), sampleSurfaceLayer(sampleSurfaceLayer), Sampler(outputPath, probeName)
     {
-        if (tStartTemporalAveraging < tStartAveraging)
-            throw std::runtime_error("WallModelProbe: tStartTemporalAveraging must be larger than tStartAveraging!");
-        if (averageEveryTimestep)
-            VF_LOG_INFO("WallModelProbe: averageEveryTimestep is true, ignoring tBetweenAverages");
-        if (tBetweenAverages == 0 && !averageEveryTimestep)
-            throw std::runtime_error("WallModelProbe: tBetweenAverages must be larger than 0!");
+        if (tStartTemporalAveraging < tStartSampling)
+            throw std::runtime_error("WallModelProbe: tStartTemporalAveraging must be larger than tStartSampling!");
+        if (sampleEveryTimestep)
+            VF_LOG_INFO("WallModelProbe: sampleEveryTimestep is true, ignoring tBetweenSamples");
+        if (tBetweenSamples == 0 && !sampleEveryTimestep)
+            throw std::runtime_error("WallModelProbe: tBetweenSamples must be larger than 0!");
+        VF_LOG_INFO(
+        "Created wall model probe, output path: " + outputPath + ", probe name: " + probeName +
+            " start sampling: {}, time steps between sampling: {}, start writing: {}, time steps between writing: {}",
+        tStartSampling, tBetweenSamples, tStartWritingOutput, tBetweenWriting);
     }
 
     ~WallModelProbe() override = default;
@@ -97,12 +101,12 @@ private:
 private:
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
-    uint tStartAveraging, tStartTemporalAveraging, tBetweenAverages, tStartWritingOutput, tBetweenWriting;
-    bool outputStress = false;
-    bool evaluatePressureGradient = false;
-    bool computeTemporalAverages = false;
-    bool averageEveryTimestep = false;
-    bool sampleSurfaceLayer = false;
+    const uint tStartSampling, tStartTemporalAveraging, tBetweenSamples, tStartWritingOutput, tBetweenWriting;
+    const bool outputStress = false;
+    const bool evaluatePressureGradient = false;
+    const bool computeTemporalAverages = false;
+    const bool sampleEveryTimestep = false;
+    const bool sampleSurfaceLayer = false;
     std::vector<LevelData> levelData;
 };
 
