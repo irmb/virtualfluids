@@ -111,7 +111,7 @@ struct QforBoundaryConditions
    int* kN;
    real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
    real* q19[19];
-   unsigned int numberOfBCnodes=0;
+   uint numberOfBCnodes=0;
    int kArray;
    real *Vx,      *Vy,      *Vz;
    real *Vx1,     *Vy1,     *Vz1;
@@ -124,7 +124,7 @@ struct QforDirectionalBoundaryCondition
    int* k;
    int* kN;
    real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
-   unsigned int numberOfBCnodes = 0;
+   uint numberOfBCnodes = 0;
    real *RhoBC;
    size_t direction;
 };
