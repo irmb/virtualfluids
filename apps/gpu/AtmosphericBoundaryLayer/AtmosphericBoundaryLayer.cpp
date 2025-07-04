@@ -92,8 +92,8 @@ void run(const vf::basics::ConfigurationFile& config)
     const real lengthY = 4 * boundaryLayerHeight;
     const real lengthZ = boundaryLayerHeight;
 
-    const real roughnessLength = config.getValue("z0", c1o10);
-    real frictionVelocity = config.getValue("u_star", c4o10);
+    const real roughnessLength = config.getValue("RoughnessLength", c1o10);
+    real frictionVelocity = config.getValue("FrictionVelocity", c4o10);
 
     const uint nodesPerBoundaryLyerHeight = config.getValue<uint>("NodesPerBoundaryLayerHeight", 64);
 
@@ -157,6 +157,8 @@ void run(const vf::basics::ConfigurationFile& config)
     const uint timeStepOutProbe = uint(timeOutProbe / deltaT);
 
     const uint timeStepStartPrecursor = uint(timeStartPrecursor / deltaT);
+
+    VF_LOG_INFO("Friction velocity [m/s] {}", frictionVelocity);
 
     //////////////////////////////////////////////////////////////////////////
     // create grid
@@ -275,7 +277,7 @@ void run(const vf::basics::ConfigurationFile& config)
         para->setIsBodyForce(true);
         para->setAllNodesAllFeatures(true);
         auto coriolisForce = std::make_shared<CoriolisForce>(para, cudaMemoryManager, geostrophicWindSpeed*std::cos(geostrophicWindDirection),
-                                                             geostrophicWindDirection*std::sin(geostrophicWindDirection), coriolisParameter, 1);
+                                                             geostrophicWindDirection*std::sin(geostrophicWindDirection), coriolisParameter);
         para->addInteractor(coriolisForce);
     }
 
