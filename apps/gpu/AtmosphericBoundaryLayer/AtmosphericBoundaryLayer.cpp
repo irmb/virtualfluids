@@ -94,6 +94,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     const real roughnessLength = config.getValue("RoughnessLength", c1o10);
     real frictionVelocity = config.getValue("FrictionVelocity", c4o10);
+    const real vonKarmanConstant = config.getValue("vonKarmanConstant", c4o10);
 
     const uint nodesPerBoundaryLyerHeight = config.getValue<uint>("NodesPerBoundaryLayerHeight", 64);
 
@@ -133,9 +134,9 @@ void run(const vf::basics::ConfigurationFile& config)
     // compute parameters in lattice units
     //////////////////////////////////////////////////////////////////////////
     if (useCoriolisForce)
-        frictionVelocity = geostrophicWindSpeed * cVonKarman / std::log(boundaryLayerHeight / roughnessLength + c1o1);
+        frictionVelocity = geostrophicWindSpeed * vonKarmanConstant / std::log(boundaryLayerHeight / roughnessLength + c1o1);
     const auto velocityProfile = [&](real coordZ) {
-        return frictionVelocity / cVonKarman * std::log(coordZ / roughnessLength + c1o1);
+        return frictionVelocity / vonKarmanConstant * std::log(coordZ / roughnessLength + c1o1);
     };
     const real velocity = c1o2 * velocityProfile(boundaryLayerHeight);
 
@@ -240,7 +241,7 @@ void run(const vf::basics::ConfigurationFile& config)
             rho = c0o1;
             vx = (velocityProfile(coordZ) + perturbation) * (c1o1 - c1o10 * std::abs(relativeY - c1o2)) * deltaT / deltaX;
             vy = perturbation * deltaT / deltaX;
-            vz = c8o1 * frictionVelocity / cVonKarman *
+            vz = c8o1 * frictionVelocity / vonKarmanConstant *
                  (std::sin(cPi * c8o1 * coordY / boundaryLayerHeight) * std::sin(cPi * c8o1 * relativeZ) +
                   std::sin(cPi * c8o1 * relativeX)) /
                  (std::pow(c1o2 * lengthZ - coordZ, c2o1) + c1o1) * deltaT / deltaX;

@@ -48,6 +48,8 @@ using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 using namespace vf::gpu;
 
+constexpr real vonKarmanConstant = c4o10;
+
 //////////////////////////////////////////////////////////////////////////////
 __host__ __device__ __forceinline__ void iMEM(
     uint k, uint kN,
@@ -107,7 +109,7 @@ __host__ __device__ __forceinline__ void iMEM(
 
       //Compute wall shear stress tau_w via MOST
       real z = (real)samplingOffset[k] + q; //assuming q=0.5, could be replaced by wall distance via wall normal
-      real u_star = vMag_el*cVonKarman/(log(z/z0[k]));
+      real u_star = vMag_el*vonKarmanConstant/(log(z/z0[k]));
       if(hasWallModelMonitor) u_star_monitor[k] = u_star;
       real tau_w = u_star*u_star;                  //Note: this is actually tau_w/rho
       real A = 1.0;                                //wall area (obviously 1 for grid aligned walls, can come from grid builder later for complex geometries)

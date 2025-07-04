@@ -152,7 +152,6 @@ static constexpr double c0p0000002 = 0.0000002;
 static constexpr double c10eM30 = 1e-30;
 static constexpr double c10eM10 = 1e-10;
 static constexpr double cSmallSingle = 0.0000000002;
-static constexpr double cVonKarman = 0.4;
 
 
 #ifndef __CUDACC__
@@ -283,8 +282,6 @@ static constexpr float c0p0000002 = 0.0000002f;
 static constexpr float c10eM30 = 1e-30f;
 static constexpr float c10eM10 = 1e-10f;
 static constexpr float cSmallSingle = 0.0000000002f;
-
-static constexpr float cVonKarman = 0.4f;
 
 #ifndef __CUDACC__
 static const float cPi = 4.0f * std::atan(1.0f);                // 3.1415926535
