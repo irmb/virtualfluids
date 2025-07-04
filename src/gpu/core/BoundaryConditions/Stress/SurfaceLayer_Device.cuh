@@ -52,7 +52,7 @@
 #include "wallModelMoninObukhov.h"
 
 template <BoundaryConditionFactory::StressBC stressBCType, BoundaryConditionFactory::SurfaceLayerBC heatFluxBCtype,
-          bool delayed>
+          bool useDelayedBounceBack>
 __global__ void
 SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryParams, WallModelParameters wallModelParams,
                      TemperatureWallModelParameters temperatureWallModelParams, TemperatureParameters temperatureParams)
@@ -67,7 +67,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     using namespace vf::lbm::advection_diffusion;
 
     using StressBC = BoundaryConditionFactory::StressBC;
-    using HeatFluxBC = BoundaryConditionFactory::SurfaceLayerBC;
+    using SurfaceLayerBC = BoundaryConditionFactory::SurfaceLayerBC;
 
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
 
@@ -78,7 +78,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     // Load and compute momentum inputs
     /////////////////////////////////////////////////////////
 
-    Distributions27 distributionReferences =
+    Distributions27 populationReferences =
         getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes, gridParams.isEvenTimestep);
     SubgridDistances27 subgridDistances;
     getPointersToSubgridDistances(subgridDistances, boundaryParams.q27[0], boundaryParams.numberOfBCnodes);
@@ -86,48 +86,44 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     const uint k_000 = boundaryParams.k[nodeIndex];
     const ListIndices listIndices(k_000, gridParams.neighborX, gridParams.neighborY, gridParams.neighborZ);
 
-    real populationsPostCollision[NUMBER_Of_DIRECTIONS];
-    getPostCollisionDistribution(populationsPostCollision, distributionReferences, listIndices);
+    real populations[NUMBER_Of_DIRECTIONS];
+    getPostCollisionDistribution(populations, populationReferences, listIndices);
 
-    real drho;
-    real3 velocityNode;
-
-    vf::lbm::getCompressibleMacroscopicValues(populationsPostCollision, drho, velocityNode.x, velocityNode.y,
-                                              velocityNode.z);
+    const real drho = vf::lbm::getDensity(populations);
+    const real3 velocityNode = { vf::lbm::getCompressibleVelocityX1(populations, drho),
+                                 vf::lbm::getCompressibleVelocityX2(populations, drho),
+                                 vf::lbm::getCompressibleVelocityX3(populations, drho) };
 
     const real density = c1o1;
 
     const real3 wallNormal { boundaryParams.normalX[nodeIndex], boundaryParams.normalY[nodeIndex],
                              boundaryParams.normalZ[nodeIndex] };
-    const real3 velocityNodeWallParallel = computeWallParallelVector(velocityNode, wallNormal);
+    const real3 velocityNodeTangential = computeTangentialVector(velocityNode, wallNormal);
 
-    const real velocityNodeWallParallelMagnitude = computeWallParallelVelocityMagnitude(velocityNode, wallNormal);
-    const real velocityNodeMeanWallParallelMagnitude =
-        smoothAndSaveMean(velocityNodeWallParallelMagnitude, filterFrequency, wallModelParams.velocityNodeX[nodeIndex]);
+    const real velocityNodeTangentialMagnitude = computeMagnitude(computeTangentialVector(velocityNode, wallNormal));
+    const real velocityNodeMeanTangentialMagnitude = smoothAndSaveMean(velocityNodeTangentialMagnitude, filterFrequency,
+                                                                       wallModelParams.velocityMagnitudeNode[nodeIndex]);
 
     const uint samplingIndex = wallModelParams.samplingIndices[nodeIndex];
 
-    const real3 velocityExchangeLocationMean = { smoothAndSaveMean(gridParams.velocityX[samplingIndex], filterFrequency,
-                                                                   wallModelParams.velocityExchangeLocationX[nodeIndex]),
-                                                 smoothAndSaveMean(gridParams.velocityY[samplingIndex], filterFrequency,
-                                                                   wallModelParams.velocityExchangeLocationY[nodeIndex]),
-                                                 smoothAndSaveMean(gridParams.velocityZ[samplingIndex], filterFrequency,
-                                                                   wallModelParams.velocityExchangeLocationZ[nodeIndex]) };
+    const real3 velocitySample = { gridParams.velocityX[samplingIndex], gridParams.velocityY[samplingIndex],
+                                   gridParams.velocityZ[samplingIndex] };
 
-    const real velocityExchangeLocationMeanWallParallelMagnitude =
-        computeWallParallelVelocityMagnitude(velocityExchangeLocationMean, wallNormal);
+    const real velocitySampleTangentialMagnitude = computeMagnitude(computeTangentialVector(velocitySample, wallNormal));
+
+    const real velocitySampleMeanTangentialMagnitude = smoothAndSaveMean(velocitySampleTangentialMagnitude, filterFrequency,
+                                                                         wallModelParams.velocityMagnitudeSample[nodeIndex]);
 
     ///////////////////////////////////////////////////////////
     // Load and compute temperature inputs
     ///////////////////////////////////////////////////////////
 
     const real temperatureRelativeNode = temperatureParams.temperature[k_000];
-    temperatureWallModelParams.temperatureFirstFluidNode[nodeIndex] = temperatureRelativeNode;
+    temperatureWallModelParams.temperatureNode[nodeIndex] = temperatureRelativeNode;
 
-    const real temperatureRelativeExchangeLocation = temperatureParams.temperature[samplingIndex];
-    const real temperatureRelativeExchangeLocationMean =
-        smoothAndSaveMean(temperatureRelativeExchangeLocation, filterFrequency,
-                          temperatureWallModelParams.temperatureExchangeLocation[nodeIndex]);
+    const real temperatureRelativeSample = temperatureParams.temperature[samplingIndex];
+    const real temperatureRelativeSampleMean = smoothAndSaveMean(temperatureRelativeSample, filterFrequency,
+                                                                 temperatureWallModelParams.temperatureSample[nodeIndex]);
 
     ///////////////////////////////////////////////////////////
     // Load wall model parameters
@@ -140,14 +136,14 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
 
     const real heatingRate = temperatureWallModelParams.heatingRate[nodeIndex];
     const real surfaceTemperature = temperatureWallModelParams.surfaceTemperature[nodeIndex] + heatingRate;
-    const real temperatureDifference = temperatureRelativeExchangeLocationMean - surfaceTemperature;
+    const real temperatureDifference = temperatureRelativeSampleMean - surfaceTemperature;
 
     ///////////////////////////////////////////////////////////
     // Compute stress and heat flux from wall model
     ///////////////////////////////////////////////////////////
-    real frictionVelocity = computeFrictionVelocity(velocityExchangeLocationMeanWallParallelMagnitude, vonKarmanConstant,
+    real frictionVelocity = computeFrictionVelocity(velocitySampleMeanTangentialMagnitude, vonKarmanConstant,
                                                     samplingDistance, roughnessLength, c0o1);
-    real temperatureScale = heatFluxBCtype == HeatFluxBC::SurfaceHeatFlux
+    real temperatureScale = heatFluxBCtype == SurfaceLayerBC::SurfaceHeatFlux
                                 ? -temperatureWallModelParams.surfaceHeatFlux[nodeIndex] / frictionVelocity
                                 : computeFrictionVelocity(temperatureDifference, vonKarmanConstant, samplingDistance,
                                                           roughnessLengthTemperature, c0o1);
@@ -156,18 +152,17 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
                                   temperatureParams.referenceTemperature, vonKarmanConstant);
     if (stabilityParameter > c0o1) {
         const real stabilityParameter =
-            heatFluxBCtype == HeatFluxBC::SurfaceTemperature
+            heatFluxBCtype == SurfaceLayerBC::SurfaceTemperature
                 ? computeStabilityParameterFromSurfaceTemperature(
-                      samplingDistance, roughnessLength, roughnessLengthTemperature,
-                      velocityExchangeLocationMeanWallParallelMagnitude, temperatureDifference,
-                      temperatureParams.referenceTemperature, temperatureParams.gravity)
+                      samplingDistance, roughnessLength, roughnessLengthTemperature, velocitySampleMeanTangentialMagnitude,
+                      temperatureDifference, temperatureParams.referenceTemperature, temperatureParams.gravity)
                 : computeStabilityParameterFromHeatFlux(
-                      samplingDistance, roughnessLength, velocityExchangeLocationMeanWallParallelMagnitude,
+                      samplingDistance, roughnessLength, velocitySampleMeanTangentialMagnitude,
                       temperatureWallModelParams.surfaceHeatFlux[nodeIndex], temperatureParams.referenceTemperature,
                       temperatureParams.gravity, vonKarmanConstant);
 
         const auto stabilityCorrections = computeStabilityCorrectionsStable(stabilityParameter);
-        frictionVelocity = computeFrictionVelocity(velocityExchangeLocationMeanWallParallelMagnitude, vonKarmanConstant,
+        frictionVelocity = computeFrictionVelocity(velocitySampleMeanTangentialMagnitude, vonKarmanConstant,
                                                    samplingDistance, roughnessLength, stabilityCorrections.momentum);
         temperatureScale = computeFrictionVelocity(temperatureDifference, vonKarmanConstant, samplingDistance,
                                                    roughnessLengthTemperature, stabilityCorrections.temperature);
@@ -181,7 +176,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
             const auto stabilityCorrections = computeStabilityCorrectionsUnstable(stabilityParameter);
 
             const real newFrictionVelocity =
-                std::max(zero, computeFrictionVelocity(velocityExchangeLocationMeanWallParallelMagnitude, vonKarmanConstant,
+                std::max(zero, computeFrictionVelocity(velocitySampleMeanTangentialMagnitude, vonKarmanConstant,
                                                        samplingDistance, roughnessLength, stabilityCorrections.momentum));
             const real newTemperatureScale =
                 computeFrictionVelocity(temperatureDifference, vonKarmanConstant, samplingDistance,
@@ -203,51 +198,48 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     temperatureWallModelParams.temperatureScale[nodeIndex] = temperatureScale;
     temperatureWallModelParams.surfaceTemperature[nodeIndex] = surfaceTemperature;
 
-    if (heatFluxBCtype == HeatFluxBC::SurfaceTemperature)
+    if (heatFluxBCtype == SurfaceLayerBC::SurfaceTemperature)
         temperatureWallModelParams.surfaceHeatFlux[nodeIndex] = surfaceHeatFlux;
 
     const real3 wallShearStress =
-        computeWallShearStress(frictionVelocity, velocityNodeWallParallel, velocityNodeMeanWallParallelMagnitude, density);
+        computeWallShearStress(frictionVelocity, velocityNodeTangential, velocityNodeMeanTangentialMagnitude, density);
 
     ///////////////////////////////////////////////////////////
     // Apply inverse Momentum Exchange
     ///////////////////////////////////////////////////////////
 
-    real populationsBouncedBack[27];
-    bool linkIsCut[27];
+    real populationsBouncedBack[NUMBER_Of_DIRECTIONS];
+    bool linkIsCut[NUMBER_Of_DIRECTIONS];
 
     switch (stressBCType) {
         case StressBC::StressBounceBackCompressible:
-            computeBouncedBackDistributionsBB(subgridDistances, populationsPostCollision, linkIsCut, populationsBouncedBack,
-                                              nodeIndex);
+            computeBouncedBackDistributionsBB(subgridDistances, populations, linkIsCut, populationsBouncedBack, nodeIndex);
             break;
         case StressBC::StressBounceBackWithPressureCompressible:
-            computeBouncedBackDistributionsBBPressure(subgridDistances, drho, populationsPostCollision, linkIsCut,
-                                                      populationsBouncedBack, nodeIndex);
+            computeBouncedBackDistributionsBBPressure(subgridDistances, drho, populations, linkIsCut, populationsBouncedBack,
+                                                      nodeIndex);
             break;
         case StressBC::StressInterpolatedCompressible: {
             const real relaxationFrequency = vf::lbm::calculateOmegaWithTurbulentViscosity(
                 gridParams.relaxationFrequency, gridParams.turbulentViscosity[k_000]);
             computeBouncedBackDistributionsInterpolated(subgridDistances, velocityNode, drho, relaxationFrequency,
-                                                        populationsPostCollision, linkIsCut, populationsBouncedBack,
-                                                        nodeIndex);
+                                                        populations, linkIsCut, populationsBouncedBack, nodeIndex);
         } break;
     }
 
-    const real3 wallMomentumBounceBack =
-        computeWallMomentumBounceBack(linkIsCut, populationsBouncedBack, populationsPostCollision);
+    const real3 wallMomentumBounceBack = computeWallMomentumBounceBack(linkIsCut, populationsBouncedBack, populations);
 
     const real wallArea = c1o1;
     const real subgridDistance = (subgridDistances.q[d00M])[nodeIndex];
     const real interpolationFactor =
         stressBCType == StressBC::StressInterpolatedCompressible ? c1o1 + subgridDistance : c1o1;
 
-    const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocityExchangeLocationMean, wallShearStress,
-                                                           density, interpolationFactor, wallArea, wallMomentumBounceBack);
-    if (!delayed)
-        distributionReferences = vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes,
-                                                                      !gridParams.isEvenTimestep);
-    const real3 wallMomentumVelocity = writeDistributionsBB(distributionReferences, linkIsCut, populationsBouncedBack,
+    const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocitySample, wallShearStress, density,
+                                                           interpolationFactor, wallArea, wallMomentumBounceBack);
+    if (!useDelayedBounceBack)
+        populationReferences = vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes,
+                                                                    !gridParams.isEvenTimestep);
+    const real3 wallMomentumVelocity = writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack,
                                                             fakeWallVelocity, density, listIndices);
 
     if (wallModelParams.hasMonitor) {
@@ -261,7 +253,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     ///////////////////////////////////////////////////////////
     auto populationReferencesTemperature = vf::gpu::getDistributionReferences27(
         temperatureParams.distributionsTemperature, gridParams.numberOfNodes, gridParams.isEvenTimestep);
-    real populationsTemperature[27];
+    real populationsTemperature[NUMBER_Of_DIRECTIONS];
     getPostCollisionDistribution(populationsTemperature, populationReferencesTemperature, listIndices);
 
     const real3 diffusiveFlux = real3 { vf::lbm::getIncompressibleVelocityX1(populationsTemperature),
@@ -271,7 +263,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     const real normalDiffusiveFlux = dot(diffusiveFlux, wallNormal);
     const real3 wallFlux = diffusiveFlux + wallNormal * (surfaceHeatFlux - normalDiffusiveFlux);
 
-    if (!delayed)
+    if (!useDelayedBounceBack)
         populationReferencesTemperature = vf::gpu::getDistributionReferences27(
             temperatureParams.distributionsTemperature, gridParams.numberOfNodes, !gridParams.isEvenTimestep);
 

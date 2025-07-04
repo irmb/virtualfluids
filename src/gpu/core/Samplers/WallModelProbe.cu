@@ -58,50 +58,42 @@ using indexIterator = thrust::device_vector<uint>::iterator;
 std::vector<std::string> WallModelProbe::getVariableNames()
 {
     std::vector<std::string> variableNames;
-    variableNames.emplace_back("vx_el_spatMean");
-    variableNames.emplace_back("vy_el_spatMean");
-    variableNames.emplace_back("vz_el_spatMean");
-    variableNames.emplace_back("vx1_spatMean");
-    variableNames.emplace_back("vy1_spatMean");
-    variableNames.emplace_back("vz1_spatMean");
-    variableNames.emplace_back("u_star_spatMean");
-    variableNames.emplace_back("Fx_spatMean");
-    variableNames.emplace_back("Fy_spatMean");
-    variableNames.emplace_back("Fz_spatMean");
+    variableNames.emplace_back("velocityNode_spatioTemporalMean");
+    variableNames.emplace_back("velocitySample_spatialMean");
+    variableNames.emplace_back("frictionVelocity_spatialMean");
+    variableNames.emplace_back("momentumExchangeX_spatialMean");
+    variableNames.emplace_back("momentumExchangeY_spatialMean");
+    variableNames.emplace_back("momentumExchangeZ_spatialMean");
     if (evaluatePressureGradient) {
-        variableNames.emplace_back("dpdx_spatMean");
-        variableNames.emplace_back("dpdy_spatMean");
-        variableNames.emplace_back("dpdz_spatMean");
+        variableNames.emplace_back("pressureGradientX_spatialMean");
+        variableNames.emplace_back("pressureGradientY_spatialMean");
+        variableNames.emplace_back("pressureGradientZ_spatialMean");
     }
     if (sampleSurfaceLayer) {
-        variableNames.emplace_back("temp_el_spatMean");
-        variableNames.emplace_back("temp_1_spatMean");
-        variableNames.emplace_back("frictionTemperature_spatMean");
-        variableNames.emplace_back("surfaceHeatFlux_spatMean");
-        variableNames.emplace_back("surfaceTemperature_spatMean");
+        variableNames.emplace_back("temperatureNode_spatialMean");
+        variableNames.emplace_back("temperatureSample_spatialMean");
+        variableNames.emplace_back("frictionTemperature_spatialMean");
+        variableNames.emplace_back("surfaceHeatFlux_spatialMean");
+        variableNames.emplace_back("surfaceTemperature_spatialMean");
     }
     if (computeTemporalAverages) {
-        variableNames.emplace_back("vx_el_spatTmpMean");
-        variableNames.emplace_back("vy_el_spatTmpMean");
-        variableNames.emplace_back("vz_el_spatTmpMean");
-        variableNames.emplace_back("vx1_spatTmpMean");
-        variableNames.emplace_back("vy1_spatTmpMean");
-        variableNames.emplace_back("vz1_spatTmpMean");
-        variableNames.emplace_back("u_star_spatTmpMean");
-        variableNames.emplace_back("Fx_spatTmpMean");
-        variableNames.emplace_back("Fy_spatTmpMean");
-        variableNames.emplace_back("Fz_spatTmpMean");
+    variableNames.emplace_back("velocityNode_spatioTemporalMean");
+    variableNames.emplace_back("velocitySample_spatioTemporalMean");
+    variableNames.emplace_back("frictionVelocity_spatioTemporalMean");
+    variableNames.emplace_back("momentumExchangeX_spatioTemporalMean");
+    variableNames.emplace_back("momentumExchangeY_spatioTemporalMean");
+    variableNames.emplace_back("momentumExchangeZ_spatioTemporalMean");
         if (evaluatePressureGradient) {
-            variableNames.emplace_back("dpdx_spatTmpMean");
-            variableNames.emplace_back("dpdy_spatTmpMean");
-            variableNames.emplace_back("dpdz_spatTmpMean");
+            variableNames.emplace_back("pressureGradientX_spatioTemporalMean");
+            variableNames.emplace_back("pressureGradientY_spatioTemporalMean");
+            variableNames.emplace_back("pressureGradientZ_spatioTemporalMean");
         }
         if (sampleSurfaceLayer) {
-            variableNames.emplace_back("temp_el_spatTmpMean");
-            variableNames.emplace_back("temp_1_spatTmpMean");
-            variableNames.emplace_back("frictionTemperature_spatTmpMean");
-            variableNames.emplace_back("surfaceHeatFlux_spatTmpMean");
-            variableNames.emplace_back("surfaceTemperature_spatTmpMean");
+            variableNames.emplace_back("temperatureNode_spatioTemporalMean");
+            variableNames.emplace_back("temperatureSample_spatioTemporalMean");
+            variableNames.emplace_back("frictionTemperature_spatioTemporalMean");
+            variableNames.emplace_back("surfaceHeatFlux_spatioTemporalMean");
+            variableNames.emplace_back("surfaceTemperature_spatioTemporalMean");
         }
     }
 
@@ -227,13 +219,8 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
     sampleSurfaceLayer ? paraDevice->surfaceLayerWallModel.momentumParameters : paraDevice->momentumWallModel;
 
 
-    computeAndSaveMean(momentumWallModel.velocityNodeX, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(momentumWallModel.velocityNodeY, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(momentumWallModel.velocityNodeZ, nPoints, newInstantaneous, velocityFactor);
-
-    computeAndSaveMean(momentumWallModel.velocityExchangeLocationX, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(momentumWallModel.velocityExchangeLocationY, nPoints, newInstantaneous, velocityFactor);
-    computeAndSaveMean(momentumWallModel.velocityExchangeLocationZ, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(momentumWallModel.velocityMagnitudeNode, nPoints, newInstantaneous, velocityFactor);
+    computeAndSaveMean(momentumWallModel.velocityMagnitudeSample, nPoints, newInstantaneous, velocityFactor);
 
     computeAndSaveMean(momentumWallModel.frictionVelocity, nPoints, newInstantaneous, velocityFactor);
 
@@ -252,8 +239,8 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
 
     if (sampleSurfaceLayer) {
         const auto temperatureWallModel = paraDevice->surfaceLayerWallModel.temperatureParameters;
-        computeAndSaveMean(temperatureWallModel.temperatureExchangeLocation, nPoints, newInstantaneous, c1o1);
-        computeAndSaveMean(temperatureWallModel.temperatureFirstFluidNode, nPoints, newInstantaneous, c1o1);
+        computeAndSaveMean(temperatureWallModel.temperatureSample, nPoints, newInstantaneous, c1o1);
+        computeAndSaveMean(temperatureWallModel.temperatureNode, nPoints, newInstantaneous, c1o1);
         computeAndSaveMean(temperatureWallModel.temperatureScale, nPoints, newInstantaneous, c1o1);
         computeAndSaveMean(temperatureWallModel.surfaceHeatFlux, nPoints, newInstantaneous, velocityFactor);
         computeAndSaveMean(temperatureWallModel.surfaceTemperature, nPoints, newInstantaneous, c1o1);

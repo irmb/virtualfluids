@@ -91,28 +91,20 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
     const real3 wallNormal { boundaryParams.normalX[nodeIndex], boundaryParams.normalY[nodeIndex],
                              boundaryParams.normalZ[nodeIndex] };
 
-    const real3 velocityNodeWallParallel = computeWallParallelVector(velocityNode, wallNormal);
+    const real3 velocityNodeTangential = computeTangentialVector(velocityNode, wallNormal);
 
-    const real3 velocityNodeMean {
-        smoothAndSaveMean(velocityNode.x, filterFrequency, wallModelParams.velocityNodeX[nodeIndex]),
-        smoothAndSaveMean(velocityNode.y, filterFrequency, wallModelParams.velocityNodeY[nodeIndex]),
-        smoothAndSaveMean(velocityNode.z, filterFrequency, wallModelParams.velocityNodeZ[nodeIndex])
-    };
-
-    const real velocityNodeMeanWallParallelMagnitude = computeWallParallelVelocityMagnitude(velocityNodeMean, wallNormal);
+    const real velocityNodeTangentialMagnitude = computeMagnitude(computeTangentialVector(velocityNode, wallNormal));
+    const real velocityNodeMeanTangentialMagnitude = smoothAndSaveMean(velocityNodeTangentialMagnitude, filterFrequency,
+                                                                       wallModelParams.velocityMagnitudeNode[nodeIndex]);
 
     const uint samplingIndex = wallModelParams.samplingIndices[nodeIndex];
-    const real3 velocityExchangeLocation { gridParams.velocityX[samplingIndex], gridParams.velocityY[samplingIndex],
-                                           gridParams.velocityZ[samplingIndex] };
+    const real3 velocitySample { gridParams.velocityX[samplingIndex], gridParams.velocityY[samplingIndex],
+                                 gridParams.velocityZ[samplingIndex] };
 
-    const real3 velocityExchangeLocationMean {
-        smoothAndSaveMean(velocityExchangeLocation.x, filterFrequency, wallModelParams.velocityExchangeLocationX[nodeIndex]),
-        smoothAndSaveMean(velocityExchangeLocation.y, filterFrequency, wallModelParams.velocityExchangeLocationY[nodeIndex]),
-        smoothAndSaveMean(velocityExchangeLocation.z, filterFrequency, wallModelParams.velocityExchangeLocationZ[nodeIndex])
-    };
+    const real velocitySampleTangentialMagnitude = computeMagnitude(computeTangentialVector(velocitySample, wallNormal));
 
-    const real velocityExchangeLocationMeanWallParallelMagnitude =
-        computeWallParallelVelocityMagnitude(velocityExchangeLocationMean, wallNormal);
+    const real velocitySampleMeanTangentialMagnitude = smoothAndSaveMean(velocitySampleTangentialMagnitude, filterFrequency,
+                                                                         wallModelParams.velocityMagnitudeSample[nodeIndex]);
 
     //////////////////////////////////////////////////////////////////////////
     // load wall model parameters and compute wall shear stress
@@ -121,10 +113,10 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
     const real samplingDistance = wallModelParams.samplingDistance[nodeIndex];
     const real roughnessLength = wallModelParams.roughnessLength[nodeIndex];
     const real vonKarmanConstant = wallModelParams.vonKarmanConstant[nodeIndex];
-    const real frictionVelocity = computeFrictionVelocity(velocityExchangeLocationMeanWallParallelMagnitude,
-                                                          vonKarmanConstant, samplingDistance, roughnessLength, c0o1);
+    const real frictionVelocity = computeFrictionVelocity(velocitySampleMeanTangentialMagnitude, vonKarmanConstant,
+                                                          samplingDistance, roughnessLength, c0o1);
     const real3 wallShearStress =
-        computeWallShearStress(frictionVelocity, velocityNodeWallParallel, velocityNodeMeanWallParallelMagnitude, density);
+        computeWallShearStress(frictionVelocity, velocityNodeTangential, velocityNodeMeanTangentialMagnitude, density);
 
     //////////////////////////////////////////////////////////////////////////
     // apply inverse Momentum exchange
@@ -156,7 +148,7 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
     const real interpolationFactor =
         stressBCType == StressBC::StressInterpolatedCompressible ? c1o1 + subgridDistance : c1o1;
 
-    const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocityExchangeLocation, wallShearStress, density,
+    const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocitySample, wallShearStress, density,
                                                            interpolationFactor, wallArea, wallMomentum);
     if (!delayed) {
         populationReferences = vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes,

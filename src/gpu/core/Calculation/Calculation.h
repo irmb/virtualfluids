@@ -186,12 +186,8 @@ struct WallModelParameters
    uint* samplingIndices;
    bool hasMonitor;
    real* frictionVelocity;
-   real* velocityNodeX;
-   real* velocityNodeY;
-   real* velocityNodeZ;
-   real* velocityExchangeLocationX;
-   real* velocityExchangeLocationY;
-   real* velocityExchangeLocationZ;
+   real* velocityMagnitudeNode;
+   real* velocityMagnitudeSample;
    real* forceX;
    real* forceY;
    real* forceZ;
@@ -199,8 +195,8 @@ struct WallModelParameters
 
 // Struct for surface layer wall model
 struct TemperatureWallModelParameters{
-   real* temperatureExchangeLocation;
-   real* temperatureFirstFluidNode;
+   real* temperatureNode;
+   real* temperatureSample;
    real* surfaceHeatFlux;
    real* surfaceTemperature;
    real* temperatureScale;

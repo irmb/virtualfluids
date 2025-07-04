@@ -53,14 +53,14 @@ constexpr real smoothAndSaveMean(real instantaneous, real filterFrequency, real&
     return smoothed;
 }
 
-constexpr real3 computeWallParallelVector(real3 quantity, real3 normal)
+constexpr real3 computeTangentialVector(real3 quantity, real3 normal)
 {
     return quantity - normal * dot(quantity, normal);
 }
 
-inline __device__ real computeWallParallelVelocityMagnitude(real3 quantity, real3 normal)
+inline __device__ real computeMagnitude(real3 vector)
 {
-    return std::sqrt(square(computeWallParallelVector(quantity, normal)));
+    return std::sqrt(square(vector));
 }
 
 struct StabilityCorrections
@@ -74,13 +74,13 @@ inline __device__ real computeFrictionVelocity(const real velocity, const real v
     return velocity * vonKarmanConstant / (std::log(coordZ / roughnessLength) - stabilityCorrection);
 }
 
-constexpr real3 computeWallShearStress(const real frictionVelocity, const real3 velocityWallParallel,
-                                       const real velocityWallParallelMeanMagnitude, const real density)
+constexpr real3 computeWallShearStress(const real frictionVelocity, const real3 velocityTangential,
+                                       const real velocityTangentialMeanMagnitude, const real density)
 {
     // Scale wall shear stress with near wall velocity, i.e., Schumann-Grötzbach
     // (SG) approach
     const real wallShearStress = frictionVelocity * frictionVelocity * density;
-    return velocityWallParallel * (wallShearStress / velocityWallParallelMeanMagnitude);
+    return velocityTangential * (wallShearStress / velocityTangentialMeanMagnitude);
 }
 
 constexpr real computeStabilityParameter(const real height, const real gravity, const real temperatureScale,
