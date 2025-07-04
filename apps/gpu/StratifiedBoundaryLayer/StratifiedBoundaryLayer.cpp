@@ -79,6 +79,16 @@ using velocityProfileFunc = std::function<std::tuple<real, real, real, real>(rea
 const std::string defaultConfigFile("sabl.cfg");
 const std::string simulationName("BoundaryLayer");
 
+temperatureProfileFunc getTemperatureFuncConstantLapseRate(real surfaceTemperature, real lapseRate)
+{
+    return [=](real coordZ) { return surfaceTemperature + coordZ * lapseRate; };
+}
+
+temperatureProfileFunc getTemperatureFuncTwoLayers(real surfaceTemperature, real inversionHeight, real lapseRate)
+{
+    return [=](real coordZ) { return surfaceTemperature + lapseRate * std::max(coordZ - inversionHeight, c0o1); };
+}
+
 //! follows <a href="https://doi.org/10.1175/1520-0450(2004)043<0925:AMTDTC>2.0.CO;2"> Rampanelli and Zardi (2004) </a>
 temperatureProfileFunc getTemperatureFuncAllaerts(real inversionHeight, real inversionThickness, real inversionStrength,
                                                   real lapseRate, real surfaceTemperature)
@@ -92,23 +102,9 @@ temperatureProfileFunc getTemperatureFuncAllaerts(real inversionHeight, real inv
     };
 }
 
-temperatureProfileFunc getTemperatureFuncGABLS(real surfaceTemperature, real inversionHeight, real lapseRate)
+velocityProfileFunc getConstantVelocityProfile(real geostrophicWindX, real geostrophicWindY)
 {
-    return [=](real coordZ) { return surfaceTemperature + lapseRate * std::max(coordZ - inversionHeight, c0o1); };
-}
-
-temperatureProfileFunc getTemperatureFuncThreeLayers(real surfaceTemperature, real inversionHeight, real inversionThickness,
-                                                     real inversionStrength, real lapseRate)
-{
-    return [=](real coordZ) {
-        const real inversionBaseHeight = inversionHeight - inversionThickness / c2o1;
-        const real inversionTopHeight = inversionHeight + inversionThickness / c2o1;
-        if (coordZ < inversionBaseHeight)
-            return surfaceTemperature;
-        if (coordZ < inversionTopHeight)
-            return surfaceTemperature + (coordZ - inversionBaseHeight) * inversionStrength / inversionThickness;
-        return surfaceTemperature + inversionStrength + (coordZ - inversionTopHeight) * lapseRate;
-    };
+    return [=](real, real, real) { return std::tuple { geostrophicWindX, geostrophicWindY, c0o1, c0o1 }; };
 }
 
 velocityProfileFunc getVelocityProfileFuncAllaerts(real frictionVelocity, real roughnessLength, real rotationAngle,
@@ -131,11 +127,6 @@ velocityProfileFunc getVelocityProfileFuncAllaerts(real frictionVelocity, real r
         return std::tuple { u * std::cos(rotationAngle) - v * std::sin(rotationAngle),
                             u * std::sin(rotationAngle) + v * std::cos(rotationAngle), c0o1, c0o1 };
     };
-}
-
-velocityProfileFunc getConstantVelocityProfile(real geostrophicWindX, real geostrophicWindY)
-{
-    return [=](real, real, real) { return std::tuple { geostrophicWindX, geostrophicWindY, c0o1, c0o1 }; };
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,7 +162,9 @@ void run(const vf::basics::ConfigurationFile& config)
     const real heatingRate = config.getValue<real>("HeatingRate", c0o1) * c1o36 * c1o100; // is conventionally given in K/h
     const real surfaceHeatFlux = config.getValue<real>("SurfaceHeatFlux", c0o1);
     const bool useHeatFlux = config.getValue<bool>("UseHeatFlux", false);
-    const std::string initialProfile = config.getValue<std::string>("InitialProfile", "ALLAERTS");
+    const std::string initialVelocityProfile = config.getValue<std::string>("InitialVelocityProfile", "Constant");
+    const std::string initialTemperatureProfile =
+        config.getValue<std::string>("InitialTemperatureProfile", "ConstantLapseRate");
     const real geostrophicWind = config.getValue<real>("GeostrophicWindSpeed", 10.0);
     const real windDirection = config.getValue<real>("GeostrophicWindDirection", 0.0) * cPio180;
     const real temperaturePerturbationHeight = config.getValue<real>("TemperaturePerturbationHeight", 200);
@@ -205,25 +198,29 @@ void run(const vf::basics::ConfigurationFile& config)
     const real diffusivityLB = diffusivity * deltaT / (deltaX * deltaX);
     const real bruntVaisalaFrequency = std::sqrt(gravity / referenceTemperature * lapseRate);
 
-    temperatureProfileFunc initialTemperatureProfile;
-    velocityProfileFunc initialVelocityProfile;
-    if (initialProfile == "GABLS") {
-        initialTemperatureProfile = getTemperatureFuncGABLS(surfaceTemperature, inversionHeight, lapseRate);
-        initialVelocityProfile = getConstantVelocityProfile(geostrophicWindX, geostrophicWindY);
-    } else if (initialProfile == "ALLAERTS") {
-        initialTemperatureProfile = getTemperatureFuncAllaerts(inversionHeight, inversionThickness, inversionStrength,
-                                                               lapseRate, surfaceTemperature);
-        initialVelocityProfile =
+    temperatureProfileFunc initialTemperatureProfileFunc;
+    velocityProfileFunc initialVelocityProfileFunc;
+    if (initialTemperatureProfile == "ConstantLapseRate") {
+        initialTemperatureProfileFunc = getTemperatureFuncConstantLapseRate(surfaceTemperature, lapseRate);
+    } else if (initialTemperatureProfile == "TwoLayers") {
+        initialTemperatureProfileFunc = getTemperatureFuncTwoLayers(surfaceTemperature, inversionHeight, lapseRate);
+    } else if (initialTemperatureProfile == "ALLAERTS") {
+        initialTemperatureProfileFunc = getTemperatureFuncAllaerts(inversionHeight, inversionThickness, inversionStrength,
+                                                                   lapseRate, surfaceTemperature);
+    } else
+        throw std::runtime_error(
+            "Unrecognized temperature initialization profile! Must be TwoLayers, ALLAERTS or ConstantLapseRate");
+
+    if (initialVelocityProfile == "Constant")
+        initialVelocityProfileFunc = getConstantVelocityProfile(geostrophicWindX, geostrophicWindY);
+    else if (initialVelocityProfile == "ALLAERTS")
+        initialVelocityProfileFunc =
             getVelocityProfileFuncAllaerts(frictionVelocity, roughnessLength, windDirection, inversionHeight,
                                            coriolisParameter, mergingRegionThickness, geostrophicWind, vonKarmanConstant);
-    } else if (initialProfile == "ThreeLayers") {
-        initialTemperatureProfile = getTemperatureFuncThreeLayers(surfaceTemperature, inversionHeight, inversionThickness,
-                                                                  inversionStrength, lapseRate);
-        initialVelocityProfile = getConstantVelocityProfile(geostrophicWind, geostrophicWindY);
-    } else
-        throw std::runtime_error("Unrecognized Initialization Method! Must be GABLS, ALLAERTS or ThreeLayers");
+    else
+        throw std::runtime_error("Unrecognized velocity initialization profile, must be Constant or ALLAERTS");
 
-    const real temperatureTop = initialTemperatureProfile(lengthZ);
+    const real temperatureTop = initialTemperatureProfileFunc(lengthZ);
 
     VF_LOG_INFO("velocity  [dx/dt] = {:3.3f}", velocityLB);
     VF_LOG_INFO("dt   = {:3.2f}s", deltaT);
@@ -270,7 +267,7 @@ void run(const vf::basics::ConfigurationFile& config)
         gridBuilderFacade->setStressBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, samplingOffset, vonKarmanConstant,
                                                       roughnessLength, deltaX);
     } else {
-        gridBuilderFacade->setSurfaceLayerBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, samplingOffset, frictionVelocity,
+        gridBuilderFacade->setSurfaceLayerBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, samplingOffset, vonKarmanConstant,
                                                             roughnessLength, roughnessLength, surfaceHeatFlux,
                                                             surfaceTemperature, heatingRate, deltaX, deltaT);
     }
@@ -295,7 +292,7 @@ void run(const vf::basics::ConfigurationFile& config)
     // Initial Conditions
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     para->setInitialCondition([&](real coordX, real coordY, real coordZ, real& rho, real& vx, real& vy, real& vz) {
-        auto [vxSI, vySI, vzSI, rhoSI] = initialVelocityProfile(coordX, coordY, coordZ);
+        auto [vxSI, vySI, vzSI, rhoSI] = initialVelocityProfileFunc(coordX, coordY, coordZ);
         vx = vxSI * deltaT / deltaX;
         vy = vySI * deltaT / deltaX;
         vz = vzSI * deltaT / deltaX;
@@ -308,12 +305,12 @@ void run(const vf::basics::ConfigurationFile& config)
 
     para->setInitialConditionAD([&](real, real, real coordZ) {
         if (coordZ < temperaturePerturbationHeight)
-            return initialTemperatureProfile(coordZ) + randomDistributionTemp(randomGenerator);
-        return initialTemperatureProfile(coordZ);
+            return initialTemperatureProfileFunc(coordZ) + randomDistributionTemp(randomGenerator);
+        return initialTemperatureProfileFunc(coordZ);
     });
 
     para->setInitialLocalReferenceTemperature(
-        [&](real, real, real coordZ) -> real { return initialTemperatureProfile(coordZ); });
+        [&](real, real, real coordZ) -> real { return initialTemperatureProfileFunc(coordZ); });
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Set parameters
