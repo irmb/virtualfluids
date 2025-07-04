@@ -128,12 +128,12 @@ void LevelGridBuilder::setSlipGeometryBoundaryCondition(real normalX, real norma
 //! \param deltaX grid spacing of level 0 [m]
 //!
 void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
-                                                    real nomalX, real normalY, real normalZ,
+                                                    real normalX, real normalY, real normalZ,
                                                     uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX)
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(nomalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength*std::exp2(level)/deltaX);
+        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength*std::exp2(level)/deltaX);
         auto side = SideFactory::make(sideType);
 
         stressBoundaryCondition->side = side;
