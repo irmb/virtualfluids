@@ -164,14 +164,14 @@ void BoundaryValues::initalVectors(unsigned int maxColumn)
     }
 }
 
-void BoundaryValues::readData(unsigned int level, int index, unsigned int maxColumn)
+void BoundaryValues::readData(unsigned int level, int index, uint maxColumn)
 {
     file >> indices[level][index];
     for (unsigned int column = 0; column < maxColumn; column++)
         file >> values[level][column][index];
 }
 
-void BoundaryValues::resizeVectorsPerLevel(unsigned int level, unsigned int maxColumn)
+void BoundaryValues::resizeVectorsPerLevel(unsigned int level, uint maxColumn)
 {
     values[level].resize(maxColumn);
     indices[level].resize(levelSizes[level]);
@@ -221,13 +221,13 @@ void BoundaryValues::setBoundarys(std::vector<std::vector<std::vector<real> > > 
                 qs[level][index].push_back(values[level][index][value]);
 }
 
-void BoundaryValues::setValues(real* velo, unsigned int level, unsigned int column) const
+void BoundaryValues::setValues(real* velo, uint level, uint column) const
 {
     for (std::size_t index = 0; index < values[level][column].size(); index++)
         velo[index] = values[level][column][index];
 }
 
-void BoundaryValues::initIndex(uint *ptr, unsigned int level)
+void BoundaryValues::initIndex(uint *ptr, uint level)
 {
     for (std::size_t i = 0; i < indices[level].size(); i++)
         ptr[i] = indices[level][i];
