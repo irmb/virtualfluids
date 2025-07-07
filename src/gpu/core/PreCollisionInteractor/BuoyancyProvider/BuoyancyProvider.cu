@@ -65,24 +65,24 @@ constexpr uint getPlaneIndex(uint nodeIndex, const uint* referenceIndices)
     return valueIndex;
 }
 
-constexpr real computeBuoyancyForce(real factor, real referenceTemperature, real temperature)
+constexpr real computeBuoyancyForce(real buoyancyFactor, real referenceTemperature, real temperature)
 {
-    return factor * (temperature - referenceTemperature);
+    return buoyancyFactor * (temperature - referenceTemperature);
 }
 
-__global__ void computeBuoyancyConstantValue(real* referenceTemperature, const real* temperature, real factor, real* forceZ,
-                                             unsigned long long numberOfNodes)
+__global__ void computeBuoyancyConstantValue(real* referenceTemperature, const real* temperature, real buoyancyFactor,
+                                             real* forceZ, unsigned long long numberOfNodes)
 {
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
     if (nodeIndex > numberOfNodes)
         return;
 
-    forceZ[nodeIndex] += computeBuoyancyForce(factor, referenceTemperature[nodeIndex], temperature[nodeIndex]);
+    forceZ[nodeIndex] += computeBuoyancyForce(buoyancyFactor, referenceTemperature[nodeIndex], temperature[nodeIndex]);
 }
 
 __global__ void computeBuoyancyPlanarAverage(BuoyancyProviderPlanarAverage::ProfileParameters profileParameters,
                                              const real* temperature, real* referenceTemperature,
-                                             const uint* numberOfNodesPerPlane, real factor, real* forceZ,
+                                             const uint* numberOfNodesPerPlane, real buoyancyFactor, real* forceZ,
                                              unsigned long long numberOfNodes)
 {
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
@@ -95,25 +95,25 @@ __global__ void computeBuoyancyPlanarAverage(BuoyancyProviderPlanarAverage::Prof
     const real newReferenceTemperature = profileParameters.referenceTemperaturesDevice[planeIndex] / numberOfNodesInPlane;
     referenceTemperature[nodeIndex] = newReferenceTemperature;
 
-    forceZ[nodeIndex] += computeBuoyancyForce(factor, newReferenceTemperature, temperature[nodeIndex]);
+    forceZ[nodeIndex] += computeBuoyancyForce(buoyancyFactor, newReferenceTemperature, temperature[nodeIndex]);
 }
 
 void findFirstIndicesInZDirection(std::vector<uint>& referenceStateIndices, std::vector<real>& referenceStateCoordsZ,
-                                  Parameter* para, int level)
+                                  const real* coordinatesZ, const unsigned long long numberOfNodes)
 {
-    real lastZ = para->getParH(level)->coordinateZ[1];
+    real lastZ = coordinatesZ[1];
     referenceStateCoordsZ.push_back(lastZ);
     referenceStateIndices.push_back(c0o1);
 
-    for (unsigned long long i = 1; i < para->getParH(level)->numberOfNodes; i++) {
-        const real currentZ = para->getParH(level)->coordinateZ[i];
-        if (currentZ > lastZ) {
-            lastZ = currentZ;
-            referenceStateCoordsZ.push_back(lastZ);
-            referenceStateIndices.push_back(i);
-        }
+    for (unsigned long long i = 1; i < numberOfNodes; i++) {
+        const real currentZ = coordinatesZ[i];
+        if (currentZ <= lastZ) continue;
+
+        lastZ = currentZ;
+        referenceStateCoordsZ.push_back(lastZ);
+        referenceStateIndices.push_back(i);
     }
-    referenceStateIndices.push_back(para->getParH(level)->numberOfNodes);
+    referenceStateIndices.push_back(numberOfNodes);
 }
 
 std::vector<uint> countNodesPerPlane(LBMSimulationParameter* para, const uint* indices, uint numberOfPlanes)
@@ -146,7 +146,8 @@ void BuoyancyProviderPlanarAverage::init()
     for (int level = 0; level <= para->getMaxLevel(); level++) {
         std::vector<uint> referenceStateIndices;
         std::vector<real> referenceStateCoordsZ;
-        findFirstIndicesInZDirection(referenceStateIndices, referenceStateCoordsZ, para.get(), level);
+        findFirstIndicesInZDirection(referenceStateIndices, referenceStateCoordsZ, para->getParH(level)->coordinateZ,
+                                     para->getParH(level)->numberOfNodes);
         const uint numberOfPlanes = uint(referenceStateIndices.size()) - 1;
         if (communicator->getNumberOfProcesses() > 1) {
             std::vector<real> otherCoords;
