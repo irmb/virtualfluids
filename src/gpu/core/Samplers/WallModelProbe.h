@@ -90,8 +90,8 @@ private:
     uint getNumberOfInstantaneousQuantities() const
     {
         uint numberOfQuantities = 10;
-        if(sampleSurfaceLayer) numberOfQuantities += 5;
         if(evaluatePressureGradient) numberOfQuantities += 3;
+        if(sampleSurfaceLayer) numberOfQuantities += 5;
         return numberOfQuantities;
     }
     void calculateQuantities(LevelData* levelData, uint t, int level);

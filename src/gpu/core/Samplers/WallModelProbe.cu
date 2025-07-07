@@ -207,15 +207,14 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
 
     data->timestepTime.push_back(t * para->getScaledTimeRatio(level));
 
-    data->instantaneousData.resize(data->instantaneousData.size() + 1);
-    std::vector<real>& newInstantaneous = data->instantaneousData.back();
+    std::vector<real>& newInstantaneous =  data->instantaneousData.emplace_back();
     newInstantaneous.reserve(numberOfQuantities);
 
     const real velocityFactor = para->getScaledVelocityRatio(level);
     const real stressFactor = para->getScaledStressRatio(level);
     const real forceFactor = para->getScaledForceRatio(level);
 
-    const auto momentumWallModel =
+    const auto& momentumWallModel =
     sampleSurfaceLayer ? paraDevice->surfaceLayerWallModel.momentumParameters : paraDevice->momentumWallModel;
 
 
@@ -238,7 +237,7 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
     }
 
     if (sampleSurfaceLayer) {
-        const auto temperatureWallModel = paraDevice->surfaceLayerWallModel.temperatureParameters;
+        const auto& temperatureWallModel = paraDevice->surfaceLayerWallModel.temperatureParameters;
         computeAndSaveMean(temperatureWallModel.temperatureSample, nPoints, newInstantaneous, c1o1);
         computeAndSaveMean(temperatureWallModel.temperatureNode, nPoints, newInstantaneous, c1o1);
         computeAndSaveMean(temperatureWallModel.temperatureScale, nPoints, newInstantaneous, c1o1);
