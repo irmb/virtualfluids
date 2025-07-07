@@ -364,29 +364,29 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const uint numberOfSurfaceLayerValues = builder->getSurfaceLayerSize(level);
         VF_LOG_INFO("size SurfaceLayer level {}: {}", level, numberOfSurfaceLayerValues);
+        auto& bcHost = para->getParH(level)->surfaceLayerBC;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->surfaceLayerBC.numberOfBCnodes = numberOfSurfaceLayerValues;
+        bcHost.numberOfBCnodes = numberOfSurfaceLayerValues;
         if (numberOfSurfaceLayerValues <= 1)
             continue;
 
-        cudaMemoryManager->cudaAllocSurfaceLayerBC(level);
         auto& momentumWallModelH = para->getParH(level)->surfaceLayerWallModel.momentumParameters;
         auto& momentumWallModelD = para->getParD(level)->surfaceLayerWallModel.momentumParameters;
         auto& temperatureWallModelH = para->getParH(level)->surfaceLayerWallModel.temperatureParameters;
         auto& temperatureWallModelD = para->getParD(level)->surfaceLayerWallModel.temperatureParameters;
 
+        cudaMemoryManager->cudaAllocSurfaceLayerBC(level);
         cudaMemoryManager->cudaAllocWallModel(momentumWallModelH, momentumWallModelD, numberOfSurfaceLayerValues,
                                               para->getHasWallModelMonitor());
         cudaMemoryManager->cudaAllocTemperatureWallModel(temperatureWallModelH, temperatureWallModelD,
                                                          numberOfSurfaceLayerValues);
 
-        builder->getSurfaceLayerValues(
-            para->getParH(level)->surfaceLayerBC.normalX, para->getParH(level)->surfaceLayerBC.normalY,
-            para->getParH(level)->surfaceLayerBC.normalZ, para->getParH(level)->surfaceLayerBC.k,
-            momentumWallModelH.samplingDistance, momentumWallModelH.samplingIndices, momentumWallModelH.frictionVelocity,
-            momentumWallModelH.roughnessLength, temperatureWallModelH.roughnessLength, temperatureWallModelH.surfaceHeatFlux,
-            temperatureWallModelH.surfaceTemperature, temperatureWallModelH.heatingRate, level);
+        builder->getSurfaceLayerValues(bcHost.normalX, bcHost.normalY, bcHost.normalZ, bcHost.k,
+                                       momentumWallModelH.samplingDistance, momentumWallModelH.samplingIndices,
+                                       momentumWallModelH.vonKarmanConstant, momentumWallModelH.roughnessLength,
+                                       temperatureWallModelH.roughnessLength, temperatureWallModelH.surfaceHeatFlux,
+                                       temperatureWallModelH.surfaceTemperature, temperatureWallModelH.heatingRate, level);
 
         cudaMemoryManager->cudaCopySurfaceLayerBC(level);
 
@@ -401,7 +401,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
                                               momentumWallModelH.samplingIndices + numberOfSurfaceLayerValues);
         tagFluidNodeIndices(surfaceLayerIndices, CollisionTemplate::WriteMacroVars, level);
 
-        para->getParD(level)->surfaceLayerBC.numberOfBCnodes = para->getParH(level)->surfaceLayerBC.numberOfBCnodes;
+        para->getParD(level)->surfaceLayerBC.numberOfBCnodes = bcHost.numberOfBCnodes;
     }
 
 
@@ -792,119 +792,103 @@ void GridGenerator::allocArrays_BoundaryQs()
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         auto& parH = para->getParHostAsReference(level);
-        if (parH.pressureBCDirectional.size() > 0)
+        if (!parH.pressureBCDirectional.empty())
             initDirectionalPressureBoundaryConditions();
         else if (builder->getPressureSize(level) > 0)
             initPressureBoundaryCondition();
     }
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-        int numberOfSlipValues = (int)builder->getSlipSize(i);
-        if (numberOfSlipValues > 0)
-        {
-            VF_LOG_INFO("size Slip:  {}: {}", i, numberOfSlipValues);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //preprocessing
-            QforBoundaryConditions &Q = para->getParH(i)->slipBC;
-            initPointersToSubgridDistances(Q);
+        const uint numberOfSlipValues = builder->getSlipSize(i);
+        if (numberOfSlipValues == 0) continue;
+        VF_LOG_INFO("size Slip:  {}: {}", i, numberOfSlipValues);
 
-            builder->getSlipQs(Q.q27, i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            cudaMemoryManager->cudaCopySlipBC(i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        }//ende if
-    }//ende oberste for schleife
+        QforBoundaryConditions& Q = para->getParH(i)->slipBC;
+        initPointersToSubgridDistances(Q);
+
+        builder->getSlipQs(Q.q27, i);
+        cudaMemoryManager->cudaCopySlipBC(i);
+    }
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-        int numberOfStressValues = (int)builder->getStressSize(i);
-        if (numberOfStressValues > 0)
-        {
-            VF_LOG_INFO("size Stress:  {}: {}", i, numberOfStressValues);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //preprocessing
-            QforBoundaryConditions &Q = para->getParH(i)->stressBC;
-            initPointersToSubgridDistances(Q);
-            
-            builder->getStressQs(Q.q27, i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            cudaMemoryManager->cudaCopyStressBC(i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        }//ende if
-    }//ende oberste for schleife
+        const uint numberOfStressValues = builder->getStressSize(i);
+        if (numberOfStressValues == 0) continue;
+        VF_LOG_INFO("size Stress:  {}: {}", i, numberOfStressValues);
+
+        QforBoundaryConditions &Q = para->getParH(i)->stressBC;
+        initPointersToSubgridDistances(Q);
+        
+        builder->getStressQs(Q.q27, i);
+        cudaMemoryManager->cudaCopyStressBC(i);
+    }
+
+    for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
+        const uint numberOfSurfaceLayerValues = builder->getSurfaceLayerSize(i);
+        if (numberOfSurfaceLayerValues == 0) continue;
+        VF_LOG_INFO("size SurfaceLayer:  {}: {}", i, numberOfSurfaceLayerValues);
+
+        QforBoundaryConditions &Q = para->getParH(i)->surfaceLayerBC;
+        initPointersToSubgridDistances(Q);
+        
+        builder->getSurfaceLayerQs(Q.q27, i);
+        cudaMemoryManager->cudaCopySurfaceLayerBC(i);
+    }
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
         const auto numberOfVelocityNodes = int(builder->getVelocitySize(i));
-        if (numberOfVelocityNodes > 0)
-        {
-            VF_LOG_INFO("size velocity level {}: {}", i, numberOfVelocityNodes);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //preprocessing
-            QforBoundaryConditions &Q = para->getParH(i)->velocityBC;
-            initPointersToSubgridDistances(Q);
-            builder->getVelocityQs(Q.q27, i);
-            cudaMemoryManager->cudaCopyVeloBC(i);
-        }
+        if (numberOfVelocityNodes == 0) continue;
+        VF_LOG_INFO("size velocity level {}: {}", i, numberOfVelocityNodes);
+
+        QforBoundaryConditions &Q = para->getParH(i)->velocityBC;
+        initPointersToSubgridDistances(Q);
+        
+        builder->getVelocityQs(Q.q27, i);
+        cudaMemoryManager->cudaCopyVeloBC(i);
     }
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-        const auto numberOfPrecursorNodes = int(builder->getPrecursorSize(i));
-        if (numberOfPrecursorNodes > 0)
-        {
-            VF_LOG_INFO("size velocity level {}: {}", i, numberOfPrecursorNodes);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //preprocessing
-            real* QQ = para->getParH(i)->precursorBC.q27[0];
-            unsigned int sizeQ = para->getParH(i)->precursorBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
-            getPointersToBoundaryConditions(Q.q27, QQ, sizeQ);
+        const uint numberOfPrecursorNodes = builder->getPrecursorSize(i);
+        if (numberOfPrecursorNodes == 0) continue;
+        VF_LOG_INFO("size precursor level {}: {}", i, numberOfPrecursorNodes);
 
-            builder->getPrecursorQs(Q.q27, i);
+        const uint sizeQ = para->getParH(i)->precursorBC.numberOfBCnodes;
+        QforBoundaryConditions Q;
+        getPointersToBoundaryConditions(Q.q27, para->getParH(i)->precursorBC.q27[0], sizeQ);
 
-            if (para->getDiffOn()) {
-                throw std::runtime_error("Advection diffusion not implemented for Precursor!");
-            }
-            cudaMemoryManager->cudaCopyPrecursorBC(i);
+        builder->getPrecursorQs(Q.q27, i);
+
+        if (para->getDiffOn()) {
+            throw std::runtime_error("Advection diffusion not implemented for Precursor!");
         }
+        cudaMemoryManager->cudaCopyPrecursorBC(i);
     }
 
 
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-        const int numberOfGeometryNodes = builder->getGeometrySize(i);
+        const uint numberOfGeometryNodes = builder->getGeometrySize(i);
         VF_LOG_INFO("size of GeomBoundaryQs, Level {}: {}", i, numberOfGeometryNodes);
 
         para->getParH(i)->geometryBC.numberOfBCnodes = numberOfGeometryNodes;
         para->getParD(i)->geometryBC.numberOfBCnodes = para->getParH(i)->geometryBC.numberOfBCnodes;
-        if (numberOfGeometryNodes > 0)
-        {
-            //cout << "Groesse der Daten GeomBoundaryQs, Level:  " << i << " : " << numberOfGeometryNodes << "MyID: " << para->getMyID() << endl;
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //para->getParH(i)->geometryBC.numberOfBCnodes = temp4;
-            //para->getParD(i)->geometryBC.numberOfBCnodes = para->getParH(i)->geometryBC.numberOfBCnodes;
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            cudaMemoryManager->cudaAllocGeomBC(i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (numberOfGeometryNodes == 0) continue;
+        //cout << "Groesse der Daten GeomBoundaryQs, Level:  " << i << " : " << numberOfGeometryNodes << "MyID: " << para->getMyID() << endl;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //para->getParH(i)->geometryBC.numberOfBCnodes = temp4;
+        //para->getParD(i)->geometryBC.numberOfBCnodes = para->getParH(i)->geometryBC.numberOfBCnodes;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        cudaMemoryManager->cudaAllocGeomBC(i);
+        builder->getGeometryIndices(para->getParH(i)->geometryBC.k, i);
+        //preprocessing
+        QforBoundaryConditions &Q = para->getParH(i)->geometryBC;
+        initPointersToSubgridDistances(Q);
+        //////////////////////////////////////////////////////////////////
 
-            //////////////////////////////////////////////////////////////////////////
-            //Indexarray
-            builder->getGeometryIndices(para->getParH(i)->geometryBC.k, i);
-            //////////////////////////////////////////////////////////////////////////
-            //preprocessing
-            QforBoundaryConditions &Q = para->getParH(i)->geometryBC;
-            initPointersToSubgridDistances(Q);
-            //////////////////////////////////////////////////////////////////
-
-            builder->getGeometryQs(Q.q27, i);
-            //QDebugWriter::writeQValues(Q, para->getParH(i)->geometryBC.k, para->getParH(i)->geometryBC.numberOfBCnodes, "M:/TestGridGeneration/results/GeomGPU.dat");
-            //////////////////////////////////////////////////////////////////
-            for (int node_i = 0; node_i < numberOfGeometryNodes; node_i++)
-            {
-                Q.q27[d000][node_i] = 0.0f;
-            }
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaCopyGeomBC(i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        }
+        builder->getGeometryQs(Q.q27, i);
+        //QDebugWriter::writeQValues(Q, para->getParH(i)->geometryBC.k, para->getParH(i)->geometryBC.numberOfBCnodes, "M:/TestGridGeneration/results/GeomGPU.dat");
+        for (uint node_i = 0; node_i < numberOfGeometryNodes; node_i++)
+            Q.q27[d000][node_i] = c0o1;
+        cudaMemoryManager->cudaCopyGeomBC(i);
     }
 
     if(para->getDiffOn())
@@ -938,6 +922,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             const uint numberOfBoundaryNodes = builder->getADDirichletSize(level);
             if(numberOfBoundaryNodes == 0) continue;
             VF_LOG_INFO("size DirichletQs, Level {}: {}", level, numberOfBoundaryNodes);
+            
             real* QQ = para->getParH(level)->AdvectionDiffusionDirichletBC.q27[0];
             getPointersToBoundaryConditions(para->getParH(level)->AdvectionDiffusionDirichletBC.q27, QQ, numberOfBoundaryNodes);
             builder->getADDirichletQs(para->getParH(level)->AdvectionDiffusionDirichletBC.q27, level);
