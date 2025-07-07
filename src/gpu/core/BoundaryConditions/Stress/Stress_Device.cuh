@@ -93,8 +93,7 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
 
     const real3 velocityNodeTangential = computeTangentialVector(velocityNode, wallNormal);
 
-    const real velocityNodeTangentialMagnitude = computeMagnitude(computeTangentialVector(velocityNode, wallNormal));
-    const real velocityNodeMeanTangentialMagnitude = smoothAndSaveMean(velocityNodeTangentialMagnitude, filterFrequency,
+    const real velocityNodeMeanTangentialMagnitude = smoothAndSaveMean(computeMagnitude(velocityNodeTangential), filterFrequency,
                                                                        wallModelParams.velocityMagnitudeNode[nodeIndex]);
 
     const uint samplingIndex = wallModelParams.samplingIndices[nodeIndex];

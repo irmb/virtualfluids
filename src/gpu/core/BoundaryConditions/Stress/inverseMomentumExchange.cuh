@@ -52,7 +52,7 @@ constexpr void findCutLinks(bool* linkIsCut, const SubgridDistances27& subgridDi
 }
 
 constexpr void computeBouncedBackDistributionsBB(const SubgridDistances27& subgridDistances, const real* populations,
-                                                 bool* const linkIsCut, real* populationsBouncedBack, const uint nodeIndex)
+                                                 bool* linkIsCut, real* populationsBouncedBack, const uint nodeIndex)
 {
     findCutLinks(linkIsCut, subgridDistances, nodeIndex);
 
@@ -79,14 +79,14 @@ constexpr void computeBouncedBackDistributionsBBPressure(const SubgridDistances2
     });
 }
 
-constexpr void computeBouncedBackDistributionsInterpolated(const SubgridDistances27& subgridD, real3 velocity, real drho,
+constexpr void computeBouncedBackDistributionsInterpolated(const SubgridDistances27& subgridDistances, real3 velocity, real drho,
                                                            real relaxationFrequency, const real* populations,
                                                            bool* linkIsCut, real* populationsBouncedBack, uint nodeIndex)
 {
     using namespace vf::lbm::dir;
     forEachNonRestDirection([&](auto dir) {
         using namespace vf::lbm::dir;
-        const real subgridDistance = (subgridD.q[dir])[nodeIndex];
+        const real subgridDistance = (subgridDistances.q[dir])[nodeIndex];
         if (subgridDistance < c0o1 || subgridDistance > c1o1) {
             linkIsCut[dir] = false;
             return;

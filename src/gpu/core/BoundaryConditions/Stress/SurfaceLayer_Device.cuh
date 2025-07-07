@@ -100,9 +100,8 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
                              boundaryParams.normalZ[nodeIndex] };
     const real3 velocityNodeTangential = computeTangentialVector(velocityNode, wallNormal);
 
-    const real velocityNodeTangentialMagnitude = computeMagnitude(computeTangentialVector(velocityNode, wallNormal));
-    const real velocityNodeMeanTangentialMagnitude = smoothAndSaveMean(velocityNodeTangentialMagnitude, filterFrequency,
-                                                                       wallModelParams.velocityMagnitudeNode[nodeIndex]);
+    const real velocityNodeMeanTangentialMagnitude = smoothAndSaveMean(
+        computeMagnitude(velocityNodeTangential), filterFrequency, wallModelParams.velocityMagnitudeNode[nodeIndex]);
 
     const uint samplingIndex = wallModelParams.samplingIndices[nodeIndex];
 
@@ -118,7 +117,12 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     // Load and compute temperature inputs
     ///////////////////////////////////////////////////////////
 
-    const real temperatureRelativeNode = temperatureParams.temperature[k_000];
+    auto populationReferencesTemperature = vf::gpu::getDistributionReferences27(
+        temperatureParams.distributionsTemperature, gridParams.numberOfNodes, gridParams.isEvenTimestep);
+    real populationsTemperature[NUMBER_Of_DIRECTIONS];
+    getPostCollisionDistribution(populationsTemperature, populationReferencesTemperature, listIndices);
+
+    const real temperatureRelativeNode = vf::lbm::getDensity(populationsTemperature);
     temperatureWallModelParams.temperatureNode[nodeIndex] = temperatureRelativeNode;
 
     const real temperatureRelativeSample = temperatureParams.temperature[samplingIndex];
@@ -227,7 +231,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
         } break;
     }
 
-    const real3 wallMomentumBounceBack = computeWallMomentumBounceBack(linkIsCut, populationsBouncedBack, populations);
+    real3 wallMomentum = computeWallMomentumBounceBack(linkIsCut, populationsBouncedBack, populations);
 
     const real wallArea = c1o1;
     const real subgridDistance = (subgridDistances.q[d00M])[nodeIndex];
@@ -235,26 +239,22 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
         stressBCType == StressBC::StressInterpolatedCompressible ? c1o1 + subgridDistance : c1o1;
 
     const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocitySample, wallShearStress, density,
-                                                           interpolationFactor, wallArea, wallMomentumBounceBack);
+                                                           interpolationFactor, wallArea, wallMomentum);
     if (!useDelayedBounceBack)
         populationReferences = vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes,
                                                                     !gridParams.isEvenTimestep);
-    const real3 wallMomentumVelocity = writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack,
+    wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack,
                                                             fakeWallVelocity, density, listIndices);
 
     if (wallModelParams.hasMonitor) {
-        wallModelParams.forceX[nodeIndex] = wallMomentumBounceBack.x + wallMomentumVelocity.x;
-        wallModelParams.forceY[nodeIndex] = wallMomentumBounceBack.y + wallMomentumVelocity.y;
-        wallModelParams.forceZ[nodeIndex] = wallMomentumBounceBack.z + wallMomentumVelocity.z;
+        wallModelParams.forceX[nodeIndex] = wallMomentum.x;
+        wallModelParams.forceY[nodeIndex] = wallMomentum.y;
+        wallModelParams.forceZ[nodeIndex] = wallMomentum.z;
     }
 
     ///////////////////////////////////////////////////////////
     // Apply Heat Flux Boundary Condition
     ///////////////////////////////////////////////////////////
-    auto populationReferencesTemperature = vf::gpu::getDistributionReferences27(
-        temperatureParams.distributionsTemperature, gridParams.numberOfNodes, gridParams.isEvenTimestep);
-    real populationsTemperature[NUMBER_Of_DIRECTIONS];
-    getPostCollisionDistribution(populationsTemperature, populationReferencesTemperature, listIndices);
 
     const real3 diffusiveFlux = real3 { vf::lbm::getIncompressibleVelocityX1(populationsTemperature),
                                         vf::lbm::getIncompressibleVelocityX2(populationsTemperature),
@@ -293,5 +293,4 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
             break;
     }
 }
-
 #endif
