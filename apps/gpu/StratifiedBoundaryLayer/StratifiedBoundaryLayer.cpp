@@ -348,7 +348,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
-    para->addInteractor(std::make_shared<BuoyancyProviderPlanarAverage>(para, cudaMemoryManager, para->getGravity() / referenceTemperature));
+    para->addInteractor(std::make_shared<BuoyancyProviderPlanarAverage>(para, cudaMemoryManager));
 
     if (useCoriolis)
         para->addInteractor(
