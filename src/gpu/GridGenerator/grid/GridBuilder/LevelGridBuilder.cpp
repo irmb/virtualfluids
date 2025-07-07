@@ -614,17 +614,15 @@ uint LevelGridBuilder::getNumberOfFluidNodesBorder(unsigned int level) const
 uint LevelGridBuilder::getSlipSize(int level) const
 {
     uint size = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->slipBoundaryConditions)
-    {
+    for (const auto& boundaryCondition : boundaryConditions[level]->slipBoundaryConditions)
         size += uint(boundaryCondition->indices.size());
-    }
     return size;
 }
 
 void LevelGridBuilder::getSlipValues(real* normalX, real* normalY, real* normalZ, int* indices, int level) const
 {
     int allIndicesCounter = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->slipBoundaryConditions)
+    for (const auto& boundaryCondition : boundaryConditions[level]->slipBoundaryConditions)
     {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++)
         {
@@ -640,15 +638,13 @@ void LevelGridBuilder::getSlipValues(real* normalX, real* normalY, real* normalZ
 
 void LevelGridBuilder::getSlipQs(real* qs[27], int level) const
 {
-    int allIndicesCounter = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->slipBoundaryConditions)
+    uint allIndicesCounter = 0;
+    for (const auto& boundaryCondition : boundaryConditions[level]->slipBoundaryConditions)
     {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++)
         {
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
-            {
                 qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
-            }
             allIndicesCounter++;
         }
     }
@@ -657,10 +653,8 @@ void LevelGridBuilder::getSlipQs(real* qs[27], int level) const
 uint LevelGridBuilder::getStressSize(int level) const
 {
     uint size = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
-    {
+    for (const auto& boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
         size += uint(boundaryCondition->indices.size());
-    }
     return size;
 }
 
@@ -690,15 +684,13 @@ void LevelGridBuilder::getStressValues( real* normalX, real* normalY, real* norm
 
 void LevelGridBuilder::getStressQs(real* qs[27], int level) const
 {
-    int allIndicesCounter = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
+    uint allIndicesCounter = 0;
+    for (const auto& boundaryCondition : boundaryConditions[level]->stressBoundaryConditions)
     {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++)
         {
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
-            {
                 qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
-            }
             allIndicesCounter++;
         }
     }
@@ -707,9 +699,7 @@ uint LevelGridBuilder::getSurfaceLayerSize(int level) const
 {
     uint size = 0;
     for (auto& boundaryCondition : boundaryConditions[level]->surfaceLayerBoundaryConditions)
-    {
         size += uint(boundaryCondition->indices.size());
-    }
     return size;
 }
 
@@ -719,9 +709,8 @@ void LevelGridBuilder::getSurfaceLayerValues(real* normalX, real* normalY, real*
                                              real* surfaceHeatFluxes, real* surfaceTemperatures, real* heatingRates,
                                              int level) const
 {
-
     uint allIndicesCounter = 0;
-    for (auto& boundaryCondition : boundaryConditions[level]->surfaceLayerBoundaryConditions)
+    for (const auto& boundaryCondition : boundaryConditions[level]->surfaceLayerBoundaryConditions)
     {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++)
         {
@@ -748,14 +737,12 @@ void LevelGridBuilder::getSurfaceLayerValues(real* normalX, real* normalY, real*
 void LevelGridBuilder::getSurfaceLayerQs(real* qs[27], int level) const
 {
     uint allIndicesCounter = 0;
-    for (auto& boundaryCondition : boundaryConditions[level]->surfaceLayerBoundaryConditions)
+    for (const auto& boundaryCondition : boundaryConditions[level]->surfaceLayerBoundaryConditions)
     {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++)
         {
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
-            {
                 qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
-            }
             allIndicesCounter++;
         }
     }
@@ -766,17 +753,15 @@ void LevelGridBuilder::getSurfaceLayerQs(real* qs[27], int level) const
 uint LevelGridBuilder::getVelocitySize(int level) const
 {
     uint size = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->velocityBoundaryConditions)
-    {
+    for (const auto& boundaryCondition : boundaryConditions[level]->velocityBoundaryConditions)
         size += uint(boundaryCondition->indices.size());
-    }
     return size;
 }
 
 void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const
 {
     int allIndicesCounter = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->velocityBoundaryConditions)
+    for (const auto& boundaryCondition : boundaryConditions[level]->velocityBoundaryConditions)
     {
         for (uint i = 0; i < (uint)boundaryCondition->indices.size(); i++)
         {
@@ -793,14 +778,12 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
 void LevelGridBuilder::getVelocityQs(real* qs[27], int level) const
 {
     int allIndicesCounter = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->velocityBoundaryConditions)
+    for (const auto& boundaryCondition : boundaryConditions[level]->velocityBoundaryConditions)
     {
         for ( uint index = 0; index < boundaryCondition->indices.size(); index++ )
         {
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
-            {
                 qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
-            }
             allIndicesCounter++;
         }
     }
@@ -809,17 +792,15 @@ void LevelGridBuilder::getVelocityQs(real* qs[27], int level) const
 uint LevelGridBuilder::getPressureSize(int level) const
 {
     uint size = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->pressureBoundaryConditions)
-    {
+    for (const auto& boundaryCondition : boundaryConditions[level]->pressureBoundaryConditions)
         size += uint(boundaryCondition->indices.size());
-    }
     return size;
 }
 
 void LevelGridBuilder::getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const
 {
-    int allIndicesCounter = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->pressureBoundaryConditions)
+    uint allIndicesCounter = 0;
+    for (const auto& boundaryCondition : boundaryConditions[level]->pressureBoundaryConditions)
     {
         for (std::size_t i = 0; i < boundaryCondition->indices.size(); i++)
         {
@@ -835,15 +816,13 @@ void LevelGridBuilder::getPressureValues(real* rho, int* indices, int* neighborI
 
 void LevelGridBuilder::getPressureQs(real* qs[27], int level) const
 {
-    int allIndicesCounter = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->pressureBoundaryConditions)
+    uint allIndicesCounter = 0;
+    for (const auto& boundaryCondition : boundaryConditions[level]->pressureBoundaryConditions)
     {
         for ( uint index = 0; index < boundaryCondition->indices.size(); index++ )
         {
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
-            {
                 qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
-            }
             allIndicesCounter++;
         }
     }
@@ -862,7 +841,7 @@ size_t LevelGridBuilder::getSizeOfPressureBoundaryCondition(uint level, uint ind
 void LevelGridBuilder::getPressureValues(real* density, int* indices, int* neighborIndices, uint level,
                                          uint indexInBoundaryConditionVector) const
 {
-    auto boundaryCondition = boundaryConditions[level]->pressureBoundaryConditions[indexInBoundaryConditionVector];
+    const auto& boundaryCondition = boundaryConditions[level]->pressureBoundaryConditions[indexInBoundaryConditionVector];
 
     for (std::size_t index = 0; index < boundaryCondition->indices.size(); index++) {
         indices[index] = grids[level]->getSparseIndex(boundaryCondition->indices[index]) + 1;
@@ -875,7 +854,7 @@ void LevelGridBuilder::getPressureValues(real* density, int* indices, int* neigh
 
 void LevelGridBuilder::getPressureQs(real* qs[27], uint level, uint indexInBoundaryConditionVector) const
 {
-    auto boundaryCondition = boundaryConditions[level]->pressureBoundaryConditions[indexInBoundaryConditionVector];
+    const auto& boundaryCondition = boundaryConditions[level]->pressureBoundaryConditions[indexInBoundaryConditionVector];
 
     for (uint index = 0; index < boundaryCondition->indices.size(); index++) {
         for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++) {
@@ -892,10 +871,8 @@ size_t LevelGridBuilder::getPressureBoundaryConditionDirection(uint level, uint 
 uint LevelGridBuilder::getPrecursorSize(int level) const
 {
     uint size = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
-    {
+    for (auto& boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
         size += uint(boundaryCondition->indices.size());
-    }
     return size;
 }
 
@@ -905,12 +882,12 @@ void LevelGridBuilder::getPrecursorValues(  uint* neighbor0PP, uint* neighbor0PM
                                             int& numberOfPrecursorNodes, size_t& numberOfQuantities, uint& timeStepsBetweenReads,
                                             real& velocityX, real& velocityY, real& velocityZ, int level) const
 {
-    int allIndicesCounter = 0;
-    int allNodesCounter = 0;
+    uint allIndicesCounter = 0;
+    uint allNodesCounter = 0;
     uint tmpTimeStepsBetweenReads = 0;
     size_t tmpNumberOfQuantities = 0;
 
-    for (auto boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
+    for (auto& boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
     {
         if( tmpTimeStepsBetweenReads == 0 )
             tmpTimeStepsBetweenReads = boundaryCondition->timeStepsBetweenReads;
@@ -955,15 +932,13 @@ void LevelGridBuilder::getPrecursorValues(  uint* neighbor0PP, uint* neighbor0PM
 
 void LevelGridBuilder::getPrecursorQs(real* qs[27], int level) const
 {
-    int allIndicesCounter = 0;
-    for (auto boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
+    uint allIndicesCounter = 0;
+    for (auto& boundaryCondition : boundaryConditions[level]->precursorBoundaryConditions)
     {
         for ( uint index = 0; index < boundaryCondition->indices.size(); index++ )
         {
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
-            {
                 qs[dir][allIndicesCounter] = boundaryCondition->qs[index][dir];
-            }
             allIndicesCounter++;
         }
     }
@@ -979,9 +954,9 @@ uint LevelGridBuilder::getADNoFluxSize(int level) const
 
 void LevelGridBuilder::getADNoFluxValues(int* indices, int level) const
 {
-    int allIndicesCounter = 0;
+    uint allIndicesCounter = 0;
     for (auto& boundaryCondition : boundaryConditions[level]->adNoFluxBoundaryConditions) {
-        for (uint i = 0; i < static_cast<uint>(boundaryCondition->indices.size()); i++) {
+        for (uint i = 0; i < boundaryCondition->indices.size(); i++) {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) + 1;
             allIndicesCounter++;
         }
@@ -990,7 +965,7 @@ void LevelGridBuilder::getADNoFluxValues(int* indices, int level) const
 
 void LevelGridBuilder::getADNoFluxQs(real* qs[27], int level) const
 {
-    int allIndicesCounter = 0;
+    uint allIndicesCounter = 0;
     for (auto& boundaryCondition : boundaryConditions[level]->adNoFluxBoundaryConditions) {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++) {
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
@@ -1011,9 +986,9 @@ uint LevelGridBuilder::getADFluxSize(int level) const
 void LevelGridBuilder::getADFluxValues(real* normalX, real* normalY, real* normalZ, real* gradient, int* indices,
                                                int level) const
 {
-    int allIndicesCounter = 0;
+    uint allIndicesCounter = 0;
     for (auto& boundaryCondition : boundaryConditions[level]->adFluxBoundaryConditions) {
-        for (uint i = 0; i < static_cast<uint>(boundaryCondition->indices.size()); i++) {
+        for (uint i = 0; i < boundaryCondition->indices.size(); i++) {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) + 1;
             normalX[allIndicesCounter] = boundaryCondition->getNormalX(i);
             normalY[allIndicesCounter] = boundaryCondition->getNormalY(i);
@@ -1026,7 +1001,7 @@ void LevelGridBuilder::getADFluxValues(real* normalX, real* normalY, real* norma
 
 void LevelGridBuilder::getADFluxQs(real* qs[27], int level) const
 {
-    int allIndicesCounter = 0;
+    uint allIndicesCounter = 0;
     for (auto& boundaryCondition : boundaryConditions[level]->adFluxBoundaryConditions) {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++) {
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
@@ -1046,9 +1021,9 @@ uint LevelGridBuilder::getADDirichletSize(int level) const
 
 void LevelGridBuilder::getADDirichletValues(real* values, real* vx, real* vy, real* vz, int* indices, int level) const
 {
-    int allIndicesCounter = 0;
+    uint allIndicesCounter = 0;
     for (auto& boundaryCondition : boundaryConditions[level]->adDirichletBoundaryConditions) {
-        for (uint i = 0; i < static_cast<uint>(boundaryCondition->indices.size()); i++) {
+        for (uint i = 0; i < boundaryCondition->indices.size(); i++) {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) + 1;
             values[allIndicesCounter] = boundaryCondition->getBCvalue(i);
             vx[allIndicesCounter] = boundaryCondition->getVx(i);
@@ -1061,7 +1036,7 @@ void LevelGridBuilder::getADDirichletValues(real* values, real* vx, real* vy, re
 
 void LevelGridBuilder::getADDirichletQs(real* qs[27], int level) const
 {
-    int allIndicesCounter = 0;
+    uint allIndicesCounter = 0;
     for (auto& boundaryCondition : boundaryConditions[level]->adDirichletBoundaryConditions) {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++) {
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
@@ -1081,9 +1056,9 @@ uint LevelGridBuilder::getADNeumannSize(int level) const
 
 void LevelGridBuilder::getADNeumannValues(real* gradients, real* vx, real* vy, real* vz, int* indices, int level) const
 {
-    int allIndicesCounter = 0;
+    uint allIndicesCounter = 0;
     for (auto& boundaryCondition : boundaryConditions[level]->adNeumannBoundaryConditions) {
-        for (uint i = 0; i < static_cast<uint>(boundaryCondition->indices.size()); i++) {
+        for (uint i = 0; i < boundaryCondition->indices.size(); i++) {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) + 1;
             gradients[allIndicesCounter] = boundaryCondition->getBCgradient(i);
             vx[allIndicesCounter] = boundaryCondition->getVx(i);
@@ -1096,7 +1071,7 @@ void LevelGridBuilder::getADNeumannValues(real* gradients, real* vx, real* vy, r
 
 void LevelGridBuilder::getADNeumannQs(real* qs[27], int level) const
 {
-    int allIndicesCounter = 0;
+    uint allIndicesCounter = 0;
     for (auto& boundaryCondition : boundaryConditions[level]->adNeumannBoundaryConditions) {
         for (uint index = 0; index < boundaryCondition->indices.size(); index++) {
             for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
