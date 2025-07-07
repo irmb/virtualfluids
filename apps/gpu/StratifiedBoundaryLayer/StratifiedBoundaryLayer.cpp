@@ -175,9 +175,9 @@ void run(const vf::basics::ConfigurationFile& config)
     const real tOut = config.getValue<real>("tOut");
     const real tEnd = config.getValue<real>("tEnd"); // total time of simulation
 
-    const real tStartAveraging = config.getValue<real>("tStartAveraging");
+    const real tStartSampling = config.getValue<real>("tStartSampling");
     const real tStartTmpAveraging = config.getValue<real>("tStartTmpAveraging");
-    const real tAveraging = config.getValue<real>("tAveraging");
+    const real tSampling = config.getValue<real>("tSampling");
     const real tStartOutProbe = config.getValue<real>("tStartOutProbe");
     const real tOutProbe = config.getValue<real>("tOutProbe");
 
@@ -259,7 +259,7 @@ void run(const vf::basics::ConfigurationFile& config)
         gridBuilderFacade->addDomainSplit(subdomain * subdomainLength, Axis::x);
 
     gridBuilderFacade->setPeriodicBoundaryCondition(true, true, false);
-    gridBuilderFacade->setPeriodicShiftOnXBoundaryInYDirection((c1o10 + c1o1) * lengthZ);
+    // gridBuilderFacade->setPeriodicShiftOnXBoundaryInYDirection((c1o10 + c1o1) * lengthZ);
     gridBuilderFacade->createGrids(processID);
 
     if (!useSurfaceLayer) {
@@ -326,18 +326,14 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setVelocityRatio(deltaX / deltaT);
     para->setViscosityRatio(deltaX * deltaX / deltaT);
     para->setDensityRatio(1.0);
-    para->setHasWallModelMonitor(true);
 
     para->configureMainKernel(vf::collision_kernel::compressible::K17CompressibleNavierStokes);
 
     para->setTimestepStartOut(uint(tStartOut / deltaT));
     para->setTimestepOut(uint(tOut / deltaT));
     para->setTimestepEnd(uint(tEnd / deltaT));
-
-    // para->setCoriolisParameters(useCoriolis, coriolisParameter * deltaT, geostrophicWindX * deltaT / deltaX,
-    //                             geostrophicWindY * deltaT / deltaX);
     para->setGravity(gravity * deltaT * deltaT / deltaX);
-    // para->setBuoyancyFactor(para->getGravity() / referenceTemperature);
+    para->setBuoyancyFactor(para->getGravity() / referenceTemperature);
 
     // Advection Diffusion
     para->setDiffOn(true);
@@ -352,7 +348,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     auto cudaMemoryManager = std::make_shared<CudaMemoryManager>(para);
 
-    para->addInteractor(std::make_shared<BuoyancyProviderPlanarAverage>(para, cudaMemoryManager));
+    para->addInteractor(std::make_shared<BuoyancyProviderPlanarAverage>(para, cudaMemoryManager, para->getGravity() / referenceTemperature));
 
     if (useCoriolis)
         para->addInteractor(
@@ -371,8 +367,8 @@ void run(const vf::basics::ConfigurationFile& config)
     // Add Probes
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     auto planarAverageProbe = std::make_shared<PlanarAverageProbe>(
-        para, cudaMemoryManager, para->getOutputPath(), "planeProbe", tStartAveraging / deltaT, tStartTmpAveraging / deltaT,
-        tAveraging / deltaT, tStartOutProbe / deltaT, tOutProbe / deltaT, Axis::z, true, true);
+        para, cudaMemoryManager, para->getOutputPath(), "planeProbe", tStartSampling / deltaT, tStartTmpAveraging / deltaT,
+        tSampling / deltaT, tStartOutProbe / deltaT, tOutProbe / deltaT, Axis::z, true, true);
     planarAverageProbe->addAllAvailableStatistics();
     planarAverageProbe->setFileNameToNOut();
     para->addSampler(planarAverageProbe);
@@ -380,13 +376,13 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setHasWallModelMonitor(true);
     auto wallModelProbe =
         std::make_shared<WallModelProbe>(para, cudaMemoryManager, para->getOutputPath(), "wallModelProbe", 0,
-                                         tStartTmpAveraging / deltaT, 100, 0, 100, false, true, true, false, true);
+                                         tStartTmpAveraging / deltaT, 100, 0, 100, false, true, true, false, useSurfaceLayer);
     para->addSampler(wallModelProbe);
 
     for (int probeHeight : { 27, 37, 90, 153, 186, 335 }) {
         std::string name = "planeProbe_" + std::to_string(probeHeight);
         SPtr<Probe> planeProbe =
-            std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), name, tStartAveraging / deltaT,
+            std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), name, tStartSampling / deltaT,
                                     tOutProbe / deltaT, tStartOutProbe / deltaT, tOutProbe / deltaT, false, false, true);
         planeProbe->addProbePlane(0, 0, static_cast<real>(probeHeight), lengthX, lengthY, deltaX);
         planeProbe->addAllAvailableStatistics();
