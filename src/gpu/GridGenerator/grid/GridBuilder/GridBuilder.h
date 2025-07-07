@@ -106,9 +106,9 @@ public:
     virtual void getStressQs(real* qs[27], int level) const = 0;
     virtual uint getSurfaceLayerSize(int level) const = 0;
     virtual void getSurfaceLayerValues(real* normalX, real* normalY, real* normalZ, int* indices, real* samplingDistances,
-                                       uint* samplingIndices, real* frictionVelocities, real* roughnessLength,
-                                       real* roughnessLengthTemperature, real* surfaceHeatFlux, real* surfaceTemperatures, real* heatingRates,
-                                       int level) const = 0;
+                                       uint* samplingIndices, real* vonKarmanConstants, real* roughnessLengths,
+                                       real* roughnessLengthsTemperature, real* surfaceHeatFluxes, real* surfaceTemperatures,
+                                       real* heatingRates, int level) const = 0;
     virtual void getSurfaceLayerQs(real* qs[27], int level) const = 0;
     virtual uint getVelocitySize(int level) const = 0;
     virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const = 0;

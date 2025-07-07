@@ -201,7 +201,6 @@ struct TemperatureWallModelParameters{
    real* surfaceTemperature;
    real* temperatureScale;
    real* roughnessLength;
-   real* invObukhovLength;
    real* heatingRate;
 };
 struct SurfaceLayerWallModelParameters{

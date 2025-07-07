@@ -714,11 +714,10 @@ uint LevelGridBuilder::getSurfaceLayerSize(int level) const
 }
 
 void LevelGridBuilder::getSurfaceLayerValues(real* normalX, real* normalY, real* normalZ, int* indices,
-                                             real* samplingDistances, uint* samplingIndices, real* vonKaramnConstants, real* roughnessLengths,
-                                             real* roughnessLengthsTemperature,
-                                             real* surfaceHeatFluxes,
-                                             real* surfaceTemperatures,
-                                             real* heatingRates, int level) const
+                                             real* samplingDistances, uint* samplingIndices, real* vonKarmanConstants,
+                                             real* roughnessLengths, real* roughnessLengthsTemperature,
+                                             real* surfaceHeatFluxes, real* surfaceTemperatures, real* heatingRates,
+                                             int level) const
 {
 
     uint allIndicesCounter = 0;
@@ -734,7 +733,7 @@ void LevelGridBuilder::getSurfaceLayerValues(real* normalX, real* normalY, real*
 
             samplingDistances[allIndicesCounter] = boundaryCondition->getSamplingDistance(index);
             samplingIndices[allIndicesCounter]  = grids[level]->getSparseIndex(boundaryCondition->getSamplingIndex(index)) + 1;
-            vonKaramnConstants[allIndicesCounter] = boundaryCondition->getVonKarmanConstant();
+            vonKarmanConstants[allIndicesCounter] = boundaryCondition->getVonKarmanConstant();
             roughnessLengths[allIndicesCounter] = boundaryCondition->getRoughnessLength(index);
             roughnessLengthsTemperature[allIndicesCounter] = boundaryCondition->getRoughnessLengthTemperature(index);
             surfaceHeatFluxes[allIndicesCounter] = boundaryCondition->getSurfaceHeatFlux(index);
