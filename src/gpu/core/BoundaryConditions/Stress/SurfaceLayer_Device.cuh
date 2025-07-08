@@ -141,6 +141,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     const real heatingRate = temperatureWallModelParams.heatingRate[nodeIndex];
     const real surfaceTemperature = temperatureWallModelParams.surfaceTemperature[nodeIndex] + heatingRate;
     const real temperatureDifference = temperatureRelativeSampleMean - surfaceTemperature;
+    temperatureWallModelParams.surfaceTemperature[nodeIndex] = surfaceTemperature;
 
     ///////////////////////////////////////////////////////////
     // Compute stress and heat flux from wall model
@@ -198,9 +199,6 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     }
 
     const real surfaceHeatFlux = -temperatureScale * frictionVelocity;
-    wallModelParams.frictionVelocity[nodeIndex] = frictionVelocity;
-    temperatureWallModelParams.temperatureScale[nodeIndex] = temperatureScale;
-    temperatureWallModelParams.surfaceTemperature[nodeIndex] = surfaceTemperature;
 
     if (heatFluxBCtype == SurfaceLayerBC::SurfaceTemperature)
         temperatureWallModelParams.surfaceHeatFlux[nodeIndex] = surfaceHeatFlux;
@@ -247,6 +245,8 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
                                                             fakeWallVelocity, density, listIndices);
 
     if (wallModelParams.hasMonitor) {
+        wallModelParams.frictionVelocity[nodeIndex] = frictionVelocity;
+        temperatureWallModelParams.temperatureScale[nodeIndex] = temperatureScale;
         wallModelParams.forceX[nodeIndex] = wallMomentum.x;
         wallModelParams.forceY[nodeIndex] = wallMomentum.y;
         wallModelParams.forceZ[nodeIndex] = wallMomentum.z;
