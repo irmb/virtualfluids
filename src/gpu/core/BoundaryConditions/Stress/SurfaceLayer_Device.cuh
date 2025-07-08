@@ -140,8 +140,8 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
 
     const real heatingRate = temperatureWallModelParams.heatingRate[nodeIndex];
     const real surfaceTemperature = temperatureWallModelParams.surfaceTemperature[nodeIndex] + heatingRate;
-    const real temperatureDifference = temperatureRelativeSampleMean - surfaceTemperature;
     temperatureWallModelParams.surfaceTemperature[nodeIndex] = surfaceTemperature;
+    const real temperatureDifference = temperatureRelativeSampleMean - surfaceTemperature;
 
     ///////////////////////////////////////////////////////////
     // Compute stress and heat flux from wall model
@@ -152,51 +152,31 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
                                 ? -temperatureWallModelParams.surfaceHeatFlux[nodeIndex] / frictionVelocity
                                 : computeFrictionVelocity(temperatureDifference, vonKarmanConstant, samplingDistance,
                                                           roughnessLengthTemperature, c0o1);
-    const real stabilityParameter =
-        computeStabilityParameter(samplingDistance, temperatureParams.gravity, temperatureScale, frictionVelocity,
-                                  temperatureParams.referenceTemperature, vonKarmanConstant);
-    if (stabilityParameter > c0o1) {
-        const real stabilityParameter =
-            heatFluxBCtype == SurfaceLayerBC::SurfaceTemperature
-                ? computeStabilityParameterFromSurfaceTemperature(
-                      samplingDistance, roughnessLength, roughnessLengthTemperature, velocitySampleMeanTangentialMagnitude,
-                      temperatureDifference, temperatureParams.referenceTemperature, temperatureParams.gravity)
-                : computeStabilityParameterFromHeatFlux(
-                      samplingDistance, roughnessLength, velocitySampleMeanTangentialMagnitude,
-                      temperatureWallModelParams.surfaceHeatFlux[nodeIndex], temperatureParams.referenceTemperature,
-                      temperatureParams.gravity, vonKarmanConstant);
 
-        const auto stabilityCorrections = computeStabilityCorrectionsStable(stabilityParameter);
-        frictionVelocity = computeFrictionVelocity(velocitySampleMeanTangentialMagnitude, vonKarmanConstant,
-                                                   samplingDistance, roughnessLength, stabilityCorrections.momentum);
-        temperatureScale = computeFrictionVelocity(temperatureDifference, vonKarmanConstant, samplingDistance,
-                                                   roughnessLengthTemperature, stabilityCorrections.temperature);
-    } else if (stabilityParameter < c0o1) {
-        bool converged = false;
-        uint iteration = 0;
-        do {
-            real stabilityParameter =
-                computeStabilityParameter(samplingDistance, temperatureParams.gravity, temperatureScale, frictionVelocity,
-                                          temperatureParams.referenceTemperature, vonKarmanConstant);
-            const auto stabilityCorrections = computeStabilityCorrectionsUnstable(stabilityParameter);
+    bool converged = false;
+    uint iteration = 0;
+    do {
+        real stabilityParameter =
+            computeStabilityParameter(samplingDistance, temperatureParams.gravity, temperatureScale, frictionVelocity,
+                                        temperatureParams.referenceTemperature, vonKarmanConstant);
+        const auto stabilityCorrections = stabilityParameter > c0o1 ? computeStabilityCorrectionsStable(stabilityParameter) : computeStabilityCorrectionsUnstable(stabilityParameter);
 
-            const real newFrictionVelocity =
-                std::max(zero, computeFrictionVelocity(velocitySampleMeanTangentialMagnitude, vonKarmanConstant,
-                                                       samplingDistance, roughnessLength, stabilityCorrections.momentum));
-            const real newTemperatureScale =
-                computeFrictionVelocity(temperatureDifference, vonKarmanConstant, samplingDistance,
-                                        roughnessLengthTemperature, stabilityCorrections.temperature);
+        const real newFrictionVelocity =
+            std::max(zero, computeFrictionVelocity(velocitySampleMeanTangentialMagnitude, vonKarmanConstant,
+                                                    samplingDistance, roughnessLength, stabilityCorrections.momentum));
+        const real newTemperatureScale =
+            computeFrictionVelocity(temperatureDifference, vonKarmanConstant, samplingDistance,
+                                    roughnessLengthTemperature, stabilityCorrections.temperature);
 
-            iteration++;
-            const bool velocityConverged =
-                std::abs(newFrictionVelocity - frictionVelocity) < convergenceCriteria * std::abs(frictionVelocity);
-            const bool temperatureConverged =
-                std::abs(newTemperatureScale - temperatureScale) < convergenceCriteria * std::abs(temperatureScale);
-            converged = velocityConverged && temperatureConverged;
-            temperatureScale = newTemperatureScale;
-            frictionVelocity = newFrictionVelocity;
-        } while ((iteration < maxIter) && !converged);
-    }
+        iteration++;
+        const bool velocityConverged =
+            std::abs(newFrictionVelocity - frictionVelocity) < convergenceCriteria * std::abs(frictionVelocity);
+        const bool temperatureConverged =
+            std::abs(newTemperatureScale - temperatureScale) < convergenceCriteria * std::abs(temperatureScale);
+        converged = velocityConverged && temperatureConverged;
+        temperatureScale = newTemperatureScale;
+        frictionVelocity = newFrictionVelocity;
+    } while ((iteration < maxIter) && !converged);
 
     const real surfaceHeatFlux = -temperatureScale * frictionVelocity;
 
