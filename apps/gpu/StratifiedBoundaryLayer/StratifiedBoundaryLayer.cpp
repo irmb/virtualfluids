@@ -267,9 +267,9 @@ void run(const vf::basics::ConfigurationFile& config)
         gridBuilderFacade->setStressBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, samplingOffset, vonKarmanConstant,
                                                       roughnessLength, deltaX);
     } else {
-        gridBuilderFacade->setSurfaceLayerBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, samplingOffset, vonKarmanConstant,
-                                                            roughnessLength, roughnessLength, surfaceHeatFlux,
-                                                            surfaceTemperature, heatingRate, deltaX, deltaT);
+        gridBuilderFacade->setSurfaceLayerBoundaryCondition(
+            SideType::MZ, c0o1, c0o1, c1o1, samplingOffset, vonKarmanConstant, roughnessLength, roughnessLength,
+            surfaceHeatFlux, surfaceTemperature, heatingRate, deltaX, deltaT);
     }
 
     gridBuilderFacade->setSlipBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1);
@@ -374,9 +374,9 @@ void run(const vf::basics::ConfigurationFile& config)
     para->addSampler(planarAverageProbe);
 
     para->setHasWallModelMonitor(true);
-    auto wallModelProbe =
-        std::make_shared<WallModelProbe>(para, cudaMemoryManager, para->getOutputPath(), "wallModelProbe", 0,
-                                         tStartTmpAveraging / deltaT, 100, 0, 100, false, true, true, false, useSurfaceLayer);
+    auto wallModelProbe = std::make_shared<WallModelProbe>(para, cudaMemoryManager, para->getOutputPath(), "wallModelProbe",
+                                                           0, tStartTmpAveraging / deltaT, 100, 0, 100, false, true, true,
+                                                           false, useSurfaceLayer);
     para->addSampler(wallModelProbe);
 
     for (int probeHeight : { 27, 37, 90, 153, 186, 335 }) {
