@@ -199,10 +199,11 @@ uint WallModelProbe::countFluidNodes(int level)
 
 void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t, int level)
 {
-    const uint nPoints = para->getParD(level)->stressBC.numberOfBCnodes;
+
+    auto parD = para->getParD(level);
+    const uint nPoints = sampleSurfaceLayer ? parD->surfaceLayerBC.numberOfBCnodes : parD->stressBC.numberOfBCnodes;
     if (nPoints < 1)
         return;
-    auto paraDevice = para->getParD(level);
     const uint numberOfQuantities = getNumberOfInstantaneousQuantities();
 
     data->timestepTime.push_back(t * para->getScaledTimeRatio(level));
@@ -215,7 +216,7 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
     const real forceFactor = para->getScaledForceRatio(level);
 
     const auto& momentumWallModel =
-    sampleSurfaceLayer ? paraDevice->surfaceLayerWallModel.momentumParameters : paraDevice->momentumWallModel;
+    sampleSurfaceLayer ? parD->surfaceLayerWallModel.momentumParameters : parD->momentumWallModel;
 
 
     computeAndSaveMean(momentumWallModel.velocityMagnitudeNode, nPoints, newInstantaneous, velocityFactor);
@@ -228,16 +229,16 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
     computeAndSaveMean(momentumWallModel.forceZ, nPoints, newInstantaneous, outputStress ? stressFactor : forceFactor);
 
     if (this->evaluatePressureGradient) {
-        computeAndSaveIndexBasedMean(paraDevice->forceX_SP, paraDevice->typeOfGridNode, paraDevice->numberOfNodes,
+        computeAndSaveIndexBasedMean(parD->forceX_SP, parD->typeOfGridNode, parD->numberOfNodes,
                                      data->numberOfFluidNodes, newInstantaneous, forceFactor);
-        computeAndSaveIndexBasedMean(paraDevice->forceY_SP, paraDevice->typeOfGridNode, paraDevice->numberOfNodes,
+        computeAndSaveIndexBasedMean(parD->forceY_SP, parD->typeOfGridNode, parD->numberOfNodes,
                                      data->numberOfFluidNodes, newInstantaneous, forceFactor);
-        computeAndSaveIndexBasedMean(paraDevice->forceZ_SP, paraDevice->typeOfGridNode, paraDevice->numberOfNodes,
+        computeAndSaveIndexBasedMean(parD->forceZ_SP, parD->typeOfGridNode, parD->numberOfNodes,
                                      data->numberOfFluidNodes, newInstantaneous, forceFactor);
     }
 
     if (sampleSurfaceLayer) {
-        const auto& temperatureWallModel = paraDevice->surfaceLayerWallModel.temperatureParameters;
+        const auto& temperatureWallModel = parD->surfaceLayerWallModel.temperatureParameters;
         computeAndSaveMean(temperatureWallModel.temperatureSample, nPoints, newInstantaneous, c1o1);
         computeAndSaveMean(temperatureWallModel.temperatureNode, nPoints, newInstantaneous, c1o1);
         computeAndSaveMean(temperatureWallModel.temperatureScale, nPoints, newInstantaneous, c1o1);
