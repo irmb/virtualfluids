@@ -89,7 +89,7 @@ private:
     std::vector<std::string> getVariableNames();
     uint getNumberOfInstantaneousQuantities() const
     {
-        uint numberOfQuantities = 10;
+        uint numberOfQuantities = 6;
         if(evaluatePressureGradient) numberOfQuantities += 3;
         if(sampleSurfaceLayer) numberOfQuantities += 5;
         return numberOfQuantities;
