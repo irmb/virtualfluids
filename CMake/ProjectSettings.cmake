@@ -109,6 +109,23 @@ if(VF_ENABLE_INCLUDE_WHAT_YOU_USE)
     enable_include_what_you_use()
 endif()
 
+
+#################################################################
+### load machine file                                         ###
+#################################################################
+site_name(MACHINE_NAME)
+string(TOUPPER  "${MACHINE_NAME}" MACHINE_NAME)
+
+set(MACHINE_FILE "${CMAKE_CURRENT_LIST_DIR}/cmake_config_files/${MACHINE_NAME}.config.cmake")
+
+IF(NOT EXISTS ${MACHINE_FILE})
+    status("No configuration file found: ${MACHINE_FILE}.")
+ELSE()
+    status("Load configuration file: ${MACHINE_FILE}")
+    include(${MACHINE_FILE})
+ENDIF()
+
+
 # set gpu features
 if(VF_ENABLE_GPU)
     include(CheckLanguage)
@@ -145,22 +162,6 @@ if(VF_ENABLE_GPU)
     # by clangd and therefore we disable it
     set(CMAKE_CUDA_USE_RESPONSE_FILE_FOR_INCLUDES 0)
 endif()
-
-
-#################################################################
-### load machine file                                         ###
-#################################################################
-site_name(MACHINE_NAME)
-string(TOUPPER  "${MACHINE_NAME}" MACHINE_NAME)
-
-set(MACHINE_FILE "${CMAKE_CURRENT_LIST_DIR}/cmake_config_files/${MACHINE_NAME}.config.cmake")
-
-IF(NOT EXISTS ${MACHINE_FILE})
-    status("No configuration file found: ${MACHINE_FILE}.")
-ELSE()
-    status("Load configuration file: ${MACHINE_FILE}")
-    include(${MACHINE_FILE})
-ENDIF()
 
 
 #################################################################################
