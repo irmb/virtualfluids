@@ -333,6 +333,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setTimestepOut(uint(tOut / deltaT));
     para->setTimestepEnd(uint(tEnd / deltaT));
     para->setGravity(gravity * deltaT * deltaT / deltaX);
+    para->setReferenceTemperature(referenceTemperature);
     para->setBuoyancyFactor(para->getGravity() / referenceTemperature);
 
     // Advection Diffusion
