@@ -62,6 +62,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 const std::string defaultConfigFile = "actuatorline.cfg";
+using namespace vf::basics::constant;
 
 void run(const vf::basics::ConfigurationFile& config)
 {
