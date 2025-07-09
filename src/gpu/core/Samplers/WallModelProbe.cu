@@ -237,8 +237,8 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
 
     if (sampleSurfaceLayer) {
         const auto& temperatureWallModel = parD->surfaceLayerWallModel.temperatureParameters;
-        computeAndSaveMean(temperatureWallModel.temperatureSample, nPoints, newInstantaneous, c1o1);
         computeAndSaveMean(temperatureWallModel.temperatureNode, nPoints, newInstantaneous, c1o1);
+        computeAndSaveMean(temperatureWallModel.temperatureSample, nPoints, newInstantaneous, c1o1);
         computeAndSaveMean(temperatureWallModel.surfaceHeatFlux, nPoints, newInstantaneous, velocityFactor);
         computeAndSaveMean(temperatureWallModel.surfaceTemperature, nPoints, newInstantaneous, c1o1);
     }
