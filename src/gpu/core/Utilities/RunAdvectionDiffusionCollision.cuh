@@ -88,6 +88,7 @@ template <typename CollisionFunctor, vf::lbm::advection_diffusion::TurbulenceMod
 __global__ void runCollisionAdvectionDiffusion(CollisionFunctor collision, GPUCollisionParameters collisionParameter)
 {
     using namespace vf::lbm::advection_diffusion;
+    using namespace vf::basics::constant;
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
 
     if (nodeIndex >= collisionParameter.numberOfFluidNodes)

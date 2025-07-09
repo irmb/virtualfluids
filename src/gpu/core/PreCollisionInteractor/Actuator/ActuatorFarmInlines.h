@@ -40,7 +40,6 @@
 
 #include "Utilities/GeometryUtils.h"
 
-using namespace vf::basics::constant;
 
 struct TurbineNodeIndex {
     uint turbine;
@@ -98,6 +97,8 @@ constexpr real distSqrd(real distX, real distY, real distZ)
 }
 constexpr real getBoundingSphereRadius(real diameter, real smearingWidth)
 {
+    using namespace vf::basics::constant;
+
     return c1o2 * diameter + c3o2 * smearingWidth;
 }
 

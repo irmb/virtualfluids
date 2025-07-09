@@ -76,6 +76,8 @@ SPtr<LBMKernel> K17CompressibleNavierStokes::clone()
 
 void K17CompressibleNavierStokes::calculate(int step)
 {
+    using namespace vf::basics::constant;
+
     (void)step; // parameter unused
 
     mu::value_type muX1, muX2, muX3;

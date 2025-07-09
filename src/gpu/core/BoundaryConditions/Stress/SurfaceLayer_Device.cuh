@@ -57,14 +57,15 @@ __global__ void
 SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryParams, WallModelParameters wallModelParams,
                      TemperatureWallModelParameters temperatureWallModelParams, TemperatureParameters temperatureParams)
 {
-    constexpr real filterFrequency = 1e-3F;
-    constexpr uint maxIter = 100;
-    constexpr real convergenceCriteria = 1e-3F;
-    constexpr real zero = c0o1; // need for some std functions
     using namespace vf::basics::constant;
     using namespace vf::lbm::dir;
     using namespace vf::gpu;
     using namespace vf::lbm::advection_diffusion;
+    
+    constexpr real filterFrequency = 1e-3F;
+    constexpr uint maxIter = 100;
+    constexpr real convergenceCriteria = 1e-3F;
+    constexpr real zero = c0o1; // need for some std functions
 
     using StressBC = BoundaryConditionFactory::StressBC;
     using SurfaceLayerBC = BoundaryConditionFactory::SurfaceLayerBC;

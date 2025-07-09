@@ -35,6 +35,7 @@
 #include <cuda_helper/CudaIndexCalculation.h>
 
 #include <lbm/MacroscopicQuantities.h>
+#include <lbm/constants/D3Q27.h>
 #include <lbm/advectionDiffusion/BoundaryConditions.h>
 
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
@@ -51,6 +52,7 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
 {
     using namespace vf::basics::constant;
     using namespace vf::lbm::advection_diffusion;
+    using namespace vf::lbm::dir;
     using namespace vf::gpu;
 
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
@@ -73,7 +75,7 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
 
     switch (bcType) {
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackSlip:
-            forEachNonRestDirection([&](auto direction) {
+            vf::lbm::dir::forEachNonRestDirection([&](auto direction) {
                 const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
                 if (subgridDistance < c0o1 || subgridDistance > c1o1)
                     return;

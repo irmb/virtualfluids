@@ -77,17 +77,19 @@ void CompressibleOffsetMomentsInterpolator::setOmegas(real omegaC, real omegaF)
 
 void CompressibleOffsetMomentsInterpolator::interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, real xoff, real yoff, real zoff)
 {
+    using namespace vf::basics::constant;
+
     vf::lbm::InterpolationCoefficients coefficients;
     calculateCoefficients(coefficients, icellC, omegaC, xoff, yoff, zoff);
 
-     vf::lbm::interpolateCF(icellF.BSW, omegaF, vf::basics::constant::c1o2, coefficients, -c1o4, -c1o4, -c1o4);
-     vf::lbm::interpolateCF(icellF.BNE, omegaF, vf::basics::constant::c1o2, coefficients,  c1o4,  c1o4, -c1o4);
-     vf::lbm::interpolateCF(icellF.TNW, omegaF, vf::basics::constant::c1o2, coefficients, -c1o4,  c1o4,  c1o4);
-     vf::lbm::interpolateCF(icellF.TSE, omegaF, vf::basics::constant::c1o2, coefficients,  c1o4, -c1o4,  c1o4);
-     vf::lbm::interpolateCF(icellF.BNW, omegaF, vf::basics::constant::c1o2, coefficients, -c1o4,  c1o4, -c1o4);
-     vf::lbm::interpolateCF(icellF.BSE, omegaF, vf::basics::constant::c1o2, coefficients,  c1o4, -c1o4, -c1o4);
-     vf::lbm::interpolateCF(icellF.TSW, omegaF, vf::basics::constant::c1o2, coefficients, -c1o4, -c1o4,  c1o4);
-     vf::lbm::interpolateCF(icellF.TNE, omegaF, vf::basics::constant::c1o2, coefficients,  c1o4,  c1o4,  c1o4);
+     vf::lbm::interpolateCF(icellF.BSW, omegaF, c1o2, coefficients, -c1o4, -c1o4, -c1o4);
+     vf::lbm::interpolateCF(icellF.BNE, omegaF, c1o2, coefficients,  c1o4,  c1o4, -c1o4);
+     vf::lbm::interpolateCF(icellF.TNW, omegaF, c1o2, coefficients, -c1o4,  c1o4,  c1o4);
+     vf::lbm::interpolateCF(icellF.TSE, omegaF, c1o2, coefficients,  c1o4, -c1o4,  c1o4);
+     vf::lbm::interpolateCF(icellF.BNW, omegaF, c1o2, coefficients, -c1o4,  c1o4, -c1o4);
+     vf::lbm::interpolateCF(icellF.BSE, omegaF, c1o2, coefficients,  c1o4, -c1o4, -c1o4);
+     vf::lbm::interpolateCF(icellF.TSW, omegaF, c1o2, coefficients, -c1o4, -c1o4,  c1o4);
+     vf::lbm::interpolateCF(icellF.TNE, omegaF, c1o2, coefficients,  c1o4,  c1o4,  c1o4);
 }
 
 void CompressibleOffsetMomentsInterpolator::interpolateFineToCoarse(D3Q27ICell& icellF, real* icellC, real xoff, real yoff, real zoff)

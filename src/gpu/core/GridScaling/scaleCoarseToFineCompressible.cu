@@ -33,6 +33,7 @@
 //=======================================================================================
 
 #include <basics/DataTypes.h>
+#include <basics/constants/NumericConstants.h>
 #include "Utilities/KernelUtilities.h"
 #include "cuda_helper/CudaIndexCalculation.h"
 #include "Utilities/ScalingUtilities.h"
@@ -41,7 +42,7 @@
 #include <lbm/interpolation/InterpolationCoefficients.h>
 #include <lbm/collision/TurbulentViscosity.h>
 
-
+using namespace vf::basics::constant;
 
 template <bool hasTurbulentViscosity> __device__ void interpolate(
     vf::lbm::InterpolationCoefficients& coefficients,

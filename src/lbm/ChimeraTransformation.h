@@ -37,8 +37,6 @@
 
 #include <basics/constants/NumericConstants.h>
 
-using namespace vf::basics::constant;
-
 namespace vf::lbm
 {
 
@@ -50,6 +48,8 @@ namespace vf::lbm
 ////////////////////////////////////////////////////////////////////////////////
 constexpr void forwardChimeraWithInverseK(real& mfa, real& mfb, real& mfc, real vv, real v2, real inverseK, real K)
 {
+    using namespace vf::basics::constant;
+
     const real m2 = mfa + mfc;
     const real m1 = mfc - mfa;
     real m0 = m2 + mfb;
@@ -69,6 +69,8 @@ constexpr void forwardChimeraWithInverseK(real& mfa, real& mfb, real& mfc, real 
 ////////////////////////////////////////////////////////////////////////////////
 constexpr void backwardChimeraWithInverseK(real& mfa, real& mfb, real& mfc, real vv, real v2, real inverseK, real K)
 {
+    using namespace vf::basics::constant;
+
     const real m0 = (((mfc - mfb) * c1o2 + mfb * vv) * inverseK + (mfa * inverseK + c1o1) * (v2 - vv) * c1o2) * K;
     const real m1 = (((mfa - mfc) - c2o1 * mfb * vv) * inverseK + (mfa * inverseK + c1o1) * (-v2)) * K;
 
@@ -86,6 +88,8 @@ constexpr void backwardChimeraWithInverseK(real& mfa, real& mfb, real& mfc, real
 ////////////////////////////////////////////////////////////////////////////////
 constexpr void forwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2)
 {
+    using namespace vf::basics::constant;
+
     const real m1 = (mfa + mfc) + mfb;
     const real m2 = mfc - mfa;
 
@@ -103,6 +107,8 @@ constexpr void forwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2)
 ////////////////////////////////////////////////////////////////////////////////
 constexpr void backwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2)
 {
+    using namespace vf::basics::constant;
+
     const real ma = (mfc + mfa * (v2 - vv)) * c1o2 + mfb * (vv - c1o2);
     const real mb = ((mfa - mfc) - mfa * v2) - c2o1 * mfb * vv;
 
@@ -113,6 +119,7 @@ constexpr void backwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2
 
 constexpr void forwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real K)
 {
+    using namespace vf::basics::constant;
 
     const real m2 = mfa + mfc;
     const real m1 = mfc - mfa;
@@ -128,6 +135,8 @@ constexpr void forwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, rea
 
 constexpr void backwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real K)
 {
+    using namespace vf::basics::constant;
+
     const real  m0 = (mfc - mfb)* c1o2 + mfb * (vv)+(mfa + K) * (v2 - vv) * c1o2;
     const real m1 = (mfa - mfc) - c2o1* mfb * vv + (mfa + K) * (-v2);
     mfc = (mfc + mfb)* c1o2 + mfb * (vv)+(mfa + K) * (v2 + vv) * c1o2;
