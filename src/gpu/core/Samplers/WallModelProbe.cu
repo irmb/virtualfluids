@@ -72,7 +72,6 @@ std::vector<std::string> WallModelProbe::getVariableNames()
     if (sampleSurfaceLayer) {
         variableNames.emplace_back("temperatureNode_spatialMean");
         variableNames.emplace_back("temperatureSample_spatialMean");
-        variableNames.emplace_back("frictionTemperature_spatialMean");
         variableNames.emplace_back("surfaceHeatFlux_spatialMean");
         variableNames.emplace_back("surfaceTemperature_spatialMean");
     }
@@ -91,7 +90,6 @@ std::vector<std::string> WallModelProbe::getVariableNames()
         if (sampleSurfaceLayer) {
             variableNames.emplace_back("temperatureNode_spatioTemporalMean");
             variableNames.emplace_back("temperatureSample_spatioTemporalMean");
-            variableNames.emplace_back("frictionTemperature_spatioTemporalMean");
             variableNames.emplace_back("surfaceHeatFlux_spatioTemporalMean");
             variableNames.emplace_back("surfaceTemperature_spatioTemporalMean");
         }
@@ -241,7 +239,6 @@ void WallModelProbe::calculateQuantities(WallModelProbe::LevelData* data, uint t
         const auto& temperatureWallModel = parD->surfaceLayerWallModel.temperatureParameters;
         computeAndSaveMean(temperatureWallModel.temperatureSample, nPoints, newInstantaneous, c1o1);
         computeAndSaveMean(temperatureWallModel.temperatureNode, nPoints, newInstantaneous, c1o1);
-        computeAndSaveMean(temperatureWallModel.temperatureScale, nPoints, newInstantaneous, c1o1);
         computeAndSaveMean(temperatureWallModel.surfaceHeatFlux, nPoints, newInstantaneous, velocityFactor);
         computeAndSaveMean(temperatureWallModel.surfaceTemperature, nPoints, newInstantaneous, c1o1);
     }

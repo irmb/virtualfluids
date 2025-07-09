@@ -1210,7 +1210,6 @@ void CudaMemoryManager::cudaCopyTemperatureWallModel(TemperatureWallModelParamet
     checkCudaErrors(cudaMemcpy(wallModelDevice.temperatureNode, wallModelHost.temperatureNode, memSize, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(wallModelDevice.surfaceHeatFlux, wallModelHost.surfaceHeatFlux, memSize, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(wallModelDevice.surfaceTemperature, wallModelHost.surfaceTemperature, memSize, cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(wallModelDevice.temperatureScale, wallModelHost.temperatureScale, memSize, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(wallModelDevice.roughnessLength, wallModelHost.roughnessLength, memSize, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(wallModelDevice.heatingRate, wallModelHost.heatingRate, memSize, cudaMemcpyHostToDevice));
 }
@@ -1222,7 +1221,6 @@ void CudaMemoryManager::cudaFreeTemperatureWallModel(TemperatureWallModelParamet
     checkCudaErrors(cudaFreeHost(wallModelHost.temperatureSample));
     checkCudaErrors(cudaFreeHost(wallModelHost.surfaceHeatFlux));
     checkCudaErrors(cudaFreeHost(wallModelHost.surfaceTemperature));
-    checkCudaErrors(cudaFreeHost(wallModelHost.temperatureScale));
     checkCudaErrors(cudaFreeHost(wallModelHost.roughnessLength));
     checkCudaErrors(cudaFreeHost(wallModelHost.heatingRate));
 
@@ -1230,7 +1228,6 @@ void CudaMemoryManager::cudaFreeTemperatureWallModel(TemperatureWallModelParamet
     checkCudaErrors(cudaFree(wallModelDevice.temperatureSample));
     checkCudaErrors(cudaFree(wallModelDevice.surfaceHeatFlux));
     checkCudaErrors(cudaFree(wallModelDevice.surfaceTemperature));
-    checkCudaErrors(cudaFree(wallModelDevice.temperatureScale));
     checkCudaErrors(cudaFree(wallModelDevice.roughnessLength));
     checkCudaErrors(cudaFree(wallModelDevice.heatingRate));
 }

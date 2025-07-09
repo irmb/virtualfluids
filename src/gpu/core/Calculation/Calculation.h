@@ -198,7 +198,6 @@ struct TemperatureWallModelParameters{
    real* temperatureSample;
    real* surfaceHeatFlux;
    real* surfaceTemperature;
-   real* temperatureScale;
    real* roughnessLength;
    real* heatingRate;
 };
