@@ -373,7 +373,6 @@ void run(const vf::basics::ConfigurationFile& config)
     planarAverageProbe->setFileNameToNOut();
     para->addSampler(planarAverageProbe);
 
-    para->setHasWallModelMonitor(true);
     auto wallModelProbe = std::make_shared<WallModelProbe>(para, cudaMemoryManager, para->getOutputPath(), "wallModelProbe",
                                                            0, tStartTmpAveraging / deltaT, 100, 0, 100, false, true, true,
                                                            false, useSurfaceLayer);

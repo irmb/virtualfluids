@@ -302,8 +302,6 @@ void run(const vf::basics::ConfigurationFile& config)
             true, para->getIsBodyForce(), false);
 
         para->addSampler(wallModelProbe);
-
-        para->setHasWallModelMonitor(true);
     }
 
     for (int iPlane = 0; iPlane < 3; iPlane++) {
