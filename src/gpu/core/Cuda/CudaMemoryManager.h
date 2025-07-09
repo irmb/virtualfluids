@@ -182,9 +182,9 @@ public:
     void cudaFreePrecursorBC(int lev);
     void cudaFreePrecursorData(int lev);
 
-    void cudaAllocWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice, uint numberOfNodes, bool hasWallModelMonitor);
+    void cudaAllocWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice, uint numberOfNodes);
     void cudaCopyWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice, uint numberOfNodes);
-    void cudaFreeWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice, bool hasWallModelMonitor);
+    void cudaFreeWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice);
 
     void cudaAllocTemperatureWallModel(TemperatureWallModelParameters& wallModelHost, TemperatureWallModelParameters& wallModelDevice, uint numberOfNodes);
     void cudaCopyTemperatureWallModel(TemperatureWallModelParameters& wallModelHost, TemperatureWallModelParameters& wallModelDevice, uint numberOfNodes);

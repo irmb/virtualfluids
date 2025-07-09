@@ -184,7 +184,6 @@ struct WallModelParameters
    real* samplingDistance;
    real* vonKarmanConstant;
    uint* samplingIndices;
-   bool hasMonitor;
    real* frictionVelocity;
    real* velocityMagnitudeNode;
    real* velocityMagnitudeSample;

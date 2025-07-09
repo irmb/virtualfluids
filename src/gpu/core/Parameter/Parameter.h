@@ -474,7 +474,6 @@ public:
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setUseTurbulentDiffusivity(bool useTurbulentDiffusivity);
     void setSGSConstant(real SGSConstant);
-    void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
     void setIsBodyForce(bool isBodyForce);
     void setAllNodesAllFeatures(bool allNodesAllFeatures);
@@ -700,7 +699,6 @@ public:
     bool getUseTurbulentViscosity();
     bool getUseTurbulentDiffusivity();
     real getSGSConstant();
-    bool getHasWallModelMonitor();
     bool getUseInitNeq();
     bool getIsBodyForce();
     double getMemsizeGPU();
@@ -798,7 +796,6 @@ private:
     bool turbulentDiffusivityEnabled{ false };
     bool isMeasurePoints{ false };
     bool isInitNeq{ false };
-    bool hasWallModelMonitor{ false };
 
     //! \property maximum level of grid refinement
     int maxlevel{ 0 };

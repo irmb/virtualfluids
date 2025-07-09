@@ -731,10 +731,6 @@ void Parameter::setSGSConstant(real SGSConstant)
 {
     this->SGSConstant = SGSConstant;
 }
-void Parameter::setHasWallModelMonitor(bool hasWallModelMonitor)
-{
-    this->hasWallModelMonitor = hasWallModelMonitor;
-}
 
 void Parameter::setIsBodyForce(bool isBodyForce)
 {
@@ -1774,10 +1770,6 @@ bool Parameter::getUseTurbulentDiffusivity()
 real Parameter::getSGSConstant()
 {
     return this->SGSConstant;
-}
-bool Parameter::getHasWallModelMonitor()
-{
-    return this->hasWallModelMonitor;
 }
 std::vector<SPtr<PreCollisionInteractor>> Parameter::getInteractors()
 {

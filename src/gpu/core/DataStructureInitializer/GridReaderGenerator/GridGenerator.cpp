@@ -350,7 +350,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
         auto& bcD = para->getParD(level)->stressBC;
         auto& wallModelD = para->getParD(level)->momentumWallModel;
         cudaMemoryManager->cudaAllocStressBC(level);
-        cudaMemoryManager->cudaAllocWallModel(wallModelH, wallModelD, numberOfStressValues, para->getHasWallModelMonitor());
+        cudaMemoryManager->cudaAllocWallModel(wallModelH, wallModelD, numberOfStressValues);
         builder->getStressValues(bcH.normalX, bcH.normalY, bcH.normalZ, bcH.k, wallModelH.samplingIndices,
                                  wallModelH.samplingDistance, wallModelH.vonKarmanConstant, wallModelH.roughnessLength,
                                  level);
@@ -376,8 +376,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
         auto& temperatureWallModelD = para->getParD(level)->surfaceLayerWallModel.temperatureParameters;
 
         cudaMemoryManager->cudaAllocSurfaceLayerBC(level);
-        cudaMemoryManager->cudaAllocWallModel(momentumWallModelH, momentumWallModelD, numberOfSurfaceLayerValues,
-                                              para->getHasWallModelMonitor());
+        cudaMemoryManager->cudaAllocWallModel(momentumWallModelH, momentumWallModelD, numberOfSurfaceLayerValues);
         cudaMemoryManager->cudaAllocTemperatureWallModel(temperatureWallModelH, temperatureWallModelD,
                                                          numberOfSurfaceLayerValues);
 
@@ -393,8 +392,6 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
         cudaMemoryManager->cudaCopyTemperatureWallModel(temperatureWallModelH, temperatureWallModelD,
                                                         numberOfSurfaceLayerValues);
 
-        momentumWallModelH.hasMonitor = para->getHasWallModelMonitor();
-        momentumWallModelD.hasMonitor = para->getHasWallModelMonitor();
 
         std::vector<uint> surfaceLayerIndices(momentumWallModelH.samplingIndices,
                                               momentumWallModelH.samplingIndices + numberOfSurfaceLayerValues);
