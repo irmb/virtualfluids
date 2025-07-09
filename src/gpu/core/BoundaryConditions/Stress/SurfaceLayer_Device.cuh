@@ -146,40 +146,28 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     ///////////////////////////////////////////////////////////
     // Compute stress and heat flux from wall model
     ///////////////////////////////////////////////////////////
-    real frictionVelocity = computeFrictionVelocity(velocitySampleMeanTangentialMagnitude, vonKarmanConstant,
-                                                    samplingDistance, roughnessLength, c0o1);
-    real temperatureScale = heatFluxBCtype == SurfaceLayerBC::SurfaceHeatFlux
-                                ? -temperatureWallModelParams.surfaceHeatFlux[nodeIndex] / frictionVelocity
-                                : computeFrictionVelocity(temperatureDifference, vonKarmanConstant, samplingDistance,
-                                                          roughnessLengthTemperature, c0o1);
+    real frictionVelocity = wallModelParams.frictionVelocity[nodeIndex];
+    real surfaceHeatFlux = temperatureWallModelParams.surfaceHeatFlux[nodeIndex];
 
-    bool converged = false;
     uint iteration = 0;
+    bool converged = false;
     do {
-        real stabilityParameter =
-            computeStabilityParameter(samplingDistance, temperatureParams.gravity, temperatureScale, frictionVelocity,
-                                        temperatureParams.referenceTemperature, vonKarmanConstant);
-        const auto stabilityCorrections = stabilityParameter > c0o1 ? computeStabilityCorrectionsStable(stabilityParameter) : computeStabilityCorrectionsUnstable(stabilityParameter);
-
-        const real newFrictionVelocity =
-            std::max(zero, computeFrictionVelocity(velocitySampleMeanTangentialMagnitude, vonKarmanConstant,
-                                                    samplingDistance, roughnessLength, stabilityCorrections.momentum));
-        const real newTemperatureScale =
-            computeFrictionVelocity(temperatureDifference, vonKarmanConstant, samplingDistance,
-                                    roughnessLengthTemperature, stabilityCorrections.temperature);
-
+        const real stabilityParameter =
+            computeStabilityParameter(samplingDistance, temperatureParams.gravity, surfaceHeatFlux, frictionVelocity,
+                                      temperatureParams.referenceTemperature, vonKarmanConstant);
+        const real stabilityCorrection = computeStabilityCorrectionMomentum(stabilityParameter);
+        const real frictionVelocityOld = frictionVelocity;
+        frictionVelocity = std::max(zero, computeFrictionVelocity(velocitySampleMeanTangentialMagnitude, vonKarmanConstant,
+            samplingDistance, roughnessLength, stabilityCorrection));
+        if (heatFluxBCtype == SurfaceLayerBC::SurfaceTemperature)
+            surfaceHeatFlux = computeSurfaceHeatFlux(temperatureDifference, frictionVelocity, vonKarmanConstant,
+                                                     samplingDistance, roughnessLengthTemperature,
+                                                     computeStabilityCorrectionTemperature(stabilityParameter));
         iteration++;
-        const bool velocityConverged =
-            std::abs(newFrictionVelocity - frictionVelocity) < convergenceCriteria * std::abs(frictionVelocity);
-        const bool temperatureConverged =
-            std::abs(newTemperatureScale - temperatureScale) < convergenceCriteria * std::abs(temperatureScale);
-        converged = velocityConverged && temperatureConverged;
-        temperatureScale = newTemperatureScale;
-        frictionVelocity = newFrictionVelocity;
+        converged = std::abs(frictionVelocity - frictionVelocityOld) < convergenceCriteria * std::abs(frictionVelocityOld);
     } while ((iteration < maxIter) && !converged);
 
-    const real surfaceHeatFlux = -temperatureScale * frictionVelocity;
-
+    wallModelParams.frictionVelocity[nodeIndex] = frictionVelocity;
     if (heatFluxBCtype == SurfaceLayerBC::SurfaceTemperature)
         temperatureWallModelParams.surfaceHeatFlux[nodeIndex] = surfaceHeatFlux;
 
@@ -221,16 +209,12 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     if (!useDelayedBounceBack)
         populationReferences = vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes,
                                                                     !gridParams.isEvenTimestep);
-    wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack,
-                                                            fakeWallVelocity, density, listIndices);
+    wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity, density,
+                                         listIndices);
 
-    if (wallModelParams.hasMonitor) {
-        wallModelParams.frictionVelocity[nodeIndex] = frictionVelocity;
-        temperatureWallModelParams.temperatureScale[nodeIndex] = temperatureScale;
-        wallModelParams.forceX[nodeIndex] = wallMomentum.x;
-        wallModelParams.forceY[nodeIndex] = wallMomentum.y;
-        wallModelParams.forceZ[nodeIndex] = wallMomentum.z;
-    }
+    wallModelParams.forceX[nodeIndex] = wallMomentum.x;
+    wallModelParams.forceY[nodeIndex] = wallMomentum.y;
+    wallModelParams.forceZ[nodeIndex] = wallMomentum.z;
 
     ///////////////////////////////////////////////////////////
     // Apply Heat Flux Boundary Condition

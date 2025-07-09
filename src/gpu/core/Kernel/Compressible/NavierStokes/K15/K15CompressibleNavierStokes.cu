@@ -33,6 +33,8 @@
 
 #include "K15CompressibleNavierStokes_Device.cuh"
 
+#include <basics/constants/NumericConstants.h>
+
 #include "Parameter/Parameter.h"
 
 std::shared_ptr<K15CompressibleNavierStokes> K15CompressibleNavierStokes::getNewInstance(std::shared_ptr<Parameter> para, int level)
@@ -75,7 +77,7 @@ void K15CompressibleNavierStokes::run()
 }
 
 K15CompressibleNavierStokes::K15CompressibleNavierStokes(std::shared_ptr<Parameter> para, int level)
-    : KernelImp(para, level, c1o6)
+    : KernelImp(para, level, vf::basics::constant::c1o6)
 {
     this->para = para;
     this->level = level;

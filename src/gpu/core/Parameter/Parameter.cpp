@@ -53,9 +53,12 @@
 #include "StringUtilities/StringUtil.h"
 
 #include <basics/config/ConfigurationFile.h>
+#include <basics/constants/NumericConstants.h>
 
 #include <logger/Logger.h>
 #include "Cuda/CudaStreamManager.h"
+
+using namespace vf::basics::constant;
 
 Parameter::Parameter() : Parameter(1, 0, {}) {}
 
@@ -730,10 +733,6 @@ void Parameter::setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusio
 void Parameter::setSGSConstant(real SGSConstant)
 {
     this->SGSConstant = SGSConstant;
-}
-void Parameter::setHasWallModelMonitor(bool hasWallModelMonitor)
-{
-    this->hasWallModelMonitor = hasWallModelMonitor;
 }
 
 void Parameter::setIsBodyForce(bool isBodyForce)
@@ -1774,10 +1773,6 @@ bool Parameter::getUseTurbulentDiffusivity()
 real Parameter::getSGSConstant()
 {
     return this->SGSConstant;
-}
-bool Parameter::getHasWallModelMonitor()
-{
-    return this->hasWallModelMonitor;
 }
 std::vector<SPtr<PreCollisionInteractor>> Parameter::getInteractors()
 {

@@ -91,7 +91,7 @@ private:
     {
         uint numberOfQuantities = 6;
         if(evaluatePressureGradient) numberOfQuantities += 3;
-        if(sampleSurfaceLayer) numberOfQuantities += 5;
+        if(sampleSurfaceLayer) numberOfQuantities += 4;
         return numberOfQuantities;
     }
     void calculateQuantities(LevelData* levelData, uint t, int level);

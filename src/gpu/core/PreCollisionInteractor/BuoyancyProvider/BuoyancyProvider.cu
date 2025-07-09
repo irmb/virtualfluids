@@ -38,6 +38,7 @@
 #include <helper_cuda.h>
 
 #include <basics/DataTypes.h>
+#include <basics/constants/NumericConstants.h>
 
 #include <parallel/MPICommunicator.h>
 
@@ -49,6 +50,8 @@
 #include "gpu/core/Cuda/CudaStreamManager.h"
 #include "gpu/core/DataStructureInitializer/GridProvider.h"
 #include "gpu/core/Parameter/Parameter.h"
+
+using namespace vf::basics::constant;
 
 constexpr uint getPlaneIndex(uint nodeIndex, const uint* referenceIndices)
 {

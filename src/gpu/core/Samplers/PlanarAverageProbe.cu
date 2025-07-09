@@ -179,6 +179,8 @@ std::vector<std::string> PlanarAverageProbe::getVariableNames(Statistic statisti
                 variableNames.emplace_back(getName("EddyViscosity", namesForTimeAverages));
             if (sampleScalar)
                 variableNames.emplace_back(getName("phi", namesForTimeAverages));
+            if (sampleScalar && para->getUseTurbulentViscosity())
+                variableNames.emplace_back(getName("EddyDiffusivity", namesForTimeAverages));
             break;
         case Statistic::Covariances:
             variableNames.emplace_back(getName("vxvx", namesForTimeAverages));
@@ -192,6 +194,7 @@ std::vector<std::string> PlanarAverageProbe::getVariableNames(Statistic statisti
                 variableNames.emplace_back(getName("vxphi", namesForTimeAverages));
                 variableNames.emplace_back(getName("vyphi", namesForTimeAverages));
                 variableNames.emplace_back(getName("vzphi", namesForTimeAverages));
+                
             }
             break;
         case Statistic::Skewness:
@@ -461,7 +464,8 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
         getPermutationIterators(parameter->turbulentViscosity, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
     const auto phi =
         getPermutationIterators(parameter->concentration, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
-
+    const auto turbulentDiffusivity =
+        getPermutationIterators(parameter->turbulentDiffusivity, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
     std::vector<real> averages;
 
     if (!isStatisticIn(Statistic::Means, statistics))
@@ -479,6 +483,8 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
         averages.push_back(computeMean(turbulentViscosity, invNPointsPerPlane) * viscosityRatio);
     if (sampleScalar)
         averages.push_back(means.phi);
+    if(sampleScalar && para->getUseTurbulentViscosity())
+        averages.push_back(computeMean(turbulentDiffusivity, invNPointsPerPlane)* viscosityRatio);
 
     if (!isStatisticIn(Statistic::Covariances, statistics))
         return averages;

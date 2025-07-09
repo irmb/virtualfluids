@@ -40,6 +40,8 @@
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 #include <GridGenerator/utilities/math/Math.h>
 
+#include <basics/constants/NumericConstants.h>
+
 #include <parallel/Communicator.h>
 
 #include <logger/Logger.h>
@@ -55,6 +57,7 @@
 #include "BoundaryConditions/BoundaryConditionFactory.h"
 
 using namespace vf::lbm::dir;
+using namespace vf::basics::constant;
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para,
                              std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator)
@@ -350,7 +353,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
         auto& bcD = para->getParD(level)->stressBC;
         auto& wallModelD = para->getParD(level)->momentumWallModel;
         cudaMemoryManager->cudaAllocStressBC(level);
-        cudaMemoryManager->cudaAllocWallModel(wallModelH, wallModelD, numberOfStressValues, para->getHasWallModelMonitor());
+        cudaMemoryManager->cudaAllocWallModel(wallModelH, wallModelD, numberOfStressValues);
         builder->getStressValues(bcH.normalX, bcH.normalY, bcH.normalZ, bcH.k, wallModelH.samplingIndices,
                                  wallModelH.samplingDistance, wallModelH.vonKarmanConstant, wallModelH.roughnessLength,
                                  level);
@@ -376,8 +379,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
         auto& temperatureWallModelD = para->getParD(level)->surfaceLayerWallModel.temperatureParameters;
 
         cudaMemoryManager->cudaAllocSurfaceLayerBC(level);
-        cudaMemoryManager->cudaAllocWallModel(momentumWallModelH, momentumWallModelD, numberOfSurfaceLayerValues,
-                                              para->getHasWallModelMonitor());
+        cudaMemoryManager->cudaAllocWallModel(momentumWallModelH, momentumWallModelD, numberOfSurfaceLayerValues);
         cudaMemoryManager->cudaAllocTemperatureWallModel(temperatureWallModelH, temperatureWallModelD,
                                                          numberOfSurfaceLayerValues);
 
@@ -393,8 +395,6 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
         cudaMemoryManager->cudaCopyTemperatureWallModel(temperatureWallModelH, temperatureWallModelD,
                                                         numberOfSurfaceLayerValues);
 
-        momentumWallModelH.hasMonitor = para->getHasWallModelMonitor();
-        momentumWallModelD.hasMonitor = para->getHasWallModelMonitor();
 
         std::vector<uint> surfaceLayerIndices(momentumWallModelH.samplingIndices,
                                               momentumWallModelH.samplingIndices + numberOfSurfaceLayerValues);

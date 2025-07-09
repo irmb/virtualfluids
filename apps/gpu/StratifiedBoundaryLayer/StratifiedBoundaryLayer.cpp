@@ -333,6 +333,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setTimestepOut(uint(tOut / deltaT));
     para->setTimestepEnd(uint(tEnd / deltaT));
     para->setGravity(gravity * deltaT * deltaT / deltaX);
+    para->setReferenceTemperature(referenceTemperature);
     para->setBuoyancyFactor(para->getGravity() / referenceTemperature);
 
     // Advection Diffusion
@@ -373,7 +374,6 @@ void run(const vf::basics::ConfigurationFile& config)
     planarAverageProbe->setFileNameToNOut();
     para->addSampler(planarAverageProbe);
 
-    para->setHasWallModelMonitor(true);
     auto wallModelProbe = std::make_shared<WallModelProbe>(para, cudaMemoryManager, para->getOutputPath(), "wallModelProbe",
                                                            0, tStartTmpAveraging / deltaT, 100, 0, 100, false, true, true,
                                                            false, useSurfaceLayer);

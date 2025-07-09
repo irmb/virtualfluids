@@ -162,12 +162,11 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
         wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity,
                                              density, listIndices);
 
-    if (wallModelParams.hasMonitor) {
-        wallModelParams.frictionVelocity[nodeIndex] = frictionVelocity;
-        wallModelParams.forceX[nodeIndex] = wallMomentum.x;
-        wallModelParams.forceY[nodeIndex] = wallMomentum.y;
-        wallModelParams.forceZ[nodeIndex] = wallMomentum.z;
-    }
+    wallModelParams.frictionVelocity[nodeIndex] = frictionVelocity;
+    wallModelParams.forceX[nodeIndex] = wallMomentum.x;
+    wallModelParams.forceY[nodeIndex] = wallMomentum.y;
+    wallModelParams.forceZ[nodeIndex] = wallMomentum.z;
+    
 }
 #endif
 
