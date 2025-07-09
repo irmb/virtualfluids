@@ -53,8 +53,6 @@
 #define KERNEL_ABS std::abs // constexpr since C++23, so if switching to C++23, std::abs can be used directly also in cuda code
 #endif
 
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
 
 namespace vf::lbm
 {
@@ -81,6 +79,9 @@ namespace vf::lbm
 template <TurbulenceModel turbulenceModel>
 constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, MacroscopicValues& macroscopicValues, TurbulentViscosity& turbulentViscosity)
 {
+    using namespace vf::basics::constant;
+    using namespace dir;
+
     auto& distribution = parameter.distribution;
 
     real& f000 = distribution[d000];

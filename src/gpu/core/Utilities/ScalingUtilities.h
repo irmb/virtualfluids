@@ -36,16 +36,11 @@
 
 #include "Utilities/KernelUtilities.h"
 
-#include <basics/constants/NumericConstants.h>
-
 #include <lbm/constants/D3Q27.h>
 #include <basics/DataTypes.h>
 
 #include <lbm/interpolation/InterpolationCoefficients.h>
 #include <lbm/collision/TurbulentViscosity.h>
-
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
 
 namespace vf::gpu
 {

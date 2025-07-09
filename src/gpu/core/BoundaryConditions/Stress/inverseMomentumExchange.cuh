@@ -45,6 +45,8 @@
 
 constexpr void findCutLinks(bool* linkIsCut, const SubgridDistances27& subgridDistances, const uint nodeIndex)
 {
+    using namespace vf::basics::constant;
+    using namespace vf::lbm::dir;
     forEachNonRestDirection([&](auto dir) {
         const real subgridDistance = (subgridDistances.q[dir])[nodeIndex];
         linkIsCut[dir] = subgridDistance >= c0o1 && subgridDistance <= c1o1;
@@ -54,6 +56,9 @@ constexpr void findCutLinks(bool* linkIsCut, const SubgridDistances27& subgridDi
 constexpr void computeBouncedBackDistributionsBB(const SubgridDistances27& subgridDistances, const real* populations,
                                                  bool* linkIsCut, real* populationsBouncedBack, const uint nodeIndex)
 {
+    using namespace vf::basics::constant;
+    using namespace vf::lbm::dir;
+
     findCutLinks(linkIsCut, subgridDistances, nodeIndex);
 
     forEachNonRestDirection([&](auto dir) {
@@ -68,6 +73,8 @@ constexpr void computeBouncedBackDistributionsBBPressure(const SubgridDistances2
                                                          const real* populations, bool* linkIsCut,
                                                          real* populationsBouncedBack, const uint nodeIndex)
 {
+    using namespace vf::lbm::dir;
+
     findCutLinks(linkIsCut, subgridDistances, nodeIndex);
 
     forEachNonRestDirection([&](auto dir) {
@@ -83,6 +90,7 @@ constexpr void computeBouncedBackDistributionsInterpolated(const SubgridDistance
                                                            real relaxationFrequency, const real* populations,
                                                            bool* linkIsCut, real* populationsBouncedBack, uint nodeIndex)
 {
+    using namespace vf::basics::constant;
     using namespace vf::lbm::dir;
     forEachNonRestDirection([&](auto dir) {
         using namespace vf::lbm::dir;
@@ -130,6 +138,7 @@ inline __device__ real3 computeFakeWallVelocity(const real3 wallNormal, const re
                                                 const real interpolationFactor, const real wallArea,
                                                 const real3 wallMomentum)
 {
+    using namespace vf::basics::constant;
 
     const real3 wallModelForce = wallShearStress * wallArea;
     const real3 wallParallelMomentum = wallMomentum - wallNormal * dot(wallMomentum, wallNormal);
@@ -152,6 +161,7 @@ constexpr real3 writeDistributionsBB(const Distributions27& populationReferences
                                      const real* populationsBouncedBack, const real3 velocity, const real density,
                                      const vf::gpu::ListIndices& listIndices)
 {
+    using namespace vf::basics::constant;
     using namespace vf::lbm::dir;
 
     real3 wallMomentumAdded {};
@@ -175,6 +185,7 @@ constexpr real3 writeDistributionsInterpolatedBB(const Distributions27& populati
                                                  const real density, const SubgridDistances27& subgridDistances,
                                                  const vf::gpu::ListIndices& listIndices, const uint nodeIndex)
 {
+    using namespace vf::basics::constant;
     using namespace vf::lbm::dir;
 
     real3 wallMomentumAdded {};
