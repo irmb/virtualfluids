@@ -53,9 +53,12 @@
 #include "StringUtilities/StringUtil.h"
 
 #include <basics/config/ConfigurationFile.h>
+#include <basics/constants/NumericConstants.h>
 
 #include <logger/Logger.h>
 #include "Cuda/CudaStreamManager.h"
+
+using namespace vf::basics::constant;
 
 Parameter::Parameter() : Parameter(1, 0, {}) {}
 

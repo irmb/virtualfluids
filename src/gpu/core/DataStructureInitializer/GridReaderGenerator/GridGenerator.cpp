@@ -40,6 +40,8 @@
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 #include <GridGenerator/utilities/math/Math.h>
 
+#include <basics/constants/NumericConstants.h>
+
 #include <parallel/Communicator.h>
 
 #include <logger/Logger.h>
@@ -55,6 +57,7 @@
 #include "BoundaryConditions/BoundaryConditionFactory.h"
 
 using namespace vf::lbm::dir;
+using namespace vf::basics::constant;
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para,
                              std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator)
