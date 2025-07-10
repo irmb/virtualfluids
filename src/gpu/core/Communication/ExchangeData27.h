@@ -67,7 +67,7 @@ void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex s
 //! \param sendProcessNeighborHost is a reference to the send buffer on the host, nodes are copied to here
 void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeNodes,
                    std::vector<ProcessNeighbor27>& recvProcessNeighborsHost,
-                   std::vector<ProcessNeighbor27>& sendProcessNeighborsHost);
+                   std::vector<ProcessNeighbor27>& sendProcessNeighborsHost, bool diffOn);
 //! \brief Exchange routine for simulations on multiple gpus
 //! \details Send and receive the nodes from the communication buffers on the gpus.
 //! \param Communicator is needed for the communication between the processes with mpi

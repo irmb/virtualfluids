@@ -347,8 +347,8 @@ template <size_t direction>
 constexpr real readFromSameDirection(const vf::gpu::ListIndices& listIndices,
                                        const Distributions27& populationReferences)
 {
-    const uint writeIndex = listIndices.getIndex<direction>();
-    return (populationReferences.f[direction])[writeIndex];
+    const uint readIndex = listIndices.getIndex<direction>();
+    return (populationReferences.f[direction])[readIndex];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

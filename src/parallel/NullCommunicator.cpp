@@ -47,183 +47,78 @@ std::shared_ptr<Communicator> NullCommunicator::getInstance()
     return instance;
 }
 //////////////////////////////////////////////////////////////////////////
-double NullCommunicator::Wtime()
-{
-    return 0;
-}
+double NullCommunicator::Wtime() { return 0; }
 //////////////////////////////////////////////////////////////////////////
-int NullCommunicator::getBundleID() const
-{
-    return 0;
-}
+int NullCommunicator::getBundleID() const { return 0; }
 //////////////////////////////////////////////////////////////////////////
-int NullCommunicator::getNumberOfBundles() const
-{
-    return 0;
-}
+int NullCommunicator::getNumberOfBundles() const { return 0; }
 //////////////////////////////////////////////////////////////////////////
-int NullCommunicator::getProcessID() const
-{
-    return 0;
-}
+int NullCommunicator::getProcessID() const { return 0; }
 //////////////////////////////////////////////////////////////////////////
-int NullCommunicator::getNumberOfProcesses() const
-{
-    return 1;
-}
+int NullCommunicator::getNumberOfProcesses() const { return 1; }
 //////////////////////////////////////////////////////////////////////////
-void *NullCommunicator::getNativeCommunicator()
-{
-    return NULL;
-}
+void *NullCommunicator::getNativeCommunicator() { return NULL; }
 //////////////////////////////////////////////////////////////////////////
-int NullCommunicator::getRoot() const
-{
-    return 0;
-}
+int NullCommunicator::getRoot() const { return 0; }
 //////////////////////////////////////////////////////////////////////////
-int NullCommunicator::getBundleRoot() const
-{
-    return 0;
-}
+int NullCommunicator::getBundleRoot() const { return 0; }
 //////////////////////////////////////////////////////////////////////////
-int NullCommunicator::getProcessRoot() const
-{
-    return 0;
-}
+int NullCommunicator::getProcessRoot() const { return 0; }
 //////////////////////////////////////////////////////////////////////////
-std::vector<std::string> NullCommunicator::gather(const std::string & /*str*/)
-{
-    return {};
-}
+std::vector<std::string> NullCommunicator::gather(const std::string & /*str*/) { return {}; }
 //////////////////////////////////////////////////////////////////////////
 
-void NullCommunicator::sendSerializedObject(std::stringstream &stream, int target)
-{
-}
+void NullCommunicator::sendSerializedObject(std::stringstream &stream, int target){}
 //////////////////////////////////////////////////////////////////////////
-void NullCommunicator::receiveSerializedObject(std::stringstream &stream, int source)
-{
-}
+void NullCommunicator::receiveSerializedObject(std::stringstream &stream, int source){}
 
-int NullCommunicator::getProcessID(int bundle, int rank) const
-{
-    return 0;
-}
-bool NullCommunicator::isRoot() const
-{
-    return true;
-}
+int NullCommunicator::getProcessID(int bundle, int rank) const { return 0; }
+bool NullCommunicator::isRoot() const { return true; }
 
-int NullCommunicator::getNumberOfProcessesInBundle(int bundle) const
-{
-    return 0;
-}
-void NullCommunicator::barrier()
-{
-}
-void NullCommunicator::abort(int errorcode)
-{
-}
+int NullCommunicator::getNumberOfProcessesInBundle(int bundle) const {return 0; }
+void NullCommunicator::barrier(){}
+void NullCommunicator::abort(int errorcode){}
 
-std::vector<int> NullCommunicator::gather(std::vector<int> &values)
-{
-    return {};
-}
-std::vector<float> NullCommunicator::gather(std::vector<float> &values)
-{
-    return {};
-}
-std::vector<double> NullCommunicator::gather(std::vector<double> &values)
-{
-    return {};
-}
-std::vector<unsigned long long> NullCommunicator::gather(std::vector<unsigned long long> &values)
-{
-    return {};
-}
+std::vector<int> NullCommunicator::gather(std::vector<int> &values) { return {}; }
+std::vector<float> NullCommunicator::gather(std::vector<float> &values) { return {}; }
+std::vector<double> NullCommunicator::gather(std::vector<double> &values) { return {}; }
+std::vector<unsigned long long> NullCommunicator::gather(std::vector<unsigned long long> &values) { return {}; }
 
-void NullCommunicator::allGather(std::vector<int> &svalues, std::vector<int> &rvalues)
-{
-}
-void NullCommunicator::allGather(std::vector<float> &svalues, std::vector<float> &rvalues)
-{
-}
-void NullCommunicator::allGather(std::vector<double> &svalues, std::vector<double> &rvalues)
-{
-}
-void NullCommunicator::allGather(std::vector<unsigned long long> &svalues, std::vector<unsigned long long> &rvalues)
-{
-}
-void NullCommunicator::allGather(std::vector<uint> &svalues, std::vector<uint> &rvalues)
-{
-}
-void NullCommunicator::allReduceSum(std::vector<float>& svalues) {};
-void NullCommunicator::allReduceSum(std::vector<double>& svalues) {};
-void NullCommunicator::allReduceSum(std::vector<uint>& svalues) {};
-void NullCommunicator::broadcast(int &value)
-{
-}
-void NullCommunicator::broadcast(float &value)
-{
-}
-void NullCommunicator::broadcast(double &value)
-{
-}
-void NullCommunicator::broadcast(long int &value)
-{
-}
-void NullCommunicator::broadcast(std::vector<int> &values)
-{
-}
-void NullCommunicator::broadcast(std::vector<float> &values)
-{
-}
-void NullCommunicator::broadcast(std::vector<double> &values)
-{
-}
-void NullCommunicator::broadcast(std::vector<long int> &values)
-{
-}
+void NullCommunicator::allGather(std::vector<int> &svalues, std::vector<int> &rvalues){}
+void NullCommunicator::allGather(std::vector<float> &svalues, std::vector<float> &rvalues){}
+void NullCommunicator::allGather(std::vector<double> &svalues, std::vector<double> &rvalues){}
+void NullCommunicator::allGather(std::vector<unsigned long long> &svalues, std::vector<unsigned long long> &rvalues){}
+void NullCommunicator::allGather(std::vector<uint> &svalues, std::vector<uint> &rvalues){}
+void NullCommunicator::allReduceSum(std::vector<float>& svalues) {}
+void NullCommunicator::allReduceSum(std::vector<double>& svalues) {}
+void NullCommunicator::allReduceSum(std::vector<uint>& svalues) {}
+void NullCommunicator::broadcast(int &value){}
+void NullCommunicator::broadcast(float &value){}
+void NullCommunicator::broadcast(double &value){}
+void NullCommunicator::broadcast(long int &value){}
+void NullCommunicator::broadcast(std::vector<int> &values){}
+void NullCommunicator::broadcast(std::vector<float> &values){}
+void NullCommunicator::broadcast(std::vector<double> &values){}
+void NullCommunicator::broadcast(std::vector<long int> &values){}
 
 void NullCommunicator::receiveSend(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
-                                   int size_buffer_send, int neighbor_rank_send) const
-{
-}
+                                   int size_buffer_send, int neighbor_rank_send) const{}
 
 void NullCommunicator::send(real *sbuf, int count_s, int nb_rank) const {};
-double NullCommunicator::reduceSum(double /*quantityPerProcess*/) const
-{
-    return 0.0;
-};
-int NullCommunicator::mapCudaDevicesOnHosts(const std::vector<unsigned int> &devices, int numberOfDevices) const
-{
-    return 0;
-}
+double NullCommunicator::reduceSum(double /*quantityPerProcess*/) const { return 0.0; };
+int NullCommunicator::mapCudaDevicesOnHosts(const std::vector<unsigned int> &devices, int numberOfDevices) const{ return 0; }
 
 void NullCommunicator::receiveSend(real *buffer_send, int size_buffer_send, real *buffer_receive, int size_buffer_recv,
-                                   int neighbor_rank) const
-{
-}
+                                   int neighbor_rank) const{}
 
-void NullCommunicator::receiveNonBlocking(real *rbuf, int count_r, int sourceRank)
-{
-}
-void NullCommunicator::sendNonBlocking(real *sbuf, int count_s, int destinationRank)
-{
-}
+void NullCommunicator::receiveNonBlocking(real *rbuf, int count_r, int sourceRank){}
+void NullCommunicator::sendNonBlocking(real *sbuf, int count_s, int destinationRank){}
 
-void NullCommunicator::send(real *sbuf, int count_s, int destinationRank)
-{
-}
+void NullCommunicator::send(real *sbuf, int count_s, int destinationRank){}
 
-void NullCommunicator::waitAll()
-{
-}
+void NullCommunicator::waitAll(){}
 
-void NullCommunicator::resetRequests()
-{
-}
+void NullCommunicator::resetRequests(){}
 } // namespace vf::parallel
 
 //! \}

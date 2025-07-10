@@ -117,7 +117,7 @@ IndexRearrangementForStreams::exchangeIndicesForCommAfterFtoC(ProcessNeighbor27&
 void IndexRearrangementForStreams::copyProcessNeighborToCommAfterFtoC(ProcessNeighbor27& neighbor,
                                                                       ProcessNeighbor27& neighborAfterFtoC) const
 {
-    neighborAfterFtoC.f[0] = neighbor.f[0];
+    neighborAfterFtoC.populations[0] = neighbor.populations[0];
     neighborAfterFtoC.index = neighbor.index;
     neighborAfterFtoC.rankNeighbor = neighbor.rankNeighbor;
 }

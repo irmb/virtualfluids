@@ -554,24 +554,24 @@ void CudaMemoryManager::cudaAllocProcessNeighbor(ProcessNeighbor27& sendNeighbor
 {
     // Host
     checkCudaErrors(cudaMallocHost((void**)&(sendNeighborHost.index), sendNeighborHost.memsizeIndex));
-    checkCudaErrors(cudaMallocHost((void**)&(sendNeighborHost.f[0]), sendNeighborHost.memsizeFs));
+    checkCudaErrors(cudaMallocHost((void**)&(sendNeighborHost.populations[0]), sendNeighborHost.memsizeFs));
     checkCudaErrors(cudaMallocHost((void**)&(recvNeighborHost.index), recvNeighborHost.memsizeIndex));
-    checkCudaErrors(cudaMallocHost((void**)&(recvNeighborHost.f[0]), recvNeighborHost.memsizeFs));
+    checkCudaErrors(cudaMallocHost((void**)&(recvNeighborHost.populations[0]), recvNeighborHost.memsizeFs));
 
     // Device
     checkCudaErrors(cudaMalloc((void**)&(sendNeighborDevice.index), sendNeighborDevice.memsizeIndex));
-    checkCudaErrors(cudaMalloc((void**)&(sendNeighborDevice.f[0]), sendNeighborDevice.memsizeFs));
+    checkCudaErrors(cudaMalloc((void**)&(sendNeighborDevice.populations[0]), sendNeighborDevice.memsizeFs));
     checkCudaErrors(cudaMalloc((void**)&(recvNeighborDevice.index), recvNeighborDevice.memsizeIndex));
-    checkCudaErrors(cudaMalloc((void**)&(recvNeighborDevice.f[0]), recvNeighborDevice.memsizeFs));
+    checkCudaErrors(cudaMalloc((void**)&(recvNeighborDevice.populations[0]), recvNeighborDevice.memsizeFs));
 
     double tmp = double(sendNeighborHost.memsizeIndex + sendNeighborHost.memsizeFs + recvNeighborHost.memsizeIndex +
                         recvNeighborHost.memsizeFs);
     if(parameter->getDiffOn())
     {
-        checkCudaErrors(cudaMallocHost((void**)&(sendNeighborHost.fAD[0]), sendNeighborHost.memsizeFs));
-        checkCudaErrors(cudaMallocHost((void**)&(recvNeighborHost.fAD[0]), recvNeighborHost.memsizeFs));
-        checkCudaErrors(cudaMalloc((void**)&(sendNeighborDevice.fAD[0]), sendNeighborDevice.memsizeFs));
-        checkCudaErrors(cudaMalloc((void**)&(recvNeighborDevice.fAD[0]), recvNeighborDevice.memsizeFs));
+        checkCudaErrors(cudaMallocHost((void**)&(sendNeighborHost.populationsAD[0]), sendNeighborHost.memsizeFs));
+        checkCudaErrors(cudaMallocHost((void**)&(recvNeighborHost.populationsAD[0]), recvNeighborHost.memsizeFs));
+        checkCudaErrors(cudaMalloc((void**)&(sendNeighborDevice.populationsAD[0]), sendNeighborDevice.memsizeFs));
+        checkCudaErrors(cudaMalloc((void**)&(recvNeighborDevice.populationsAD[0]), recvNeighborDevice.memsizeFs));
         tmp += sendNeighborDevice.memsizeFs + recvNeighborDevice.memsizeFs;
     }
     setMemsizeGPU(tmp, false);
@@ -588,44 +588,44 @@ void CudaMemoryManager::cudaCopyProcessNeighborIndex(ProcessNeighbor27& sendNeig
 void CudaMemoryManager::cudaFreeProcessNeighbor(ProcessNeighbor27& sendNeighborHost, ProcessNeighbor27& sendNeighborDevice, ProcessNeighbor27& recvNeighborHost, ProcessNeighbor27& recvNeighborDevice)
 {
     checkCudaErrors(cudaFreeHost(sendNeighborHost.index));
-    checkCudaErrors(cudaFreeHost(sendNeighborHost.f[0]));
+    checkCudaErrors(cudaFreeHost(sendNeighborHost.populations[0]));
     checkCudaErrors(cudaFreeHost(recvNeighborHost.index));
-    checkCudaErrors(cudaFreeHost(recvNeighborHost.f[0]));
+    checkCudaErrors(cudaFreeHost(recvNeighborHost.populations[0]));
     checkCudaErrors(cudaFree(sendNeighborDevice.index));
-    checkCudaErrors(cudaFree(sendNeighborDevice.f[0]));
+    checkCudaErrors(cudaFree(sendNeighborDevice.populations[0]));
     checkCudaErrors(cudaFree(recvNeighborDevice.index));
-    checkCudaErrors(cudaFree(recvNeighborDevice.f[0]));
+    checkCudaErrors(cudaFree(recvNeighborDevice.populations[0]));
     if(parameter->getDiffOn())
     {
-        checkCudaErrors(cudaFreeHost(sendNeighborHost.fAD[0]));
-        checkCudaErrors(cudaFreeHost(recvNeighborHost.fAD[0]));
-        checkCudaErrors(cudaFree(sendNeighborDevice.fAD[0]));
-        checkCudaErrors(cudaFree(recvNeighborDevice.fAD[0]));
+        checkCudaErrors(cudaFreeHost(sendNeighborHost.populationsAD[0]));
+        checkCudaErrors(cudaFreeHost(recvNeighborHost.populationsAD[0]));
+        checkCudaErrors(cudaFree(sendNeighborDevice.populationsAD[0]));
+        checkCudaErrors(cudaFree(recvNeighborDevice.populationsAD[0]));
     }
 }
 
 void CudaMemoryManager::cudaCopyProcessNeighborFsHtoD(ProcessNeighbor27* neighborHost, ProcessNeighbor27* neighborDevice)
 {
     if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder)) {
-        checkCudaErrors(cudaMemcpy(neighborDevice->f[0], neighborHost->f[0], neighborDevice->memsizeFs, cudaMemcpyHostToDevice));
+        checkCudaErrors(cudaMemcpy(neighborDevice->populations[0], neighborHost->populations[0], neighborDevice->memsizeFs, cudaMemcpyHostToDevice));
         if (parameter->getDiffOn())
-            checkCudaErrors(cudaMemcpy(neighborDevice->fAD[0], neighborHost->fAD[0], neighborDevice->memsizeFs, cudaMemcpyHostToDevice));
-        checkCudaErrors(cudaMemcpyAsync(neighborDevice->f[0], neighborHost->f[0], neighborDevice->memsizeFs,cudaMemcpyHostToDevice,parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
+            checkCudaErrors(cudaMemcpy(neighborDevice->populationsAD[0], neighborHost->populationsAD[0], neighborDevice->memsizeFs, cudaMemcpyHostToDevice));
+        checkCudaErrors(cudaMemcpyAsync(neighborDevice->populations[0], neighborHost->populations[0], neighborDevice->memsizeFs,cudaMemcpyHostToDevice,parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
         if (parameter->getDiffOn()) {
-            checkCudaErrors(cudaMemcpyAsync(neighborDevice->fAD[0], neighborHost->fAD[0], neighborDevice->memsizeFs,cudaMemcpyHostToDevice,parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
+            checkCudaErrors(cudaMemcpyAsync(neighborDevice->populationsAD[0], neighborHost->populationsAD[0], neighborDevice->memsizeFs,cudaMemcpyHostToDevice,parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
         }
     }
 }
 void CudaMemoryManager::cudaCopyProcessNeighborFsDtoH(ProcessNeighbor27* neighborHost, ProcessNeighbor27* neighborDevice)
 {
     if (!parameter->getStreamManager()->streamIsRegistered(CudaStreamIndex::SubDomainBorder)) {
-        checkCudaErrors(cudaMemcpy(neighborHost->f[0], neighborDevice->f[0], neighborDevice->memsizeFs, cudaMemcpyDeviceToHost));
+        checkCudaErrors(cudaMemcpy(neighborHost->populations[0], neighborDevice->populations[0], neighborDevice->memsizeFs, cudaMemcpyDeviceToHost));
         if (parameter->getDiffOn())
-            checkCudaErrors(cudaMemcpy(neighborHost->fAD[0], neighborDevice->fAD[0], neighborDevice->memsizeFs, cudaMemcpyDeviceToHost));
+            checkCudaErrors(cudaMemcpy(neighborHost->populationsAD[0], neighborDevice->populationsAD[0], neighborDevice->memsizeFs, cudaMemcpyDeviceToHost));
     } else {
-        checkCudaErrors(cudaMemcpyAsync(neighborHost->f[0], neighborDevice->f[0], neighborDevice->memsizeFs,cudaMemcpyDeviceToHost,parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
+        checkCudaErrors(cudaMemcpyAsync(neighborHost->populations[0], neighborDevice->populations[0], neighborDevice->memsizeFs,cudaMemcpyDeviceToHost,parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
         if (parameter->getDiffOn())
-            checkCudaErrors(cudaMemcpyAsync(neighborHost->fAD[0], neighborDevice->fAD[0], neighborDevice->memsizeFs,cudaMemcpyDeviceToHost,parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
+            checkCudaErrors(cudaMemcpyAsync(neighborHost->populationsAD[0], neighborDevice->populationsAD[0], neighborDevice->memsizeFs,cudaMemcpyDeviceToHost,parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
     }
 }
 
