@@ -86,11 +86,11 @@ void GridGenerator::initalGridInformations()
     para->setGridX(gridX);
     para->setGridY(gridY);
     para->setGridZ(gridZ);
+    
     if(para->getDiffOn())
-    {
-        para->setIsBodyForce(true);
         para->setAllNodesAllFeatures(true);
-    }
+    if(para->getAllNodesAllFeatures())
+        para->setIsBodyForce(true);
 
 }
 
