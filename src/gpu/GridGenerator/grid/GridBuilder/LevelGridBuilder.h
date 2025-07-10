@@ -250,8 +250,8 @@ public:
 
     virtual uint getNumberOfSendIndices(int direction, uint level) override;
     virtual uint getNumberOfReceiveIndices(int direction, uint level) override;
-    virtual void getSendIndices(int *sendIndices, int direction, int level) override;
-    virtual void getReceiveIndices(int *sendIndices, int direction, int level) override;
+    virtual void getSendIndices(uint *sendIndices, int direction, int level) override;
+    virtual void getReceiveIndices(uint *sendIndices, int direction, int level) override;
 
 
     // needed for CUDA Streams MultiGPU (Communication Hiding)

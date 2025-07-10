@@ -49,11 +49,11 @@ private:
     bool procNeighbor;
 
     std::vector< std::vector<std::vector<real> > >values;
-    std::vector< std::vector<unsigned int> >indices;
-    std::vector<unsigned int> levelSizes;
+    std::vector< std::vector<uint> >indices;
+    std::vector<uint> levelSizes;
 
     std::ifstream file;
-    unsigned int maxLevel;
+    uint maxLevel;
     
 public:
     BoundaryValues(std::string path);
@@ -61,12 +61,12 @@ public:
     BoundaryValues(int neighbor, std::shared_ptr<Parameter> para, std::string sor, std::string dir);
     ~BoundaryValues();
 
-    unsigned int getLevel();
-    unsigned int getSize(unsigned int level);
+    uint getLevel();
+    uint getSize(uint level);
     std::string getBoundaryCondition();
     void setBoundarys(std::vector<std::vector<std::vector<real> > > &qs) const;
-    void setValues(real* velo, unsigned int level, unsigned int column) const;
-    void initIndex(/*unsigned*/ int *ptr, unsigned int level);
+    void setValues(real* velo, uint level, uint column) const;
+    void initIndex(uint *ptr, uint level);
 
     void setProcNeighbor(bool pN);
     bool getProcNeighbor();
@@ -78,11 +78,11 @@ public:
 private:
     void init();
     int getNumberOfColumns();
-    void initalVectors(unsigned int maxColumn);
-    void readData(unsigned int level, int index, unsigned int maxColumn);
-    void resizeVectorsPerLevel(unsigned int level, unsigned int maxColumn);
+    void initalVectors(uint maxColumn);
+    void readData(uint level, int index, uint maxColumn);
+    void resizeVectorsPerLevel(uint level, uint maxColumn);
     void skipLine();
-    void readLevelSize(unsigned int level);
+    void readLevelSize(uint level);
     void initalVectorsWithSingleZero();
     void readNumberOfLevels();
     void readBC();

@@ -32,6 +32,7 @@
 #ifndef F16IncompressibleAdvectionDiffusion_H
 #define F16IncompressibleAdvectionDiffusion_H
 
+#include "Calculation/Calculation.h"
 #include "Kernel/AdvectionDiffusionKernel.h"
 #include <lbm/advectionDiffusion/TurbulentDiffusivity.h>
 
@@ -41,7 +42,7 @@ class F16IncompressibleAdvectionDiffusion : public AdvectionDiffusionKernel
 public:
     static std::shared_ptr<F16IncompressibleAdvectionDiffusion> getNewInstance(std::shared_ptr<Parameter> para, int level);
     void run() override;
-    void runOnIndicesAD(const uint* indices, uint size_indices, CudaStreamIndex streamIdx = CudaStreamIndex::Legacy) override;
+    void runOnIndices(const uint* indices, uint size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIdx = CudaStreamIndex::Legacy) override;
 
 private:
     F16IncompressibleAdvectionDiffusion() = default;

@@ -54,7 +54,7 @@ class ExchangeData27Test_CopyEdgeNodesXZTest : public testing::Test
 protected:
     SPtr<Parameter> para;
     int level    = 0;
-    int numNodes = 10;
+    uint numNodes = 10;
     std::vector<real> recvFs;
     std::vector<real> sendFs;
     std::vector<ProcessNeighbor27> sendProcessNeighborHost;
@@ -74,7 +74,7 @@ protected:
         para->getParH(level)->edgeNodesXtoZ.emplace_back(0, 7, 0, 8);
     }
 
-    void setUpRecvProcessNeighbors(int numberOfNodesInRecv)
+    void setUpRecvProcessNeighbors(uint numberOfNodesInRecv)
     {
         recvFs.resize(numberOfNodesInRecv);
         std::fill(recvFs.begin(), recvFs.end(), 0.5); // 0.5s should not be copied
@@ -87,24 +87,24 @@ protected:
         setUpFsByCopyingF0(recvFs, numberOfNodesInRecv);
 
         recvProcessNeighborHost.resize(1);
-        recvProcessNeighborHost[0].f[0]          = recvFs.data();
+        recvProcessNeighborHost[0].populations[0]          = recvFs.data();
         recvProcessNeighborHost[0].numberOfNodes = numberOfNodesInRecv;
     }
 
-    void setUpSendProcessNeighbors(int numberOfNodesInSend)
+    void setUpSendProcessNeighbors(uint numberOfNodesInSend)
     {
         sendFs.resize(27 * numberOfNodesInSend);
         std::fill(sendFs.begin(), sendFs.end(), 0.0);
 
         sendProcessNeighborHost.resize(1);
-        sendProcessNeighborHost[0].f[0]          = sendFs.data();
+        sendProcessNeighborHost[0].populations[0]          = sendFs.data();
         sendProcessNeighborHost[0].numberOfNodes = numberOfNodesInSend;
     }
 };
 
 TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAfterFtoC_recvVectorFullSize)
 {
-    int numNodesAfterFtoC = 5; // indexInSend < 5 --> mode is in AfterFToC
+    const uint numNodesAfterFtoC = 5; // indexInSend < 5 --> mode is in AfterFToC
     setUpRecvProcessNeighbors(numNodes);
     setUpSendProcessNeighbors(numNodesAfterFtoC);
 
@@ -115,18 +115,18 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAft
     setUpFsByCopyingF0(expectedFs, numNodesAfterFtoC);
 
     // act
-    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost);
+    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost, false);
 
     // convert result to std::vector
     std::vector<real> result;
-    result.assign(sendProcessNeighborHost[0].f[0], sendProcessNeighborHost[0].f[0] + 27 * numNodesAfterFtoC);
+    result.assign(sendProcessNeighborHost[0].populations[0], sendProcessNeighborHost[0].populations[0] + 27 * numNodesAfterFtoC);
 
     EXPECT_THAT(result, testing::Eq(expectedFs));
 }
 
 TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAfterFtoC_recvVectorShort)
 {
-    int numNodesAfterFtoC = 5; // indexInSend < 5 --> mode is in AfterFToC
+    const uint numNodesAfterFtoC = 5; // indexInSend < 5 --> mode is in AfterFToC
     setUpRecvProcessNeighbors(numNodesAfterFtoC);
     setUpSendProcessNeighbors(numNodesAfterFtoC);
 
@@ -137,11 +137,11 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicationAft
     setUpFsByCopyingF0(expectedFs, numNodesAfterFtoC);
 
     // act
-    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost);
+    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost, false);
 
     // convert result to std::vector
     std::vector<real> result;
-    result.assign(sendProcessNeighborHost[0].f[0], sendProcessNeighborHost[0].f[0] + 27 * numNodesAfterFtoC);
+    result.assign(sendProcessNeighborHost[0].populations[0], sendProcessNeighborHost[0].populations[0] + 27 * numNodesAfterFtoC);
 
     EXPECT_THAT(result, testing::Eq(expectedFs));
 }
@@ -160,11 +160,11 @@ TEST_F(ExchangeData27Test_CopyEdgeNodesXZTest, copyEdgeNodes_XZ_CommunicateAll)
     setUpFsByCopyingF0(expectedFs, numNodes);
 
     // act
-    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost);
+    copyEdgeNodes(para->getParH(level)->edgeNodesXtoZ, recvProcessNeighborHost, sendProcessNeighborHost, false);
 
     // convert result to std::vector
     std::vector<real> result;
-    result.assign(sendProcessNeighborHost[0].f[0], sendProcessNeighborHost[0].f[0] + 27 * numNodes);
+    result.assign(sendProcessNeighborHost[0].populations[0], sendProcessNeighborHost[0].populations[0] + 27 * numNodes);
 
     EXPECT_THAT(result, testing::Eq(expectedFs));
 }
