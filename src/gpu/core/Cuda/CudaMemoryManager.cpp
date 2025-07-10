@@ -46,6 +46,7 @@
 #include "Parameter/Parameter.h"
 #include "CudaStreamManager.h"
 #include "PreCollisionInteractor/Actuator/ActuatorFarm.h"
+#include "PreCollisionInteractor/BuoyancyProvider/BuoyancyProvider.h"
 #include "Samplers/Probe.h"
 #include "Samplers/PlanarAverageProbe.h"
 #include "Samplers/PrecursorWriter.h"
@@ -2199,17 +2200,99 @@ void CudaMemoryManager::cudaCopySphereIndicesHtoD(ActuatorFarm* actuatorFarm)
 
 void CudaMemoryManager::cudaFreeSphereIndices(ActuatorFarm* actuatorFarm)
 {
-    checkCudaErrors( cudaFreeHost(actuatorFarm->boundingSphereIndicesH) );
-    checkCudaErrors( cudaFree(actuatorFarm->boundingSphereIndicesD) );
+    checkCudaErrors(cudaFreeHost(actuatorFarm->boundingSphereIndicesH));
+    checkCudaErrors(cudaFree(actuatorFarm->boundingSphereIndicesD));
+}
+void CudaMemoryManager::cudaAllocBuoyancyProviderProfileParameters(BuoyancyProviderPlanarAverage* buoyancyProvider,
+                                                                   int level)
+{
+    auto& profileParameters = buoyancyProvider->getProfileParameter(level);
+    const size_t memSizeIndices = sizeof(size_t) * (profileParameters.numberOfPlanes + 1);
+    const size_t memSizeTemperature = sizeof(real) * profileParameters.numberOfPlanes;
+
+    checkCudaErrors(cudaMalloc(&profileParameters.indicesDevice, memSizeIndices));
+    checkCudaErrors(cudaMallocHost(&profileParameters.indicesHost, memSizeIndices));
+    checkCudaErrors(cudaMalloc(&profileParameters.referenceTemperaturesDevice, memSizeTemperature));
+    checkCudaErrors(cudaMallocHost(&profileParameters.referenceTemperaturesHost, memSizeTemperature));
+    setMemsizeGPU(memSizeIndices + memSizeTemperature, false);
 }
 
+void CudaMemoryManager::cudaCopyBuoyancyProviderProfileParametersHtoD(BuoyancyProviderPlanarAverage* buoyancyProvider,
+                                                                      int level)
+{
+    auto& profileParameters = buoyancyProvider->getProfileParameter(level);
+    checkCudaErrors(cudaMemcpy(profileParameters.indicesDevice, profileParameters.indicesHost,
+                               sizeof(size_t) * (profileParameters.numberOfPlanes + 1), cudaMemcpyHostToDevice));
+}
+
+void CudaMemoryManager::cudaCopyBuoyancyProviderReferenceTemperaturesDtoHAsync(
+    BuoyancyProviderPlanarAverage* buoyancyProvider, int level)
+{
+    auto& profileParams = buoyancyProvider->getProfileParameter(level);
+    auto* stream = parameter->getStreamManager()->getStream(CudaStreamIndex::BuoyancyProvider);
+    
+    checkCudaErrors(cudaMemcpyAsync(profileParams.referenceTemperaturesHost, profileParams.referenceTemperaturesDevice,
+                                    profileParams.numberOfPlanes, cudaMemcpyDeviceToHost, stream));
+}
+void CudaMemoryManager::cudaCopyBuoyancyProviderReferenceTemperaturesHtoDAsync(
+    BuoyancyProviderPlanarAverage* buoyancyProvider, int level)
+{
+    auto& profileParams = buoyancyProvider->getProfileParameter(level);
+    auto* stream = parameter->getStreamManager()->getStream(CudaStreamIndex::BuoyancyProvider);
+    
+    checkCudaErrors(cudaMemcpyAsync(profileParams.referenceTemperaturesDevice, profileParams.referenceTemperaturesHost,
+                                    profileParams.numberOfPlanes, cudaMemcpyHostToDevice, stream));
+}
+
+void CudaMemoryManager::cudaFreeBuoyancyProviderProfileParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level)
+{
+    auto& profileParameters = buoyancyProvider->getProfileParameter(level);
+
+    checkCudaErrors(cudaFree(profileParameters.referenceTemperaturesDevice));
+    checkCudaErrors(cudaFreeHost(profileParameters.referenceTemperaturesHost));
+    checkCudaErrors(cudaFree(profileParameters.indicesDevice));
+    checkCudaErrors(cudaFreeHost(profileParameters.indicesHost));
+}
+
+void CudaMemoryManager::cudaAllocBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider,
+                                                                     int level)
+{
+    auto& reductionParameters = buoyancyProvider->getReductionParameter(level);
+    const size_t memSize = sizeof(uint) * reductionParameters.numberOfPlanes;
+
+    checkCudaErrors(cudaMallocHost(&reductionParameters.numberOfNodesPerPlaneHost, memSize));
+    checkCudaErrors(cudaMalloc(&reductionParameters.numberOfNodesPerPlaneDevice, memSize));
+    checkCudaErrors(cudaMalloc(&reductionParameters.temporaryMemory, reductionParameters.sizeOfTemporaryMemory));
+
+    setMemsizeGPU(reductionParameters.sizeOfTemporaryMemory + memSize, false);
+}
+
+void CudaMemoryManager::cudaCopyBuoyancyProviderReductionParametersHtoD(BuoyancyProviderPlanarAverage* buoyancyProvider,
+                                                                        int level)
+{
+    auto& reductionParameters = buoyancyProvider->getReductionParameter(level);
+
+    checkCudaErrors(cudaMemcpy(reductionParameters.numberOfNodesPerPlaneDevice,
+                               reductionParameters.numberOfNodesPerPlaneHost,
+                               sizeof(uint) * reductionParameters.numberOfPlanes, cudaMemcpyHostToDevice));
+}
+
+void CudaMemoryManager::cudaFreeBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider,
+                                                                    int level)
+{
+    auto& reductionParameters = buoyancyProvider->getReductionParameter(level);
+
+    checkCudaErrors(cudaFree(reductionParameters.temporaryMemory));
+    checkCudaErrors(cudaFree(reductionParameters.numberOfNodesPerPlaneDevice));
+    checkCudaErrors(cudaFreeHost(reductionParameters.numberOfNodesPerPlaneHost));
+}
 ////////////////////////////////////////////////////////////////////////////////////
 //  Probe
 ///////////////////////////////////////////////////////////////////////////////
 void CudaMemoryManager::cudaAllocProbeData(Probe* probe, int level)
 {
-    auto probeDataH = &probe->getLevelData(level)->probeDataH;
-    auto probeDataD = &probe->getLevelData(level)->probeDataD;
+    auto* probeDataH = &probe->getLevelData(level)->probeDataH;
+    auto* probeDataD = &probe->getLevelData(level)->probeDataD;
     const size_t sizeData = sizeof(real)*probeDataH->numberOfPoints*probeDataH->numberOfTimesteps*probeDataH->numberOfQuantities;
     const size_t sizeIndices = sizeof(uint)*probeDataH->numberOfPoints;
     size_t totalSize = sizeIndices;
@@ -2241,8 +2324,8 @@ void CudaMemoryManager::cudaAllocProbeData(Probe* probe, int level)
 
 void CudaMemoryManager::cudaCopyProbeDataHtoD(Probe* probe, int level)
 {
-    auto probeDataH = &probe->getLevelData(level)->probeDataH;
-    auto probeDataD = &probe->getLevelData(level)->probeDataD;
+    auto* probeDataH = &probe->getLevelData(level)->probeDataH;
+    auto* probeDataD = &probe->getLevelData(level)->probeDataD;
     const size_t sizeData = sizeof(real)*probeDataH->numberOfPoints*probeDataH->numberOfTimesteps*probeDataH->numberOfQuantities;
     const size_t sizeIndices = sizeof(uint)*probeDataH->numberOfPoints;
 
@@ -2264,8 +2347,8 @@ void CudaMemoryManager::cudaCopyProbeDataHtoD(Probe* probe, int level)
 
 void CudaMemoryManager::cudaCopyProbeDataDtoH(Probe* probe, int level)
 {
-    auto probeDataH = &probe->getLevelData(level)->probeDataH;
-    auto probeDataD = &probe->getLevelData(level)->probeDataD;
+    auto* probeDataH = &probe->getLevelData(level)->probeDataH;
+    auto* probeDataD = &probe->getLevelData(level)->probeDataD;
     const size_t sizeData = sizeof(real)*probeDataH->numberOfPoints*probeDataH->numberOfTimesteps*probeDataH->numberOfQuantities;
     if(probeDataH->computeInstantaneous)
     {
@@ -2283,8 +2366,8 @@ void CudaMemoryManager::cudaCopyProbeDataDtoH(Probe* probe, int level)
 
 void CudaMemoryManager::cudaFreeProbeData(Probe* probe, int level)
 {
-    auto probeDataH = &probe->getLevelData(level)->probeDataH;
-    auto probeDataD = &probe->getLevelData(level)->probeDataD;
+    auto* probeDataH = &probe->getLevelData(level)->probeDataH;
+    auto* probeDataD = &probe->getLevelData(level)->probeDataD;
     checkCudaErrors( cudaFreeHost(probeDataH->indices) );
     checkCudaErrors( cudaFree(probeDataD->indices) );
 
@@ -2315,7 +2398,7 @@ void CudaMemoryManager::cudaAllocPlanarAverageProbeIndices(PlanarAverageProbe* p
 
 void CudaMemoryManager::cudaCopyPlanarAverageProbeIndicesHtoD(PlanarAverageProbe* planarAverageProbe, int level)
 {
-    auto data = planarAverageProbe->getLevelData(level);
+    auto* data = planarAverageProbe->getLevelData(level);
     checkCudaErrors( cudaMemcpy(data->indicesOfFirstPlaneD, data->indicesOfFirstPlaneH, sizeof(unsigned long long)*data->numberOfPointsPerPlane, cudaMemcpyHostToDevice) );
 }
 
@@ -2329,7 +2412,7 @@ void CudaMemoryManager::cudaFreePlanarAverageProbeIndices(PlanarAverageProbe* pl
 
 void CudaMemoryManager::cudaAllocPrecursorWriter(PrecursorWriter* writer, int level)
 {
-    auto prec =  writer->getPrecursorStruct(level);
+    auto* prec =  writer->getPrecursorStruct(level);
     size_t indSize = prec->numberOfPointsInBC*sizeof(uint);
 
     checkCudaErrors( cudaMallocHost((void**) &prec->indicesH, indSize));

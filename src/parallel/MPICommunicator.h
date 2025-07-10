@@ -94,6 +94,11 @@ public:
     void allGather(std::vector<float> &svalues, std::vector<float> &rvalues) override;
     void allGather(std::vector<double> &svalues, std::vector<double> &rvalues) override;
     void allGather(std::vector<unsigned long long> &svalues, std::vector<unsigned long long> &rvalues) override;
+    void allGather(std::vector<uint> &svalues, std::vector<uint> &rvalues) override;
+
+    void allReduceSum(std::vector<float>& values) override;
+    void allReduceSum(std::vector<double>& values) override;
+    void allReduceSum(std::vector<uint>& values) override;
 
     void broadcast(int &value) override;
     void broadcast(float &value) override;
@@ -109,7 +114,8 @@ public:
 
     template <class T>
     void allGather(std::vector<T> &svalues, std::vector<T> &rvalues);
-
+    template <class T>
+    void allReduceSum(std::vector<T> &values);
     template <class T>
     void broadcast(std::vector<T> &values);
 
@@ -141,6 +147,17 @@ private:
 
     std::vector<MPI_Request> requests;
 };
+
+//////////////////////////////////////////////////////////////////////////
+template<typename T>
+inline MPI_Datatype getDataType();
+
+template<> inline MPI_Datatype getDataType<double>(){return MPI_DOUBLE; }
+template<> inline MPI_Datatype getDataType<float>(){return MPI_FLOAT; }
+template<> inline MPI_Datatype getDataType<int>(){return MPI_INT; }
+template<> inline MPI_Datatype getDataType<unsigned long long>(){return MPI_UNSIGNED_LONG_LONG; }
+template<> inline MPI_Datatype getDataType<char>(){return MPI_CHAR; }
+template<> inline MPI_Datatype getDataType<unsigned int>(){return MPI_UNSIGNED_LONG; }
 
 //////////////////////////////////////////////////////////////////////////
 template <class T>
@@ -222,6 +239,13 @@ void MPICommunicator::allGather(std::vector<T> &svalues, std::vector<T> &rvalues
     MPI_Allgatherv(sval, scount, mpiDataType, rval, &rcounts[0], &displs[0], mpiDataType, comm);
 }
 //////////////////////////////////////////////////////////////////////////
+template <class T>
+void MPICommunicator::allReduceSum(std::vector<T> &values)
+{
+    MPI_Allreduce(MPI_IN_PLACE, values.data(), int(values.size()), getDataType<T>(), MPI_SUM, comm);
+}
+//////////////////////////////////////////////////////////////////////////
+
 template <class T>
 void MPICommunicator::broadcast(std::vector<T> &values)
 {
