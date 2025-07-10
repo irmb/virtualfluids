@@ -114,13 +114,13 @@ void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex s
     }
 }
 
-void startNonBlockingMpiSend(vf::parallel::Communicator& comm, std::vector<ProcessNeighbor27>& sendProcessNeighborHost,
+void startBlockingMpiSend(vf::parallel::Communicator& comm, std::vector<ProcessNeighbor27>& sendProcessNeighborHost,
                           bool diffOn)
 {
     for (auto& neighbor : sendProcessNeighborHost) {
-        comm.sendNonBlocking(neighbor.populations[0], neighbor.numberOfFs, neighbor.rankNeighbor);
+        comm.send(neighbor.populations[0], neighbor.numberOfFs, neighbor.rankNeighbor);
         if (diffOn)
-            comm.sendNonBlocking(neighbor.populationsAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
+            comm.send(neighbor.populationsAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
     }
 }
 
@@ -192,10 +192,7 @@ void exchangeCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, Cu
         cudaStreamSynchronize(stream);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 4. send data to neighboring process (MPI)
-    startNonBlockingMpiSend(comm, sendProcessNeighborsHost, para->getDiffOn());
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //! 5. wait until data is received
-    comm.waitAll();
+    startBlockingMpiSend(comm, sendProcessNeighborsHost, para->getDiffOn());
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 6. reset the request array, which was used for the mpi communication
     if (0 < numberOfProcessNeighbors)
