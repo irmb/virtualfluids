@@ -211,12 +211,12 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the base-node-indices of coarse and fine refinement cells
     // 3D domain decomposition
-    std::vector<ProcessNeighbor27> sendProcessNeighborX;
-    std::vector<ProcessNeighbor27> sendProcessNeighborY;
-    std::vector<ProcessNeighbor27> sendProcessNeighborZ;
-    std::vector<ProcessNeighbor27> recvProcessNeighborX;
-    std::vector<ProcessNeighbor27> recvProcessNeighborY;
-    std::vector<ProcessNeighbor27> recvProcessNeighborZ;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsX;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsY;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsZ;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsX;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsY;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsZ;
 
     std::vector<ProcessNeighbor27> sendProcessNeighborsAfterFtoCX;
     std::vector<ProcessNeighbor27> sendProcessNeighborsAfterFtoCY;
@@ -224,23 +224,15 @@ struct LBMSimulationParameter {
     std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCX;
     std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCY;
     std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCZ;
-    ///////////////////////////////////////////////////////
-    // 3D domain decomposition convection diffusion
-    std::vector<ProcessNeighbor27> sendProcessNeighborADX;
-    std::vector<ProcessNeighbor27> sendProcessNeighborADY;
-    std::vector<ProcessNeighbor27> sendProcessNeighborADZ;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADX;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADY;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADZ;
     ////////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition: position (index in array) of corner nodes in ProcessNeighbor27
     struct EdgeNodePositions {
-        int indexOfProcessNeighborRecv;
-        int indexInRecvBuffer;
-        int indexOfProcessNeighborSend;
-        int indexInSendBuffer;
-        EdgeNodePositions(int indexOfProcessNeighborRecv, int indexInRecvBuffer, int indexOfProcessNeighborSend,
-                          int indexInSendBuffer)
+        uint indexOfProcessNeighborRecv;
+        uint indexInRecvBuffer;
+        uint indexOfProcessNeighborSend;
+        uint indexInSendBuffer;
+        EdgeNodePositions(uint indexOfProcessNeighborRecv, uint indexInRecvBuffer, uint indexOfProcessNeighborSend,
+                          uint indexInSendBuffer)
             : indexOfProcessNeighborRecv(indexOfProcessNeighborRecv), indexInRecvBuffer(indexInRecvBuffer),
               indexOfProcessNeighborSend(indexOfProcessNeighborSend), indexInSendBuffer(indexInSendBuffer)
         {

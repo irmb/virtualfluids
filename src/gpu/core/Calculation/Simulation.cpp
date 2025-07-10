@@ -799,17 +799,34 @@ Simulation::~Simulation()
     //3D domain decomposition
     if (para->getNumprocs() > 1) {
         for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
+            auto& parH = para->getParHostAsReference(lev);
+            auto& parD = para->getParDeviceAsReference(lev);
             //////////////////////////////////////////////////////////////////////////
-            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++) {
-                cudaMemoryManager->cudaFreeProcessNeighborX(lev, i);
+            for (uint i = 0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++) {
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsX[i], parD.sendProcessNeighborsX[i],
+                                                           parH.recvProcessNeighborsX[i], parD.recvProcessNeighborsX[i]);
+                if (para->useReducedCommunicationAfterFtoC)
+                    cudaMemoryManager->cudaFreeProcessNeighbor(
+                        parH.sendProcessNeighborsAfterFtoCX[i], parD.sendProcessNeighborsAfterFtoCX[i],
+                        parH.recvProcessNeighborsAfterFtoCX[i], parD.recvProcessNeighborsAfterFtoCX[i]);
             }
             //////////////////////////////////////////////////////////////////////////
-            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++) {
-                cudaMemoryManager->cudaFreeProcessNeighborY(lev, i);
+            for (uint i = 0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++) {
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsY[i], parD.sendProcessNeighborsY[i],
+                                                           parH.recvProcessNeighborsY[i], parD.recvProcessNeighborsY[i]);
+                if (para->useReducedCommunicationAfterFtoC)
+                    cudaMemoryManager->cudaFreeProcessNeighbor(
+                        parH.sendProcessNeighborsAfterFtoCY[i], parD.sendProcessNeighborsAfterFtoCY[i],
+                        parH.recvProcessNeighborsAfterFtoCY[i], parD.recvProcessNeighborsAfterFtoCY[i]);
             }
             //////////////////////////////////////////////////////////////////////////
-            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++) {
-                cudaMemoryManager->cudaFreeProcessNeighborZ(lev, i);
+            for (uint i = 0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++) {
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsZ[i], parD.sendProcessNeighborsZ[i],
+                                                           parH.recvProcessNeighborsZ[i], parD.recvProcessNeighborsZ[i]);
+                if (para->useReducedCommunicationAfterFtoC)
+                    cudaMemoryManager->cudaFreeProcessNeighbor(
+                        parH.sendProcessNeighborsAfterFtoCZ[i], parD.sendProcessNeighborsAfterFtoCZ[i],
+                        parH.recvProcessNeighborsAfterFtoCZ[i], parD.recvProcessNeighborsAfterFtoCZ[i]);
             }
         }
     }

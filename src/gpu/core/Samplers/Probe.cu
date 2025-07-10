@@ -64,15 +64,15 @@ using namespace vf::basics::constant;
 Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
              std::string probeName, uint tStartSampling, uint tBetweenSamples, uint tStartWritingOutput,
              uint tBetweenWriting, bool outputTimeSeries, bool sampleEveryTimestep, bool sampleScalar)
-    : para(para), cudaMemoryManager(cudaMemoryManager), tStartSampling(tStartSampling), tBetweenSamples(tBetweenSamples),
+    : para(std::move(para)), cudaMemoryManager(std::move(cudaMemoryManager)), tStartSampling(tStartSampling), tBetweenSamples(tBetweenSamples),
       tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting), outputTimeSeries(outputTimeSeries),
-      sampleEveryTimestep(sampleEveryTimestep), Sampler(outputPath, probeName)
+      sampleEveryTimestep(sampleEveryTimestep), sampleScalar(sampleScalar), Sampler(std::move(outputPath), std::move(probeName))
 {
     if (tStartWritingOutput < tStartSampling)
         throw std::runtime_error("Probe: tStartWritingOutput must be larger than tStartSampling!");
     if (sampleEveryTimestep)
         VF_LOG_INFO("Probe: sampleEveryTimestep is true, ignoring tBetweenSamples");
-    if (sampleScalar && !para->getDiffOn())
+    if (sampleScalar && !this->para->getDiffOn())
         throw std::runtime_error("Probe: can only sample scalar if diffusion is enabled in parameter");
 }
 
@@ -87,7 +87,7 @@ void Probe::addProbePoint(real x, real y, real z)
     probeObjects.emplace_back(std::make_shared<GbPoint3D>(x, y, z));
 }
 
-void Probe::addProbeVolume(std::shared_ptr<GbObject3D> probeVolume)
+void Probe::addProbeVolume(const std::shared_ptr<GbObject3D>& probeVolume)
 {
     probeObjects.push_back(probeVolume);
 }
@@ -246,15 +246,15 @@ std::vector<Probe::PostProcessingVariable> Probe::getAllPostProcessingVariables(
 {
     std::vector<PostProcessingVariable> postProcessingVariables;
     if (enableComputationInstantaneous) {
-        for (auto p : getPostProcessingVariables(Statistic::Instantaneous, level))
+        for (const auto& p : getPostProcessingVariables(Statistic::Instantaneous, level))
             postProcessingVariables.push_back(p);
     }
     if (enableComputationMeans) {
-        for (auto p : getPostProcessingVariables(Statistic::Means, level))
+        for (const auto& p : getPostProcessingVariables(Statistic::Means, level))
             postProcessingVariables.push_back(p);
     }
     if (enableComputationVariances) {
-        for (auto p : getPostProcessingVariables(Statistic::Variances, level))
+        for (const auto& p : getPostProcessingVariables(Statistic::Variances, level))
             postProcessingVariables.push_back(p);
     }
     return postProcessingVariables;
@@ -293,7 +293,7 @@ void Probe::addLevelData(int level)
         const real maxX = nodeCoordX + deltaX;
         const real maxY = nodeCoordY + deltaX;
         const real maxZ = nodeCoordZ + deltaX;
-        for (auto object : probeObjects) {
+        for (auto& object : probeObjects) {
             if ((object->isInsideCell(nodeCoordX, nodeCoordY, nodeCoordZ, maxX, maxY, maxZ) ||
                  object->isPointInGbObject3D(nodeCoordX, nodeCoordY, nodeCoordZ)) &&
                 isValidProbePoint(pos, para.get(), level)) {
@@ -331,7 +331,7 @@ void Probe::addLevelData(int level)
 
 void Probe::sample(int level, uint t)
 {
-    auto levelData = &levelDatas[level];
+    auto* levelData = &levelDatas[level];
     if (levelData->probeDataH.numberOfPoints == 0)
         return;
     const uint tLevel = para->getTimeStep(level, t, false);
@@ -440,7 +440,7 @@ void Probe::writeParallelFile(int t)
 void Probe::appendStatisticToNodeData(Statistic statistic, uint startPos, uint endPos, uint timestep, int level,
                                       std::vector<std::vector<double>>& nodedata)
 {
-    auto levelData = &levelDatas[level];
+    auto* levelData = &levelDatas[level];
     const uint numberOfNodes = levelData->probeDataH.numberOfPoints;
     const real* data = getStatisticArray(levelData->probeDataH, statistic);
     std::vector<PostProcessingVariable> postProcessingVariables = this->getPostProcessingVariables(statistic, level);
@@ -465,7 +465,7 @@ void Probe::writeGridFile(int level, int t, uint part)
 
     std::vector<std::vector<double>> nodedata;
 
-    auto levelData = &levelDatas[level];
+    auto* levelData = &levelDatas[level];
 
     const uint startpos = (part - 1) * FilePartCalculator::limitOfNodesForVTK;
     const uint sizeOfNodes =
@@ -542,7 +542,7 @@ void Probe::appendTimeseriesFile(int level, int t)
 std::vector<std::string> Probe::getVarNames()
 {
     std::vector<std::string> varNames;
-    for (auto variable : getAllPostProcessingVariables(0))
+    for (const auto& variable : getAllPostProcessingVariables(0))
         varNames.push_back(variable.name);
     return varNames;
 }

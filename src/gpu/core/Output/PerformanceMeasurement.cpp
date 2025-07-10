@@ -78,7 +78,7 @@ void PerformanceMeasurement::log(vf::basics::Timer& timer, uint timestep, vf::pa
     if (communicator.getNumberOfProcesses() > 1) {
         const double nupsSum = communicator.reduceSum(nups);
         if (communicator.isRoot())
-            VF_LOG_INFO("Sum of all {} processes: Nups in Mio: {:.1f}", communicator.getNumberOfProcesses(), nupsSum);
+            VF_LOG_INFO("Sum of all {} processes: Nups in Mio: {:.1f}", communicator.getNumberOfProcesses(), nupsSum*1e-6);
     }
 }
 

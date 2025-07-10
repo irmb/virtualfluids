@@ -500,7 +500,7 @@ uint LevelGridBuilder::getNumberOfReceiveIndices(int direction, uint level)
     return this->grids[level]->getNumberOfReceiveNodes(direction);
 }
 
-void LevelGridBuilder::getSendIndices(int * sendIndices, int direction, int level)
+void LevelGridBuilder::getSendIndices(uint* sendIndices, int direction, int level)
 {
     SPtr<Grid> grid = this->grids[level];
     for( uint i = 0; i < getNumberOfSendIndices(direction, level); i++ )
@@ -509,7 +509,7 @@ void LevelGridBuilder::getSendIndices(int * sendIndices, int direction, int leve
     }
 }
 
-void LevelGridBuilder::getReceiveIndices(int * receiveIndices, int direction, int level)
+void LevelGridBuilder::getReceiveIndices(uint* receiveIndices, int direction, int level)
 {
     SPtr<Grid> grid = this->grids[level];
     for( uint i = 0; i < getNumberOfReceiveIndices(direction, level); i++ )
