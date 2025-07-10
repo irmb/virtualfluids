@@ -329,6 +329,7 @@ public:
     void cudaAllocDampingLayerData(DampingLayer* dampingLayer, int level);
     void cudaCopyDampingLayerDataHtoD(DampingLayer* dampingLayer, int level);
     void cudaFreeDampingLayerData(DampingLayer* dampingLayer, int level);
+
     // Probes
     void cudaAllocProbeData(Probe* probe, int level);
     void cudaCopyProbeDataHtoD(Probe* probe, int level);

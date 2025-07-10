@@ -89,6 +89,12 @@ void GridGenerator::initalGridInformations()
     para->setGridX(gridX);
     para->setGridY(gridY);
     para->setGridZ(gridZ);
+    
+    if(para->getDiffOn())
+        para->setAllNodesAllFeatures(true);
+    if(para->getAllNodesAllFeatures())
+        para->setIsBodyForce(true);
+
 }
 
 void GridGenerator::allocArrays_CoordNeighborGeo()
