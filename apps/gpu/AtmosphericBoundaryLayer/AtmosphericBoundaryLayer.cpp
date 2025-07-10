@@ -172,8 +172,8 @@ void run(const vf::basics::ConfigurationFile& config)
     const auto dimensions = std::make_shared<GridDimensions>(c0o1, lengthX, c0o1, lengthY, c0o1, lengthZ, deltaX);
     auto gridBuilderFacade = std::make_shared<MultipleGridBuilderFacade>(dimensions, c8o1 * deltaX);
 
-    // for (int process = 1; process < numberOfProcesses; process++)
-    //     gridBuilderFacade->addDomainSplit(process * lengthX / numberOfProcesses, Axis::x);
+    for (int process = 1; process < numberOfProcesses; process++)
+        gridBuilderFacade->addDomainSplit(process * lengthX / numberOfProcesses, Axis::x);
 
     gridBuilderFacade->setPeriodicBoundaryCondition(!usePrecursorInflow, true, false);
     auto scalingFactory = GridScalingFactory();
