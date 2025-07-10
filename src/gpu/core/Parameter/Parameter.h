@@ -466,6 +466,7 @@ public:
     void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
     void setIsBodyForce(bool isBodyForce);
+    void setAllNodesAllFeatures(bool allNodesAllFeatures);
     void setclockCycleForMeasurePoints(real clockCycleForMeasurePoints);
     void setDevices(std::vector<uint> devices);
     void setGridX(std::vector<int> GridX);
@@ -528,6 +529,7 @@ public:
     bool getEvenOrOdd(int level);
     bool getDiffOn();
     bool getBuoyancyEnabled() const;
+    bool getAllNodesAllFeatures() const;
     bool getPrintFiles();
     bool getReadGeo();
     bool getCalcTurbulenceIntensity();
@@ -764,6 +766,7 @@ private:
     bool calcCp{ false };
     bool calcVelocityAndFluctuations{ false };
     bool isBodyForce{ false };
+    bool allNodesAllFeatures{ false };
     bool printFiles{ false };
     bool doRestart{ false };
     bool doCheckPoint{ false };

@@ -317,6 +317,7 @@ public:
     void cudaCopyBuoyancyProviderReductionParametersHtoD(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
     void cudaCopyBuoyancyProviderReductionParametersDtoH(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
     void cudaFreeBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+
     // Probes
     void cudaAllocProbeData(Probe* probe, int level);
     void cudaCopyProbeDataHtoD(Probe* probe, int level);
