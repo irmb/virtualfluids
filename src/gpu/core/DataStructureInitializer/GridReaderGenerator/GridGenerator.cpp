@@ -86,6 +86,12 @@ void GridGenerator::initalGridInformations()
     para->setGridX(gridX);
     para->setGridY(gridY);
     para->setGridZ(gridZ);
+    if(para->getDiffOn())
+    {
+        para->setIsBodyForce(true);
+        para->setAllNodesAllFeatures(true);
+    }
+
 }
 
 void GridGenerator::allocArrays_CoordNeighborGeo()
@@ -250,7 +256,7 @@ void GridGenerator::sortFluidNodeTags() {
     VF_LOG_INFO("Start sorting tagged fluid nodes...");
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
     {
-        if(para->getAllNodesAllFeatures() || para->getDiffOn())
+        if(para->getAllNodesAllFeatures())
             builder->addAllFluidNodeIndicesToAllFeatures(level);
         builder->sortFluidNodeIndicesAllFeatures(level); //has to be called first!
         builder->sortFluidNodeIndicesMacroVars(level);
