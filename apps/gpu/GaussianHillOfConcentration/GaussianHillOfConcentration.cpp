@@ -157,8 +157,8 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setTimestepEnd(numberOfTimesteps);
 
     para->setDiffOn(true);
-    para->setIsBodyForce(true);
     para->setUseStreams(true);
+    para->setAllNodesAllFeatures(true);
     para->setADKernel(vf::advectionDiffusionKernel::compressible::F16);
     para->setDiffusivity(diffusivityLB);
 
