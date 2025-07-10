@@ -158,7 +158,6 @@ void run(const vf::basics::ConfigurationFile& config)
 
     para->setDiffOn(true);
     para->setUseStreams(true);
-    para->setAllNodesAllFeatures(true);
     para->setADKernel(vf::advectionDiffusionKernel::compressible::F16);
     para->setDiffusivity(diffusivityLB);
 
