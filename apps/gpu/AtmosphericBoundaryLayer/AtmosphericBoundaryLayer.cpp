@@ -134,9 +134,9 @@ void run(const vf::basics::ConfigurationFile& config)
     // compute parameters in lattice units
     //////////////////////////////////////////////////////////////////////////
     if (useCoriolisForce)
-        frictionVelocity = geostrophicWindSpeed * vonKarmanConstant / std::log(boundaryLayerHeight / roughnessLength + c1o1);
+        frictionVelocity = geostrophicWindSpeed * vonKarmanConstant / std::log(boundaryLayerHeight / roughnessLength);
     const auto velocityProfile = [&](real coordZ) {
-        return frictionVelocity / vonKarmanConstant * std::log(coordZ / roughnessLength + c1o1);
+        return frictionVelocity / vonKarmanConstant * std::log(coordZ / roughnessLength);
     };
     const real velocity = c1o2 * velocityProfile(boundaryLayerHeight);
 
