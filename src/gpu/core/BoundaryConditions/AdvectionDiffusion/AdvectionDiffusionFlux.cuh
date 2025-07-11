@@ -82,7 +82,7 @@ __global__ void AdvectionDiffusionFlux_Device(real* populationsArray,
     const real vx2 = velocityY[indexOfBCnode];
     const real vx3 = velocityZ[indexOfBCnode];
 
-    real populations[27];
+    real populations[NUMBER_Of_DIRECTIONS];
     getPostCollisionDistribution(populations, populationReferences, listIndices);
     getPointersToDistributions(populationReferences, populationsArray, numberOfLBnodes, !isEvenTimestep);
 

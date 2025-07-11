@@ -1026,7 +1026,7 @@ void CudaMemoryManager::cudaAllocStressBC(int lev)
     checkCudaErrors(cudaMalloc((void**)&(parD.stressBC.normalZ), memSizeReal));
 
     //////////////////////////////////////////////////////////////////////////
-    double tmp = 2 * memSizeInt + parameter->getD3Qxx() * memSizeReal + 3 * memSizeReal;
+    double tmp = memSizeInt + parameter->getD3Qxx() * memSizeReal + 3 * memSizeReal;
     setMemsizeGPU(tmp, false);
 }
 void CudaMemoryManager::cudaCopyStressBC(int lev)
@@ -1071,7 +1071,7 @@ void CudaMemoryManager::cudaAllocSurfaceLayerBC(int lev)
     checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->surfaceLayerBC.normalY),                           memSizeReal     ));
     checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->surfaceLayerBC.normalZ),                           memSizeReal     ));
     //////////////////////////////////////////////////////////////////////////
-    const double tmp = memSizeInt + parameter->getD3Qxx()*memSizeReal + 3*memSizeReal;
+    const double tmp = memSizeInt + parameter->getD3Qxx()*memSizeReal + 3 * memSizeReal;
     setMemsizeGPU(tmp, false);
 }
 

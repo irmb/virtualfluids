@@ -67,7 +67,7 @@ AdvectionDiffusionNeumann_Device(real* populationArray, const AdvectionDiffusion
 
     Distributions27 populationReferences = getDistributionReferences27(populationArray, numberOfLBnodes, isEvenTimestep);
 
-    real populations[27];
+    real populations[NUMBER_Of_DIRECTIONS];
     getPostCollisionDistribution(populations, populationReferences, listIndices);
     const real concentrationNode = vf::lbm::getDensity(populations);
     const real gradient = bcParameters.gradient[nodeIndex];

@@ -58,7 +58,7 @@ using indexIterator = thrust::device_vector<uint>::iterator;
 std::vector<std::string> WallModelProbe::getVariableNames()
 {
     std::vector<std::string> variableNames;
-    variableNames.emplace_back("velocityNode_spatioTemporalMean");
+    variableNames.emplace_back("velocityNode_spatialMean");
     variableNames.emplace_back("velocitySample_spatialMean");
     variableNames.emplace_back("frictionVelocity_spatialMean");
     variableNames.emplace_back("momentumExchangeX_spatialMean");

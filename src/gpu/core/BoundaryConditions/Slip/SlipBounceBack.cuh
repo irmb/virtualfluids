@@ -61,7 +61,7 @@ __global__ void SlipBounceBack_Device(real* populationsArray, QforBoundaryCondit
     const uint indexOfBCnode = bcParams.k[nodeIndex];
     const ListIndices listIndices(indexOfBCnode, neighborX, neighborY, neighborZ);
 
-    real populations[27];
+    real populations[NUMBER_Of_DIRECTIONS];
     getPostCollisionDistribution(populations, populationReferences, listIndices);
 
     const real drho = vf::lbm::getDensity(populations);

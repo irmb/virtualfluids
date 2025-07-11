@@ -67,7 +67,7 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
 
     Distributions27 populationReferences = getDistributionReferences27(populationsArray, numberOfLBnodes, isEvenTimestep);
 
-    real populations[27];
+    real populations[NUMBER_Of_DIRECTIONS];
     getPostCollisionDistribution(populations, populationReferences, listIndices);
     const real concentrationWall = bcParameters.concentration[nodeIndex];
 
@@ -75,7 +75,7 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
 
     switch (bcType) {
         case BoundaryConditionFactory::AdvectionDiffusionDirichletBC::DirichletAntiBounceBackSlip:
-            vf::lbm::dir::forEachNonRestDirection([&](auto direction) {
+            forEachNonRestDirection([&](auto direction) {
                 const real subgridDistance = (subgridDistances.q[direction])[nodeIndex];
                 if (subgridDistance < c0o1 || subgridDistance > c1o1)
                     return;

@@ -116,7 +116,7 @@ velocityProfileFunc getVelocityProfileFuncAllaerts(real frictionVelocity, real r
 
         const real f_u = 1.57F * zeta - 2.68F * zeta * zeta;
         const real f_v = 13.2F * zeta - 8.7F * zeta * zeta;
-        const real u_ABL = frictionVelocity / vonKarmanConstant * (std::log1p(coordZ / roughnessLength) + f_u);
+        const real u_ABL = frictionVelocity / vonKarmanConstant * (std::log(coordZ / roughnessLength) + f_u);
         const real v_ABL = frictionVelocity / vonKarmanConstant * f_v * (coriolisParameter >= c0o1 ? c1o1 : -c1o1);
 
         const real merging_factor = std::tanh((zeta - c1o2) * c2o1 * inversionHeight / mergingRegionThickness);
