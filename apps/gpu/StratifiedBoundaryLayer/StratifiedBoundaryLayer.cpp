@@ -181,6 +181,9 @@ void run(const vf::basics::ConfigurationFile& config)
     const real tStartOutProbe = config.getValue<real>("tStartOutProbe");
     const real tOutProbe = config.getValue<real>("tOutProbe");
 
+    const bool addHorizontalPlanarProbes = config.getValue<bool>("AddHorizontalPlanarProbe", false);
+    const bool addVerticalPlanarProbes = config.getValue<bool>("AddVerticalPlaneProbe", false);
+
     const real dampingLayerStartHeight = config.getValue<real>("DampingLayerStartHeight", 0.7 * lengthZ);
     const real dampingFactor = config.getValue<real>("DampingFactor", 1e6);
     const bool useRayleighDamping = config.getValue("useRayleighDamping", false);
@@ -378,13 +381,25 @@ void run(const vf::basics::ConfigurationFile& config)
                                                            0, tStartTmpAveraging / deltaT, 100, 0, 100, false, true, true,
                                                            false, useSurfaceLayer);
     para->addSampler(wallModelProbe);
+    
+    if(addHorizontalPlanarProbes)
+        for (int probeHeight : {  37, 153,335 }) {
+            std::string name = "planeProbe_" + std::to_string(probeHeight);
+            SPtr<Probe> planeProbe =
+                std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), name, tStartSampling / deltaT,
+                                        tOutProbe / deltaT, tStartOutProbe / deltaT, tOutProbe / deltaT, false, false, true);
+            planeProbe->addProbePlane(0, 0, static_cast<real>(probeHeight), lengthX, lengthY, deltaX);
+            planeProbe->addAllAvailableStatistics();
+            para->addSampler(planeProbe);
+        }
 
-    for (int probeHeight : { 27, 37, 90, 153, 186, 335 }) {
-        std::string name = "planeProbe_" + std::to_string(probeHeight);
+    if(addVerticalPlanarProbes)
+    {
+
         SPtr<Probe> planeProbe =
-            std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), name, tStartSampling / deltaT,
-                                    tOutProbe / deltaT, tStartOutProbe / deltaT, tOutProbe / deltaT, false, false, true);
-        planeProbe->addProbePlane(0, 0, static_cast<real>(probeHeight), lengthX, lengthY, deltaX);
+        std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), "verticalProbe", tStartSampling / deltaT,
+        tOutProbe / deltaT, tStartOutProbe / deltaT, tOutProbe / deltaT, false, false, true);
+        planeProbe->addProbePlane(c1o2*lengthX, 0, 0, deltaX, lengthY, lengthZ);
         planeProbe->addAllAvailableStatistics();
         para->addSampler(planeProbe);
     }
