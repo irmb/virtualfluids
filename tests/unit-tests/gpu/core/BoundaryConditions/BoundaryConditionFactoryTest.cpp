@@ -44,6 +44,7 @@
 #include <gpu/core/BoundaryConditions/Pressure/Pressure.h>
 #include <gpu/core/BoundaryConditions/Slip/Slip.h>
 #include <gpu/core/BoundaryConditions/Stress/Stress.h>
+#include <gpu/core/BoundaryConditions/Stress/SurfaceLayer.h>
 #include <gpu/core/BoundaryConditions/Velocity/Velocity.h>
 #include <gpu/core/BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h>
 
@@ -96,7 +97,7 @@ TEST(BoundaryConditionFactoryTest, defaultStressBC)
     auto bcFactory = BoundaryConditionFactory();
     auto bc = bcFactory.getStressBoundaryConditionPost();
     EXPECT_THAT(bc, testing::Eq(nullptr));
-    EXPECT_THROW(bc(nullptr, nullptr, 0), std::bad_function_call);
+    EXPECT_THROW(bc(nullptr, nullptr), std::bad_function_call);
 }
 
 TEST(BoundaryConditionFactoryTest, defaultADNoFluxBC)
@@ -212,6 +213,57 @@ TEST(BoundaryConditionFactoryTest, slipBC)
         << "The returned boundary condition is not the expected function QSlipDevCompTurbulentViscosity27.";
 }
 
+
+bcFunction getSurfaceLayerBcTarget(BoundaryConditionFactory &bcFactory)
+{
+    auto bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    void (*bcTarget)(LBMSimulationParameter *, QforBoundaryConditions *) =
+        (*bc.target<void (*)(LBMSimulationParameter *, QforBoundaryConditions *)>());
+    return bcTarget;
+}
+
+TEST(BoundaryConditionFactoryTest, surfaceLayerBoundaryCondition)
+{
+    auto bcFactory = BoundaryConditionFactory();
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceHeatFlux);
+    auto bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    auto bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerBounceBackCompressibleHeatFlux)
+        << "The returned boundary condition is not the expected function SurfaceLayerBounceBackCompressibleHeatFlux.";
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackWithPressureCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceHeatFlux);
+    bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerBounceBackWithPressureCompressibleHeatFlux)
+        << "The returned boundary condition is not the expected function SurfaceLayerBounceBackWithPressureCompressibleHeatFlux.";
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressInterpolatedCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceHeatFlux);
+    bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerInterpolatedCompressibleHeatFlux)
+        << "The returned boundary condition is not the expected function SurfaceLayerInterpolatedCompressibleHeatFlux.";
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceTemperature);
+    bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerBounceBackCompressibleSurfaceTemperature)
+        << "The returned boundary condition is not the expected function SurfaceLayerBounceBackCompressibleSurfaceTemperature.";
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackWithPressureCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceTemperature);
+    bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerBounceBackWithPressureCompressibleSurfaceTemperature)
+        << "The returned boundary condition is not the expected function SurfaceLayerBounceBackWithPressureCompressibleSurfaceTemperature.";
+
+    bcFactory.setSurfaceLayerBoundaryCondition(BoundaryConditionFactory::StressBC::StressInterpolatedCompressible, BoundaryConditionFactory::SurfaceLayerBC::SurfaceTemperature);
+    bc = bcFactory.getSurfaceLayerBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == SurfaceLayerInterpolatedCompressibleSurfaceTemperature)
+        << "The returned boundary condition is not the expected function SurfaceLayerInterpolatedCompressibleSurfaceTemperature.";
+}
+
+
 bcFunctionDirectional getDirectionalPressureBcTarget(BoundaryConditionFactory &bcFactory)
 {
     auto bc = std::get<DirectionalBoundaryConditionKernel>(bcFactory.getPressureBoundaryConditionPre());
@@ -286,15 +338,21 @@ TEST(BoundaryConditionFactoryTest, stressBoundaryConditions)
 
     bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackCompressible);
     auto bc = bcFactory.getStressBoundaryConditionPost();
-    auto bcTarget = *bc.target<bcFunctionParameter>();
+    auto bcTarget = *bc.target<bcFunction>();
     EXPECT_TRUE(*bcTarget == StressBounceBackCompressible)
         << "The returned boundary condition is not the expected function StressBounceBackCompressible.";
 
-    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressCompressible);
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackWithPressureCompressible);
     bc = bcFactory.getStressBoundaryConditionPost();
-    bcTarget = *bc.target<bcFunctionParameter>();
-    EXPECT_TRUE(*bcTarget == StressCompressible)
-        << "The returned boundary condition is not the expected function StressCompressible.";
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == StressBounceBackWithPressureCompressible)
+        << "The returned boundary condition is not the expected function StressBounceBackWithPressureCompressible.";
+
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressInterpolatedCompressible);
+    bc = bcFactory.getStressBoundaryConditionPost();
+    bcTarget = *bc.target<bcFunction>();
+    EXPECT_TRUE(*bcTarget == StressInterpolatedCompressible)
+        << "The returned boundary condition is not the expected function StressInterpolatedCompressible.";
 }
 
 TEST(BoundaryConditionFactoryTest, hasDirectionalPressureBoundaryCondition_whenDirectionalBC_returnsTrue)

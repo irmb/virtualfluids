@@ -255,6 +255,93 @@ template<> constexpr real getWeight<dMPM>(){ return basics::constant::c1o216; }
 template<> constexpr real getWeight<dPMM>(){ return basics::constant::c1o216; }
 template<> constexpr real getWeight<dMPP>(){ return basics::constant::c1o216; }
 
+template<size_t direction> constexpr real getComponentX();
+template<> constexpr real getComponentX<d000>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentX<dP00>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentX<dM00>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentX<d0P0>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentX<d0M0>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentX<d00P>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentX<d00M>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentX<dPP0>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentX<dMM0>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentX<dPM0>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentX<dMP0>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentX<dP0P>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentX<dM0M>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentX<dP0M>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentX<dM0P>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentX<d0PP>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentX<d0MM>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentX<d0PM>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentX<d0MP>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentX<dPPP>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentX<dMMM>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentX<dPPM>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentX<dMMP>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentX<dPMP>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentX<dMPM>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentX<dPMM>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentX<dMPP>(){ return -basics::constant::c1o1; }
+
+template<size_t direction> constexpr real getComponentY();
+template<> constexpr real getComponentY<d000>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentY<dP00>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentY<dM00>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentY<d0P0>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentY<d0M0>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentY<d00P>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentY<d00M>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentY<dPP0>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentY<dMM0>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentY<dPM0>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentY<dMP0>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentY<dP0P>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentY<dM0M>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentY<dP0M>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentY<dM0P>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentY<d0PP>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentY<d0MM>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentY<d0PM>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentY<d0MP>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentY<dPPP>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentY<dMMM>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentY<dPPM>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentY<dMMP>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentY<dPMP>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentY<dMPM>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentY<dPMM>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentY<dMPP>(){ return  basics::constant::c1o1; }
+
+template<size_t direction> constexpr real getComponentZ();
+template<> constexpr real getComponentZ<d000>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentZ<dP00>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentZ<dM00>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentZ<d0P0>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentZ<d0M0>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentZ<d00P>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentZ<d00M>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dPP0>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentZ<dMM0>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentZ<dPM0>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentZ<dMP0>(){ return  basics::constant::c0o1; }
+template<> constexpr real getComponentZ<dP0P>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dM0M>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dP0M>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dM0P>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentZ<d0PP>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentZ<d0MM>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentZ<d0PM>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentZ<d0MP>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dPPP>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dMMM>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dPPM>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dMMP>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dPMP>(){ return  basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dMPM>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dPMM>(){ return -basics::constant::c1o1; }
+template<> constexpr real getComponentZ<dMPP>(){ return  basics::constant::c1o1; }
+
 
 template <std::size_t offset, std::size_t... S, typename F>
 constexpr void forSequence(std::index_sequence<S...> /**/, F func)

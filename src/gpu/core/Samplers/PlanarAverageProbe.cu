@@ -33,9 +33,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <stdexcept>
 #include <string>
-#include <cstddef>
 
 #include <helper_cuda.h>
 
@@ -179,6 +179,8 @@ std::vector<std::string> PlanarAverageProbe::getVariableNames(Statistic statisti
                 variableNames.emplace_back(getName("EddyViscosity", namesForTimeAverages));
             if (sampleScalar)
                 variableNames.emplace_back(getName("phi", namesForTimeAverages));
+            if (sampleScalar && para->getUseTurbulentViscosity())
+                variableNames.emplace_back(getName("EddyDiffusivity", namesForTimeAverages));
             break;
         case Statistic::Covariances:
             variableNames.emplace_back(getName("vxvx", namesForTimeAverages));
@@ -224,7 +226,7 @@ void PlanarAverageProbe::addStatistic(Statistic statistic)
 }
 
 PlanarAverageProbe::PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager,
-                                       std::string outputPath, std::string probeName, uint tStartSampling,
+                                       const std::string& outputPath, const std::string& probeName, uint tStartSampling,
                                        uint tStartTemporalAveraging, uint tBetweenSamples, uint tStartWritingOutput,
                                        uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages, bool sampleScalar)
     : para(para), cudaMemoryManager(cudaMemoryManager), tStartSampling(tStartSampling),
@@ -238,6 +240,10 @@ PlanarAverageProbe::PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryMana
         throw std::runtime_error("PlaneAverageProbe: tBetweenWriting must be larger than 0!");
     if (sampleScalar && !para->getDiffOn())
         throw std::runtime_error("PlaneAverageProbe: Scalar can only be sampled if diff is on!");
+    VF_LOG_INFO(
+        "Created planar averaging probe, output path: " + outputPath + ", probe name: " + probeName +
+            " start sampling: {}, time steps between sampling: {}, start writing: {}, time steps between writing: {}",
+        tStartSampling, tBetweenSamples, tStartWritingOutput, tBetweenWriting);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -457,7 +463,8 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
         getPermutationIterators(parameter->turbulentViscosity, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
     const auto phi =
         getPermutationIterators(parameter->concentration, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
-
+    const auto turbulentDiffusivity =
+        getPermutationIterators(parameter->turbulentDiffusivity, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
     std::vector<real> averages;
 
     if (!isStatisticIn(Statistic::Means, statistics))
@@ -475,6 +482,8 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
         averages.push_back(computeMean(turbulentViscosity, invNPointsPerPlane) * viscosityRatio);
     if (sampleScalar)
         averages.push_back(means.phi);
+    if (sampleScalar && para->getUseTurbulentViscosity())
+        averages.push_back(computeMean(turbulentDiffusivity, invNPointsPerPlane) * viscosityRatio);
 
     if (!isStatisticIn(Statistic::Covariances, statistics))
         return averages;
@@ -490,9 +499,9 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
 
     if (sampleScalar) {
         averages.push_back(covariances.phiphi);
-        averages.push_back(covariances.vxphi);
-        averages.push_back(covariances.vyphi);
-        averages.push_back(covariances.vzphi);
+        averages.push_back(covariances.vxphi * velocityRatio);
+        averages.push_back(covariances.vyphi * velocityRatio);
+        averages.push_back(covariances.vzphi * velocityRatio);
     }
 
     if (!isStatisticIn(Statistic::Skewness, statistics))
@@ -500,9 +509,9 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
 
     const auto skewnesses =
         computeSkewnesses(means, covariances, velocityX, velocityY, velocityZ, phi, invNPointsPerPlane, sampleScalar);
-    averages.push_back(skewnesses.Sx);
-    averages.push_back(skewnesses.Sy);
-    averages.push_back(skewnesses.Sz);
+    averages.push_back(skewnesses.Sx * std::pow(velocityRatio, 3));
+    averages.push_back(skewnesses.Sy * std::pow(velocityRatio, 3));
+    averages.push_back(skewnesses.Sz * std::pow(velocityRatio, 3));
     if (sampleScalar)
         averages.push_back(skewnesses.Sphi);
 
@@ -511,9 +520,9 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
 
     const auto flatnesses =
         computeFlatnesses(velocityX, velocityY, velocityZ, phi, means, covariances, invNPointsPerPlane, sampleScalar);
-    averages.push_back(flatnesses.Fx);
-    averages.push_back(flatnesses.Fy);
-    averages.push_back(flatnesses.Fz);
+    averages.push_back(flatnesses.Fx * std::pow(velocityRatio, 4));
+    averages.push_back(flatnesses.Fy * std::pow(velocityRatio, 4));
+    averages.push_back(flatnesses.Fz * std::pow(velocityRatio, 4));
     if (sampleScalar)
         averages.push_back(flatnesses.Fphi);
 

@@ -134,9 +134,9 @@ void run(const vf::basics::ConfigurationFile& config)
     // compute parameters in lattice units
     //////////////////////////////////////////////////////////////////////////
     if (useCoriolisForce)
-        frictionVelocity = geostrophicWindSpeed * vonKarmanConstant / std::log(boundaryLayerHeight / roughnessLength + c1o1);
+        frictionVelocity = geostrophicWindSpeed * vonKarmanConstant / std::log(boundaryLayerHeight / roughnessLength);
     const auto velocityProfile = [&](real coordZ) {
-        return frictionVelocity / vonKarmanConstant * std::log(coordZ / roughnessLength + c1o1);
+        return frictionVelocity / vonKarmanConstant * std::log(coordZ / roughnessLength);
     };
     const real velocity = c1o2 * velocityProfile(boundaryLayerHeight);
 
@@ -169,30 +169,28 @@ void run(const vf::basics::ConfigurationFile& config)
 
     const int numberOfProcesses = communicator.getNumberOfProcesses();
     const int processID = communicator.getProcessID();
+    const auto dimensions = std::make_shared<GridDimensions>(c0o1, lengthX, c0o1, lengthY, c0o1, lengthZ, deltaX);
+    auto gridBuilderFacade = std::make_shared<MultipleGridBuilderFacade>(dimensions, c8o1 * deltaX);
 
-    const real overlap = c8o1 * deltaX;
+    for (int process = 1; process < numberOfProcesses; process++)
+        gridBuilderFacade->addDomainSplit(process * lengthX / numberOfProcesses, Axis::x);
 
-    auto dimensions = std::make_shared<GridDimensions>(c0o1, lengthX, c0o1, lengthY, c0o1, lengthZ, deltaX);
-
-    auto gridBuilder = std::make_unique<MultipleGridBuilderFacade>(dimensions, overlap);
+    gridBuilderFacade->setPeriodicBoundaryCondition(!usePrecursorInflow, true, false);
     auto scalingFactory = GridScalingFactory();
 
-    for (int iProcess = 1; iProcess < numberOfProcesses; iProcess++)
-        gridBuilder->addDomainSplit(lengthX / numberOfProcesses * iProcess, Axis::x);
-
     if (useRefinement) {
-        gridBuilder->setNumberOfLayersForRefinement(4, 0);
-        const real endRefinement = usePrecursorInflow ? lengthX - boundaryLayerHeight : lengthX;
-        gridBuilder->addFineGrid(std::make_shared<Cuboid>(c0o1, c0o1, c0o1, endRefinement, lengthY, c1o2 * lengthZ), 1);
+        gridBuilderFacade->setNumberOfLayersForRefinement(4, 0);
+        real lengthRefinement = lengthX;
+        if (usePrecursorInflow)
+            lengthRefinement -= boundaryLayerHeight;
+        gridBuilderFacade->addFineGrid(std::make_shared<Cuboid>(c0o1, c0o1, c0o1, lengthRefinement, lengthY, c1o2 * lengthZ),
+                                       1);
         scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
     }
-
-    gridBuilder->setPeriodicBoundaryCondition(!usePrecursorInflow, true, false);
-
     if (!usePrecursorInflow)
-        gridBuilder->setPeriodicShiftOnXBoundaryInYDirection(periodicShift);
+        gridBuilderFacade->setPeriodicShiftOnXBoundaryInYDirection(periodicShift);
 
-    gridBuilder->createGrids(processID);
+    gridBuilderFacade->createGrids(processID);
 
     //////////////////////////////////////////////////////////////////////////
     // set parameters
@@ -248,22 +246,25 @@ void run(const vf::basics::ConfigurationFile& config)
         });
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     if (usePrecursorInflow) {
-        auto precursor = createFileCollection(precursorDirectory + "precursor", TransientBCFileType::VTK);
-        gridBuilder->setPrecursorBoundaryCondition(SideType::MX, precursor, timestepsBetweenReadsPrecursor);
-        gridBuilder->setPressureBoundaryCondition(SideType::PX, c0o1);
+        if (processID == 0) {
+            auto precursor = createFileCollection(precursorDirectory , "precursor", TransientBCFileType::VTK);
+            gridBuilderFacade->setPrecursorBoundaryCondition(SideType::MX, precursor, timestepsBetweenReadsPrecursor, false);
+        }
+
+        if (processID == numberOfProcesses - 1)
+            gridBuilderFacade->setPressureBoundaryCondition(SideType::PX, c0o1);
+
     }
 
-    gridBuilder->setStressBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, samplingOffsetWallModel, roughnessLength,
-                                            deltaX);
+    gridBuilderFacade->setStressBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, samplingOffsetWallModel, vonKarmanConstant,
+                                            roughnessLength, deltaX);
 
-    gridBuilder->setSlipBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1);
+    gridBuilderFacade->setSlipBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1);
 
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
     bcFactory.setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC::VelocityInterpolatedCompressible);
-    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackPressureCompressible);
+    bcFactory.setStressBoundaryCondition(BoundaryConditionFactory::StressBC::StressBounceBackWithPressureCompressible);
     bcFactory.setSlipBoundaryCondition(BoundaryConditionFactory::SlipBC::SlipTurbulentViscosityCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
     if (useDistributionsForPrecursor) {
@@ -298,11 +299,9 @@ void run(const vf::basics::ConfigurationFile& config)
         const auto wallModelProbe = std::make_shared<WallModelProbe>(
             para, cudaMemoryManager, para->getOutputPath(), "wallModelProbe", timeStepStartAveraging,
             timeStepStartTemporalAveraging, timeStepAveraging / 4, timeStepStartOutProbe, timeStepOutProbe, false, true,
-            true, para->getIsBodyForce());
+            true, para->getIsBodyForce(), false);
 
         para->addSampler(wallModelProbe);
-
-        para->setHasWallModelMonitor(true);
     }
 
     for (int iPlane = 0; iPlane < 3; iPlane++) {
@@ -345,12 +344,12 @@ void run(const vf::basics::ConfigurationFile& config)
     auto tmFactory = std::make_shared<TurbulenceModelFactory>(para);
     tmFactory->readConfigFile(config);
 
-    VF_LOG_INFO("process parameter:");
+    VF_LOG_INFO("process parameters:");
     VF_LOG_INFO("Number of Processes {} process ID {}", numberOfProcesses, processID);
     printf("\n");
     
     para->worldLength = lengthX + c2o1*deltaX;
-    Simulation simulation(para, cudaMemoryManager, gridBuilder->getGridBuilder(), &bcFactory, tmFactory, &scalingFactory);
+    Simulation simulation(para, cudaMemoryManager, gridBuilderFacade->getGridBuilder(), &bcFactory, tmFactory, &scalingFactory);
     simulation.run();
 }
 

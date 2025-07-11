@@ -133,6 +133,9 @@ struct LBMSimulationParameter {
     //! \brief stores the stress boundary condition data
     QforBoundaryConditions stressBC;
     //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the surface layer boundary condition data
+    QforBoundaryConditions surfaceLayerBC;
+    //////////////////////////////////////////////////////////////////////////
     //! \brief stores the precursor boundary condition data
     QforPrecursorBoundaryConditions precursorBC;
     //////////////////////////////////////////////////////////////////////////
@@ -157,7 +160,9 @@ struct LBMSimulationParameter {
     real *forcing;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores parameters for a wall model
-    WallModelParameters wallModel;
+    WallModelParameters momentumWallModel;
+    //! \brief stores parameters for a temperature wall model
+    SurfaceLayerWallModelParameters surfaceLayerWallModel;
     //////////////////////////////////////////////////////////////////////////
     //! \brief allows reading values for a boundary condition from a file
     std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
@@ -180,6 +185,10 @@ struct LBMSimulationParameter {
     real *concentration;
     //! \brief stores a field of local reference temperature when using buoyancy
     real *localReferenceTemperature;
+    //! \biref stores temperature that is set as reference temperature in simulation
+    real referenceTemperature;
+    //! \brief stores non-dimensional scaled gravity
+    real gravity;
     //! \brief store all distribution functions for the D3Q27 advection diffusion field
     Distributions27 distributionsAD;
     //////////////////////////////////////////////////////////////////////////
@@ -454,6 +463,8 @@ public:
     void setRe(real Re);
     void setTurbulentPrandtlNumber(real turbulentPrandtlNumber);
     void setBuoyancyFactor(real buoyancyFactor);
+    void setGravity(real gravity);
+    void setReferenceTemperature(real referenceTemperature);
     void setFactorPressBC(real factorPressBC);
     void setIsGeo(bool isGeo);
     void setIsCp(bool isCp);
@@ -463,7 +474,6 @@ public:
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setUseTurbulentDiffusivity(bool useTurbulentDiffusivity);
     void setSGSConstant(real SGSConstant);
-    void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
     void setIsBodyForce(bool isBodyForce);
     void setAllNodesAllFeatures(bool allNodesAllFeatures);
@@ -652,6 +662,9 @@ public:
     real getTurbulentPrandtlNumber() const;
     real getBuoyancyFactor() const;
     real getScaledBuoyancyFactor(int level) const;
+    real getGravity() const;
+    real getScaledGravity(int level) const;
+    real getReferenceTemperature() const;
     real getFactorPressBC();
     real getclockCycleForMeasurePoints();
     std::vector<uint> getDevices() const;
@@ -686,7 +699,6 @@ public:
     bool getUseTurbulentViscosity();
     bool getUseTurbulentDiffusivity();
     real getSGSConstant();
-    bool getHasWallModelMonitor();
     bool getUseInitNeq();
     bool getIsBodyForce();
     double getMemsizeGPU();
@@ -760,6 +772,8 @@ private:
     real outflowPressureCorrectionFactor{ 0.0 };
     real turbulentPrandtlNumber{ 0.0 };
     real buoyancyFactor{ 0.0 };
+    real gravity{ 0.0 };
+    real referenceTemperature{ 0.0 };
     bool diffOn{ false };
     bool buoyancyEnabled { false };
     bool calcDragLift{ false };
@@ -782,7 +796,6 @@ private:
     bool turbulentDiffusivityEnabled{ false };
     bool isMeasurePoints{ false };
     bool isInitNeq{ false };
-    bool hasWallModelMonitor{ false };
 
     //! \property maximum level of grid refinement
     int maxlevel{ 0 };

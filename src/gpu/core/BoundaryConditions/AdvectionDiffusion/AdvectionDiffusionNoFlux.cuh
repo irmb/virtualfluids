@@ -59,7 +59,7 @@ __global__ void AdvectionDiffusionNoFluxBounceBack_Device(real* distributions,
     SubgridDistances27 subgridDistances;
     getPointersToSubgridDistances(subgridDistances, bcParameters.q27[0], bcParameters.numberOfBCnodes);
 
-    real populations[27];
+    real populations[NUMBER_Of_DIRECTIONS];
     getPostCollisionDistribution(populations, populationReferences, listIndices);
 
     getPointersToDistributions(populationReferences, distributions, numberOfLBnodes, !isEvenTimestep);

@@ -71,11 +71,11 @@ public:
 //! \param planeNormal The normal direction of the planes along which the probe samples.
 //! \param computeTimeAverages If true, the probe computes time averages.
 //! \param sampleScalar If true, the probe samples statistics related to the scalar.
-    PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
-                       std::string probeName, uint tStartSampling, uint tStartTemporalAveraging, uint tBetweenSamples,
+    PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string& outputPath,
+                       const std::string& probeName, uint tStartSampling, uint tStartTemporalAveraging, uint tBetweenSamples,
                        uint tStartWritingOutput, uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages,
                        bool sampleScalar);
-    ~PlanarAverageProbe();
+    ~PlanarAverageProbe() override;
 
     void init() override;
     void sample(int level, uint t) override;

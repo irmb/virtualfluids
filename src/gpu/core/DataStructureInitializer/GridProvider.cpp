@@ -32,6 +32,8 @@
 //=======================================================================================
 #include "GridProvider.h"
 
+#include <basics/constants/NumericConstants.h>
+
 #include "GridReaderFiles/GridReader.h"
 #include "GridReaderGenerator/GridGenerator.h"
 #include <Parameter/Parameter.h>
@@ -39,6 +41,8 @@
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 
 #include "Cuda/CudaMemoryManager.h"
+
+using namespace vf::basics::constant;
 
 std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator)
 {

@@ -47,7 +47,7 @@ class PlanarAverageProbe;
 class VelocitySetter;
 class PrecursorWriter;
 class BuoyancyProviderPlanarAverage;
-
+class DampingLayer;
 class CudaMemoryManager
 {
 public:
@@ -171,6 +171,10 @@ public:
     void cudaCopyStressBC(int lev);
     void cudaFreeStressBC(int lev);
 
+    void cudaAllocSurfaceLayerBC(int lev);
+    void cudaCopySurfaceLayerBC(int lev);
+    void cudaFreeSurfaceLayerBC(int lev);
+
     void cudaAllocPrecursorBC(int lev);
     void cudaAllocPrecursorData(int lev);
     void cudaCopyPrecursorBC(int lev);
@@ -178,9 +182,13 @@ public:
     void cudaFreePrecursorBC(int lev);
     void cudaFreePrecursorData(int lev);
 
-    void cudaAllocWallModel(int lev, bool hasWallModelMonitor);
-    void cudaCopyWallModel(int lev, bool hasWallModelMonitor);
-    void cudaFreeWallModel(int lev, bool hasWallModelMonitor);
+    void cudaAllocWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice, uint numberOfNodes);
+    void cudaCopyWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice, uint numberOfNodes);
+    void cudaFreeWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice);
+
+    void cudaAllocTemperatureWallModel(TemperatureWallModelParameters& wallModelHost, TemperatureWallModelParameters& wallModelDevice, uint numberOfNodes);
+    void cudaCopyTemperatureWallModel(TemperatureWallModelParameters& wallModelHost, TemperatureWallModelParameters& wallModelDevice, uint numberOfNodes);
+    void cudaFreeTemperatureWallModel(TemperatureWallModelParameters& wallModelHost, TemperatureWallModelParameters& wallModelDevice);
 
     void cudaAllocGeomValuesBC(int lev);
     void cudaCopyGeomValuesBC(int lev);
@@ -317,6 +325,10 @@ public:
     void cudaCopyBuoyancyProviderReductionParametersHtoD(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
     void cudaCopyBuoyancyProviderReductionParametersDtoH(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
     void cudaFreeBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+
+    void cudaAllocDampingLayerData(DampingLayer* dampingLayer, int level);
+    void cudaCopyDampingLayerDataHtoD(DampingLayer* dampingLayer, int level);
+    void cudaFreeDampingLayerData(DampingLayer* dampingLayer, int level);
 
     // Probes
     void cudaAllocProbeData(Probe* probe, int level);

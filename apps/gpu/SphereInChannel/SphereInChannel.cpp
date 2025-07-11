@@ -54,6 +54,8 @@
 #include "gpu/core/Samplers/Probe.h"
 #include "gpu/core/Cuda/CudaMemoryManager.h"
 
+using namespace vf::basics::constant;
+
 void run(const vf::basics::ConfigurationFile& config)
 {
     //////////////////////////////////////////////////////////////////////////

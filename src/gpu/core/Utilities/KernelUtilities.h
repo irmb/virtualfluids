@@ -47,14 +47,13 @@
 
 #include <basics/constants/NumericConstants.h>
 
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
-
 namespace vf::gpu
 {
 
 inline real getForceFactor(size_t level)
 {
+    using namespace vf::basics::constant;
+
     real factor = c1o1;
     for (size_t i = 1; i <= level; i++) {
         factor *= c2o1;
@@ -66,6 +65,8 @@ inline real getForceFactor(size_t level)
 constexpr void getPointersToDistributions(Distributions27& dist, real* distributionArray,
                                           const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
 {
+    using namespace vf::lbm::dir;
+
     if (isEvenTimestep) {
         dist.f[d000] = &distributionArray[d000 * numberOfLBnodes];
         dist.f[dP00] = &distributionArray[dP00 * numberOfLBnodes];
@@ -143,6 +144,8 @@ constexpr DistributionReferences27 getDistributionReferences27(real* distributio
 constexpr void getPointersToSubgridDistances(SubgridDistances27& subgridD, real* subgridDistances,
                                              const unsigned int numberOfSubgridIndices)
 {
+    using namespace vf::lbm::dir;
+
     subgridD.q[dP00] = &subgridDistances[dP00 * numberOfSubgridIndices];
     subgridD.q[dM00] = &subgridDistances[dM00 * numberOfSubgridIndices];
     subgridD.q[d0P0] = &subgridDistances[d0P0 * numberOfSubgridIndices];
@@ -174,12 +177,15 @@ constexpr void getPointersToSubgridDistances(SubgridDistances27& subgridD, real*
 
 constexpr real getEquilibriumForBC(const real& drho, const real& velocity, const real& cu_sq, const real weight)
 {
+    using namespace vf::basics::constant;
+
     return weight * (drho + c9o2 * velocity * velocity * (c1o1 + drho) - cu_sq);
 }
 
 constexpr real getInterpolatedDistributionForVeloBC(const real& q, const real& f, const real& fInverse, const real& feq,
                                                     const real& omega, const real& velocity, const real weight)
 {
+    using namespace vf::basics::constant;
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse) - c6o1 * weight * velocity) / (c1o1 + q);
@@ -187,6 +193,7 @@ constexpr real getInterpolatedDistributionForVeloBC(const real& q, const real& f
 
 constexpr real getBounceBackDistributionForVeloBC(const real& f, const real& velocity, const real weight)
 {
+    using namespace vf::basics::constant;
 
     return f - (c6o1 * weight * velocity);
 }
@@ -194,6 +201,7 @@ constexpr real getBounceBackDistributionForVeloBC(const real& f, const real& vel
 constexpr real getInterpolatedDistributionForNoSlipBC(const real& q, const real& f, const real& fInverse, const real& feq,
                                                       const real& omega)
 {
+    using namespace vf::basics::constant;
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse)) / (c1o1 + q);
@@ -203,6 +211,7 @@ constexpr real getInterpolatedDistributionForNoSlipWithPressureBC(const real& q,
                                                                   const real& feq, const real& omega, const real& drho,
                                                                   const real weight)
 {
+    using namespace vf::basics::constant;
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2 
            + (q * (f + fInverse)) / (c1o1 + q) - weight * drho;
@@ -212,6 +221,7 @@ constexpr real getInterpolatedDistributionForVeloWithPressureBC(const real& q, c
                                                                 const real& feq, const real& omega, const real& drho,
                                                                 const real& velocity, const real weight)
 {
+    using namespace vf::basics::constant;
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse) - c6o1 * weight * velocity) / (c1o1 + q) - weight * drho;
@@ -279,33 +289,33 @@ struct ListIndices
     template<size_t direction> constexpr uint getIndex() const;
 };
 
-template <> constexpr uint ListIndices::getIndex<d000>() const { return k000(); }
-template <> constexpr uint ListIndices::getIndex<dP00>() const { return kP00(); }
-template <> constexpr uint ListIndices::getIndex<dM00>() const { return kM00(); }
-template <> constexpr uint ListIndices::getIndex<d0P0>() const { return k0P0(); }
-template <> constexpr uint ListIndices::getIndex<d0M0>() const { return k0M0(); }
-template <> constexpr uint ListIndices::getIndex<d00P>() const { return k00P(); }
-template <> constexpr uint ListIndices::getIndex<d00M>() const { return k00M(); }
-template <> constexpr uint ListIndices::getIndex<dPP0>() const { return kPP0(); }
-template <> constexpr uint ListIndices::getIndex<dMM0>() const { return kMM0(); }
-template <> constexpr uint ListIndices::getIndex<dPM0>() const { return kPM0(); }
-template <> constexpr uint ListIndices::getIndex<dMP0>() const { return kMP0(); }
-template <> constexpr uint ListIndices::getIndex<dP0P>() const { return kP0P(); }
-template <> constexpr uint ListIndices::getIndex<dM0M>() const { return kM0M(); }
-template <> constexpr uint ListIndices::getIndex<dP0M>() const { return kP0M(); }
-template <> constexpr uint ListIndices::getIndex<dM0P>() const { return kM0P(); }
-template <> constexpr uint ListIndices::getIndex<d0PP>() const { return k0PP(); }
-template <> constexpr uint ListIndices::getIndex<d0MM>() const { return k0MM(); }
-template <> constexpr uint ListIndices::getIndex<d0PM>() const { return k0PM(); }
-template <> constexpr uint ListIndices::getIndex<d0MP>() const { return k0MP(); }
-template <> constexpr uint ListIndices::getIndex<dPPP>() const { return kPPP(); }
-template <> constexpr uint ListIndices::getIndex<dMPP>() const { return kMPP(); }
-template <> constexpr uint ListIndices::getIndex<dPMP>() const { return kPMP(); }
-template <> constexpr uint ListIndices::getIndex<dMMP>() const { return kMMP(); }
-template <> constexpr uint ListIndices::getIndex<dPPM>() const { return kPPM(); }
-template <> constexpr uint ListIndices::getIndex<dMPM>() const { return kMPM(); }
-template <> constexpr uint ListIndices::getIndex<dPMM>() const { return kPMM(); }
-template <> constexpr uint ListIndices::getIndex<dMMM>() const { return kMMM(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d000>() const { return k000(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dP00>() const { return kP00(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dM00>() const { return kM00(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0P0>() const { return k0P0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0M0>() const { return k0M0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d00P>() const { return k00P(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d00M>() const { return k00M(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPP0>() const { return kPP0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMM0>() const { return kMM0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPM0>() const { return kPM0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMP0>() const { return kMP0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dP0P>() const { return kP0P(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dM0M>() const { return kM0M(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dP0M>() const { return kP0M(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dM0P>() const { return kM0P(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0PP>() const { return k0PP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0MM>() const { return k0MM(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0PM>() const { return k0PM(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0MP>() const { return k0MP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPPP>() const { return kPPP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMPP>() const { return kMPP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPMP>() const { return kPMP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMMP>() const { return kMMP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPPM>() const { return kPPM(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMPM>() const { return kMPM(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPMM>() const { return kPMM(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMMM>() const { return kMMM(); }
 
 template <size_t direction>
 constexpr void writeInInverseDirection(const real population, const vf::gpu::ListIndices& listIndices,
@@ -348,6 +358,8 @@ constexpr real readFromSameDirection(const vf::gpu::ListIndices& listIndices,
 //! DOI:10.3390/computation5020019 ]</b></a>
 constexpr void getPreCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
 {
+    using namespace vf::lbm::dir;
+
     local[d000] = (global.f[d000])[indices.k_000];
     local[dP00] = (global.f[dP00])[indices.k_000];
     local[dM00] = (global.f[dM00])[indices.k_M00];
@@ -379,6 +391,8 @@ constexpr void getPreCollisionDistribution(real* local, const Distributions27& g
 
 constexpr void getPostCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
 {
+    using namespace vf::lbm::dir;
+
     local[d000] = (global.f[d000])[indices.k_000];
     local[dM00] = (global.f[dP00])[indices.k_000];
     local[dP00] = (global.f[dM00])[indices.k_M00];
@@ -415,6 +429,8 @@ constexpr void getPostCollisionDistribution(real* local, const Distributions27& 
 //! DOI:10.3390/computation5020019 ]</b></a>
 constexpr void setPreCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
 {
+    using namespace vf::lbm::dir;
+
     (global.f[d000])[indices.k_000] = local[d000];
     (global.f[dP00])[indices.k_000] = local[dP00];
     (global.f[dM00])[indices.k_M00] = local[dM00];
@@ -446,6 +462,8 @@ constexpr void setPreCollisionDistribution(Distributions27& global, const ListIn
 
 constexpr void setPostCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
 {
+    using namespace vf::lbm::dir;
+
     (global.f[d000])[indices.k_000] = local[d000];
     (global.f[dP00])[indices.k_000] = local[dM00];
     (global.f[dM00])[indices.k_M00] = local[dP00];

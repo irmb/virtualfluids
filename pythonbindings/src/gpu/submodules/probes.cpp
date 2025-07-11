@@ -54,8 +54,8 @@ namespace probes
         py::class_<Probe, Sampler, std::shared_ptr<Probe>>(probeProbeModule, "Probe")
         .def(py::init<  SPtr<Parameter>,
                         SPtr<CudaMemoryManager>,
-                        const std::string,
-                        const std::string,
+                        const std::string&,
+                        const std::string&,
                         uint,
                         uint, 
                         uint,
@@ -90,8 +90,8 @@ namespace probes
         py::class_<PlanarAverageProbe, Sampler, std::shared_ptr<PlanarAverageProbe>>(planarAverageProbeModule, "PlanarAverageProbe")
         .def(py::init<  SPtr<Parameter>,
                         SPtr<CudaMemoryManager>,
-                        const std::string,
-                        const std::string,
+                        const std::string&,
+                        const std::string&,
                         uint,
                         uint,
                         uint,
@@ -122,13 +122,14 @@ namespace probes
         py::class_<WallModelProbe, Sampler, std::shared_ptr<WallModelProbe>>(wallModelProbeModule, "WallModelProbe")
         .def(py::init<  SPtr<Parameter>,
                         SPtr<CudaMemoryManager>,
-                        const std::string,
-                        const std::string,
+                        const std::string&,
+                        const std::string&,
                         uint,
                         uint, 
                         uint,
                         uint,
                         uint,
+                        bool,
                         bool,
                         bool,
                         bool,
@@ -145,7 +146,8 @@ namespace probes
                         py::arg("average_every_timestep"),
                         py::arg("compute_temporal_averages"),
                         py::arg("output_stress"),
-                        py::arg("evaluate_pressure_gradient"));
+                        py::arg("evaluate_pressure_gradient"),
+                        py::arg("sample_surface_layer"));
 
         return probeModule;
     }

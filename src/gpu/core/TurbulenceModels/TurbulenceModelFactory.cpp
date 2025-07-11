@@ -35,6 +35,7 @@
 #include "TurbulenceModelFactory.h"
 
 #include <basics/config/ConfigurationFile.h>
+#include <basics/constants/NumericConstants.h>
 
 #include <logger/Logger.h>
 
@@ -43,6 +44,7 @@
 #include "lbm/collision/TurbulentViscosity.h"
 
 using ADTurbulenceModel = vf::lbm::advection_diffusion::TurbulenceModel;
+using namespace vf::basics::constant;
 
 void TurbulenceModelFactory::setTurbulenceModel(std::string turbulenceModel)
 {

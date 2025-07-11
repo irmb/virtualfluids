@@ -39,9 +39,6 @@
 
 #include "lbm/MacroscopicQuantities.h"
 
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
-
 namespace vf::lbm
 {
 
@@ -78,6 +75,7 @@ struct MomentsOnSourceNode
 
     constexpr void calculate(const real *const f, const real omega)
     {
+        using namespace vf::basics::constant;
         // const real f_000 = f[dir::d000];
         const real fP00 = f[dir::dP00];
         const real fM00 = f[dir::dM00];
@@ -194,6 +192,8 @@ public:
     constexpr void calculateCoefficients(InterpolationCoefficients &coefficients, real xoff, real yoff,
                                                    real zoff) const
     {
+        using namespace vf::basics::constant;
+
         real& a000 = coefficients.a000;
         real& b000 = coefficients.b000;
         real& c000 = coefficients.c000;

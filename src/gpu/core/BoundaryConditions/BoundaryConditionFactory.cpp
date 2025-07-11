@@ -45,6 +45,7 @@
 #include "BoundaryConditions/Stress/Stress.h"
 #include "BoundaryConditions/Velocity/Velocity.h"
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h"
+#include "BoundaryConditions/Stress/SurfaceLayer.h"
 #include "Parameter/Parameter.h"
 
 void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryConditionType)
@@ -75,6 +76,11 @@ void BoundaryConditionFactory::setGeometryBoundaryCondition(std::variant<Velocit
 void BoundaryConditionFactory::setStressBoundaryCondition(StressBC boundaryConditionType)
 {
     this->stressBoundaryCondition = boundaryConditionType;
+}
+
+void BoundaryConditionFactory::setSurfaceLayerBoundaryCondition(StressBC momentumBoundaryConditionType, SurfaceLayerBC surfaceLayerBoundaryConditionType)
+{
+    this->surfaceLayerBoundaryCondition = {momentumBoundaryConditionType, surfaceLayerBoundaryConditionType};
 }
 
 void BoundaryConditionFactory::setPrecursorBoundaryCondition(PrecursorBC boundaryConditionType)
@@ -152,6 +158,9 @@ BoundaryConditionKernel BoundaryConditionFactory::getSlipBoundaryConditionPost(b
 
     // for descriptions of the boundary conditions refer to the header
     switch (boundaryCondition) {
+        case SlipBC::SlipBounceBack:
+            return SlipBounceBack;
+            break;
         case SlipBC::SlipCompressible:
             return SlipCompressible;
             break;
@@ -203,17 +212,17 @@ PrecursorBoundaryConditionKernel BoundaryConditionFactory::getPrecursorBoundaryC
     }
 }
 
-BoundaryConditionWithParameterKernel BoundaryConditionFactory::getStressBoundaryConditionPost() const
+BoundaryConditionKernel BoundaryConditionFactory::getStressBoundaryConditionPost() const
 {
     switch (this->stressBoundaryCondition) {
         case StressBC::StressBounceBackCompressible:
             return StressBounceBackCompressible;
             break;
-        case StressBC::StressBounceBackPressureCompressible:
-            return StressBounceBackPressureCompressible;
+        case StressBC::StressBounceBackWithPressureCompressible:
+            return StressBounceBackWithPressureCompressible;
             break;
-        case StressBC::StressCompressible:
-            return StressCompressible;
+        case StressBC::StressInterpolatedCompressible:
+            return StressInterpolatedCompressible;
             break;
         default:
             return nullptr;
@@ -283,6 +292,23 @@ AdvectionDiffusionNeumannBoundaryConditionKernel BoundaryConditionFactory::getAd
         default:
             return nullptr;
     };
+}
+
+BoundaryConditionKernel BoundaryConditionFactory::getSurfaceLayerBoundaryConditionPost() const
+{
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackCompressible, SurfaceLayerBC::SurfaceHeatFlux))
+        return SurfaceLayerBounceBackCompressibleHeatFlux;
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackWithPressureCompressible, SurfaceLayerBC::SurfaceHeatFlux))
+        return SurfaceLayerBounceBackWithPressureCompressibleHeatFlux;
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressInterpolatedCompressible, SurfaceLayerBC::SurfaceHeatFlux))
+        return SurfaceLayerInterpolatedCompressibleHeatFlux;
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackCompressible, SurfaceLayerBC::SurfaceTemperature))
+        return SurfaceLayerBounceBackCompressibleSurfaceTemperature;
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackWithPressureCompressible, SurfaceLayerBC::SurfaceTemperature))
+        return SurfaceLayerBounceBackWithPressureCompressibleSurfaceTemperature;
+    if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressInterpolatedCompressible, SurfaceLayerBC::SurfaceTemperature))
+        return SurfaceLayerInterpolatedCompressibleSurfaceTemperature;
+    return nullptr;
 }
 
 

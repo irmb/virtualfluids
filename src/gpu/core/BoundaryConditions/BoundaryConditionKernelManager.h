@@ -99,6 +99,8 @@ public:
     void runADFluxBCKernel(int level) const ;
     void runADDirichletBCKernel(int level) const ;
     void runADNeumannBCKernel(int level) const ;
+        //! \brief calls the device function of the surface layer boundary condition (post-collision)
+    void runSurfaceLayerBCKernelPost(int level) const;
 private:
     //! \brief check if a directional boundary condition was set
     //! \throws std::runtime_error if boundary nodes were assigned, but no boundary condition was set in the boundary condition factory
@@ -134,7 +136,7 @@ private:
     BoundaryConditionKernel noSlipBoundaryConditionPost = nullptr;
     BoundaryConditionKernel slipBoundaryConditionPost = nullptr;
     BoundaryConditionKernel geometryBoundaryConditionPost = nullptr;
-    BoundaryConditionWithParameterKernel stressBoundaryConditionPost = nullptr;
+    BoundaryConditionKernel stressBoundaryConditionPost = nullptr;
     PrecursorBoundaryConditionKernel precursorBoundaryConditionPost = nullptr;
     BoundaryConditionKernel pressureBoundaryConditionPre = nullptr;
     DirectionalBoundaryConditionKernel directionalPressureBoundaryConditionPre = nullptr;
@@ -142,6 +144,8 @@ private:
     ADFluxBoundaryConditionKernel ADFluxBoundaryConditionPost = nullptr;
     ADDirichletBoundaryConditionKernel ADDirichletBoundaryConditionPost = nullptr;
     ADNeumannBoundaryConditionKernel ADNeumannBoundaryConditionPost = nullptr;
+    BoundaryConditionKernel surfaceLayerBoundaryConditionPost = nullptr;
+
 };
 #endif
 

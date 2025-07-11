@@ -110,11 +110,9 @@ struct QforBoundaryConditions
    int* k;
    int* kN;
    real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
-   real* q19[19];
    uint numberOfBCnodes=0;
    int kArray;
    real *Vx,      *Vy,      *Vz;
-   real *Vx1,     *Vy1,     *Vz1;
    real *deltaVz, *RhoBC;
    real *normalX, *normalY, *normalZ;
 };
@@ -183,13 +181,30 @@ struct AdvectionDiffusionFluxBoundaryConditions
 // Settings for wall model used in StressBC
 struct WallModelParameters
 {
-   real* z0;
-   int* samplingOffset;
-   bool hasMonitor;
-   real* u_star;
-   real* Fx;
-   real* Fy;
-   real* Fz;
+   real* roughnessLength;
+   real* samplingDistance;
+   real* vonKarmanConstant;
+   uint* samplingIndices;
+   real* frictionVelocity;
+   real* velocityMagnitudeNode;
+   real* velocityMagnitudeSample;
+   real* forceX;
+   real* forceY;
+   real* forceZ;
+};
+
+// Struct for surface layer wall model
+struct TemperatureWallModelParameters{
+   real* temperatureNode;
+   real* temperatureSample;
+   real* surfaceHeatFlux;
+   real* surfaceTemperature;
+   real* roughnessLength;
+   real* heatingRate;
+};
+struct SurfaceLayerWallModelParameters{
+   WallModelParameters momentumParameters;
+   TemperatureWallModelParameters temperatureParameters;
 };
 
 

@@ -37,7 +37,8 @@
 #include "Calculation/Calculation.h"
 
 struct LBMSimulationParameter;
-class Parameter;
+
+void SlipBounceBack(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void SlipCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 

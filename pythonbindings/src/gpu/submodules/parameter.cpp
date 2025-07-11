@@ -76,7 +76,6 @@ void makeModule(py::module_& parentModule)
         .def("set_use_streams", &Parameter::setUseStreams, py::arg("use_streams"))
         .def("configure_main_kernel", &Parameter::configureMainKernel, py::arg("kernel"))
         .def("set_AD_kernel", &Parameter::setADKernel, py::arg("ad_kernel"))
-        .def("set_has_wall_model_monitor", &Parameter::setHasWallModelMonitor, py::arg("has_wall_monitor"))
         .def("set_outflow_pressure_correction_factor", &Parameter::setOutflowPressureCorrectionFactor, py::arg("correction_factor"))
         .def(
             "set_initial_condition",

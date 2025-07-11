@@ -51,4 +51,5 @@ class WallModelProbe(gpu.Sampler):
         compute_temporal_averages: bool,
         output_stress: bool,
         evaluate_pressure_gradient: bool,
+        sample_surface_layer: bool,
     ) -> None: ...

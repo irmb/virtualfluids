@@ -53,9 +53,12 @@
 #include "StringUtilities/StringUtil.h"
 
 #include <basics/config/ConfigurationFile.h>
+#include <basics/constants/NumericConstants.h>
 
 #include <logger/Logger.h>
 #include "Cuda/CudaStreamManager.h"
+
+using namespace vf::basics::constant;
 
 Parameter::Parameter() : Parameter(1, 0, {}) {}
 
@@ -401,6 +404,8 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->diffusivity      = this->Diffusivity * std::exp2((real)i);
         parH[i]->omega            = (real)1.0 / (real(3.0) * parH[i]->viscosity + real(0.5)); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
         parH[i]->omegaDiffusivity = vf::lbm::computeRelaxationFrequency(parH[i]->diffusivity);
+        parH[i]->referenceTemperature = this->referenceTemperature;
+        parH[i]->gravity = getScaledGravity(i);
     }
 
     // device
@@ -414,6 +419,8 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->diffusivity      = parH[i]->diffusivity;
         parD[i]->omega            = parH[i]->omega;
         parD[i]->omegaDiffusivity = parH[i]->omegaDiffusivity;
+        parD[i]->referenceTemperature = parH[i]->referenceTemperature;
+        parD[i]->gravity = parH[i]->gravity;
     }
 }
 
@@ -636,6 +643,11 @@ real Parameter::getScaledBuoyancyFactor(int level) const
     return this->getBuoyancyFactor() * std::exp2(-level);
 }
 
+real Parameter::getScaledGravity(int level) const
+{
+    return this->getGravity() * std::exp2(-level);
+}
+
 void Parameter::setRealX(real RealX)
 {
     this->RealX = RealX;
@@ -676,6 +688,12 @@ void Parameter::setBuoyancyFactor(real buoyancyFactor)
 {
     this->buoyancyFactor = buoyancyFactor;
 }
+void Parameter::setGravity(real gravity) {
+    this->gravity = gravity;
+}
+void Parameter::setReferenceTemperature(real referenceTemperature) {
+    this->referenceTemperature = referenceTemperature;
+}
 void Parameter::setFactorPressBC(real factorPressBC)
 {
     this->factorPressBC = factorPressBC;
@@ -715,10 +733,6 @@ void Parameter::setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusio
 void Parameter::setSGSConstant(real SGSConstant)
 {
     this->SGSConstant = SGSConstant;
-}
-void Parameter::setHasWallModelMonitor(bool hasWallModelMonitor)
-{
-    this->hasWallModelMonitor = hasWallModelMonitor;
 }
 
 void Parameter::setIsBodyForce(bool isBodyForce)
@@ -1424,6 +1438,14 @@ real Parameter::getBuoyancyFactor() const
 {
     return this->buoyancyFactor;
 }
+real Parameter::getGravity() const
+{
+    return this->gravity;
+}
+real Parameter::getReferenceTemperature() const
+{
+    return this->referenceTemperature;
+}
 real Parameter::getFactorPressBC()
 {
     return this->factorPressBC;
@@ -1751,10 +1773,6 @@ bool Parameter::getUseTurbulentDiffusivity()
 real Parameter::getSGSConstant()
 {
     return this->SGSConstant;
-}
-bool Parameter::getHasWallModelMonitor()
-{
-    return this->hasWallModelMonitor;
 }
 std::vector<SPtr<PreCollisionInteractor>> Parameter::getInteractors()
 {

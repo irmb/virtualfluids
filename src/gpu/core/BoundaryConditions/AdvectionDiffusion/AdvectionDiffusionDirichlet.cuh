@@ -35,6 +35,7 @@
 #include <cuda_helper/CudaIndexCalculation.h>
 
 #include <lbm/MacroscopicQuantities.h>
+#include <lbm/constants/D3Q27.h>
 #include <lbm/advectionDiffusion/BoundaryConditions.h>
 
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
@@ -51,6 +52,7 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
 {
     using namespace vf::basics::constant;
     using namespace vf::lbm::advection_diffusion;
+    using namespace vf::lbm::dir;
     using namespace vf::gpu;
 
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
@@ -65,7 +67,7 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
 
     Distributions27 populationReferences = getDistributionReferences27(populationsArray, numberOfLBnodes, isEvenTimestep);
 
-    real populations[27];
+    real populations[NUMBER_Of_DIRECTIONS];
     getPostCollisionDistribution(populations, populationReferences, listIndices);
     const real concentrationWall = bcParameters.concentration[nodeIndex];
 

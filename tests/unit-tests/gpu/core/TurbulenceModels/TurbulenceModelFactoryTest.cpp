@@ -34,6 +34,7 @@
 #include <gmock/gmock.h>
 
 #include <basics/config/ConfigurationFile.h>
+#include <basics/constants/NumericConstants.h>
 #include <gpu/core/TurbulenceModels/TurbulenceModelFactory.h>
 #include <gtest/gtest.h>
 #include <memory>
@@ -46,6 +47,8 @@
 #include "PostProcessor/TurbulentViscosityKernels.h"
 #include "lbm/advectionDiffusion/TurbulentDiffusivity.h"
 #include "lbm/collision/TurbulentViscosity.h"
+
+using namespace vf::basics::constant;
 
 class TurbulenceModelFactoryTest_Initialization : public testing::Test
 {

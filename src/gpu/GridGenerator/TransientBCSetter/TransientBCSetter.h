@@ -33,6 +33,7 @@
 #ifndef TRANSIENTBCSETTER_H_
 #define TRANSIENTBCSETTER_H_
 
+#include "constants/NumericConstants.h"
 #include <cmath>
 #include <future>
 #include <string>
@@ -65,7 +66,7 @@ class VTKFile
 {
 public: 
     explicit VTKFile(std::string fileName): 
-    fileName(fileName)
+    fileName(std::move(fileName))
     {
         readHeader();
         this->loaded = false;
@@ -127,8 +128,7 @@ private:
 class FileCollection
 {
 public:
-    FileCollection(std::string prefix): 
-    prefix(prefix){};
+    FileCollection(std::string path, std::string prefix): path(fixPath(std::move(path))), prefix(std::move(prefix)){};
 
     virtual ~FileCollection() = default;
 
@@ -137,15 +137,22 @@ public:
     virtual TransientBCFileType getFileType() = 0;
 
 protected:
-    std::string prefix;
+    const std::string path, prefix;
+private:
+    static std::string fixPath(std::string path)
+    {
+        if(path.back() == '/')
+            return path;
+        return path + '/';
+    }
 };
 
 
 class VTKFileCollection : public FileCollection
 {
 public:
-    VTKFileCollection(std::string prefix): 
-    FileCollection(prefix)
+    VTKFileCollection(const std::string& path, const std::string& prefix): 
+    FileCollection(path, prefix)
     {
         findFiles();
     };
@@ -174,18 +181,13 @@ public:
 class TransientBCInputFileReader
 {
 public:
-    TransientBCInputFileReader()
-    { 
-        this->nPoints = 0; 
-        this->nPointsRead = 0;
-        this->writingOffset = 0;        
-    };
+    TransientBCInputFileReader(size_t nQuantities, bool cycleFiles) : nQuantities(nQuantities), cycleFiles(cycleFiles) {};
     virtual ~TransientBCInputFileReader() = default;
 
     virtual void getNextData(real* data, uint numberOfNodes, real time)=0;
     virtual void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ)=0;
-    uint getNPoints() const{return nPoints; };
-    uint getNPointsRead() const{return nPointsRead; };
+    uint getNPoints() const{ return nPoints; };
+    uint getNPointsRead() const{ return nPointsRead; };
     size_t getNumberOfQuantities() const{ return nQuantities; };
     void setWritingOffset(uint offset){ this->writingOffset = offset; }
     void getNeighbors(uint* neighbor0PP, uint* neighbor0PM, uint* neighbor0MP, uint* neighbor0MM);
@@ -196,25 +198,22 @@ public:
     std::vector<real> weights0PP, weights0PM, weights0MP,  weights0MM;
 
 protected:
-    uint nPoints, nPointsRead, writingOffset;
-    uint nReads=0;
-    size_t nQuantities=0;
+    uint nPoints { 0 }, nPointsRead { 0 }, writingOffset { 0 }, nReads { 0 };
+    const size_t nQuantities;
+    const bool cycleFiles;
 };
 
 
 class VTKReader : public TransientBCInputFileReader
 {
 public:
-    VTKReader(SPtr<VTKFileCollection> fileCollection, uint readLevel):
-    fileCollection(fileCollection), 
-    readLevel(readLevel)
-    {
-        this->nQuantities = fileCollection->getNumberOfQuantities();
-        read = std::async([](){});
-    };
+    VTKReader(const SPtr<VTKFileCollection>& fileCollection, uint readLevel, bool cycleFiles)
+        : fileCollection(fileCollection), readLevel(readLevel),
+          TransientBCInputFileReader(fileCollection->getNumberOfQuantities(), cycleFiles) {};
     void getNextData(real* data, uint numberOfNodes, real time) override;
     void fillArrays(std::vector<real>& coordsY, std::vector<real>& coordsZ) override;
-private:  
+
+private:
     uint getWriteIndex(int level, int id, int linearIndex);
     void initializeIndexVectors();
 
@@ -223,12 +222,13 @@ private:
     std::vector<std::vector<size_t>> nFile;
     SPtr<VTKFileCollection> fileCollection;
     uint readLevel;
-    std::future<void> read;
+    real startTime { vf::basics::constant::c0o1 };
+    std::future<void> read = std::async([]() {});
 };
 
-
-SPtr<FileCollection> createFileCollection(std::string prefix, TransientBCFileType type);
-SPtr<TransientBCInputFileReader> createReaderForCollection(SPtr<FileCollection> fileCollection, uint readLevel);
+SPtr<FileCollection> createFileCollection(const std::string& path, const std::string& prefix, TransientBCFileType type);
+SPtr<TransientBCInputFileReader> createReaderForCollection(SPtr<FileCollection> fileCollection, uint readLevel,
+                                                           bool cycleFiles);
 
 #endif //TRANSIENTBCSETTER_H_
 
