@@ -61,17 +61,17 @@ void run(const vf::basics::ConfigurationFile& config)
     SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
     int myid = comm->getProcessID();
 
-    real rhoLB1 = 0.00001;
+    real rhoLB1 = 0.00001 / dpFactor;
     real rhoLB2 = 0;
     real nu = 0.0064;
 
     real h = boundingBox[1] / 2.0;
     real dp = (rhoLB1 / 3. - rhoLB2 / 3.);
     real L = boundingBox[0];
-    //real u_max = h * h / (2. * nu) * (dp / L);
+    real u_max = h * h / (2. * nu) * (dp / L);
     
-    real forcing = dp / 64.0 /dpFactor;// /8.0;// /8.0;
-    real u_max = h * h / (2. * nu) * (forcing);
+    //real forcing = dp / 64.0 /dpFactor;// /8.0;// /8.0;
+    //real u_max = h * h / (2. * nu) * (forcing);
     real Re = u_max * 2 * h / nu;
 
     SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
@@ -89,7 +89,12 @@ void run(const vf::basics::ConfigurationFile& config)
 
     // bc
     SPtr<BC> noSlipBC(new NoSlipBC());
-    noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
+    // noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
+    SPtr<NoSlipInterpolatedRelaxed> noSlipRelaxed = SPtr<NoSlipInterpolatedRelaxed>(new NoSlipInterpolatedRelaxed());
+    noSlipRelaxed->thirdMomentsOff();
+    noSlipBC->setBCStrategy(noSlipRelaxed);
+
+
     // mu::Parser fct;
     // fct.SetExpr("u");
     // fct.DefineConst("u", 0.0);
@@ -106,7 +111,7 @@ void run(const vf::basics::ConfigurationFile& config)
     BoundaryConditionsBlockVisitor bcVisitor;
 
     SPtr<Grid3D> grid(new Grid3D(comm));
-    grid->setPeriodicX1(true);
+    grid->setPeriodicX1(false);
     grid->setPeriodicX2(false);
     grid->setPeriodicX3(true);
     grid->setDeltaX(deltax);
@@ -133,8 +138,8 @@ void run(const vf::basics::ConfigurationFile& config)
     kernel = SPtr<LBMKernel>(new K17CompressibleNavierStokes());
     //kernel = SPtr<LBMKernel>(new K15CompressibleNavierStokes());
 
-    kernel->setWithForcing(true);
-    kernel->setForcingX1(forcing);
+    // kernel->setWithForcing(true);
+    // kernel->setForcingX1(forcing);
 
     SPtr<BCSet> bcProc;
     bcProc = std::make_shared<BCSet>();
@@ -233,9 +238,9 @@ void run(const vf::basics::ConfigurationFile& config)
         intHelper.addInteractor(addWallYminInt);
         intHelper.addInteractor(addWallYmaxInt);
 
-        //intHelper.addInteractor(inflowInt);
+        intHelper.addInteractor(inflowInt);
 
-        //intHelper.addInteractor(outflowInt);
+        intHelper.addInteractor(outflowInt);
 
         intHelper.selectBlocks();
         if (myid == 0)

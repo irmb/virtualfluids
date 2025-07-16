@@ -32,46 +32,28 @@
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#include "NoSlipInterpolated.h"
-#include "BoundaryConditions.h"
-#include "DistributionArray3D.h"
+#ifndef NoSlipInterpolatedRelaxed_h__
+#define NoSlipInterpolatedRelaxed_h__
 
-NoSlipInterpolated::NoSlipInterpolated()
-{
-    BCStrategy::preCollision = false;
-}
-//////////////////////////////////////////////////////////////////////////
-SPtr<BCStrategy> NoSlipInterpolated::clone()
-{
-    SPtr<BCStrategy> bc(new NoSlipInterpolated());
-    return bc;
-}
-//////////////////////////////////////////////////////////////////////////
-void NoSlipInterpolated::addDistributions(SPtr<DistributionArray3D> distributions)
-{
-    this->distributions = distributions;
-}
-//////////////////////////////////////////////////////////////////////////
-void NoSlipInterpolated::applyBC()
-{
-    using namespace vf::basics::constant;
-    using namespace d3q27_system;
-    real f[ENDF + 1];
-    real feq[ENDF + 1];
-    distributions->getPostCollisionDistribution(f, x1, x2, x3);
-    real rho, vx1, vx2, vx3;
-    calcMacrosFct(f, rho, vx1, vx2, vx3);
-    calcFeqFct(feq, rho, vx1, vx2, vx3);
+#include "BCStrategy.h"
+#include <PointerDefinitions.h>
 
-    for (int fdir = FSTARTDIR; fdir <= FENDDIR; fdir++) {
-        if (bcPtr->hasNoSlipBoundaryFlag(fdir)) {
-            // quadratic bounce back
-            const int invDir = INVDIR[fdir];
-            real q = bcPtr->getQ(invDir);
-            real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((feq[invDir]-feq[fdir])+((f[invDir]+f[fdir])-(feq[invDir]+feq[fdir])*collFactor) / (c1o1-collFactor))*c1o2  + ((q / (c1o1 + q)) * (f[invDir] + f[fdir]))+((f[invDir]-f[fdir])-(feq[invDir]-feq[fdir]))*c1o2*0.0;
-            distributions->setPostCollisionDistributionForDirection(fReturn, x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
-        }
-    }
-}
+class DistributionArray3D;
+
+//! A class implements no-slip boundary condition
+class NoSlipInterpolatedRelaxed : public BCStrategy
+{
+public:
+    NoSlipInterpolatedRelaxed();
+    SPtr<BCStrategy> clone() override;
+    void addDistributions(SPtr<DistributionArray3D> distributions) override;
+    void applyBC() override;
+    void thirdMomentsOn();
+    void thirdMomentsOff();
+
+private:
+    real thirdMomentsFactor{1.0};
+};
+#endif
 
 //! \}

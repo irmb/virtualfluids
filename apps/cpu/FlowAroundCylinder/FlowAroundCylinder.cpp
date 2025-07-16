@@ -116,7 +116,8 @@ void run(string configname)
 
       //BC
       SPtr<BC> noSlipAdapter(new NoSlipBC());
-      noSlipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
+      //noSlipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
+      noSlipAdapter->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolatedRelaxed()));
 
       mu::Parser fct;
       //fct.SetExpr("16*U*x2*x3*(H-x2)*(H-x3)/H^4");
@@ -240,8 +241,19 @@ void run(string configname)
             UBLOG(logINFO, "Preprozess - start");
          }
 
-         SPtr<GbObject3D> refCylinder(new GbCylinder3D(0.5, 0.2, -0.1, 0.5, 0.2, L3+0.1, radius+7.0*dx/(1<<refineLevel)));
+         //SPtr<GbObject3D> refCylinder(new GbCylinder3D(0.5, 0.2-L2*0.5, -0.1-L3*0.5, 0.5, 0.2-L2*0.5, L3+0.1-L3*0.5, radius+7.0*dx/(1<<refineLevel)));
+         SPtr<GbObject3D> refCylinder(new GbCuboid3D(0.32, g_minX2 - blockLength, g_minX3 - blockLength, 0.68, g_maxX2 + blockLength, g_maxX3 + blockLength));
          gb_system_3d::writeGeoObject(refCylinder.get(), pathOut+"/geo/refCylinder", WbWriterVtkXmlBinary::getInstance());
+
+              // inflow
+      GbCuboid3DPtr refInflow(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_minX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
+      if (myid == 0)
+          gb_system_3d::writeGeoObject(geoInflow.get(), pathOut + "/geo/refInflow", WbWriterVtkXmlASCII::getInstance());
+
+      // outflow
+      GbCuboid3DPtr refOutflow(new GbCuboid3D(g_maxX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
+      if (myid == 0)
+          gb_system_3d::writeGeoObject(geoOutflow.get(), pathOut + "/geo/refOutflow", WbWriterVtkXmlASCII::getInstance()); 
 
 
 
@@ -265,6 +277,8 @@ void run(string configname)
             if (myid==0) UBLOG(logINFO, "Refinement - start");
             RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
             refineHelper.addGbObject(refCylinder, refineLevel);
+            //refineHelper.addGbObject(refInflow, refineLevel);
+            //refineHelper.addGbObject(refOutflow, refineLevel);
             refineHelper.refine();
             if (myid==0) UBLOG(logINFO, "Refinement - end");
          }
