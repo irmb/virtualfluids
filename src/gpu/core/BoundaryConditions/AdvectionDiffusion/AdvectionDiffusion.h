@@ -29,12 +29,13 @@
 //! \addtogroup gpu_BoundaryConditions BoundaryConditions
 //! \ingroup gpu_core core
 //! \{
-//! \author Martin Schoenherr
+//! \author Martin Schoenherr, Henry Korb
 //=======================================================================================
 #ifndef AdvectionDiffusion_H
 #define AdvectionDiffusion_H
 
 #include "Calculation/Calculation.h"
+#include "Parameter/Parameter.h"
 
 #include <cuda.h>
 #include <cuda_runtime.h>
@@ -42,56 +43,30 @@
 struct LBMSimulationParameter;
 class Parameter;
 
-//////////////////////////////////////////////////////////////////////////
-//! \brief defines the behavior of a slip-AD boundary condition
-void AdvectionDiffusionSlipVelocityCompressible(
-    uint numberOfThreads,
-    real * normalX,
-    real * normalY,
-    real * normalZ,
-    real * distributions,
-    real * distributionsAD,
-    int* QindexArray,
-    real * Qarrays,
-    uint numberOfBCnodes,
-    real omegaDiffusivity,
-    uint * neighborX,
-    uint * neighborY,
-    uint * neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
-    
-void AdvectionDiffusionDirichlet(
-    unsigned int numberOfThreads,
-    real* DD, 
-    real* DD27,
-    real* temp,
-    real diffusivity,
-    int* k_Q, 
-    real* QQ,
-    unsigned int numberOfBCnodes, 
-    real om1, 
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes, 
-    bool isEvenTimestep);
-
-void AdvectionDiffusionBounceBack(
-    unsigned int numberOfThreads,
-    real* DD, 
-    real* DD27,
-    real* temp,
-    real diffusivity,
-    int* k_Q, 
-    real* QQ,
-    unsigned int numberOfBCnodes, 
-    real om1, 
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes, 
-    bool isEvenTimestep);
+void AdvectionDiffusionNoFluxBounceBack(LBMSimulationParameter* parameterDevice,
+                                  AdvectionDiffusionNoFluxBoundaryConditions bcParameters);
+void AdvectionDiffusionFluxTurbulentViscosityCompressible(LBMSimulationParameter* parameterDevice,
+                                                          AdvectionDiffusionFluxBoundaryConditions bcParameters);
+void AdvectionDiffusionFluxCompressible(LBMSimulationParameter* parameterDevice,
+                                        AdvectionDiffusionFluxBoundaryConditions bcParameters);
+void AdvectionDiffusionFluxBounceBack(LBMSimulationParameter* parameterDevice,
+                                      AdvectionDiffusionFluxBoundaryConditions bcParameters);
+void AdvectionDiffusionDirichletAntiBounceBackSlip(LBMSimulationParameter* parameterDevice,
+                                                   AdvectionDiffusionDirichletBoundaryConditions bcParameters);
+void AdvectionDiffusionDirichletInterpolatedSlip(LBMSimulationParameter* parameterDevice,
+                                                 AdvectionDiffusionDirichletBoundaryConditions bcParameters);
+void AdvectionDiffusionDirichletAntiBounceBackNoSlip(LBMSimulationParameter* parameterDevice,
+                                                     AdvectionDiffusionDirichletBoundaryConditions bcParameters);
+void AdvectionDiffusionDirichletInterpolatedNoSlip(LBMSimulationParameter* parameterDevice,
+                                                   AdvectionDiffusionDirichletBoundaryConditions bcParameters);
+void AdvectionDiffusionNeumannAntiBounceBackSlip(LBMSimulationParameter* parameterDevice,
+                                                 AdvectionDiffusionNeumannBoundaryConditions bcParameters);
+void AdvectionDiffusionNeumannInterpolatedSlip(LBMSimulationParameter* parameterDevice,
+                                               AdvectionDiffusionNeumannBoundaryConditions bcParameters);
+void AdvectionDiffusionNeumannAntiBounceBackNoSlip(LBMSimulationParameter* parameterDevice,
+                                                   AdvectionDiffusionNeumannBoundaryConditions bcParameters);
+void AdvectionDiffusionNeumannInterpolatedNoSlip(LBMSimulationParameter* parameterDevice,
+                                                 AdvectionDiffusionNeumannBoundaryConditions bcParameters);
 
 #endif
 

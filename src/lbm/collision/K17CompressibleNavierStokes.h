@@ -53,8 +53,6 @@
 #define KERNEL_ABS std::abs // constexpr since C++23, so if switching to C++23, std::abs can be used directly also in cuda code
 #endif
 
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
 
 namespace vf::lbm
 {
@@ -81,6 +79,9 @@ namespace vf::lbm
 template <TurbulenceModel turbulenceModel>
 constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, MacroscopicValues& macroscopicValues, TurbulentViscosity& turbulentViscosity)
 {
+    using namespace vf::basics::constant;
+    using namespace dir;
+
     auto& distribution = parameter.distribution;
 
     real& f000 = distribution[d000];
@@ -142,14 +143,20 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
     real& m200 = fPMM;
     real& m000 = fMMM;
 
-    //////////////////////////////////////////////////////(unsigned long)//////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
     //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
     //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
     //!
     real drho = 0.0, oneOverRho = 0.0, vvx = 0.0, vvy = 0.0, vvz = 0.0;
     getCompressibleMacroscopicValues(distribution, drho, oneOverRho, vvx, vvy, vvz);
+    
 
+    ////////////////////////////////////////////////////////////////////////////////////
+    //! - needed for Kahan summation algorithm
+    const real vvxWithoutForce = vvx;
+    const real vvyWithoutForce = vvy;
+    const real vvzWithoutForce = vvz;
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
@@ -158,6 +165,12 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
     vvx += parameter.forceX * c1o2;
     vvy += parameter.forceY * c1o2;
     vvz += parameter.forceZ * c1o2;
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    //! - Compute round off errors using Kahan summation algorithm <a href=https://en.wikipedia.org/wiki/Kahan_summation_algorithm">
+    parameter.forceX -= c2o1*(vvx - vvxWithoutForce);
+    parameter.forceY -= c2o1*(vvy - vvyWithoutForce);
+    parameter.forceZ -= c2o1*(vvz - vvzWithoutForce);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // calculate the square of velocities for this lattice node
@@ -236,7 +249,7 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Calculate modified omega with turbulent viscosity
     //!
-    const real omega = turbulenceModel == TurbulenceModel::None ? parameter.omega : vf::lbm::calculateOmegaWithturbulentViscosity(parameter.omega, turbulentViscosity.value);
+    const real omega = turbulenceModel == TurbulenceModel::None ? parameter.omega : vf::lbm::calculateOmegaWithTurbulentViscosity(parameter.omega, turbulentViscosity.value);
     ////////////////////////////////////////////////////////////
     // 2.
     real OxxPyyPzz = c1o1;

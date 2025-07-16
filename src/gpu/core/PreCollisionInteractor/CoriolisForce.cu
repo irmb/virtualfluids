@@ -26,64 +26,36 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup gpu_BoundaryConditions BoundaryConditions
-//! \ingroup gpu_core core
-//! \{
-//! \author Martin Schoenherr
-//=======================================================================================
-#ifndef AdvectionDiffusion_Device_H
-#define AdvectionDiffusion_Device_H
-
 #include "Calculation/Calculation.h"
+#include "CoriolisForce.h"
 
-//////////////////////////////////////////////////////////////////////////
-//! \brief \ref AD_SlipVelDeviceComp : device function for the slip-AD boundary condition
-__global__ void AdvectionDiffusionSlipVelocityCompressible_Device(
-    real * normalX,
-    real * normalY,
-    real * normalZ,
-    real * distributions,
-    real * distributionsAD,
-    int* QindexArray,
-    real * Qarrays,
-    uint numberOfBCnodes,
-    real omegaDiffusivity,
-    uint * neighborX,
-    uint * neighborY,
-    uint * neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+#include <cmath>
 
-__global__ void AdvectionDiffusionDirichlet_Device(
-    real* DD,
-    real* DD27,
-    real* temp,
-    real diffusivity,
-    int* k_Q,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+#include <cstdlib>
 
-__global__ void AdvectionDiffusionBounceBack_Device(
-    real* DD,
-    real* DD27,
-    real* temp,
-    real diffusivity,
-    int* k_Q,
-    real* QQ,
-    unsigned int numberOfBCnodes,
-    real om1,
-    unsigned int* neighborX,
-    unsigned int* neighborY,
-    unsigned int* neighborZ,
-    unsigned long long numberOfLBnodes,
-    bool isEvenTimestep);
+#include <basics/DataTypes.h>
+#include <basics/constants/NumericConstants.h>
 
-#endif
+#include "cuda_helper/CudaGrid.h"
+#include "gpu/core/Cuda/CudaMemoryManager.h"
+#include "gpu/core/Parameter/Parameter.h"
+#include <cuda_helper/CudaIndexCalculation.h>
 
-//! \}
+__global__ void computeCoriolis(unsigned long long numberOfNodes, const real* velocityX, const real* velocityY, real* forceX,
+                                real* forceY, const real geostrophicWindX, const real geostrophicWindY,
+                                const real coriolisParameter)
+{
+    const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
+    if (nodeIndex >= numberOfNodes)
+        return;
+    forceX[nodeIndex] += -(geostrophicWindY - velocityY[nodeIndex]) * coriolisParameter;
+    forceY[nodeIndex] += (geostrophicWindX - velocityX[nodeIndex]) * coriolisParameter;
+}
+
+void CoriolisForce::interact(int level, uint /**/)
+{
+    auto parD = para->getParD(level);
+    vf::cuda::CudaGrid grid(parD->numberofthreads, parD->numberOfNodes);
+    computeCoriolis<<<grid.grid, grid.threads>>>(parD->numberOfNodes, parD->velocityX, parD->velocityY, parD->forceX_SP,
+                                                 parD->forceY_SP, geostrophicWindX, geostrophicWindY, coriolisParameter);
+}

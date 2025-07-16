@@ -40,11 +40,11 @@ namespace transient_bc_setter
         py::enum_<TransientBCFileType>(parentModule, "TransientBCFileType")
         .value("VTK", TransientBCFileType::VTK);
 
-        parentModule.def("create_file_collection", &createFileCollection, py::arg("prefix"), py::arg("type"));
+        parentModule.def("create_file_collection", &createFileCollection, py::arg("path"), py::arg("prefix"), py::arg("type"));
 
         py::class_<FileCollection, std::shared_ptr<FileCollection>>(parentModule, "FileCollection");
 
         py::class_<VTKFileCollection, FileCollection, std::shared_ptr<VTKFileCollection>>(parentModule, "VTKFileCollection")
-        .def(py::init <std::string>(), py::arg("prefix"));
+        .def(py::init <const std::string&, const std::string&>(), py::arg("path"), py::arg("prefix"));
     }
 }

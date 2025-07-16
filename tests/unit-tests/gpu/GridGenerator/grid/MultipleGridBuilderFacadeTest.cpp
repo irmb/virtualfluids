@@ -44,6 +44,8 @@
 #include "utilities/communication.h"
 #include "grid/GridBuilder/MultipleGridBuilder.h"
 
+using namespace vf::basics::constant;
+
 class MultipleGridBuilderFacadeTest : public MultipleGridBuilderFacade
 {public:
     MultipleGridBuilderFacadeTest(SPtr<MultipleGridBuilder> gridBuilder, UPtr<GridDimensions> gridDimensions, std::optional<real> overlapOfSubdomains =  std::nullopt)
@@ -96,14 +98,14 @@ public:
 
     MOCK_METHOD(void, setNoSlipBoundaryCondition, (SideType side), (override));
     MOCK_METHOD(void, setStressBoundaryCondition,
-                (SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real z0, real dx),
+                (SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX),
                 (override));
     MOCK_METHOD(void, setVelocityBoundaryCondition, (SideType sideType, real vx, real vy, real vz), (override));
     MOCK_METHOD(void, setPressureBoundaryCondition, (SideType sideType, real rho), (override));
     MOCK_METHOD(void, setSlipBoundaryCondition, (SideType sideType, real normalX, real normalY, real normalZ),
                 (override));
     MOCK_METHOD(void, setPrecursorBoundaryCondition,
-                (SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, real velocityX,
+                (SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, bool cycleFiles, real velocityX,
                  real velocityY, real velocityZ, std::vector<uint> fileLevelToGridLevelMap),
                 (override));
     MOCK_METHOD(void, setPeriodicBoundaryCondition, (bool periodic_X, bool periodic_Y, bool periodic_Z), (override));
@@ -452,45 +454,46 @@ TEST_F(MultipleGridBuilderFacadeTest_24subdomains, noSlipPX)
 TEST_F(MultipleGridBuilderFacadeTest_24subdomains, stressMX)
 {
     SideType sideType = SideType::MX;
-    real normalX = 0.1;
-    real normalY = 0.2;
-    real normalZ = 0.3;
-    uint samplingOffset = 1;
-    real z0 = 0.5;
-    real dx = 0.7;
+    const real normalX = 0.1;
+    const real normalY = 0.2;
+    const real normalZ = 0.3;
+    const uint samplingOffset = 1;
+    const real roughnessLength = 0.5;
+    const real vonKarmanConstant = 0.4;
+    const real dx = 0.7;
 
     // process index
     EXPECT_CALL(*mockGridBuilder,
-                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx));
+                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx));
     sut->createGrids(0);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
 
     // process index 9
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder, setStressBoundaryCondition).Times(0);
     sut->createGrids(9);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
 
     // process index 18
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder,
-                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx));
+                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx));
     sut->createGrids(18);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
 
     // process index 23
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder, setStressBoundaryCondition).Times(0);
     sut->createGrids(23);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
 
     EXPECT_CALL(*mockGridBuilder,
-                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx))
+                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx))
         .Times(12);
     for (int i = 0; i < 24; i++) {
         this->createNewSut();
         sut->createGrids(i);
-        sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+        sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
     }
 }
 
@@ -615,34 +618,35 @@ TEST_F(MultipleGridBuilderFacadeTest_24subdomains, precursorMZ)
     real velocityX = c1o2;
     real velocityY = c1o3;
     real velocityZ = c1o4;
+    bool cycleFiles = false;
     std::vector<uint> fileLevelToGridLevelMap = { 0 };
 
     EXPECT_CALL(*mockGridBuilder,
-                setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY,
+                setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY,
                                               velocityZ, fileLevelToGridLevelMap));
     sut->createGrids(0);
-    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY, velocityZ,
+    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY, velocityZ,
                                        fileLevelToGridLevelMap);
 
     // process index 17
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder, setPrecursorBoundaryCondition).Times(0);
     sut->createGrids(17);
-    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY, velocityZ,
+    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY, velocityZ,
                                        fileLevelToGridLevelMap);
 
     // process index 18
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder, setPrecursorBoundaryCondition).Times(0);
     sut->createGrids(18);
-    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY, velocityZ,
+    sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY, velocityZ,
                                        fileLevelToGridLevelMap);
 
     EXPECT_CALL(*mockGridBuilder, setPrecursorBoundaryCondition).Times(6);
     for (int i = 0; i < 24; i++) {
         this->createNewSut();
         sut->createGrids(i);
-        sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY,
+        sut->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY,
                                            velocityZ, fileLevelToGridLevelMap);
     }
 }

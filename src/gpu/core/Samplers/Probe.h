@@ -58,15 +58,15 @@ class Probe : public Sampler
 {
 public:
     enum class Statistic { Instantaneous, Means, Variances };
-    Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, std::string outputPath,
-          std::string probeName, uint tStartSampling, uint tBetweenSamples, uint tStartWritingOutput, uint tBetweenWriting,
+    Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, const std::string& outputPath,
+          const std::string& probeName, uint tStartSampling, uint tBetweenSamples, uint tStartWritingOutput, uint tBetweenWriting,
           bool outputTimeSeries, bool sampleEveryTimestep, bool sampleScalar = false);
-    ~Probe();
+    ~Probe() override;
 
     void addProbePlane(real startX, real startY, real startZ, real length, real width, real height);
     void addProbePoint(real x, real y, real z);
     void addProbePointsFromList(std::vector<real> coordsX, std::vector<real> coordY, std::vector<real> coordZ);
-    void addProbeVolume(std::shared_ptr<GbObject3D> probeVolume);
+    void addProbeVolume(const std::shared_ptr<GbObject3D>& probeVolume);
     void addStatistic(Statistic variable);
     void addAllAvailableStatistics()
     {
@@ -104,7 +104,7 @@ private:
     {
         return WbWriterVtkXmlBinary::getInstance();
     };
-    std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic variable, int level) const;
+    std::vector<PostProcessingVariable> getPostProcessingVariables(Statistic statistic, int level) const;
     std::vector<PostProcessingVariable> getAllPostProcessingVariables(int level) const;
 
     void writeParallelFile(int t);
@@ -130,7 +130,8 @@ protected:
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
     std::vector<LevelData> levelDatas;
-    bool enableComputationInstantaneous {}, enableComputationMeans {}, enableComputationVariances {}, sampleScalar {};
+    bool enableComputationInstantaneous {}, enableComputationMeans {}, enableComputationVariances {};
+    const bool sampleScalar;
     //! flag initiating time series output.
     const bool outputTimeSeries, sampleEveryTimestep;
     std::vector<std::string> fileNamesForCollectionFile;

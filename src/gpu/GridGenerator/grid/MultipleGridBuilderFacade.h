@@ -80,9 +80,6 @@ class FileCollection;
 //!
 //! - 4. set boundary conditions
 //!
-
-using namespace vf::basics::constant;
-
 class MultipleGridBuilderFacade
 {
 public:
@@ -116,16 +113,23 @@ public:
 
     // Boundary conditions, call after createGrids()
     void setSlipBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ) const;
-    void setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset,
-                                    real z0, real dx) const;
+    void setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
+                                    real roughnessLength, real deltaX) const;
+    void setSurfaceLayerBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
+                                          real roughnessLength, real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate,
+                                          real deltaX, real deltaT) const;
     void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz) const;
     void setPressureBoundaryCondition(SideType sideType, real rho) const;
     void setNoSlipBoundaryCondition(SideType sideType) const;
     void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     void setPeriodicBoundaryCondition(const std::array<bool, 3>& periodicity);
-    void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads,
-                                       real velocityX = c0o1, real velocityY = c0o1, real velocityZ = c0o1, 
+    void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, bool cycleFiles,
+                                       real velocityX = vf::basics::constant::c0o1, real velocityY = vf::basics::constant::c0o1, real velocityZ = vf::basics::constant::c0o1, 
                                        std::vector<uint> fileLevelToGridLevelMap = {}) const;
+    void setADNoFluxBoundaryCondition(SideType sideType);
+    void setADFluxBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX);
+    void setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz);
+    void setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx);
     void setPeriodicShiftOnXBoundaryInYDirection(real shift);
     void setPeriodicShiftOnXBoundaryInZDirection(real shift);
     void setPeriodicShiftOnYBoundaryInXDirection(real shift);

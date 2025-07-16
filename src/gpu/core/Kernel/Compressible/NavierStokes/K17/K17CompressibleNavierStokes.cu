@@ -159,6 +159,7 @@ K17CompressibleNavierStokes<turbulenceModel>::K17CompressibleNavierStokes(std::s
 }
 
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::AMD>;
+template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::AMDStratified>;
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::Smagorinsky>;
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::QR>;
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::None>;

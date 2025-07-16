@@ -28,6 +28,9 @@
 //
 //! \author Henry Korb, Henrik Asmuth
 //=======================================================================================
+#include <memory>
+#include <optional>
+
 #include <pybind11/pybind11.h>
 #include "gpu/GridGenerator/utilities/communication.h"
 #include "gpu/GridGenerator/geometries/Object.h"
@@ -41,6 +44,7 @@
 #include "gpu/GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridDimensions.h"
 #include "basics/constants/NumericConstants.h"
+#include "grid/MultipleGridBuilderFacade.h"
 
 using namespace vf::basics::constant;
 
@@ -93,8 +97,12 @@ namespace grid_generator
         .def("set_pressure_boundary_condition", &LevelGridBuilder::setPressureBoundaryCondition, py::arg("side_type"), py::arg("rho"))
         .def("set_periodic_boundary_condition", &LevelGridBuilder::setPeriodicBoundaryCondition, py::arg("periodic_x"), py::arg("periodic_y"), py::arg("periodic_z"))
         .def("set_no_slip_boundary_condition", &LevelGridBuilder::setNoSlipBoundaryCondition, py::arg("side_type"))
-        .def("set_precursor_boundary_condition", &LevelGridBuilder::setPrecursorBoundaryCondition, py::arg("side_type"), py::arg("file_collection"), py::arg("n_t_read"), py::arg("velocity_x")=c0o1, py::arg("velocity_y")=c0o1, py::arg("velocity_z")=c0o1, py::arg("file_level_to_grid_level_map")=std::vector<uint>())
-        .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("z0"), py::arg("dx"))
+        .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("von_karman_constant"), py::arg("roughness_length"), py::arg("delta_x"))
+        .def("set_surface_layer_boundary_condition", &LevelGridBuilder::setSurfaceLayerBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("von_karman_constant"), py::arg("roughness_length"), py::arg("roughness_length_temperature"), py::arg("surface_heat_flux"), py::arg("surface_temperature"), py::arg("heating_rate"), py::arg("delta_x"), py::arg("delta_t"))
+        .def("set_AD_dirichlet_boundary_condition", &LevelGridBuilder::setADDirichletBoundaryCondition, py::arg("side_type"), py::arg("value"), py::arg("vx"), py::arg("vy"), py::arg("vz"))
+        .def("set_AD_neumann_boundary_condition", &LevelGridBuilder::setADNeumannBoundaryCondition, py::arg("side_type"), py::arg("gradient"), py::arg("vx"), py::arg("vy"), py::arg("vz"), py::arg("dx"))
+        .def("set_AD_no_flux_boundary_condition", &LevelGridBuilder::setADNoFluxBoundaryCondition, py::arg("side_type"))
+        .def("set_AD_flux_boundary_condition", &LevelGridBuilder::setADFluxBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("gradient"), py::arg("dx"))
         .def("set_periodic_shift_on_x_boundary_in_y_direction", &LevelGridBuilder::setPeriodicShiftOnXBoundaryInYDirection, py::arg("shift"))
         .def("set_periodic_shift_on_x_boundary_in_z_direction", &LevelGridBuilder::setPeriodicShiftOnXBoundaryInZDirection, py::arg("shift"))
         .def("set_periodic_shift_on_y_boundary_in_x_direction", &LevelGridBuilder::setPeriodicShiftOnYBoundaryInXDirection, py::arg("shift"))
@@ -116,6 +124,38 @@ namespace grid_generator
         .def("set_subdomain_box", &MultipleGridBuilder::setSubDomainBox, py::arg("bounding_box"))
         .def("find_communication_indices", &MultipleGridBuilder::findCommunicationIndices, py::arg("direction"), py::arg("do_shift")=false)
         .def("set_number_of_layers", &MultipleGridBuilder::setNumberOfLayers, py::arg("number_of_layers_fine"), py::arg("number_of_layers_between_levels"));
+
+        py::class_<GridDimensions, std::shared_ptr<GridDimensions>>(gridGeneratorModule, "GridDimensions")
+        .def(py::init<real, real, real, real, real, real, real>(), py::arg("min_x"), py::arg("max_x"), py::arg("min_y"), py::arg("max_y"), py::arg("min_z"), py::arg("max_z"), py::arg("delta"));
+        
+        py::class_<MultipleGridBuilderFacade, std::shared_ptr<MultipleGridBuilderFacade>>(gridGeneratorModule, "MultipleGridBuilderFacade")
+        .def(py::init<std::shared_ptr<GridDimensions>, std::optional<real>>(), py::arg("grid_dimensions"), py::arg("overlap_of_subdomains")=std::nullopt)
+        .def("add_domain_split", &MultipleGridBuilderFacade::addDomainSplit, py::arg("coordinate"), py::arg("direction"))
+        .def("set_overlap_of_subdomains", &MultipleGridBuilderFacade::setOverlapOfSubdomains, py::arg("overlap"))
+        .def("add_fine_grid", &MultipleGridBuilderFacade::addFineGrid, py::arg("grid_shape"), py::arg("level_fine"))
+        .def("add_geometry", &MultipleGridBuilderFacade::addGeometry, py::arg("grid_shape"))
+        .def("set_number_of_layers_for_refinement", &MultipleGridBuilderFacade::setNumberOfLayersForRefinement, py::arg("number_of_layers_fine"), py::arg("number_of_layers_between_levels"))
+        .def("create_grids", &MultipleGridBuilderFacade::createGrids, py::arg("generate_part"))
+        .def("set_periodic_boundary_condition", py::overload_cast<bool, bool, bool>(&MultipleGridBuilderFacade::setPeriodicBoundaryCondition), py::arg("periodic_x"), py::arg("periodic_y"), py::arg("periodic_z"))
+        .def("set_periodic_boundary_condition", py::overload_cast<const std::array<bool, 3>&>(&MultipleGridBuilderFacade::setPeriodicBoundaryCondition), py::arg("periodicity"))
+        .def("set_slip_boundary_condition", &MultipleGridBuilderFacade::setSlipBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"))
+        .def("set_velocity_boundary_condition", &MultipleGridBuilderFacade::setVelocityBoundaryCondition, py::arg("side_type"), py::arg("vx"), py::arg("vy"), py::arg("vz"))
+        .def("set_pressure_boundary_condition", &MultipleGridBuilderFacade::setPressureBoundaryCondition, py::arg("side_type"), py::arg("rho"))
+        .def("set_no_slip_boundary_condition", &MultipleGridBuilderFacade::setNoSlipBoundaryCondition, py::arg("side_type"))
+        .def("set_stress_boundary_condition", &MultipleGridBuilderFacade::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("von_karman_constant"), py::arg("roughness_length"), py::arg("delta_x"))
+        .def("set_surface_layer_boundary_condition", &MultipleGridBuilderFacade::setSurfaceLayerBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("von_karman_constant"), py::arg("roughness_length"), py::arg("roughness_length_temperature"), py::arg("surface_heat_flux"), py::arg("surface_temperature"), py::arg("heating_rate"), py::arg("delta_x"), py::arg("delta_t"))
+        .def("set_AD_dirichlet_boundary_condition", &MultipleGridBuilderFacade::setADDirichletBoundaryCondition, py::arg("side_type"), py::arg("value"), py::arg("vx"), py::arg("vy"), py::arg("vz"))
+        .def("set_AD_neumann_boundary_condition", &MultipleGridBuilderFacade::setADNeumannBoundaryCondition, py::arg("side_type"), py::arg("gradient"), py::arg("vx"), py::arg("vy"), py::arg("vz"), py::arg("dx"))
+        .def("set_AD_no_flux_boundary_condition", &MultipleGridBuilderFacade::setADNoFluxBoundaryCondition, py::arg("side_type"))
+        .def("set_AD_flux_boundary_condition", &MultipleGridBuilderFacade::setADFluxBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("gradient"), py::arg("dx"))
+        .def("set_periodic_shift_on_x_boundary_in_y_direction", &MultipleGridBuilderFacade::setPeriodicShiftOnXBoundaryInYDirection, py::arg("shift"))
+        .def("set_periodic_shift_on_x_boundary_in_z_direction", &MultipleGridBuilderFacade::setPeriodicShiftOnXBoundaryInZDirection, py::arg("shift"))
+        .def("set_periodic_shift_on_y_boundary_in_x_direction", &MultipleGridBuilderFacade::setPeriodicShiftOnYBoundaryInXDirection, py::arg("shift"))
+        .def("set_periodic_shift_on_y_boundary_in_z_direction", &MultipleGridBuilderFacade::setPeriodicShiftOnYBoundaryInZDirection, py::arg("shift"))
+        .def("set_periodic_shift_on_z_boundary_in_x_direction", &MultipleGridBuilderFacade::setPeriodicShiftOnZBoundaryInXDirection, py::arg("shift"))
+        .def("set_periodic_shift_on_z_boundary_in_y_direction", &MultipleGridBuilderFacade::setPeriodicShiftOnZBoundaryInYDirection, py::arg("shift"))
+        .def("get_grid_builder", &MultipleGridBuilderFacade::getGridBuilder);
+;
 
         return gridGeneratorModule;
     }

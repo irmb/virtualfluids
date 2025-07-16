@@ -26,52 +26,45 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup gpu_Kernel Kernel
-//! \ingroup gpu_core core
-//! \{
-//! \author Martin Schoenherr
+//! \author Henry Korb
 //=======================================================================================
-#ifndef ADVECTION_DIFFUSION_H
-#define ADVECTION_DIFFUSION_H
+#ifndef SurfaceLayer_H
+#define SurfaceLayer_H
 
-#include <vector>
-
+#include "Calculation/Calculation.h"
+#include "Parameter/Parameter.h"
 #include <basics/DataTypes.h>
-#include <basics/PointerDefinitions.h>
 
-
-//! \brief Class forwarding for Parameter, CudaMemoryManager
-class Parameter;
-class CudaMemoryManager;
-class AdvectionDiffusionKernel;
-
-//! \class ADKernelManager
-//! \brief manage the advection diffusion kernel calls
-class ADKernelManager
+struct TemperatureParameters
 {
-
-public:
-    //! Class constructor
-    //! \param parameter shared pointer to instance of class Parameter
-    ADKernelManager(SPtr<Parameter> parameter, std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels);
-
-    //! \brief calculate the state of the next time step of the advection diffusion distributions
-    void runADcollisionKernel(int level) const;
-
-    //! \brief calls the device function of the geometry boundary condition for advection diffusion
-    void runADgeometryBCKernel(int level) const;
-
-    //! \brief calls the device function of the velocity boundary condition for advection diffusion
-    void runADDirichletBCKernel(int level) const;
-
-    //! \brief calls the device function of the slip boundary condition for advection diffusion
-    void runADslipBCKernel(int level) const;
-
-private:
-    SPtr<Parameter> para;
-    std::vector<SPtr<AdvectionDiffusionKernel>> adkernels;
+    real* temperature;
+    real diffusivity;
+    real gravity;
+    real* turbulentDiffusivity;
+    real referenceTemperature;
+    real* distributionsTemperature;
 };
 
-#endif
+struct TemperatureBoundaryParameters
+{
+    real* surfaceHeatFlux;
+};
 
-//! \}
+struct LBMSimulationParameter;
+struct QforBoundaryConditions;
+
+void SurfaceLayerBounceBackCompressibleHeatFlux(LBMSimulationParameter* parameterDevice,
+                                                QforBoundaryConditions* surfaceLayerBoundaryCondition);
+void SurfaceLayerBounceBackWithPressureCompressibleHeatFlux(LBMSimulationParameter* parameterDevice,
+                                                            QforBoundaryConditions* surfaceLayerBoundaryCondition);
+void SurfaceLayerInterpolatedCompressibleHeatFlux(LBMSimulationParameter* parameterDevice,
+                                                  QforBoundaryConditions* surfaceLayerBoundaryCondition);
+
+void SurfaceLayerBounceBackCompressibleSurfaceTemperature(LBMSimulationParameter* parameterDevice,
+                                                          QforBoundaryConditions* surfaceLayerBoundaryCondition);
+void SurfaceLayerBounceBackWithPressureCompressibleSurfaceTemperature(LBMSimulationParameter* parameterDevice,
+                                                                      QforBoundaryConditions* surfaceLayerBoundaryCondition);
+void SurfaceLayerInterpolatedCompressibleSurfaceTemperature(LBMSimulationParameter* parameterDevice,
+                                                            QforBoundaryConditions* surfaceLayerBoundaryCondition);
+
+#endif

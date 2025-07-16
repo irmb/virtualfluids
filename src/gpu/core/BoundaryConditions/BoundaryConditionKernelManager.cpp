@@ -58,6 +58,13 @@ BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> p
     this->geometryBoundaryConditionPost = bcFactory->getGeometryBoundaryConditionPost();
     this->stressBoundaryConditionPost = bcFactory->getStressBoundaryConditionPost();
     this->precursorBoundaryConditionPost = bcFactory->getPrecursorBoundaryConditionPost();
+    
+    this->ADNoFluxBoundaryConditionPost = bcFactory->getAdvectionDiffusionNoFluxBoundaryConditionPost();
+    this->ADFluxBoundaryConditionPost = bcFactory->getAdvectionDiffusionFluxBoundaryConditionPost();
+    this->ADDirichletBoundaryConditionPost = bcFactory->getAdvectionDiffusionDirichletBoundaryConditionPost();
+    this->ADNeumannBoundaryConditionPost = bcFactory->getAdvectionDiffusionNeumannBoundaryConditionPost();
+
+    this->surfaceLayerBoundaryConditionPost = bcFactory->getSurfaceLayerBoundaryConditionPost();
 
     if (bcFactory->hasDirectionalPressureBoundaryCondition())
         this->directionalPressureBoundaryConditionPre =
@@ -81,6 +88,17 @@ BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> p
                            "pressureBoundaryConditionPre");
     checkBoundaryCondition(this->directionalPressureBoundaryConditionPre, this->para->getParD(0)->pressureBCDirectional,
                            "directionalPressureBoundaryConditionPre");
+    checkBoundaryCondition(this->ADNoFluxBoundaryConditionPost, this->para->getParD(0)->AdvectionDiffusionNoFluxBC,
+                           "AdvectionDiffusionNoFluxBoundaryConditionPost");
+    checkBoundaryCondition(this->ADFluxBoundaryConditionPost,
+                           this->para->getParD(0)->AdvectionDiffusionFluxBC,
+                           "AdvectionDiffusionFluxBoundaryConditionPost");
+    checkBoundaryCondition(this->ADDirichletBoundaryConditionPost, this->para->getParD(0)->AdvectionDiffusionDirichletBC,
+                           "AdvectionDiffusionDirichletBoundaryConditionPost");
+    checkBoundaryCondition(this->ADNeumannBoundaryConditionPost, this->para->getParD(0)->AdvectionDiffusionNeumannBC,
+                           "AdvectionDiffusionNeumannBoundaryConditionPost");
+    checkBoundaryCondition(this->surfaceLayerBoundaryConditionPost, this->para->getParD(0)->surfaceLayerBC,
+                           "surfaceLayerBoundaryConditionPost");
 }
 
 void BoundaryConditionKernelManager::runVelocityBCKernelPre(int level) const
@@ -331,7 +349,7 @@ void BoundaryConditionKernelManager::runPressureBCKernelPre(int level) const
 void BoundaryConditionKernelManager::runStressWallModelKernelPost(int level) const
 {
     if (para->getParD(level)->stressBC.numberOfBCnodes > 0)
-        stressBoundaryConditionPost(para.get(), &(para->getParD(level)->stressBC), level);
+        stressBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->stressBC));
 }
 
 void BoundaryConditionKernelManager::runSlipBCKernelPost(int level) const{
@@ -342,6 +360,11 @@ void BoundaryConditionKernelManager::runSlipBCKernelPost(int level) const{
 void BoundaryConditionKernelManager::runNoSlipBCKernelPost(int level) const{
     if (para->getParD(level)->noSlipBC.numberOfBCnodes > 0)
         noSlipBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->noSlipBC));
+}
+
+void BoundaryConditionKernelManager::runSurfaceLayerBCKernelPost(const int level) const{
+    if (para->getParD(level)->surfaceLayerBC.numberOfBCnodes > 0)
+        surfaceLayerBoundaryConditionPost(para->getParD(level).get(), &(para->getParD(level)->surfaceLayerBC));
 }
 
 void BoundaryConditionKernelManager::runPrecursorBCKernelPost(int level, uint t, CudaMemoryManager* cudaMemoryManager)
@@ -380,6 +403,37 @@ void BoundaryConditionKernelManager::runPrecursorBCKernelPost(int level, uint t,
     
     real tRatio = real(t_level-lastTime)/para->getParD(level)->precursorBC.timeStepsBetweenReads;
     precursorBoundaryConditionPost(para->getParD(level).get(), &para->getParD(level)->precursorBC, tRatio, para->getVelocityRatio());
+}
+
+void BoundaryConditionKernelManager::runADNoFluxBCKernel(int level) const
+{
+    auto* parD = para->getParD(level).get();
+    if (parD->AdvectionDiffusionNoFluxBC.numberOfBCnodes == 0)
+        return;
+    ADNoFluxBoundaryConditionPost(parD, parD->AdvectionDiffusionNoFluxBC);
+}
+
+void BoundaryConditionKernelManager::runADFluxBCKernel(int level) const
+{
+    auto* parD = para->getParD(level).get();
+    if (parD->AdvectionDiffusionFluxBC.numberOfBCnodes == 0)
+        return;
+    ADFluxBoundaryConditionPost(parD, parD->AdvectionDiffusionFluxBC);
+}
+
+void BoundaryConditionKernelManager::runADDirichletBCKernel(int level) const
+{
+    auto* parD = &para->getParDeviceAsReference(level);
+    if (parD->AdvectionDiffusionDirichletBC.numberOfBCnodes == 0)
+        return;
+    ADDirichletBoundaryConditionPost(parD, parD->AdvectionDiffusionDirichletBC);
+}
+void BoundaryConditionKernelManager::runADNeumannBCKernel(int level) const
+{
+    auto* parD = &para->getParDeviceAsReference(level);
+    if (parD->AdvectionDiffusionNeumannBC.numberOfBCnodes == 0)
+        return;
+    ADNeumannBoundaryConditionPost(parD, parD->AdvectionDiffusionNeumannBC);
 }
 
 //! \}

@@ -48,11 +48,13 @@ add_subdirectory(src/gpu/core)
 
 if(VF_ENABLE_ALL_APPS)
     list(APPEND USER_APPS
-    "apps/gpu/GaussianHillOfConcentration"
-    "apps/gpu/DrivenCavityMultiGPU"
-    "apps/gpu/AtmosphericBoundaryLayer"
     "apps/gpu/ActuatorLine"
+    "apps/gpu/AtmosphericBoundaryLayer"
+    "apps/gpu/DrivenCavityMultiGPU"
+    "apps/gpu/GaussianHillOfConcentration"
+    "apps/gpu/HeatedCube"
     "apps/gpu/SphereMultiGPU" 
+    "apps/gpu/StratifiedBoundaryLayer"
     "apps/gpu/TaylorGreenVortex"
     )
 endif()

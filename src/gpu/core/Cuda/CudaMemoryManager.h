@@ -46,7 +46,8 @@ class Probe;
 class PlanarAverageProbe;
 class VelocitySetter;
 class PrecursorWriter;
-
+class BuoyancyProviderPlanarAverage;
+class DampingLayer;
 class CudaMemoryManager
 {
 public:
@@ -116,23 +117,12 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
-    virtual void cudaAllocProcessNeighborX(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborXFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
-    void cudaCopyProcessNeighborXFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
-    virtual void cudaCopyProcessNeighborXIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborX(int lev, unsigned int processNeighbor);
-    //
-    virtual void cudaAllocProcessNeighborY(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborYFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
-    void cudaCopyProcessNeighborYFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
-    virtual void cudaCopyProcessNeighborYIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborY(int lev, unsigned int processNeighbor);
-    //
-    virtual void cudaAllocProcessNeighborZ(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborZFsHD(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsRecv);
-    void cudaCopyProcessNeighborZFsDH(int lev, unsigned int processNeighbor, const unsigned int &memsizeFsSend);
-    virtual void cudaCopyProcessNeighborZIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborZ(int lev, unsigned int processNeighbor);
+    virtual void cudaAllocProcessNeighbor(ProcessNeighbor27& sendNeighborHost, ProcessNeighbor27& sendNeighborDevice, ProcessNeighbor27& recvNeighborHost, ProcessNeighbor27& recvNeighborDevice);
+    virtual void cudaCopyProcessNeighborIndex(ProcessNeighbor27& sendNeighborHost, ProcessNeighbor27& sendNeighborDevice, ProcessNeighbor27& recvNeighborHost, ProcessNeighbor27& recvNeighborDevice);
+    void cudaFreeProcessNeighbor(ProcessNeighbor27& sendNeighborHost, ProcessNeighbor27& sendNeighborDevice, ProcessNeighbor27& recvNeighborHost, ProcessNeighbor27& recvNeighborDevice);
+
+    void cudaCopyProcessNeighborFsDtoH(ProcessNeighbor27* neighborHost, ProcessNeighbor27* neighborDevice);
+    void cudaCopyProcessNeighborFsHtoD(ProcessNeighbor27* neighborHost, ProcessNeighbor27* neighborDevice);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -181,6 +171,10 @@ public:
     void cudaCopyStressBC(int lev);
     void cudaFreeStressBC(int lev);
 
+    void cudaAllocSurfaceLayerBC(int lev);
+    void cudaCopySurfaceLayerBC(int lev);
+    void cudaFreeSurfaceLayerBC(int lev);
+
     void cudaAllocPrecursorBC(int lev);
     void cudaAllocPrecursorData(int lev);
     void cudaCopyPrecursorBC(int lev);
@@ -188,9 +182,13 @@ public:
     void cudaFreePrecursorBC(int lev);
     void cudaFreePrecursorData(int lev);
 
-    void cudaAllocWallModel(int lev, bool hasWallModelMonitor);
-    void cudaCopyWallModel(int lev, bool hasWallModelMonitor);
-    void cudaFreeWallModel(int lev, bool hasWallModelMonitor);
+    void cudaAllocWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice, uint numberOfNodes);
+    void cudaCopyWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice, uint numberOfNodes);
+    void cudaFreeWallModel(WallModelParameters& wallModelHost, WallModelParameters& wallModelDevice);
+
+    void cudaAllocTemperatureWallModel(TemperatureWallModelParameters& wallModelHost, TemperatureWallModelParameters& wallModelDevice, uint numberOfNodes);
+    void cudaCopyTemperatureWallModel(TemperatureWallModelParameters& wallModelHost, TemperatureWallModelParameters& wallModelDevice, uint numberOfNodes);
+    void cudaFreeTemperatureWallModel(TemperatureWallModelParameters& wallModelHost, TemperatureWallModelParameters& wallModelDevice);
 
     void cudaAllocGeomValuesBC(int lev);
     void cudaCopyGeomValuesBC(int lev);
@@ -255,36 +253,27 @@ public:
     void cudaCopyTurbulentDiffusivityHostToDevice(int lev);
     void cudaCopyTurbulentDiffusivityDeviceToHost(int lev);
     void cudaFreeTurbulentDiffusivity(int lev);
+
+    void cudaAllocConcentrationNoFluxBC(int lev);
+    void cudaCopyConcentrationNoFluxBCHostToDevice(int lev);
+    void cudaFreeConcentrationNoFluxBC(int lev);
+
+    void cudaAllocConcentrationFluxBC(int lev);
+    void cudaCopyConcentrationFluxBCHostToDevice(int lev);
+    void cudaFreeConcentrationFluxBC(int lev);
+
     void cudaAllocConcentrationDirichletBC(int lev);
     void cudaCopyConcentrationDirichletBCHostToDevice(int lev);
     void cudaFreeConcentrationDirichletBC(int lev);
 
-    void cudaAllocConcentrationNoSlipBC(int lev);
-    void cudaCopyConcentrationNoSlipBCHD(int lev);
-    void cudaFreeConcentrationNoSlipBC(int lev);
+    void cudaAllocConcentrationNeumannBC(int lev);
+    void cudaCopyConcentrationNeumannBCHostToDevice(int lev);
+    void cudaFreeConcentrationNeumannBC(int lev);
 
     void cudaAllocLocalReferenceTemperature(int lev);
     void cudaCopyLocalReferenceTemperatureDeviceToHost(int lev);
     void cudaCopyLocalReferenceTemperatureHostToDevice(int lev);
     void cudaFreeLocalReferenceTemperature(int lev);
-
-    void cudaAllocProcessNeighborADX(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADXFsHD(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADXFsDH(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADXIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborADX(int lev, unsigned int processNeighbor);
-
-    void cudaAllocProcessNeighborADY(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADYFsHD(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADYFsDH(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADYIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborADY(int lev, unsigned int processNeighbor);
-
-    void cudaAllocProcessNeighborADZ(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADZFsHD(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADZFsDH(int lev, unsigned int processNeighbor);
-    void cudaCopyProcessNeighborADZIndex(int lev, unsigned int processNeighbor);
-    void cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor);
 
     void cudaAllocTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
     void cudaCopyTaggedFluidNodeIndices(CollisionTemplate tag, int lev);
@@ -323,6 +312,24 @@ public:
     void cudaAllocSphereIndices(ActuatorFarm* actuatorFarm);
     void cudaCopySphereIndicesHtoD(ActuatorFarm* actuatorFarm);
     void cudaFreeSphereIndices(ActuatorFarm* actuatorFarm);
+
+    // BuoyancyProvider
+    void cudaAllocBuoyancyProviderProfileParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderProfileParametersHtoD(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderProfileParametersDtoH(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaFreeBuoyancyProviderProfileParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderReferenceTemperaturesDtoHAsync(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderReferenceTemperaturesHtoDAsync(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+
+    void cudaAllocBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderReductionParametersHtoD(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaCopyBuoyancyProviderReductionParametersDtoH(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+    void cudaFreeBuoyancyProviderReductionParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
+
+    void cudaAllocDampingLayerData(DampingLayer* dampingLayer, int level);
+    void cudaCopyDampingLayerDataHtoD(DampingLayer* dampingLayer, int level);
+    void cudaFreeDampingLayerData(DampingLayer* dampingLayer, int level);
+
     // Probes
     void cudaAllocProbeData(Probe* probe, int level);
     void cudaCopyProbeDataHtoD(Probe* probe, int level);

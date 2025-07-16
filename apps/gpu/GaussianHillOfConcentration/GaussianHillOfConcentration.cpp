@@ -47,13 +47,15 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-
+#include "GridGenerator/grid/MultipleGridBuilderFacade.h"
+#include "GridGenerator/grid/GridDimensions.h"
 //////////////////////////////////////////////////////////////////////////
 
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 #include "gpu/core/Calculation/Simulation.h"
 #include "gpu/core/DataStructureInitializer/GridProvider.h"
 #include "gpu/core/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+
 #include "gpu/core/Kernel/KernelTypes.h"
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
@@ -70,9 +72,8 @@ void run(const vf::basics::ConfigurationFile& config)
 {
     const real prandtlNumber = c1o1;
 
-    const real deltaX = c1o1;
-    const real deltaT = c1o100;
-
+    const real deltaT = c1o1;
+    const real sigma0 = c1o1;
     const real pecletNumber = config.getValue<real>("PecletNumber");
     const real nodesPerSigma0 = config.getValue<real>("NodesPerSigma0");
     const real diffusivityLB = config.getValue<real>("DiffusivityLB");
@@ -80,20 +81,22 @@ void run(const vf::basics::ConfigurationFile& config)
 
     const bool useDiffusionVelocity = pecletNumber < c1o1;
 
-    const real sigma0 = nodesPerSigma0 * deltaX;
+    const real deltaX = sigma0 / nodesPerSigma0;
+    const real domainSize = c18o1 * sigma0;
     const real diffusivity = diffusivityLB * deltaX * deltaX / deltaT;
     const real advectionVelocityLB = pecletNumber * diffusivityLB / nodesPerSigma0;
     const real advectionVelocity = advectionVelocityLB * deltaX / deltaT;
     const real diffusionVelocity = diffusivity / sigma0;
     const real referenceVelocity = useDiffusionVelocity ? diffusionVelocity : advectionVelocity;
     const real velocityLB = referenceVelocity * deltaT / deltaX; // LB units
-    const real viscosityLB = prandtlNumber * diffusivityLB; // LB units
+    const real viscosityLB = prandtlNumber * diffusivityLB;      // LB units
 
-    const real transportLength = transports*sigma0;
+    const real transportLength = transports * sigma0;
 
     const real time = transportLength / referenceVelocity;
 
-    const int numberOfTimesteps = time/deltaT;
+    const uint numberOfTimesteps = time / deltaT;
+    const real machNumber = referenceVelocity * std::sqrt(c3o1) * deltaT / deltaX;
 
     VF_LOG_INFO("reference Velocity = {}", referenceVelocity);
     VF_LOG_INFO("velocity  [dx/dt] = {}", velocityLB);
@@ -102,23 +105,26 @@ void run(const vf::basics::ConfigurationFile& config)
     VF_LOG_INFO("viscosity [dx^2/dt] = {}", viscosityLB);
     VF_LOG_INFO("Peclet number = {}", pecletNumber);
     VF_LOG_INFO("Prandtl number = {}", prandtlNumber);
+    VF_LOG_INFO("Mach number = {}", machNumber);
     VF_LOG_INFO("advection velocity = {}", advectionVelocity);
     VF_LOG_INFO("diffusion velocity = {}", diffusionVelocity);
     VF_LOG_INFO("tEnd = {}", time);
     VF_LOG_INFO("Number of Timesteps = {}", numberOfTimesteps);
 
-    auto gridBuilder = std::make_shared<MultipleGridBuilder>();
-    if(useDiffusionVelocity)
-        gridBuilder->addCoarseGrid(-c10o1 * sigma0, -c10o1 * sigma0, -c10o1 * sigma0, c10o1 * sigma0, c10o1 * sigma0, c10o1 * sigma0, deltaX);
-    else
-        gridBuilder->addCoarseGrid(-c6o1*sigma0, -c6o1*sigma0, -c6o1*sigma0, c8o1*sigma0, c8o1*sigma0, c8o1*sigma0, deltaX);
-    
-    gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+    vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
 
-    gridBuilder->buildGrids(true);
+    auto grid = std::make_shared<GridDimensions>(-c1o2 * domainSize, c1o2 * domainSize, -c1o2 * domainSize,
+                                                 c1o2 * domainSize, -c1o2 * domainSize, c1o2 * domainSize, deltaX);
+    auto gridBuilder = std::make_shared<MultipleGridBuilderFacade>(grid, c2o1 * deltaX);
+
+    gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+    for (int iProcess = 1; iProcess < communicator.getNumberOfProcesses(); iProcess++)
+        gridBuilder->addDomainSplit(c0o1, Axis::x);
+
+    gridBuilder->createGrids(communicator.getProcessID());
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    SPtr<Parameter> para = std::make_shared<Parameter>(&config);
+    SPtr<Parameter> para = std::make_shared<Parameter>(communicator.getNumberOfProcesses(), communicator.getProcessID(),&config);
 
     para->setInitialCondition([&](real, real, real, real& rho, real& vx, real& vy, real& vz) {
         rho = c0o1;
@@ -126,15 +132,19 @@ void run(const vf::basics::ConfigurationFile& config)
         vy = advectionVelocityLB;
         vz = advectionVelocityLB;
     });
+
     para->setInitialConditionAD([&](real coordX, real coordY, real coordZ) -> real {
-        const real distSquared = coordX * coordX + coordY * coordY + coordZ * coordZ;
+        const real shiftedX = coordX + time * advectionVelocity * c1o2;
+        const real shiftedY = coordY + time * advectionVelocity * c1o2;
+        const real shiftedZ = coordZ + time * advectionVelocity * c1o2;
+        const real distSquared = shiftedX * shiftedX + shiftedY * shiftedY + shiftedZ * shiftedZ;
         return std::exp(-c1o2 * distSquared / (sigma0 * sigma0));
     });
 
     para->setOutputPrefix(simulationName);
 
     para->setPrintFiles(true);
-
+    para->worldLength = domainSize + 2 * deltaX;
     para->setVelocityLB(velocityLB);
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio(deltaX / deltaT);
@@ -147,6 +157,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setTimestepEnd(numberOfTimesteps);
 
     para->setDiffOn(true);
+    para->setUseStreams(true);
     para->setADKernel(vf::advectionDiffusionKernel::compressible::F16);
     para->setDiffusivity(diffusivityLB);
 
@@ -155,7 +166,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     BoundaryConditionFactory bcFactory = BoundaryConditionFactory();
 
-    Simulation sim(para, gridBuilder, &bcFactory, tmFactory);
+    Simulation sim(para, gridBuilder->getGridBuilder(), &bcFactory, tmFactory);
     sim.run();
 }
 

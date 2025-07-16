@@ -47,8 +47,6 @@
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
 
-using namespace vf::basics::constant;
-
 namespace vf::lbm
 {
 
@@ -70,11 +68,15 @@ enum class TurbulenceModel {
 
 inline __host__ __device__ real calcTurbulentViscositySmagorinsky(real SGSConstant, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
 {
+    using namespace vf::basics::constant;
+
     return SGSConstant * SGSConstant * sqrtf(c2o1 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
 }
 
 inline __host__ __device__ real calcTurbulentViscosityQR(real SGSConstant, real dxux, real dyuy, real dzuz, real Dxy, real Dxz, real Dyz)
 {
+    using namespace vf::basics::constant;
+
     // ! Verstappen's QR model
     //! Second invariant of the strain-rate tensor
     const real secondInvariant = c1o2 * (dxux * dxux + dyuy * dyuy + dzuz * dzuz) + c1o4 * (Dxy * Dxy + Dxz * Dxz + Dyz * Dyz);
@@ -105,6 +107,8 @@ constexpr real calcNumeratorAMD(real dvxdx, real dvxdy, real dvxdz, real dvydx, 
 constexpr real calcTurbulentViscosityAMD(real SGSConstant, real dvxdx, real dvxdy, real dvxdz, real dvydx, real dvydy,
                                          real dvydz, real dvzdx, real dvzdy, real dvzdz)
 {
+    using namespace vf::basics::constant;
+
     const real denominator = calcDenominatorAMD(dvxdx, dvxdy, dvxdz, dvydx, dvydy, dvydz, dvzdx, dvzdy, dvzdz);
     if (denominator == c0o1)
         return c0o1;
@@ -117,6 +121,8 @@ constexpr real calcTurbulentViscosityAMDStratified(real SGSConstant, real dvxdx,
                                                    real dvydy, real dvydz, real dvzdx, real dvzdy, real dvzdz,
                                                    real buoyancyParameter, real dthetadx, real dthetady, real dthetadz)
 {
+    using namespace vf::basics::constant;
+
     const real denominator = calcDenominatorAMD(dvxdx, dvxdy, dvxdz, dvydx, dvydy, dvydz, dvzdx, dvzdy, dvzdz);
     if (denominator <= cSmallSingle)
         return c0o1;
@@ -127,8 +133,10 @@ constexpr real calcTurbulentViscosityAMDStratified(real SGSConstant, real dvxdx,
     return std::clamp(SGSConstant * (numerator + temp) / denominator, zero, upperLimit);
 }
 
-constexpr real calculateOmegaWithturbulentViscosity(real omega, real turbulenceViscosity)
+constexpr real calculateOmegaWithTurbulentViscosity(real omega, real turbulenceViscosity)
 {
+    using namespace vf::basics::constant;
+
     return omega / (c1o1 + c3o1 * omega * turbulenceViscosity);
 }
 } // namespace vf::lbm

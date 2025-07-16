@@ -40,6 +40,8 @@
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 #include <GridGenerator/utilities/math/Math.h>
 
+#include <basics/constants/NumericConstants.h>
+
 #include <parallel/Communicator.h>
 
 #include <logger/Logger.h>
@@ -55,6 +57,7 @@
 #include "BoundaryConditions/BoundaryConditionFactory.h"
 
 using namespace vf::lbm::dir;
+using namespace vf::basics::constant;
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para,
                              std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator)
@@ -86,6 +89,12 @@ void GridGenerator::initalGridInformations()
     para->setGridX(gridX);
     para->setGridY(gridY);
     para->setGridZ(gridZ);
+    
+    if(para->getDiffOn())
+        para->setAllNodesAllFeatures(true);
+    if(para->getAllNodesAllFeatures())
+        para->setIsBodyForce(true);
+
 }
 
 void GridGenerator::allocArrays_CoordNeighborGeo()
@@ -168,7 +177,7 @@ void GridGenerator::allocArrays_taggedFluidNodes() {
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
     {
         for ( CollisionTemplate tag: all_CollisionTemplate )
-        {   //TODO: Need to add CollisionTemplate to GridBuilder to allow as argument and get rid of indivual get funtions for fluid node indices... and clean up this mess
+        {   //TODO: Need to add CollisionTemplate to GridBuilder to allow as argument and get rid of individual get functions for fluid node indices... and clean up this mess
             switch(tag)
             {
                 case CollisionTemplate::Default:
@@ -250,6 +259,8 @@ void GridGenerator::sortFluidNodeTags() {
     VF_LOG_INFO("Start sorting tagged fluid nodes...");
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
     {
+        if(para->getAllNodesAllFeatures())
+            builder->addAllFluidNodeIndicesToAllFeatures(level);
         builder->sortFluidNodeIndicesAllFeatures(level); //has to be called first!
         builder->sortFluidNodeIndicesMacroVars(level);
         builder->sortFluidNodeIndicesApplyBodyForce(level);
@@ -260,7 +271,7 @@ void GridGenerator::sortFluidNodeTags() {
 void GridGenerator::initPressureBoundaryCondition()
 {
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
-        const auto numberOfPressureValues = int(builder->getPressureSize(level));
+        const uint numberOfPressureValues = builder->getPressureSize(level);
         VF_LOG_INFO("size pressure level {}: {}", level, numberOfPressureValues);
 
         para->getParH(level)->pressureBC.numberOfBCnodes = 0;
@@ -320,7 +331,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
         initPressureBoundaryCondition();
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
-        const auto numberOfSlipValues = int(builder->getSlipSize(level));
+        const uint numberOfSlipValues = builder->getSlipSize(level);
         VF_LOG_INFO("size slip level {}: {}", level, numberOfSlipValues);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -337,82 +348,85 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
     }
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
-        const auto numberOfStressValues = int(builder->getStressSize(level));
+        const uint numberOfStressValues = builder->getStressSize(level);
         VF_LOG_INFO("size stress level {}: {}", level, numberOfStressValues);
+        auto& bcH = para->getParH(level)->stressBC;
+        
+        bcH.numberOfBCnodes = numberOfStressValues;
+        if (numberOfStressValues == 0) continue;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(level)->stressBC.numberOfBCnodes = 0;
-        if (numberOfStressValues > 1)
-        {
-            para->getParH(level)->stressBC.numberOfBCnodes = numberOfStressValues;
-            cudaMemoryManager->cudaAllocStressBC(level);
-            cudaMemoryManager->cudaAllocWallModel(level, para->getHasWallModelMonitor());
-            builder->getStressValues(   para->getParH(level)->stressBC.normalX,  para->getParH(level)->stressBC.normalY,  para->getParH(level)->stressBC.normalZ,
-                                        para->getParH(level)->stressBC.Vx,       para->getParH(level)->stressBC.Vy,       para->getParH(level)->stressBC.Vz,
-                                        para->getParH(level)->stressBC.Vx1,      para->getParH(level)->stressBC.Vy1,      para->getParH(level)->stressBC.Vz1,
-                                        para->getParH(level)->stressBC.k,        para->getParH(level)->stressBC.kN,
-                                        para->getParH(level)->wallModel.samplingOffset, para->getParH(level)->wallModel.z0,
-                                        level);
+        auto& wallModelH = para->getParH(level)->momentumWallModel;
+        auto& bcD = para->getParD(level)->stressBC;
+        auto& wallModelD = para->getParD(level)->momentumWallModel;
+        cudaMemoryManager->cudaAllocStressBC(level);
+        cudaMemoryManager->cudaAllocWallModel(wallModelH, wallModelD, numberOfStressValues);
+        builder->getStressValues(bcH.normalX, bcH.normalY, bcH.normalZ, bcH.k, wallModelH.samplingIndices,
+                                 wallModelH.samplingDistance, wallModelH.vonKarmanConstant, wallModelH.roughnessLength,
+                                 level);
 
-            cudaMemoryManager->cudaCopyStressBC(level);
-            cudaMemoryManager->cudaCopyWallModel(level, para->getHasWallModelMonitor());
-        }
-        para->getParD(level)->stressBC.numberOfBCnodes = para->getParH(level)->stressBC.numberOfBCnodes;
+        cudaMemoryManager->cudaCopyStressBC(level);
+        cudaMemoryManager->cudaCopyWallModel(wallModelH, wallModelD, numberOfStressValues);
+        std::vector<uint> stressIndices(wallModelH.samplingIndices, wallModelH.samplingIndices + numberOfStressValues);
+        tagFluidNodeIndices(stressIndices, CollisionTemplate::WriteMacroVars, level);
+        bcD.numberOfBCnodes = para->getParH(level)->stressBC.numberOfBCnodes;
+    }
+
+    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
+        const uint numberOfSurfaceLayerValues = builder->getSurfaceLayerSize(level);
+        VF_LOG_INFO("size SurfaceLayer level {}: {}", level, numberOfSurfaceLayerValues);
+        auto& bcHost = para->getParH(level)->surfaceLayerBC;
+
+        bcHost.numberOfBCnodes = numberOfSurfaceLayerValues;
+        if (numberOfSurfaceLayerValues == 0) continue;
+
+        auto& momentumWallModelH = para->getParH(level)->surfaceLayerWallModel.momentumParameters;
+        auto& momentumWallModelD = para->getParD(level)->surfaceLayerWallModel.momentumParameters;
+        auto& temperatureWallModelH = para->getParH(level)->surfaceLayerWallModel.temperatureParameters;
+        auto& temperatureWallModelD = para->getParD(level)->surfaceLayerWallModel.temperatureParameters;
+
+        cudaMemoryManager->cudaAllocSurfaceLayerBC(level);
+        cudaMemoryManager->cudaAllocWallModel(momentumWallModelH, momentumWallModelD, numberOfSurfaceLayerValues);
+        cudaMemoryManager->cudaAllocTemperatureWallModel(temperatureWallModelH, temperatureWallModelD,
+                                                         numberOfSurfaceLayerValues);
+
+        builder->getSurfaceLayerValues(bcHost.normalX, bcHost.normalY, bcHost.normalZ, bcHost.k,
+                                       momentumWallModelH.samplingDistance, momentumWallModelH.samplingIndices,
+                                       momentumWallModelH.vonKarmanConstant, momentumWallModelH.roughnessLength,
+                                       temperatureWallModelH.roughnessLength, temperatureWallModelH.surfaceHeatFlux,
+                                       temperatureWallModelH.surfaceTemperature, temperatureWallModelH.heatingRate, level);
+
+        cudaMemoryManager->cudaCopySurfaceLayerBC(level);
+
+        cudaMemoryManager->cudaCopyWallModel(momentumWallModelH, momentumWallModelD, numberOfSurfaceLayerValues);
+        cudaMemoryManager->cudaCopyTemperatureWallModel(temperatureWallModelH, temperatureWallModelD,
+                                                        numberOfSurfaceLayerValues);
+
+
+        std::vector<uint> surfaceLayerIndices(momentumWallModelH.samplingIndices,
+                                              momentumWallModelH.samplingIndices + numberOfSurfaceLayerValues);
+        tagFluidNodeIndices(surfaceLayerIndices, CollisionTemplate::WriteMacroVars, level);
+
+        para->getParD(level)->surfaceLayerBC.numberOfBCnodes = bcHost.numberOfBCnodes;
     }
 
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
-        const auto numberOfVelocityValues = int(builder->getVelocitySize(level));
+        const uint numberOfVelocityValues = builder->getVelocitySize(level);
         VF_LOG_INFO("size velocity level {}: {}", level, numberOfVelocityValues);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        para->getParH(level)->velocityBC.numberOfBCnodes = 0;
-
+        para->getParH(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
+        para->getParD(level)->velocityBC.numberOfBCnodes = para->getParH(level)->velocityBC.numberOfBCnodes;
         if (numberOfVelocityValues > 1)
         {
-            para->getParH(level)->velocityBC.numberOfBCnodes = numberOfVelocityValues;
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             cudaMemoryManager->cudaAllocVeloBC(level);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
             builder->getVelocityValues(para->getParH(level)->velocityBC.Vx, para->getParH(level)->velocityBC.Vy,
                                        para->getParH(level)->velocityBC.Vz, para->getParH(level)->velocityBC.k, level);
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
             cudaMemoryManager->cudaCopyVeloBC(level);
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // advection - diffusion stuff
-            if (para->getDiffOn()){
-                //////////////////////////////////////////////////////////////////////////
-                para->getParH(level)->AdvectionDiffusionDirichletBC.numberOfBcNodes = para->getParH(level)->velocityBC.numberOfBCnodes;
-                //cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
-                VF_LOG_INFO("getTemperatureInit = {}", para->getConcentrationInit());
-                VF_LOG_INFO("getTemperatureBC = {}", para->getConcentrationBC());
-                //////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaAllocConcentrationDirichletBC(level);
-                //cout << "nach alloc " << endl;
-                //////////////////////////////////////////////////////////////////////////
-                for (uint m = 0; m < para->getParH(level)->velocityBC.numberOfBCnodes; m++)
-                {
-                    para->getParH(level)->AdvectionDiffusionDirichletBC.concentration[m]   = para->getConcentrationInit();
-                    para->getParH(level)->AdvectionDiffusionDirichletBC.concentrationBC[m] = para->getConcentrationBC();
-                    para->getParH(level)->AdvectionDiffusionDirichletBC.k[m]               = para->getParH(level)->velocityBC.k[m];
-                }
-                //////////////////////////////////////////////////////////////////////////
-                //cout << "vor copy " << endl;
-                cudaMemoryManager->cudaCopyConcentrationDirichletBCHostToDevice(level);
-                //cout << "nach copy " << endl;
-                //////////////////////////////////////////////////////////////////////////
-            }
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
-        para->getParD(level)->velocityBC.numberOfBCnodes = para->getParH(level)->velocityBC.numberOfBCnodes;
     }
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
-        const auto numberOfPrecursorValues = int(builder->getPrecursorSize(level));
+        const uint numberOfPrecursorValues = builder->getPrecursorSize(level);
         VF_LOG_INFO("size precursor level {}: {}", level, numberOfPrecursorValues);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         auto blocks = (numberOfPrecursorValues / para->getParH(level)->numberofthreads) + 1;
@@ -555,6 +569,74 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
 
         }
     }//ende geo
+    if(para->getDiffOn())
+    {
+        for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
+        {
+            const uint numberOfADNoFluxValues = builder->getADNoFluxSize(level);
+            para->getParH(level)->AdvectionDiffusionNoFluxBC.numberOfBCnodes = numberOfADNoFluxValues;
+            para->getParD(level)->AdvectionDiffusionNoFluxBC.numberOfBCnodes = numberOfADNoFluxValues;
+            if(numberOfADNoFluxValues < 1) continue;
+            VF_LOG_INFO("size No Flux AD level {}: {}", level, numberOfADNoFluxValues);
+
+            cudaMemoryManager->cudaAllocConcentrationNoFluxBC(level);
+            builder->getADNoFluxValues(para->getParH(level)->AdvectionDiffusionNoFluxBC.BCNodeIndices, level);
+            cudaMemoryManager->cudaCopyConcentrationNoFluxBCHostToDevice(level);
+        }
+
+        for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
+        {
+            const uint numberOfADFluxValues = builder->getADFluxSize(level);
+            para->getParH(level)->AdvectionDiffusionFluxBC.numberOfBCnodes = numberOfADFluxValues;
+            para->getParD(level)->AdvectionDiffusionFluxBC.numberOfBCnodes = numberOfADFluxValues;
+            
+            if(numberOfADFluxValues < 1) continue;
+            VF_LOG_INFO("size Flux AD level {}: {}", level, numberOfADFluxValues);
+
+            cudaMemoryManager->cudaAllocConcentrationFluxBC(level);
+            builder->getADFluxValues(para->getParH(level)->AdvectionDiffusionFluxBC.normalX,
+                                     para->getParH(level)->AdvectionDiffusionFluxBC.normalY,
+                                     para->getParH(level)->AdvectionDiffusionFluxBC.normalZ,
+                                     para->getParH(level)->AdvectionDiffusionFluxBC.gradient,
+                                     para->getParH(level)->AdvectionDiffusionFluxBC.BCNodeIndices, level);
+            cudaMemoryManager->cudaCopyConcentrationFluxBCHostToDevice(level);
+        }
+
+        for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
+        {
+            const uint numberOfADDirichletValues = builder->getADDirichletSize(level);
+            para->getParH(level)->AdvectionDiffusionDirichletBC.numberOfBCnodes = numberOfADDirichletValues;
+            para->getParD(level)->AdvectionDiffusionDirichletBC.numberOfBCnodes = numberOfADDirichletValues;
+            if (numberOfADDirichletValues < 1)
+                continue;
+            VF_LOG_INFO("size Dirichlet AD level {}: {}", level, numberOfADDirichletValues);
+            cudaMemoryManager->cudaAllocConcentrationDirichletBC(level);
+            builder->getADDirichletValues(para->getParH(level)->AdvectionDiffusionDirichletBC.concentration,
+                                          para->getParH(level)->AdvectionDiffusionDirichletBC.vx,
+                                          para->getParH(level)->AdvectionDiffusionDirichletBC.vy,
+                                          para->getParH(level)->AdvectionDiffusionDirichletBC.vz,
+                                          para->getParH(level)->AdvectionDiffusionDirichletBC.BCNodeIndices, level);
+            cudaMemoryManager->cudaCopyConcentrationDirichletBCHostToDevice(level);
+        }
+
+        for (uint level = 0; level < builder->getNumberOfGridLevels(); level++)
+        {
+            const uint numberOfNeumannADValues = builder->getADNeumannSize(level);
+            para->getParH(level)->AdvectionDiffusionNeumannBC.numberOfBCnodes = numberOfNeumannADValues;
+            para->getParD(level)->AdvectionDiffusionNeumannBC.numberOfBCnodes = numberOfNeumannADValues;
+            if (numberOfNeumannADValues < 1)
+                continue;
+            VF_LOG_INFO("size Neumann AD level {}: {}", level, numberOfNeumannADValues);
+
+            cudaMemoryManager->cudaAllocConcentrationNeumannBC(level);
+            builder->getADNeumannValues(para->getParH(level)->AdvectionDiffusionNeumannBC.gradient,
+                                        para->getParH(level)->AdvectionDiffusionNeumannBC.vx,
+                                        para->getParH(level)->AdvectionDiffusionNeumannBC.vy,
+                                        para->getParH(level)->AdvectionDiffusionNeumannBC.vz,
+                                        para->getParH(level)->AdvectionDiffusionNeumannBC.BCNodeIndices, level);
+            cudaMemoryManager->cudaCopyConcentrationNeumannBCHostToDevice(level);
+        }
+    }
 
     initalValuesDomainDecompostion();
 }
@@ -582,205 +664,99 @@ void GridGenerator::initalValuesDomainDecompostion()
                 continue;
 
             for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
-                if (direction == communication_directions::MX || direction == communication_directions::PX) {
-                    int tempSend = builder->getNumberOfSendIndices(direction, level);
-                    int tempRecv = builder->getNumberOfReceiveIndices(direction, level);
+                auto& parD = para->getParDeviceAsReference(level);
+                auto& parH = para->getParHostAsReference(level);
+                const uint nSendIndices = builder->getNumberOfSendIndices(direction, level);
+                const uint nRecvIndices = builder->getNumberOfReceiveIndices(direction, level);
 
-                    if (tempSend > 0) {
-                        int indexProcessNeighbor = (int)para->getParH(level)->sendProcessNeighborX.size();
+                if (nSendIndices == 0)
+                    continue;
 
-                        para->getParH(level)->sendProcessNeighborX.emplace_back();
-                        para->getParD(level)->sendProcessNeighborX.emplace_back();
-                        para->getParH(level)->recvProcessNeighborX.emplace_back();
-                        para->getParD(level)->recvProcessNeighborX.emplace_back();
-                        if (para->getDiffOn() == true) {
-                            para->getParH(level)->sendProcessNeighborADX.emplace_back();
-                            para->getParD(level)->sendProcessNeighborADX.emplace_back();
-                            para->getParH(level)->recvProcessNeighborADX.emplace_back();
-                            para->getParD(level)->recvProcessNeighborADX.emplace_back();
-                        }
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        // send
-                        para->getParH(level)->sendProcessNeighborX.back().rankNeighbor =
-                            builder->getCommunicationProcess(direction);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        VF_LOG_INFO("size of Data for X send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->sendProcessNeighborX.back().numberOfNodes = tempSend;
-                        para->getParD(level)->sendProcessNeighborX.back().numberOfNodes = tempSend;
-                        para->getParH(level)->sendProcessNeighborX.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParD(level)->sendProcessNeighborX.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParH(level)->sendProcessNeighborX.back().memsizeIndex =
-                            sizeof(unsigned int) * tempSend;
-                        para->getParD(level)->sendProcessNeighborX.back().memsizeIndex =
-                            sizeof(unsigned int) * tempSend;
-                        para->getParH(level)->sendProcessNeighborX.back().memsizeFs = sizeof(real) * tempSend;
-                        para->getParD(level)->sendProcessNeighborX.back().memsizeFs = sizeof(real) * tempSend;
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        // recv
-                        VF_LOG_INFO("size of Data for X receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborX.back().rankNeighbor =
-                            builder->getCommunicationProcess(direction);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborX.back().numberOfNodes = tempRecv;
-                        para->getParD(level)->recvProcessNeighborX.back().numberOfNodes = tempRecv;
-                        para->getParH(level)->recvProcessNeighborX.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParD(level)->recvProcessNeighborX.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParH(level)->recvProcessNeighborX.back().memsizeIndex =
-                            sizeof(unsigned int) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborX.back().memsizeIndex =
-                            sizeof(unsigned int) * tempRecv;
-                        para->getParH(level)->recvProcessNeighborX.back().memsizeFs = sizeof(real) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborX.back().memsizeFs = sizeof(real) * tempRecv;
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        // malloc on host and device
-                        cudaMemoryManager->cudaAllocProcessNeighborX(level, indexProcessNeighbor);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        // init index arrays
-                        builder->getSendIndices(para->getParH(level)->sendProcessNeighborX[indexProcessNeighbor].index, direction, level);
-                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborX[indexProcessNeighbor].index, direction,
-                                                   level);
-                        if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
-                            indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseX(level, indexProcessNeighbor, direction);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        cudaMemoryManager->cudaCopyProcessNeighborXIndex(level, indexProcessNeighbor);
-                        ////////////////////////////////////////////////////////////////////////////////////////
+                const uint rankNeighbor = builder->getCommunicationProcess(direction);
+                ProcessNeighbor27 sendNeighborHost(nSendIndices, rankNeighbor);
+                ProcessNeighbor27 sendNeighborDevice(nSendIndices, rankNeighbor);
+                ProcessNeighbor27 recvNeighborHost(nRecvIndices, rankNeighbor);
+                ProcessNeighbor27 recvNeighborDevice(nRecvIndices, rankNeighbor);
+                cudaMemoryManager->cudaAllocProcessNeighbor(sendNeighborHost, sendNeighborDevice, recvNeighborHost,
+                                                            recvNeighborDevice);
+                builder->getSendIndices(sendNeighborHost.index, direction, level);
+                builder->getReceiveIndices(recvNeighborHost.index, direction, level);
+
+                if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC) {
+                    ProcessNeighbor27 sendNeighborAfterFtoCHost;
+                    ProcessNeighbor27 recvNeighborAfterFtoCHost;
+                    ProcessNeighbor27 sendNeighborAfterFtoCDevice;
+                    ProcessNeighbor27 recvNeighborAfterFtoCDevice;
+                    indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarse(
+                        sendNeighborHost, sendNeighborDevice, sendNeighborAfterFtoCHost, sendNeighborAfterFtoCDevice,
+                        recvNeighborHost, recvNeighborDevice, recvNeighborAfterFtoCHost, recvNeighborAfterFtoCDevice, level,
+                        direction);
+                    switch (direction) {
+                        case communication_directions::MX:
+                        case communication_directions::PX: {
+                            parH.sendProcessNeighborsAfterFtoCX.push_back(sendNeighborAfterFtoCHost);
+                            parH.recvProcessNeighborsAfterFtoCX.push_back(recvNeighborAfterFtoCHost);
+                            parD.sendProcessNeighborsAfterFtoCX.push_back(sendNeighborAfterFtoCDevice);
+                            parD.recvProcessNeighborsAfterFtoCX.push_back(recvNeighborAfterFtoCDevice);
+                        } break;
+                        case communication_directions::MY:
+                        case communication_directions::PY: {
+                            parH.sendProcessNeighborsAfterFtoCY.push_back(sendNeighborAfterFtoCHost);
+                            parH.recvProcessNeighborsAfterFtoCY.push_back(recvNeighborAfterFtoCHost);
+                            parD.sendProcessNeighborsAfterFtoCY.push_back(sendNeighborAfterFtoCDevice);
+                            parD.recvProcessNeighborsAfterFtoCY.push_back(recvNeighborAfterFtoCDevice);
+                        } break;
+                        case communication_directions::MZ:
+                        case communication_directions::PZ: {
+                            parH.sendProcessNeighborsAfterFtoCZ.push_back(sendNeighborAfterFtoCHost);
+                            parH.recvProcessNeighborsAfterFtoCZ.push_back(recvNeighborAfterFtoCHost);
+                            parD.sendProcessNeighborsAfterFtoCZ.push_back(sendNeighborAfterFtoCDevice);
+                            parD.recvProcessNeighborsAfterFtoCZ.push_back(recvNeighborAfterFtoCDevice);
+                        } break;
                     }
                 }
+                cudaMemoryManager->cudaCopyProcessNeighborIndex(sendNeighborHost, sendNeighborDevice, recvNeighborHost,
+                                                                recvNeighborDevice);
+                switch (direction) {
+                    case communication_directions::MX:
+                    case communication_directions::PX: {
+                        parH.sendProcessNeighborsX.push_back(sendNeighborHost);
+                        parD.sendProcessNeighborsX.push_back(sendNeighborDevice);
 
-                if (direction == communication_directions::MY || direction == communication_directions::PY) {
-                    int tempSend = builder->getNumberOfSendIndices(direction, level);
-                    int tempRecv = builder->getNumberOfReceiveIndices(direction, level);
+                        parH.recvProcessNeighborsX.push_back(recvNeighborHost);
+                        parD.recvProcessNeighborsX.push_back(recvNeighborDevice);
+                        ////////////////////////////////////////////////////////////////////////////////////////
+                        VF_LOG_INFO("size of Data for X send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nSendIndices, rankNeighbor);
+                        VF_LOG_INFO("size of Data for X receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nRecvIndices, rankNeighbor);
+                    } break;
+                    case communication_directions::MY:
+                    case communication_directions::PY: {
+                        parH.sendProcessNeighborsY.push_back(sendNeighborHost);
+                        parD.sendProcessNeighborsY.push_back(sendNeighborDevice);
 
-                    if (tempSend > 0) {
-                        int indexProcessNeighbor = (int)para->getParH(level)->sendProcessNeighborY.size();
+                        parH.recvProcessNeighborsY.push_back(recvNeighborHost);
+                        parD.recvProcessNeighborsY.push_back(recvNeighborDevice);
+                        ////////////////////////////////////////////////////////////////////////////////////////
+                        VF_LOG_INFO("size of Data for Y send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nSendIndices, rankNeighbor);
+                        VF_LOG_INFO("size of Data for Y receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nRecvIndices, rankNeighbor);
+                    } break;
+                    case communication_directions::MZ:
+                    case communication_directions::PZ: {
+                        parH.sendProcessNeighborsZ.push_back(sendNeighborHost);
+                        parD.sendProcessNeighborsZ.push_back(sendNeighborDevice);
 
-                        para->getParH(level)->sendProcessNeighborY.emplace_back();
-                        para->getParD(level)->sendProcessNeighborY.emplace_back();
-                        para->getParH(level)->recvProcessNeighborY.emplace_back();
-                        para->getParD(level)->recvProcessNeighborY.emplace_back();
-                        if (para->getDiffOn() == true) {
-                            para->getParH(level)->sendProcessNeighborADY.emplace_back();
-                            para->getParD(level)->sendProcessNeighborADY.emplace_back();
-                            para->getParH(level)->recvProcessNeighborADY.emplace_back();
-                            para->getParD(level)->recvProcessNeighborADY.emplace_back();
-                        }
+                        parH.recvProcessNeighborsZ.push_back(recvNeighborHost);
+                        parD.recvProcessNeighborsZ.push_back(recvNeighborDevice);
                         ////////////////////////////////////////////////////////////////////////////////////////
-                        // send
-                        VF_LOG_INFO("size of Data for Y send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->sendProcessNeighborY.back().rankNeighbor =
-                            builder->getCommunicationProcess(direction);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->sendProcessNeighborY.back().numberOfNodes = tempSend;
-                        para->getParD(level)->sendProcessNeighborY.back().numberOfNodes = tempSend;
-                        para->getParH(level)->sendProcessNeighborY.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParD(level)->sendProcessNeighborY.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParH(level)->sendProcessNeighborY.back().memsizeIndex =
-                            sizeof(unsigned int) * tempSend;
-                        para->getParD(level)->sendProcessNeighborY.back().memsizeIndex =
-                            sizeof(unsigned int) * tempSend;
-                        para->getParH(level)->sendProcessNeighborY.back().memsizeFs = sizeof(real) * tempSend;
-                        para->getParD(level)->sendProcessNeighborY.back().memsizeFs = sizeof(real) * tempSend;
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        // recv
-                        VF_LOG_INFO("size of Data for Y receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborY.back().rankNeighbor =
-                            builder->getCommunicationProcess(direction);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborY.back().numberOfNodes = tempRecv;
-                        para->getParD(level)->recvProcessNeighborY.back().numberOfNodes = tempRecv;
-                        para->getParH(level)->recvProcessNeighborY.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParD(level)->recvProcessNeighborY.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParH(level)->recvProcessNeighborY.back().memsizeIndex =
-                            sizeof(unsigned int) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborY.back().memsizeIndex =
-                            sizeof(unsigned int) * tempRecv;
-                        para->getParH(level)->recvProcessNeighborY.back().memsizeFs = sizeof(real) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborY.back().memsizeFs = sizeof(real) * tempRecv;
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        // malloc on host and device
-                        cudaMemoryManager->cudaAllocProcessNeighborY(level, indexProcessNeighbor);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        // init index arrays
-                        builder->getSendIndices(para->getParH(level)->sendProcessNeighborY[indexProcessNeighbor].index, direction, level);
-                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborY[indexProcessNeighbor].index, direction,
-                                                   level);
-                        if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
-                            indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseY(level, indexProcessNeighbor, direction);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        cudaMemoryManager->cudaCopyProcessNeighborYIndex(level, indexProcessNeighbor);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                    }
-                }
-
-                if (direction == communication_directions::MZ || direction == communication_directions::PZ) {
-                    int tempSend = builder->getNumberOfSendIndices(direction, level);
-                    int tempRecv = builder->getNumberOfReceiveIndices(direction, level);
-
-                    if (tempSend > 0) {
-                        int indexProcessNeighbor = (int)para->getParH(level)->sendProcessNeighborZ.size();
-
-                        para->getParH(level)->sendProcessNeighborZ.emplace_back();
-                        para->getParD(level)->sendProcessNeighborZ.emplace_back();
-                        para->getParH(level)->recvProcessNeighborZ.emplace_back();
-                        para->getParD(level)->recvProcessNeighborZ.emplace_back();
-                        if (para->getDiffOn() == true) {
-                            para->getParH(level)->sendProcessNeighborADZ.emplace_back();
-                            para->getParD(level)->sendProcessNeighborADZ.emplace_back();
-                            para->getParH(level)->recvProcessNeighborADZ.emplace_back();
-                            para->getParD(level)->recvProcessNeighborADZ.emplace_back();
-                        }
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        // send
-                        VF_LOG_INFO("size of Data for Z send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempSend, builder->getCommunicationProcess(direction));
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->sendProcessNeighborZ.back().rankNeighbor =
-                            builder->getCommunicationProcess(direction);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->sendProcessNeighborZ.back().numberOfNodes = tempSend;
-                        para->getParD(level)->sendProcessNeighborZ.back().numberOfNodes = tempSend;
-                        para->getParH(level)->sendProcessNeighborZ.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParD(level)->sendProcessNeighborZ.back().numberOfFs    = para->getD3Qxx() * tempSend;
-                        para->getParH(level)->sendProcessNeighborZ.back().memsizeIndex =
-                            sizeof(unsigned int) * tempSend;
-                        para->getParD(level)->sendProcessNeighborZ.back().memsizeIndex =
-                            sizeof(unsigned int) * tempSend;
-                        para->getParH(level)->sendProcessNeighborZ.back().memsizeFs = sizeof(real) * tempSend;
-                        para->getParD(level)->sendProcessNeighborZ.back().memsizeFs = sizeof(real) * tempSend;
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        // recv
-                        VF_LOG_INFO("size of Data for Z receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level, tempRecv, builder->getCommunicationProcess(direction));
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborZ.back().rankNeighbor =
-                            builder->getCommunicationProcess(direction);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        para->getParH(level)->recvProcessNeighborZ.back().numberOfNodes = tempRecv;
-                        para->getParD(level)->recvProcessNeighborZ.back().numberOfNodes = tempRecv;
-                        para->getParH(level)->recvProcessNeighborZ.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParD(level)->recvProcessNeighborZ.back().numberOfFs    = para->getD3Qxx() * tempRecv;
-                        para->getParH(level)->recvProcessNeighborZ.back().memsizeIndex =
-                            sizeof(unsigned int) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborZ.back().memsizeIndex =
-                            sizeof(unsigned int) * tempRecv;
-                        para->getParH(level)->recvProcessNeighborZ.back().memsizeFs = sizeof(real) * tempRecv;
-                        para->getParD(level)->recvProcessNeighborZ.back().memsizeFs = sizeof(real) * tempRecv;
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        // malloc on host and device
-                        cudaMemoryManager->cudaAllocProcessNeighborZ(level, indexProcessNeighbor);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        // init index arrays
-                        builder->getSendIndices(para->getParH(level)->sendProcessNeighborZ[indexProcessNeighbor].index, direction, level);
-                        builder->getReceiveIndices(para->getParH(level)->recvProcessNeighborZ[indexProcessNeighbor].index, direction,
-                                                   level);
-                        if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC)
-                            indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarseZ(level, indexProcessNeighbor, direction);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                        cudaMemoryManager->cudaCopyProcessNeighborZIndex(level, indexProcessNeighbor);
-                        ////////////////////////////////////////////////////////////////////////////////////////
-                    }
+                        VF_LOG_INFO("size of Data for Z send buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nSendIndices, rankNeighbor);
+                        VF_LOG_INFO("size of Data for Z receive buffer, \t\tLevel {}: {} \t(neighbor rank: {})", level,
+                                    nRecvIndices, rankNeighbor);
+                    } break;
                 }
             }
         }
@@ -821,186 +797,151 @@ void GridGenerator::allocArrays_BoundaryQs()
 
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         auto& parH = para->getParHostAsReference(level);
-        if (parH.pressureBCDirectional.size() > 0)
+        if (!parH.pressureBCDirectional.empty())
             initDirectionalPressureBoundaryConditions();
         else if (builder->getPressureSize(level) > 0)
             initPressureBoundaryCondition();
     }
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-        int numberOfSlipValues = (int)builder->getSlipSize(i);
-        if (numberOfSlipValues > 0)
-        {
-            VF_LOG_INFO("size Slip:  {}: {}", i, numberOfSlipValues);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //preprocessing
-            QforBoundaryConditions &Q = para->getParH(i)->slipBC;
-            initPointersToSubgridDistances(Q);
+        const uint numberOfSlipValues = builder->getSlipSize(i);
+        if (numberOfSlipValues == 0) continue;
+        VF_LOG_INFO("size Slip:  {}: {}", i, numberOfSlipValues);
 
-            builder->getSlipQs(Q.q27, i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            cudaMemoryManager->cudaCopySlipBC(i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        }//ende if
-    }//ende oberste for schleife
+        QforBoundaryConditions& Q = para->getParH(i)->slipBC;
+        initPointersToSubgridDistances(Q);
 
-    for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-        int numberOfStressValues = (int)builder->getStressSize(i);
-        if (numberOfStressValues > 0)
-        {
-            VF_LOG_INFO("size Stress:  {}: {}", i, numberOfStressValues);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //preprocessing
-            QforBoundaryConditions &Q = para->getParH(i)->stressBC;
-            initPointersToSubgridDistances(Q);
-            
-            builder->getStressQs(Q.q27, i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            cudaMemoryManager->cudaCopyStressBC(i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        }//ende if
-    }//ende oberste for schleife
-
-    for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-        const auto numberOfVelocityNodes = int(builder->getVelocitySize(i));
-        if (numberOfVelocityNodes > 0)
-        {
-            VF_LOG_INFO("size velocity level {}: {}", i, numberOfVelocityNodes);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //preprocessing
-            QforBoundaryConditions &Q = para->getParH(i)->velocityBC;
-            initPointersToSubgridDistances(Q);
-            builder->getVelocityQs(Q.q27, i);
-
-            if (para->getDiffOn()) {
-                //////////////////////////////////////////////////////////////////////////
-                para->getParH(i)->AdvectionDiffusionDirichletBC.numberOfBcNodes = numberOfVelocityNodes;
-                para->getParD(i)->AdvectionDiffusionDirichletBC.numberOfBcNodes = numberOfVelocityNodes;
-                VF_LOG_INFO("size TempVel.kTemp: {}",  para->getParH(i)->AdvectionDiffusionDirichletBC.numberOfBcNodes);
-                VF_LOG_INFO("getTemperatureInit: {}",  para->getConcentrationInit());
-                VF_LOG_INFO("getTemperatureBC: {}",  para->getConcentrationBC());
-                //////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaAllocConcentrationDirichletBC(i);
-                //////////////////////////////////////////////////////////////////////////
-                for (int m = 0; m < numberOfVelocityNodes; m++)
-                {
-                    para->getParH(i)->AdvectionDiffusionDirichletBC.concentration[m] = para->getConcentrationInit();
-                    para->getParH(i)->AdvectionDiffusionDirichletBC.concentrationBC[m] = para->getConcentrationBC();
-                    para->getParH(i)->AdvectionDiffusionDirichletBC.k[m] = para->getParH(i)->velocityBC.k[m];
-                }
-                cudaMemoryManager->cudaCopyConcentrationDirichletBCHostToDevice(i);
-            }
-            cudaMemoryManager->cudaCopyVeloBC(i);
-        }
+        builder->getSlipQs(Q.q27, i);
+        cudaMemoryManager->cudaCopySlipBC(i);
     }
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-        const auto numberOfPrecursorNodes = int(builder->getPrecursorSize(i));
-        if (numberOfPrecursorNodes > 0)
-        {
-            VF_LOG_INFO("size velocity level {}: {}", i, numberOfPrecursorNodes);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //preprocessing
-            real* QQ = para->getParH(i)->precursorBC.q27[0];
-            unsigned int sizeQ = para->getParH(i)->precursorBC.numberOfBCnodes;
-            QforBoundaryConditions Q;
-            getPointersToBoundaryConditions(Q.q27, QQ, sizeQ);
+        const uint numberOfStressValues = builder->getStressSize(i);
+        if (numberOfStressValues == 0) continue;
+        VF_LOG_INFO("size Stress:  {}: {}", i, numberOfStressValues);
 
-            builder->getPrecursorQs(Q.q27, i);
-
-            if (para->getDiffOn()) {
-                throw std::runtime_error("Advection diffusion not implemented for Precursor!");
-                //////////////////////////////////////////////////////////////////////////
-                // para->getParH(i)->TempVel.kTemp = numberOfVelocityNodes;
-                // para->getParD(i)->TempVel.kTemp = numberOfVelocityNodes;
-                // std::cout << "Groesse TempVel.kTemp = " << para->getParH(i)->TempPress.kTemp << std::endl;
-                // std::cout << "getTemperatureInit = " << para->getTemperatureInit() << std::endl;
-                // std::cout << "getTemperatureBC = " << para->getTemperatureBC() << std::endl;
-                // //////////////////////////////////////////////////////////////////////////
-                // cudaMemoryManager->cudaAllocTempVeloBC(i);
-                // //cout << "nach alloc " << std::endl;
-                // //////////////////////////////////////////////////////////////////////////
-                // for (int m = 0; m < numberOfVelocityNodes; m++)
-                // {
-                //     para->getParH(i)->TempVel.temp[m] = para->getTemperatureInit();
-                //     para->getParH(i)->TempVel.tempPulse[m] = para->getTemperatureBC();
-                //     para->getParH(i)->TempVel.velo[m] = para->getVelocity();
-                //     para->getParH(i)->TempVel.k[m] = para->getParH(i)->Qinflow.k[m];
-                // }
-                // //////////////////////////////////////////////////////////////////////////
-                // //cout << "vor copy " << std::endl;
-                // cudaMemoryManager->cudaCopyTempVeloBCHD(i);
-                // //cout << "nach copy " << std::endl;
-                //////////////////////////////////////////////////////////////////////////
-            }
-            cudaMemoryManager->cudaCopyPrecursorBC(i);
-        }
+        QforBoundaryConditions &Q = para->getParH(i)->stressBC;
+        initPointersToSubgridDistances(Q);
+        
+        builder->getStressQs(Q.q27, i);
+        cudaMemoryManager->cudaCopyStressBC(i);
     }
 
+    for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
+        const uint numberOfSurfaceLayerValues = builder->getSurfaceLayerSize(i);
+        if (numberOfSurfaceLayerValues == 0) continue;
+        VF_LOG_INFO("size SurfaceLayer:  {}: {}", i, numberOfSurfaceLayerValues);
 
+        QforBoundaryConditions &Q = para->getParH(i)->surfaceLayerBC;
+        initPointersToSubgridDistances(Q);
+        
+        builder->getSurfaceLayerQs(Q.q27, i);
+        cudaMemoryManager->cudaCopySurfaceLayerBC(i);
+    }
 
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
-        const int numberOfGeometryNodes = builder->getGeometrySize(i);
+        const uint numberOfVelocityNodes = builder->getVelocitySize(i);
+        if (numberOfVelocityNodes == 0) continue;
+        VF_LOG_INFO("size velocity level {}: {}", i, numberOfVelocityNodes);
+
+        QforBoundaryConditions &Q = para->getParH(i)->velocityBC;
+        initPointersToSubgridDistances(Q);
+        
+        builder->getVelocityQs(Q.q27, i);
+        cudaMemoryManager->cudaCopyVeloBC(i);
+    }
+
+    for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
+        const uint numberOfPrecursorNodes = builder->getPrecursorSize(i);
+        if (numberOfPrecursorNodes == 0) continue;
+        VF_LOG_INFO("size precursor level {}: {}", i, numberOfPrecursorNodes);
+
+        const uint sizeQ = para->getParH(i)->precursorBC.numberOfBCnodes;
+        QforBoundaryConditions Q;
+        getPointersToBoundaryConditions(Q.q27, para->getParH(i)->precursorBC.q27[0], sizeQ);
+
+        builder->getPrecursorQs(Q.q27, i);
+
+        if (para->getDiffOn()) {
+            throw std::runtime_error("Advection diffusion not implemented for Precursor!");
+        }
+        cudaMemoryManager->cudaCopyPrecursorBC(i);
+    }
+
+    for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
+        const uint numberOfGeometryNodes = builder->getGeometrySize(i);
         VF_LOG_INFO("size of GeomBoundaryQs, Level {}: {}", i, numberOfGeometryNodes);
 
         para->getParH(i)->geometryBC.numberOfBCnodes = numberOfGeometryNodes;
         para->getParD(i)->geometryBC.numberOfBCnodes = para->getParH(i)->geometryBC.numberOfBCnodes;
-        if (numberOfGeometryNodes > 0)
+        if (numberOfGeometryNodes == 0) continue;
+        //cout << "Groesse der Daten GeomBoundaryQs, Level:  " << i << " : " << numberOfGeometryNodes << "MyID: " << para->getMyID() << endl;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //para->getParH(i)->geometryBC.numberOfBCnodes = temp4;
+        //para->getParD(i)->geometryBC.numberOfBCnodes = para->getParH(i)->geometryBC.numberOfBCnodes;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        cudaMemoryManager->cudaAllocGeomBC(i);
+        builder->getGeometryIndices(para->getParH(i)->geometryBC.k, i);
+        //preprocessing
+        QforBoundaryConditions &Q = para->getParH(i)->geometryBC;
+        initPointersToSubgridDistances(Q);
+        //////////////////////////////////////////////////////////////////
+
+        builder->getGeometryQs(Q.q27, i);
+        //QDebugWriter::writeQValues(Q, para->getParH(i)->geometryBC.k, para->getParH(i)->geometryBC.numberOfBCnodes, "M:/TestGridGeneration/results/GeomGPU.dat");
+        for (uint node_i = 0; node_i < numberOfGeometryNodes; node_i++)
+            Q.q27[d000][node_i] = c0o1;
+        cudaMemoryManager->cudaCopyGeomBC(i);
+    }
+
+    if(para->getDiffOn())
+    {
+        for(uint level=0; level<builder->getNumberOfGridLevels(); level++)
         {
-            //cout << "Groesse der Daten GeomBoundaryQs, Level:  " << i << " : " << numberOfGeometryNodes << "MyID: " << para->getMyID() << endl;
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //para->getParH(i)->geometryBC.numberOfBCnodes = temp4;
-            //para->getParD(i)->geometryBC.numberOfBCnodes = para->getParH(i)->geometryBC.numberOfBCnodes;
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            cudaMemoryManager->cudaAllocGeomBC(i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            const uint numberOfBoundaryNodes = builder->getADNoFluxSize(level);
+            if(numberOfBoundaryNodes == 0) continue;
+            VF_LOG_INFO("size NoSlipQs, Level {}: {}", level, numberOfBoundaryNodes);
 
-            //////////////////////////////////////////////////////////////////////////
-            //Indexarray
-            builder->getGeometryIndices(para->getParH(i)->geometryBC.k, i);
-            //////////////////////////////////////////////////////////////////////////
-            //preprocessing
-            QforBoundaryConditions &Q = para->getParH(i)->geometryBC;
-            initPointersToSubgridDistances(Q);
-            //////////////////////////////////////////////////////////////////
+            real* QQ = para->getParH(level)->AdvectionDiffusionNoFluxBC.q27[0];
+            getPointersToBoundaryConditions(para->getParH(level)->AdvectionDiffusionNoFluxBC.q27, QQ, numberOfBoundaryNodes);
+            builder->getADNoFluxQs(para->getParH(level)->AdvectionDiffusionNoFluxBC.q27, level);
+            cudaMemoryManager->cudaCopyConcentrationNoFluxBCHostToDevice(level); 
+        }
 
-            builder->getGeometryQs(Q.q27, i);
-            //QDebugWriter::writeQValues(Q, para->getParH(i)->geometryBC.k, para->getParH(i)->geometryBC.numberOfBCnodes, "M:/TestGridGeneration/results/GeomGPU.dat");
-            //////////////////////////////////////////////////////////////////
-            for (int node_i = 0; node_i < numberOfGeometryNodes; node_i++)
-            {
-                Q.q27[d000][node_i] = 0.0f;
-            }
-            //for(int test = 0; test < 3; test++)
-            //{
-            //    for (int tmp = 0; tmp < 27; tmp++)
-            //    {
-            //        cout <<"Kuhs: " << Q.q27[tmp][test]  << "\n";
-            //    }
-            //}
+        for(uint level=0; level<builder->getNumberOfGridLevels(); level++)
+        {
+            const uint numberOfBoundaryNodes = builder->getADFluxSize(level);
+            if(numberOfBoundaryNodes == 0) continue;
+            VF_LOG_INFO("size FluxQs, Level {}: {}", level, numberOfBoundaryNodes);
+            
+            real* QQ = para->getParH(level)->AdvectionDiffusionFluxBC.q27[0];
+            getPointersToBoundaryConditions(para->getParH(level)->AdvectionDiffusionFluxBC.q27, QQ, numberOfBoundaryNodes);
+            builder->getADFluxQs(para->getParH(level)->AdvectionDiffusionFluxBC.q27, level);
+            cudaMemoryManager->cudaCopyConcentrationFluxBCHostToDevice(level); 
+        }
 
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // advection - diffusion stuff
-            if (para->getDiffOn() == true) {
-                    //////////////////////////////////////////////////////////////////////////
-                    para->getParH(i)->AdvectionDiffusionNoSlipBC.numberOfBcNodes = numberOfGeometryNodes;
-                    para->getParD(i)->AdvectionDiffusionNoSlipBC.numberOfBcNodes = numberOfGeometryNodes;
-                    std::cout << "Groesse Temp.kTemp = " << para->getParH(i)->AdvectionDiffusionNoSlipBC.numberOfBcNodes << std::endl;
-                    //////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaAllocConcentrationNoSlipBC(i);
-                    //////////////////////////////////////////////////////////////////////////
-                    for (int m = 0; m < numberOfGeometryNodes; m++)
-                    {
-                        para->getParH(i)->AdvectionDiffusionNoSlipBC.concentration[m] = para->getConcentrationInit();
-                        para->getParH(i)->AdvectionDiffusionNoSlipBC.k[m] = para->getParH(i)->geometryBC.k[m];
-                    }
-                    //////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaCopyConcentrationNoSlipBCHD(i);
-                    //////////////////////////////////////////////////////////////////////////
-                }
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                cudaMemoryManager->cudaCopyGeomBC(i);
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        for(uint level=0; level<builder->getNumberOfGridLevels(); level++)
+        {
+            const uint numberOfBoundaryNodes = builder->getADDirichletSize(level);
+            if(numberOfBoundaryNodes == 0) continue;
+            VF_LOG_INFO("size DirichletQs, Level {}: {}", level, numberOfBoundaryNodes);
+            
+            real* QQ = para->getParH(level)->AdvectionDiffusionDirichletBC.q27[0];
+            getPointersToBoundaryConditions(para->getParH(level)->AdvectionDiffusionDirichletBC.q27, QQ, numberOfBoundaryNodes);
+            builder->getADDirichletQs(para->getParH(level)->AdvectionDiffusionDirichletBC.q27, level);
+            cudaMemoryManager->cudaCopyConcentrationDirichletBCHostToDevice(level); 
+        }
+
+        for(uint level=0; level<builder->getNumberOfGridLevels(); level++)
+        {
+            const uint numberOfBoundaryNodes = builder->getADNeumannSize(level);
+            if(numberOfBoundaryNodes == 0) continue;
+            VF_LOG_INFO("size NeumannQs, Level {}: {}", level, numberOfBoundaryNodes);
+            
+            real* QQ = para->getParH(level)->AdvectionDiffusionNeumannBC.q27[0];
+            getPointersToBoundaryConditions(para->getParH(level)->AdvectionDiffusionNeumannBC.q27, QQ, numberOfBoundaryNodes);
+            builder->getADNeumannQs(para->getParH(level)->AdvectionDiffusionNeumannBC.q27, level);
+            cudaMemoryManager->cudaCopyConcentrationNeumannBCHostToDevice(level); 
         }
     }
 

@@ -133,17 +133,26 @@ struct LBMSimulationParameter {
     //! \brief stores the stress boundary condition data
     QforBoundaryConditions stressBC;
     //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the surface layer boundary condition data
+    QforBoundaryConditions surfaceLayerBC;
+    //////////////////////////////////////////////////////////////////////////
     //! \brief stores the precursor boundary condition data
     QforPrecursorBoundaryConditions precursorBC;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the data for a directional pressure boundary condition
     std::vector<QforDirectionalBoundaryCondition> pressureBCDirectional;
     //////////////////////////////////////////////////////////////////////////
-    //! \brief stores the advection diffusion noSlip boundary condition data
-    AdvectionDiffusionNoSlipBoundaryConditions AdvectionDiffusionNoSlipBC;
+    //! \brief stores the advection diffusion noFlux boundary condition data
+    AdvectionDiffusionNoFluxBoundaryConditions AdvectionDiffusionNoFluxBC;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the advection diffusion Dirichlet boundary condition data
     AdvectionDiffusionDirichletBoundaryConditions AdvectionDiffusionDirichletBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the advection diffusion Dirichlet boundary condition data
+    AdvectionDiffusionNeumannBoundaryConditions AdvectionDiffusionNeumannBC;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the advection diffusion Dirichlet boundary condition data
+    AdvectionDiffusionFluxBoundaryConditions AdvectionDiffusionFluxBC;
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -151,7 +160,9 @@ struct LBMSimulationParameter {
     real *forcing;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores parameters for a wall model
-    WallModelParameters wallModel;
+    WallModelParameters momentumWallModel;
+    //! \brief stores parameters for a temperature wall model
+    SurfaceLayerWallModelParameters surfaceLayerWallModel;
     //////////////////////////////////////////////////////////////////////////
     //! \brief allows reading values for a boundary condition from a file
     std::vector<SPtr<TransientBCInputFileReader>> transientBCInputFileReader;
@@ -174,6 +185,10 @@ struct LBMSimulationParameter {
     real *concentration;
     //! \brief stores a field of local reference temperature when using buoyancy
     real *localReferenceTemperature;
+    //! \biref stores temperature that is set as reference temperature in simulation
+    real referenceTemperature;
+    //! \brief stores non-dimensional scaled gravity
+    real gravity;
     //! \brief store all distribution functions for the D3Q27 advection diffusion field
     Distributions27 distributionsAD;
     //////////////////////////////////////////////////////////////////////////
@@ -205,12 +220,12 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the base-node-indices of coarse and fine refinement cells
     // 3D domain decomposition
-    std::vector<ProcessNeighbor27> sendProcessNeighborX;
-    std::vector<ProcessNeighbor27> sendProcessNeighborY;
-    std::vector<ProcessNeighbor27> sendProcessNeighborZ;
-    std::vector<ProcessNeighbor27> recvProcessNeighborX;
-    std::vector<ProcessNeighbor27> recvProcessNeighborY;
-    std::vector<ProcessNeighbor27> recvProcessNeighborZ;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsX;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsY;
+    std::vector<ProcessNeighbor27> sendProcessNeighborsZ;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsX;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsY;
+    std::vector<ProcessNeighbor27> recvProcessNeighborsZ;
 
     std::vector<ProcessNeighbor27> sendProcessNeighborsAfterFtoCX;
     std::vector<ProcessNeighbor27> sendProcessNeighborsAfterFtoCY;
@@ -218,23 +233,15 @@ struct LBMSimulationParameter {
     std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCX;
     std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCY;
     std::vector<ProcessNeighbor27> recvProcessNeighborsAfterFtoCZ;
-    ///////////////////////////////////////////////////////
-    // 3D domain decomposition convection diffusion
-    std::vector<ProcessNeighbor27> sendProcessNeighborADX;
-    std::vector<ProcessNeighbor27> sendProcessNeighborADY;
-    std::vector<ProcessNeighbor27> sendProcessNeighborADZ;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADX;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADY;
-    std::vector<ProcessNeighbor27> recvProcessNeighborADZ;
     ////////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition: position (index in array) of corner nodes in ProcessNeighbor27
     struct EdgeNodePositions {
-        int indexOfProcessNeighborRecv;
-        int indexInRecvBuffer;
-        int indexOfProcessNeighborSend;
-        int indexInSendBuffer;
-        EdgeNodePositions(int indexOfProcessNeighborRecv, int indexInRecvBuffer, int indexOfProcessNeighborSend,
-                          int indexInSendBuffer)
+        uint indexOfProcessNeighborRecv;
+        uint indexInRecvBuffer;
+        uint indexOfProcessNeighborSend;
+        uint indexInSendBuffer;
+        EdgeNodePositions(uint indexOfProcessNeighborRecv, uint indexInRecvBuffer, uint indexOfProcessNeighborSend,
+                          uint indexInSendBuffer)
             : indexOfProcessNeighborRecv(indexOfProcessNeighborRecv), indexInRecvBuffer(indexInRecvBuffer),
               indexOfProcessNeighborSend(indexOfProcessNeighborSend), indexInSendBuffer(indexInSendBuffer)
         {
@@ -445,8 +452,6 @@ public:
     void setConcentration(std::string concFile);
     void setPrintFiles(bool printfiles);
     void setReadGeo(bool readGeo);
-    void setConcentrationInit(real concentrationInit);
-    void setConcentrationBC(real concentrationBC);
     void setViscosityLB(real Viscosity);
     void setVelocityLB(real Velocity);
     void setViscosityRatio(real ViscosityRatio);
@@ -458,6 +463,8 @@ public:
     void setRe(real Re);
     void setTurbulentPrandtlNumber(real turbulentPrandtlNumber);
     void setBuoyancyFactor(real buoyancyFactor);
+    void setGravity(real gravity);
+    void setReferenceTemperature(real referenceTemperature);
     void setFactorPressBC(real factorPressBC);
     void setIsGeo(bool isGeo);
     void setIsCp(bool isCp);
@@ -467,9 +474,9 @@ public:
     void setUseTurbulentViscosity(bool useTurbulentViscosity);
     void setUseTurbulentDiffusivity(bool useTurbulentDiffusivity);
     void setSGSConstant(real SGSConstant);
-    void setHasWallModelMonitor(bool hasWallModelMonitor);
     void setUseInitNeq(bool useInitNeq);
     void setIsBodyForce(bool isBodyForce);
+    void setAllNodesAllFeatures(bool allNodesAllFeatures);
     void setclockCycleForMeasurePoints(real clockCycleForMeasurePoints);
     void setDevices(std::vector<uint> devices);
     void setGridX(std::vector<int> GridX);
@@ -483,10 +490,6 @@ public:
     void setMaxCoordX(std::vector<real> MaxCoordX);
     void setMaxCoordY(std::vector<real> MaxCoordY);
     void setMaxCoordZ(std::vector<real> MaxCoordZ);
-    void setConcentrationNoSlipBCHost(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost);
-    void setConcentrationNoSlipBCDevice(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCDevice);
-    void setConcentrationDirichletBCHost(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost);
-    void setConcentrationDirichletBCDevice(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCDevice);
     void setTimeDoCheckPoint(unsigned int tDoCheckPoint);
     void setTimeDoRestart(unsigned int tDoRestart);
     void setDoCheckPoint(bool doCheckPoint);
@@ -536,6 +539,7 @@ public:
     bool getEvenOrOdd(int level);
     bool getDiffOn();
     bool getBuoyancyEnabled() const;
+    bool getAllNodesAllFeatures() const;
     bool getPrintFiles();
     bool getReadGeo();
     bool getCalcTurbulenceIntensity();
@@ -620,8 +624,6 @@ public:
     unsigned int getTimestepForMeasurePoints();
     unsigned int getTimestepOfCoarseLevel();
     real getDiffusivity();
-    real getConcentrationInit();
-    real getConcentrationBC();
     real getViscosity() const;
     real getVelocity() const;
     //! \returns the viscosity ratio in SI/LB units
@@ -660,6 +662,9 @@ public:
     real getTurbulentPrandtlNumber() const;
     real getBuoyancyFactor() const;
     real getScaledBuoyancyFactor(int level) const;
+    real getGravity() const;
+    real getScaledGravity(int level) const;
+    real getReferenceTemperature() const;
     real getFactorPressBC();
     real getclockCycleForMeasurePoints();
     std::vector<uint> getDevices() const;
@@ -674,10 +679,6 @@ public:
     std::vector<real> getMaxCoordX();
     std::vector<real> getMaxCoordY();
     std::vector<real> getMaxCoordZ();
-    AdvectionDiffusionNoSlipBoundaryConditions *getConcentrationNoSlipBCHost();
-    AdvectionDiffusionNoSlipBoundaryConditions *getConcentrationNoSlipBCDevice();
-    AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCHost();
-    AdvectionDiffusionDirichletBoundaryConditions *getConcentrationDirichletBCDevice();
     std::vector<SPtr<PreCollisionInteractor>> getInteractors();
     std::vector<SPtr<Sampler>> getSamplers();
     unsigned int getTimeDoCheckPoint();
@@ -698,7 +699,6 @@ public:
     bool getUseTurbulentViscosity();
     bool getUseTurbulentDiffusivity();
     real getSGSConstant();
-    bool getHasWallModelMonitor();
     bool getUseInitNeq();
     bool getIsBodyForce();
     double getMemsizeGPU();
@@ -759,8 +759,6 @@ private:
     real Re;
     real factorPressBC{ 1.0 };
     real Diffusivity{ 0.001 };
-    real concentrationInit{ 0.0 };
-    real concentrationBC{ 1.0 };
     real RealX{ 1.0 };
     real RealY{ 1.0 };
     real clockCycleForMeasurePoints{ 1.0 };
@@ -774,12 +772,15 @@ private:
     real outflowPressureCorrectionFactor{ 0.0 };
     real turbulentPrandtlNumber{ 0.0 };
     real buoyancyFactor{ 0.0 };
+    real gravity{ 0.0 };
+    real referenceTemperature{ 0.0 };
     bool diffOn{ false };
     bool buoyancyEnabled { false };
     bool calcDragLift{ false };
     bool calcCp{ false };
     bool calcVelocityAndFluctuations{ false };
     bool isBodyForce{ false };
+    bool allNodesAllFeatures{ false };
     bool printFiles{ false };
     bool doRestart{ false };
     bool doCheckPoint{ false };
@@ -795,7 +796,6 @@ private:
     bool turbulentDiffusivityEnabled{ false };
     bool isMeasurePoints{ false };
     bool isInitNeq{ false };
-    bool hasWallModelMonitor{ false };
 
     //! \property maximum level of grid refinement
     int maxlevel{ 0 };
@@ -858,11 +858,6 @@ private:
     std::vector<std::string> multiKernel;
     bool kernelNeedsFluidNodeIndicesToRun = false;
     std::string adKernel;
-
-    // Concentration No Slip BC
-    AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost, *concentrationNoSlipBCDevice;
-    // Concentration Dirichlet BC
-    AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost, *concentrationDirichletBCDevice;
 
     std::vector<SPtr<PreCollisionInteractor>> interactors;
     std::vector<SPtr<Sampler>> samplers;

@@ -40,30 +40,21 @@
 
 #include <basics/DataTypes.h>
 
-void GetSendFsPreDev27(real* DD, real* bufferFs, int* sendIndex, int buffmax, unsigned int* neighborX,
-                       unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
-                       bool isEvenTimestep, unsigned int numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
+void GetSendFsPreDev27(real* DD, real* bufferFs, const uint* sendIndex, uint buffmax, const uint* neighborX,
+                       const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
+                       bool isEvenTimestep, uint numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
 
-void GetSendFsPostDev27(real* DD, real* bufferFs, int* sendIndex, int buffmax, unsigned int* neighborX,
-                        unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
-                        bool isEvenTimestep, unsigned int numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
+void GetSendFsPostDev27(real* DD, real* bufferFs, const uint* sendIndex, uint buffmax, const uint* neighborX,
+                        const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
+                        bool isEvenTimestep, uint numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
 
-void SetRecvFsPreDev27(real* DD, real* bufferFs, int* recvIndex, int buffmax, unsigned int* neighborX,
-                       unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
-                       bool isEvenTimestep, unsigned int numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
+void SetRecvFsPreDev27(real* DD, real* bufferFs, const uint* recvIndex, uint buffmax, const uint* neighborX,
+                       const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
+                       bool isEvenTimestep, uint numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
 
-void SetRecvFsPostDev27(real* DD, real* bufferFs, int* recvIndex, int buffmax, unsigned int* neighborX,
-                        unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
-                        bool isEvenTimestep, unsigned int numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
-
-void getSendGsDevF3(real* G6, real* bufferGs, int* sendIndex, int buffmax, unsigned int* neighborX, unsigned int* neighborY,
-                    unsigned int* neighborZ, unsigned long long numberOfLBnodes, bool isEvenTimestep,
-                    unsigned int numberOfThreads);
-
-void setRecvGsDevF3(real* G6, real* bufferGs, int* recvIndex, int buffmax, unsigned int* neighborX, unsigned int* neighborY,
-                    unsigned int* neighborZ, unsigned long long numberOfLBnodes, bool isEvenTimestep,
-                    unsigned int numberOfThreads);
-
+void SetRecvFsPostDev27(real* DD, real* bufferFs, const uint* recvIndex, uint buffmax, const uint* neighborX,
+                        const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
+                        bool isEvenTimestep, uint numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
 #endif
 
 //! \}

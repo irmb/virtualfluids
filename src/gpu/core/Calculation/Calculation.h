@@ -91,7 +91,7 @@ using InterpolationCellNeighbor = ICellNeigh;
 
 struct Distributions27
 {
-   real* f[27] = { nullptr };
+   real* f[vf::lbm::dir::NUMBER_Of_DIRECTIONS] = { nullptr };
    constexpr Distributions27() = default;
 };
 
@@ -100,7 +100,7 @@ using DistributionReferences27 = Distributions27;
 
 struct SubgridDistances27
 {
-   real* q[27];
+   real* q[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
 };
 
 //Q for second order BCs
@@ -109,12 +109,10 @@ struct QforBoundaryConditions
 {
    int* k;
    int* kN;
-   real* q27[27];
-   real* q19[19];
-   unsigned int numberOfBCnodes=0;
+   real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
+   uint numberOfBCnodes=0;
    int kArray;
    real *Vx,      *Vy,      *Vz;
-   real *Vx1,     *Vy1,     *Vz1;
    real *deltaVz, *RhoBC;
    real *normalX, *normalY, *normalZ;
 };
@@ -123,8 +121,8 @@ struct QforDirectionalBoundaryCondition
 {
    int* k;
    int* kN;
-   real* q27[27];
-   unsigned int numberOfBCnodes = 0;
+   real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
+   uint numberOfBCnodes = 0;
    real *RhoBC;
    size_t direction;
 };
@@ -139,38 +137,74 @@ struct QforPrecursorBoundaryConditions
    uint nPrecursorReads=0;
    uint timeStepsBetweenReads;
    size_t numberOfQuantities;
-   real* q27[27];
+   real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
    uint* planeNeighbor0PP, *planeNeighbor0PM, *planeNeighbor0MP, *planeNeighbor0MM;
    real* weights0PP, *weights0PM, *weights0MP,  *weights0MM;
    real* last, *current, *next;
    real velocityX, velocityY, velocityZ;
 };
 
-struct AdvectionDiffusionNoSlipBoundaryConditions
+struct AdvectionDiffusionNoFluxBoundaryConditions
 {
-   int* k;
-   real* concentration;
-   int numberOfBcNodes=0;
+   int* BCNodeIndices;
+   real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
+   int numberOfBCnodes=0;
 };
 
 struct AdvectionDiffusionDirichletBoundaryConditions
 {
-   int* k;
+   int* BCNodeIndices;
+   real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
    real* concentration;
-   real* concentrationBC;
-   int numberOfBcNodes=0;
+   real *vx, *vy, *vz;
+   int numberOfBCnodes=0;
+};
+
+struct AdvectionDiffusionNeumannBoundaryConditions
+{
+   int* BCNodeIndices;
+   real* gradient;
+   real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
+   real *vx, *vy, *vz;
+   int numberOfBCnodes=0;
+};
+
+struct AdvectionDiffusionFluxBoundaryConditions
+{
+   int* BCNodeIndices;
+   real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
+   real* normalX, *normalY, *normalZ;
+   real* gradient;
+   int numberOfBCnodes=0;
 };
 
 // Settings for wall model used in StressBC
 struct WallModelParameters
 {
-   real* z0;
-   int* samplingOffset;
-   bool hasMonitor;
-   real* u_star;
-   real* Fx;
-   real* Fy;
-   real* Fz;
+   real* roughnessLength;
+   real* samplingDistance;
+   real* vonKarmanConstant;
+   uint* samplingIndices;
+   real* frictionVelocity;
+   real* velocityMagnitudeNode;
+   real* velocityMagnitudeSample;
+   real* forceX;
+   real* forceY;
+   real* forceZ;
+};
+
+// Struct for surface layer wall model
+struct TemperatureWallModelParameters{
+   real* temperatureNode;
+   real* temperatureSample;
+   real* surfaceHeatFlux;
+   real* surfaceTemperature;
+   real* roughnessLength;
+   real* heatingRate;
+};
+struct SurfaceLayerWallModelParameters{
+   WallModelParameters momentumParameters;
+   TemperatureWallModelParameters temperatureParameters;
 };
 
 
@@ -187,13 +221,18 @@ struct MeasurePoints
 
 struct ProcessNeighbor27
 {
-   real* f[27];
-   uint memsizeFs;
-   int* index;
-   uint memsizeIndex;
+   real* populations[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
+   real* populationsAD[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
+   size_t memsizeFs;
+   uint* index;
+   size_t memsizeIndex;
    uint rankNeighbor;
-   int numberOfNodes;
-   int numberOfFs;
+   uint numberOfNodes;
+   uint numberOfFs;
+   ProcessNeighbor27()= default;
+   ProcessNeighbor27(uint numberOfNodes, uint rankNeighbor) : 
+      memsizeFs(numberOfNodes*sizeof(real)*vf::lbm::dir::NUMBER_Of_DIRECTIONS), memsizeIndex(numberOfNodes*sizeof(real)), rankNeighbor(rankNeighbor), numberOfNodes(numberOfNodes), numberOfFs(numberOfNodes*vf::lbm::dir::NUMBER_Of_DIRECTIONS)
+   {}
 };
 
 

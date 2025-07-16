@@ -40,14 +40,13 @@
 
 #include "lbm/interpolation/InterpolationCoefficients.h"
 
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
-
 namespace vf::lbm
 {
 
 constexpr void interpolateFC(real* const f, const real epsnew, const real omegaC, const InterpolationCoefficients& coefficients)
 {
+    using namespace vf::basics::constant;
+
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Set all moments to zero
     //!
@@ -219,33 +218,33 @@ constexpr void interpolateFC(real* const f, const real epsnew, const real omegaC
     backwardChimeraWithInverseK(m210, m211, m212, vvz, vzsq, c9o1,  c1o9);
     backwardChimeraWithInverseK(m220, m221, m222, vvz, vzsq, c36o1, c1o36);
 
-    f[d000] = f000;
-    f[dP00] = fP00;
-    f[dM00] = fM00;
-    f[d0P0] = f0P0;
-    f[d0M0] = f0M0;
-    f[d00P] = f00P;
-    f[d00M] = f00M;
-    f[dPP0] = fPP0;
-    f[dMM0] = fMM0;
-    f[dPM0] = fPM0;
-    f[dMP0] = fMP0;
-    f[dP0P] = fP0P;
-    f[dM0M] = fM0M;
-    f[dP0M] = fP0M;
-    f[dM0P] = fM0P;
-    f[d0PP] = f0PP;
-    f[d0MM] = f0MM;
-    f[d0PM] = f0PM;
-    f[d0MP] = f0MP;
-    f[dPPP] = fPPP;
-    f[dMPP] = fMPP;
-    f[dPMP] = fPMP;
-    f[dMMP] = fMMP;
-    f[dPPM] = fPPM;
-    f[dMPM] = fMPM;
-    f[dPMM] = fPMM;
-    f[dMMM] = fMMM;
+    f[dir::d000] = f000;
+    f[dir::dP00] = fP00;
+    f[dir::dM00] = fM00;
+    f[dir::d0P0] = f0P0;
+    f[dir::d0M0] = f0M0;
+    f[dir::d00P] = f00P;
+    f[dir::d00M] = f00M;
+    f[dir::dPP0] = fPP0;
+    f[dir::dMM0] = fMM0;
+    f[dir::dPM0] = fPM0;
+    f[dir::dMP0] = fMP0;
+    f[dir::dP0P] = fP0P;
+    f[dir::dM0M] = fM0M;
+    f[dir::dP0M] = fP0M;
+    f[dir::dM0P] = fM0P;
+    f[dir::d0PP] = f0PP;
+    f[dir::d0MM] = f0MM;
+    f[dir::d0PM] = f0PM;
+    f[dir::d0MP] = f0MP;
+    f[dir::dPPP] = fPPP;
+    f[dir::dMPP] = fMPP;
+    f[dir::dPMP] = fPMP;
+    f[dir::dMMP] = fMMP;
+    f[dir::dPPM] = fPPM;
+    f[dir::dMPM] = fMPM;
+    f[dir::dPMM] = fPMM;
+    f[dir::dMMM] = fMMM;
 }
 
 }

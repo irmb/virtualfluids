@@ -41,7 +41,7 @@ class F16CompressibleAdvectionDiffusion : public AdvectionDiffusionKernel
 public:
     static std::shared_ptr<F16CompressibleAdvectionDiffusion> getNewInstance(std::shared_ptr<Parameter> para, int level);
     void run() override;
-    void runOnIndicesAD(const uint* indices, uint size_indices, CudaStreamIndex streamIdx = CudaStreamIndex::Legacy) override;
+    void runOnIndices(const uint* indices, uint size_indices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIdx = CudaStreamIndex::Legacy) override;
 
 private:
     F16CompressibleAdvectionDiffusion() = default;

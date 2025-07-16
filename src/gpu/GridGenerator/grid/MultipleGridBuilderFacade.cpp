@@ -359,20 +359,29 @@ void MultipleGridBuilderFacade::setSlipBoundaryCondition(SideType sideType, real
 }
 
 void MultipleGridBuilderFacade::setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ,
-                                                           uint samplingOffset, real z0, real dx) const
+                                                           uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX) const
 {
     setBoundaryCondition(sideType, [&]() {
-        gridBuilder->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, z0, dx);
+        gridBuilder->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, deltaX);
     });
 }
-
+void MultipleGridBuilderFacade::setSurfaceLayerBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ,
+                                                                 uint samplingOffset, real vonKarmanConstant, real roughnessLength,
+                                                                 real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate,
+                                                                 real deltaX, real deltaT) const
+{
+    setBoundaryCondition(sideType, [&]() {
+        gridBuilder->setSurfaceLayerBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength,
+                                                      roughnessLengthTemperature, surfaceHeatFlux, surfaceTemperature, heatingRate, deltaX, deltaT);
+    });
+}
 void MultipleGridBuilderFacade::setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection,
-                                                              int timeStepsBetweenReads, real velocityX, real velocityY,
+                                                              int timeStepsBetweenReads, bool cycleFiles, real velocityX, real velocityY,
                                                               real velocityZ,
                                                               std::vector<uint> fileLevelToGridLevelMap) const
 {
     setBoundaryCondition(sideType, [&]() {
-        gridBuilder->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, velocityX, velocityY,
+        gridBuilder->setPrecursorBoundaryCondition(sideType, fileCollection, timeStepsBetweenReads, cycleFiles, velocityX, velocityY,
                                                    velocityZ, fileLevelToGridLevelMap);
     });
 }
@@ -390,6 +399,22 @@ void MultipleGridBuilderFacade::setPressureBoundaryCondition(SideType sideType, 
 void MultipleGridBuilderFacade::setNoSlipBoundaryCondition(SideType sideType) const
 {
     setBoundaryCondition(sideType, [&]() { gridBuilder->setNoSlipBoundaryCondition(sideType); });
+}
+
+void MultipleGridBuilderFacade::setADNoFluxBoundaryCondition(SideType sideType){
+    setBoundaryCondition(sideType, [&]{gridBuilder->setADNoFluxBoundaryCondition(sideType);});
+}
+
+void MultipleGridBuilderFacade::setADFluxBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX){
+    setBoundaryCondition(sideType, [&]{gridBuilder->setADFluxBoundaryCondition(sideType, normalX, normalY, normalZ, gradient, deltaX);});
+}
+
+void MultipleGridBuilderFacade::setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz){
+    setBoundaryCondition(sideType, [&]{gridBuilder->setADDirichletBoundaryCondition(sideType, value, vx, vy, vz); });
+}
+
+void MultipleGridBuilderFacade::setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx){
+    setBoundaryCondition(sideType, [&]{gridBuilder->setADNeumannBoundaryCondition(sideType, gradient, vx, vy, vz, dx); });
 }
 
 bool MultipleGridBuilderFacade::isFinalSubdomainInDirection(CommunicationDirection direction) const

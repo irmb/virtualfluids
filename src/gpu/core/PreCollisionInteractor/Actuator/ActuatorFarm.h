@@ -39,7 +39,6 @@
 #include <vector>
 
 class GridProvider;
-using namespace vf::basics::constant;
 
 class ActuatorFarm : public PreCollisionInteractor
 {
@@ -73,7 +72,7 @@ public:
         useHostArrays(useHostArrays),
         deltaT(deltaT*exp2(-level)),
         deltaX(deltaX*exp2(-level)),
-        invDeltaX(c1o1/deltaX),
+        invDeltaX(vf::basics::constant::c1o1/deltaX),
         PreCollisionInteractor(para, cudaMemoryManager)
     {
         if(this->smearingWidth < this->deltaX)

@@ -32,6 +32,9 @@
 #include "K15IncompressibleNavierStokes.h"
 
 #include "K15IncompressibleNavierStokes_Device.cuh"
+
+#include <basics/constants/NumericConstants.h>
+
 #include "Parameter/Parameter.h"
 #include <cuda_helper/CudaGrid.h>
 
@@ -57,7 +60,7 @@ void K15IncompressibleNavierStokes::run()
 }
 
 K15IncompressibleNavierStokes::K15IncompressibleNavierStokes(std::shared_ptr<Parameter> para, int level)
-    : KernelImp(para, level, c1o6)
+    : KernelImp(para, level, vf::basics::constant::c1o6)
 {
     this->para = para;
     this->level = level;
