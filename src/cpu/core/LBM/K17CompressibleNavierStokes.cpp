@@ -33,9 +33,9 @@
 //=======================================================================================
 #include "K17CompressibleNavierStokes.h"
 
-#include <lbm/collision/CollisionParameter.h>
 #include <lbm/collision/K17CompressibleNavierStokes.h>
 #include <lbm/collision/TurbulentViscosity.h>
+#include <logger/Logger.h>
 
 #include "BCArray3D.h"
 #include "BCSet.h"
@@ -47,7 +47,8 @@
 
 K17CompressibleNavierStokes::K17CompressibleNavierStokes()
 {
-    this->compressible = true;
+    compressible = true;
+    quadricLimiter = { 0.01, 0.01, 0.01 };
 }
 
 void K17CompressibleNavierStokes::initDataSet()
@@ -70,7 +71,7 @@ SPtr<LBMKernel> K17CompressibleNavierStokes::clone()
     kernel->setIndex(ix1, ix2, ix3);
     kernel->setDeltaT(deltaT);
     kernel->setBlock(block.lock());
-
+    std::dynamic_pointer_cast<K17CompressibleNavierStokes>(kernel)->setQuadricLimiter(quadricLimiter);
     return kernel;
 }
 
@@ -127,11 +128,10 @@ void K17CompressibleNavierStokes::calculate(int step)
                     continue;
                 }
 
-                vf::lbm::CollisionParameter parameter;
                 esoSplit->getPreCollisionDistribution(parameter.distribution, x1, x2, x3);
 
                 real forces[3] = { c0o1, c0o1, c0o1 };
-                if (withForcing) // TODO: add level factor?
+                if (withForcing)
                 {
                     muX1 = static_cast<real>(x1 - 1 + ix1 * maxX1);
                     muX2 = static_cast<real>(x2 - 1 + ix2 * maxX2);
@@ -151,8 +151,7 @@ void K17CompressibleNavierStokes::calculate(int step)
 
                 parameter.omega = omega;
 
-                real quadricLimiter[3] = { 0.01, 0.01, 0.01 }; // TODO: Where do we configure the quadricLimiter?
-                parameter.quadricLimiter = quadricLimiter;
+                parameter.quadricLimiter = this->quadricLimiter.data();
 
                 vf::lbm::MacroscopicValues mv;  // not used
                 vf::lbm::TurbulentViscosity tv; // not used
@@ -161,6 +160,25 @@ void K17CompressibleNavierStokes::calculate(int step)
             }
         }
     }
+}
+
+void K17CompressibleNavierStokes::setQuadricLimiter(std::array<real,3> limiter)
+{
+    if (isLimiterValid(limiter) ) {
+        quadricLimiter = limiter;
+    }
+    else {
+        quadricLimiter = {0.01, 0.01, 0.01};
+        VF_LOG_WARNING("The quadric limiter array was not properly initialized. It was given a default initialization of {0.01, 0.01, 0.01.}.");
+    }
+}
+
+bool K17CompressibleNavierStokes::isLimiterValid(std::array<real,3> limiter) 
+{
+    for (int i = 0; i < 3; ++i) {
+        if (!std::isnormal(limiter[i])) return false;
+    }
+    return true;
 }
 
 //! \}
