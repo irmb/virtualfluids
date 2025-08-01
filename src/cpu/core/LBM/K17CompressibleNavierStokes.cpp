@@ -164,8 +164,8 @@ void K17CompressibleNavierStokes::calculate(int step)
 
 void K17CompressibleNavierStokes::setQuadricLimiter(std::array<real,3> limiter)
 {
-    if (isLimiterValid(limiter) ) {
-        quadricLimiter = limiter;
+    if (isLimiterValid(limiter) && (limiter[0] > 0 && limiter[1] > 0 && limiter[2] > 0) ) {
+            quadricLimiter = limiter;
     }
     else {
         quadricLimiter = {0.01, 0.01, 0.01};

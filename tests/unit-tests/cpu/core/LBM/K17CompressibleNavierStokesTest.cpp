@@ -26,52 +26,44 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup cpu_LBM LBM
-//! \ingroup cpu_core core
+//! \addtogroup cpu_Connectors_tests Connectors
+//! \ingroup cpu_core_tests core
 //! \{
-//! \author Konstantin Kutscher, Martin Geier
-//=======================================================================================
 
-#ifndef CPU_K17COMPRESSIBLENAVIERSTOKES_H
-#define CPU_K17COMPRESSIBLENAVIERSTOKES_H
-
+#include <gtest/gtest.h>
+#include <array>
 #include <memory>
-#include <optional>
 
-#include <basics/DataTypes.h>
-#include <lbm/collision/CollisionParameter.h>
+#include "K17CompressibleNavierStokes.h"
 
-#include "LBMKernel.h"
-
-//! \brief   Compressible cumulant LBM kernel.
-//! \details  LBM implementation that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
-//!
-//! The model is publisched in
-//! <a href="http://dx.doi.org/10.1016/j.jcp.2017.05.040"><b>[ Geier et al., (2017), 10.1016/j.jcp.2017.05.040]</b></a>,
-//! <a href="http://dx.doi.org/10.1016/j.jcp.2017.07.004"><b>[ Geier et al., (2017), 10.1016/j.jcp.2017.07.004]</b></a>
-//!
-class K17CompressibleNavierStokes : public LBMKernel
-{
-public:
-    K17CompressibleNavierStokes();
-    void calculate(int step) override;
-    std::shared_ptr<LBMKernel> clone() override;
-    real getCalculationTime() override
-    {
-        return .0;
-    }
-    void setQuadricLimiter(std::array<real,3>);
-    std::array<real,3> getQuadricLimiter() const { return quadricLimiter; }
-private:
-    vf::lbm::CollisionParameter parameter;
-    std::array<real,3> quadricLimiter;
-    void initDataSet();
-    bool isLimiterValid(std::array<real,3> limiter);
+class K17CompressibleNavierStokesTest : public ::testing::Test {
+protected:
+    K17CompressibleNavierStokes solver;
 
 };
 
+TEST_F(K17CompressibleNavierStokesTest, ValidLimiterIsSetCorrectly) {
+    std::array<real, 3> input = {0.5, 0.5, 0.5};
+    solver.setQuadricLimiter(input);
+    EXPECT_EQ(solver.getQuadricLimiter(), input);
+}
 
+TEST_F(K17CompressibleNavierStokesTest, InvalidLimiterDefaultsToFallback) {
+    std::array<real, 3> invalidInput = {-10.0, 0.0, 9999.0};
+    solver.setQuadricLimiter(invalidInput);
 
-#endif
+    std::array<real, 3> expected = {0.01, 0.01, 0.01};
+
+    EXPECT_EQ(solver.getQuadricLimiter(), expected);
+}
+
+TEST_F(K17CompressibleNavierStokesTest, InvalidInitOfLimiterDefaultsToFallback) {
+    std::array<real, 3> invalidInit;
+    solver.setQuadricLimiter(invalidInit);
+
+    std::array<real, 3> expected = {0.01, 0.01, 0.01};
+
+    EXPECT_EQ(solver.getQuadricLimiter(), expected);
+}
 
 //! \}
