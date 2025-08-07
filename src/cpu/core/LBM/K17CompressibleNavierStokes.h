@@ -61,6 +61,7 @@ public:
         return .0;
     }
     void setQuadricLimiter(std::array<real,3>);
+    std::array<real,3> getQuadricLimiter() const { return quadricLimiter; }
 private:
     vf::lbm::CollisionParameter parameter;
     std::array<real,3> quadricLimiter;
