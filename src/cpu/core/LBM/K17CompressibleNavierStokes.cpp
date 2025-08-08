@@ -169,7 +169,7 @@ void K17CompressibleNavierStokes::setQuadricLimiter(std::array<real,3> limiter)
     }
     else {
         quadricLimiter = {0.01, 0.01, 0.01};
-        VF_LOG_WARNING("The quadric limiter array was not properly initialized. It was given a default initialization of {0.01, 0.01, 0.01.}.");
+        //VF_LOG_WARNING("The quadric limiter array was not properly initialized. It was given a default initialization of {0.01, 0.01, 0.01.}.");
     }
 }
 
