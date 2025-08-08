@@ -35,7 +35,7 @@
 
 #include <lbm/collision/K17CompressibleNavierStokes.h>
 #include <lbm/collision/TurbulentViscosity.h>
-#include <logger/Logger.h>
+//#include <logger/Logger.h>
 
 #include "BCArray3D.h"
 #include "BCSet.h"
