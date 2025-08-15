@@ -98,6 +98,10 @@ namespace grid_generator
         .def("set_periodic_boundary_condition", &LevelGridBuilder::setPeriodicBoundaryCondition, py::arg("periodic_x"), py::arg("periodic_y"), py::arg("periodic_z"))
         .def("set_no_slip_boundary_condition", &LevelGridBuilder::setNoSlipBoundaryCondition, py::arg("side_type"))
         .def("set_stress_boundary_condition", &LevelGridBuilder::setStressBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("von_karman_constant"), py::arg("roughness_length"), py::arg("delta_x"))
+        .def("set_precursor_boundary_condition", &LevelGridBuilder::setPrecursorBoundaryCondition, py::arg("side_type"), py::arg("file_collection"),
+                                                                    py::arg("time_steps_between_reads"), py::arg("cycle_files"), py::arg("velocity_x") = vf::basics::constant::c0o1,
+                                                                    py::arg("velocity_y") = vf::basics::constant::c0o1, py::arg("velocity_z") = vf::basics::constant::c0o1,
+                                                                    py::arg("file_level_to_grid_level_map") = {})
         .def("set_surface_layer_boundary_condition", &LevelGridBuilder::setSurfaceLayerBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("von_karman_constant"), py::arg("roughness_length"), py::arg("roughness_length_temperature"), py::arg("surface_heat_flux"), py::arg("surface_temperature"), py::arg("heating_rate"), py::arg("delta_x"), py::arg("delta_t"))
         .def("set_AD_dirichlet_boundary_condition", &LevelGridBuilder::setADDirichletBoundaryCondition, py::arg("side_type"), py::arg("value"), py::arg("vx"), py::arg("vy"), py::arg("vz"))
         .def("set_AD_neumann_boundary_condition", &LevelGridBuilder::setADNeumannBoundaryCondition, py::arg("side_type"), py::arg("gradient"), py::arg("vx"), py::arg("vy"), py::arg("vz"), py::arg("dx"))
@@ -124,9 +128,6 @@ namespace grid_generator
         .def("set_subdomain_box", &MultipleGridBuilder::setSubDomainBox, py::arg("bounding_box"))
         .def("find_communication_indices", &MultipleGridBuilder::findCommunicationIndices, py::arg("direction"), py::arg("do_shift")=false)
         .def("set_number_of_layers", &MultipleGridBuilder::setNumberOfLayers, py::arg("number_of_layers_fine"), py::arg("number_of_layers_between_levels"));
-
-        py::class_<GridDimensions, std::shared_ptr<GridDimensions>>(gridGeneratorModule, "GridDimensions")
-        .def(py::init<real, real, real, real, real, real, real>(), py::arg("min_x"), py::arg("max_x"), py::arg("min_y"), py::arg("max_y"), py::arg("min_z"), py::arg("max_z"), py::arg("delta"));
         
         py::class_<MultipleGridBuilderFacade, std::shared_ptr<MultipleGridBuilderFacade>>(gridGeneratorModule, "MultipleGridBuilderFacade")
         .def(py::init<std::shared_ptr<GridDimensions>, std::optional<real>>(), py::arg("grid_dimensions"), py::arg("overlap_of_subdomains")=std::nullopt)
