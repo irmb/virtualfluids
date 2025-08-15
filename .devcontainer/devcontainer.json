@@ -8,14 +8,24 @@
                 "mhutchie.git-graph",
                 "donjayamanne.githistory",
                 "ms-python.python",
-                "twxs.cmake",
-                //"ms-vscode.cpptools",
+                "ms-toolsai.jupyter",
+                "charliermarsh.ruff",
+                "ms-python.mypy-type-checker",
                 "usernamehw.errorlens", // show warnings in code
                 "streetsidesoftware.code-spell-checker",
-                "xaver.clang-format",
-                "msekoranja.clang-format-checker", // currently this extensions results in a lot of warnings
+                "ms-vscode.cpptools",
+                "ms-vscode.cmake-tools",
+                "gitlab.gitlab-workflow",
                 "llvm-vs-code-extensions.vscode-clangd" // code index based on clang using the compile_commannds.json
-            ]
+            ],
+            "settings":
+            {
+                "cmake.cmakePath": "/usr/local/bin/cmake",
+                "cmake.useCMakePresets": "always",
+                "python.terminal.activateEnvironment": true,
+                "python.defaultInterpreterPath": "${containerEnv:VIRTUAL_ENV}/bin/python3",
+                "python.terminal.activateEnvInCurrentTerminal": true
+            }
         }
     },
     "containerEnv": {"TZ": "${localEnv:TZ:Europe/Berlin}"},
