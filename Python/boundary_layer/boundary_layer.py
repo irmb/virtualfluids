@@ -64,19 +64,19 @@ boundary_layer_height = config.get_float_value("boundaryLayerHeight", 1000)
 z0 = config.get_float_value("z0", 0.1)
 u_star = config.get_float_value("u_star", 0.4)
 
-kappa = config.get_float_value("vonKarmanConstant", 0.4)  # von Karman constant
+von_karman_constant = config.get_float_value("vonKarmanConstant", 0.4)  # von Karman constant
 
 viscosity = config.get_float_value("viscosity", 1.56e-5)
 
 velocity = (
-    0.5 * u_star / kappa * np.log(boundary_layer_height / z0 + 1)
+    0.5 * u_star / von_karman_constant * np.log(boundary_layer_height / z0 + 1)
 )  # 0.5 times max mean velocity at the top in m/s
 
 mach = config.get_float_value("Ma", 0.1)
 nodes_per_height = config.get_uint_value("nz", 64)
 
 
-write_precursor = config.get_bool_value("_p", False)
+write_precursor = config.get_bool_value("writePrecursor", False)
 read_precursor = config.get_bool_value("readPrecursor", False)
 
 if write_precursor:
@@ -148,25 +148,24 @@ grid_builder.build_grids(False)
 
 sampling_offset = 2
 if read_precursor:
-    precursor = gpu.create_file_collection(precursor_directory + "/precursor", gpu.TransientBCFileType.VTK)
+    precursor = gpu.create_file_collection(precursor_directory, "precursor", gpu.TransientBCFileType.VTK)
     grid_builder.set_precursor_boundary_condition(gpu.SideType.MX, precursor, nTReadPrecursor, 0, 0, 0)
 
-grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, z0, dx)
-para.set_has_wall_model_monitor(True)
+grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, von_karman_constant, z0, dx)
 grid_builder.set_slip_boundary_condition(gpu.SideType.PZ, 0, 0, -1)
 
 if read_precursor:
     grid_builder.set_pressure_boundary_condition(gpu.SideType.PX, 0)
     bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
     bc_factory.set_precursor_boundary_condition(
-        gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.DistributionsPrecursor
+        gpu.PrecursorBC.PrecursorDistributions if use_distributions else gpu.PrecursorBC.PrecursorNonReflectiveCompressible
     )
 
-bc_factory.set_stress_boundary_condition(gpu.StressBC.StressBounceBackPressureCompressible)
+bc_factory.set_stress_boundary_condition(gpu.StressBC.StressBounceBackCompressible)
 bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipCompressible)
 para.set_outflow_pressure_correction_factor(0.0)
 # %%
-para.set_initial_condition_perturbed_log_law(u_star, z0, length[0], length[2], boundary_layer_height, dx / dx)
+para.set_initial_condition_perturbed_log_law(u_star, z0, length[0], length[2], boundary_layer_height, dx / dt)
 cuda_memory_manager = gpu.CudaMemoryManager(para)
 
 # %%
@@ -201,7 +200,8 @@ wall_model_probe = gpu.probes.wall_model_probe.WallModelProbe(
     False,
     True,
     True,
-    para.get_is_body_force()
+    para.get_is_body_force(),
+    False
 )
 para.add_sampler(wall_model_probe)
 
@@ -239,7 +239,7 @@ if write_precursor:
         length[1],
         0,
         length[2],
-        t_start_precursor / dt,
+        int(t_start_precursor / dt),
         nTWritePrecursor,
         gpu.OutputVariable.Distributions if use_distributions else gpu.OutputVariable.Velocities,
         10000
