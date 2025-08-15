@@ -101,7 +101,7 @@ namespace grid_generator
         .def("set_precursor_boundary_condition", &LevelGridBuilder::setPrecursorBoundaryCondition, py::arg("side_type"), py::arg("file_collection"),
                                                                     py::arg("time_steps_between_reads"), py::arg("cycle_files"), py::arg("velocity_x") = vf::basics::constant::c0o1,
                                                                     py::arg("velocity_y") = vf::basics::constant::c0o1, py::arg("velocity_z") = vf::basics::constant::c0o1,
-                                                                    py::arg("file_level_to_grid_level_map") = {})
+                                                                    py::arg("file_level_to_grid_level_map")=std::vector<uint>() )
         .def("set_surface_layer_boundary_condition", &LevelGridBuilder::setSurfaceLayerBoundaryCondition, py::arg("side_type"), py::arg("normal_x"), py::arg("normal_y"), py::arg("normal_z"), py::arg("sampling_offset"), py::arg("von_karman_constant"), py::arg("roughness_length"), py::arg("roughness_length_temperature"), py::arg("surface_heat_flux"), py::arg("surface_temperature"), py::arg("heating_rate"), py::arg("delta_x"), py::arg("delta_t"))
         .def("set_AD_dirichlet_boundary_condition", &LevelGridBuilder::setADDirichletBoundaryCondition, py::arg("side_type"), py::arg("value"), py::arg("vx"), py::arg("vy"), py::arg("vz"))
         .def("set_AD_neumann_boundary_condition", &LevelGridBuilder::setADNeumannBoundaryCondition, py::arg("side_type"), py::arg("gradient"), py::arg("vx"), py::arg("vy"), py::arg("vz"), py::arg("dx"))
