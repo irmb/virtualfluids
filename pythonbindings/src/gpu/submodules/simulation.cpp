@@ -101,6 +101,8 @@ namespace simulation
              py::arg("parameter"), py::arg("memory_manager"), py::arg("grid_builder"), py::arg("bc_factory"), py::arg("tm_factory"),
              py::arg("grid_scaling_factory"))
         .def("run", &Simulation::run)
+        .def("init_timers", &Simulation::initTimers)
+        .def("calculate_timestep", &Simulation::calculateTimestep, py::arg("time_step"))
         .def("addKineticEnergyAnalyzer", &Simulation::addKineticEnergyAnalyzer, py::arg("t_analyse"))
         .def("addEnstrophyAnalyzer", &Simulation::addEnstrophyAnalyzer, py::arg("t_analyse"));
     }
