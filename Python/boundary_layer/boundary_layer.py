@@ -237,7 +237,6 @@ if write_precursor:
         10000,
     )
     para.add_sampler(precursor_writer)
-
 # %%
 sim = gpu.Simulation(para, grid_builder.get_grid_builder(), bc_factory, tm_factory, grid_scaling_factory)
 # %%
