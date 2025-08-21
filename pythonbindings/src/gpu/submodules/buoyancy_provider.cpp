@@ -32,17 +32,19 @@
 #include <pybind11/pybind11.h>
 #include <gpu/core/PreCollisionInteractor/BuoyancyProvider/BuoyancyProvider.h>
 
-namespace buoyancy_provier
+namespace buoyancy_provider
 {
+    namespace py = pybind11;
+
     void makeModule(py::module_ &parentModule)
     {
         
         py::class_<BuoyancyProviderConstantValue, PreCollisionInteractor, std::shared_ptr<BuoyancyProviderConstantValue>>(parentModule, "BuoyancyProviderConstantValue")
-        .def(py::init<SPtr<Parameter>, SPtr<CudaMemoryManager>>,
+        .def(py::init<SPtr<Parameter>, SPtr<CudaMemoryManager>>(),
              py::arg("para"), py::arg("cuda_memory_manager"));
         
         py::class_<BuoyancyProviderPlanarAverage, PreCollisionInteractor, std::shared_ptr<BuoyancyProviderPlanarAverage>>(parentModule, "BuoyancyProviderPlanarAverage")
-        .def(py::init<SPtr<Parameter>, SPtr<CudaMemoryManager>>,
+        .def(py::init<SPtr<Parameter>, SPtr<CudaMemoryManager>>(),
              py::arg("para"), py::arg("cuda_memory_manager"));
     }
 }

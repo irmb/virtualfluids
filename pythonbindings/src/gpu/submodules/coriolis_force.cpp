@@ -34,11 +34,13 @@
 
 namespace coriolis_force
 {
+    namespace py = pybind11;
+
     void makeModule(py::module_ &parentModule)
     {
         
         py::class_<CoriolisForce, PreCollisionInteractor, std::shared_ptr<CoriolisForce>>(parentModule, "CoriolisForce")
-        .def(py::init<SPtr<Parameter>, SPtr<CudaMemoryManager>, real, real, real>,
+        .def(py::init<SPtr<Parameter>, SPtr<CudaMemoryManager>, real, real, real>(),
              py::arg("para"), py::arg("cuda_memory_manager"), py::arg("geostrophic_wind_x"), py::arg("geostrophic_wind_y"), py::arg("coriolis_parameter"));
     }
 }

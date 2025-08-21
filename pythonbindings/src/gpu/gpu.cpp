@@ -44,6 +44,9 @@
 #include "submodules/grid_scaling_factory.cpp"
 #include "submodules/kernel.cpp"
 #include "submodules/sampler.cpp"
+#include "submodules/coriolis_force.cpp"
+#include "submodules/damping_layer.cpp"
+#include "submodules/buoyancy_provider.cpp"
 
 namespace gpu_bindings
 {
@@ -64,5 +67,8 @@ PYBIND11_MODULE(gpu, m)
     turbulence_model::makeModule(m);
     grid_scaling_factory::makeModule(m);
     kernel::makeModule(m);
+    coriolis_force::makeModule(m);
+    damping_layer::makeModule(m);
+    buoyancy_provider::makeModule(m);
 }
 } // namespace gpu_bindings

@@ -34,6 +34,8 @@ r"""
 from __future__ import annotations
 from typing import Callable, ClassVar, List, Optional
 
+from enum import Enum
+
 from typing import overload, Union
 import numpy as np
 import numpy.typing as npt
@@ -184,6 +186,37 @@ class ActuatorFarmStandalone(ActuatorFarm):
         delta_t: float,
         delta_x: float,
     ) -> None: ...
+
+class CoriolisForce(PreCollisionInteractor):
+    def __init__(
+        self,
+        para: Parameter,
+        cuda_memory_manager: CudaMemoryManager,
+        geostrophic_wind_x: float,
+        geostrophic_wind_y: float,
+        coriolis_parameter: float,
+    ) -> None: ...
+
+class BouyancyProviderConstantValue(PreCollisionInteractor):
+    def __init__(self, para: Parameter, cuda_memory_manager: CudaMemoryManager) -> None: ...
+class BouyancyProviderPlanarAverage(PreCollisionInteractor):
+    def __init__(self, para: Parameter, cuda_memory_manager: CudaMemoryManager) -> None: ...
+
+class DampingLayerType(Enum):
+    Rayleigh = ...
+
+class DampingLayer(PreCollisionInteractor):
+    def __init__(
+        self,
+        parameter: Parameter,
+        cuda_memory_manager: CudaMemoryManager,
+        damping_layer_type: DampingLayerType,
+        direction: basics.geometry3d.Axis,
+        damping_function: Callable[[float], float],
+        start_position: float,
+        end_position: float,
+    ) -> None: ...
+
 
 class BoundaryConditionFactory:
     def __init__(self) -> None: ...

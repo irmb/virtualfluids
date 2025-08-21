@@ -34,13 +34,15 @@
 
 namespace damping_layer
 {
+    namespace py = pybind11;
+
     void makeModule(py::module_ &parentModule)
     {
         py::enum_<DampingLayer::DampingLayerType>(parentModule, "DampingLayerType")
         .value("Rayleigh",DampingLayer::DampingLayerType::Rayleigh);
         
         py::class_<DampingLayer, PreCollisionInteractor, std::shared_ptr<DampingLayer>>(parentModule, "DampingLayer")
-        .def(py::init<SPtr<Parameter>, SPtr<CudaMemoryManager>, DampingLayerType, Axis, std::function<real(real)>, real, real>,
+        .def(py::init<SPtr<Parameter>, SPtr<CudaMemoryManager>, DampingLayer::DampingLayerType, Axis, std::function<real(real)>, real, real>(),
              py::arg("parameter"), py::arg("cudaMemoryManager"), py::arg("dampingLayerType"), py::arg("direction"), py::arg("dampingFunction"), py::arg("startPosition"), py::arg("endPosition"));
     }
 }
