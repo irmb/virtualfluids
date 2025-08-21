@@ -30,7 +30,7 @@
 # VirtualFluids Development Image:
 # Ubuntu 24.04
 
-FROM nvidia/cuda:12.9.1-devel-ubuntu24.04
+FROM nvidia/cuda:12.9.1-devel-ubuntu24.04 AS base
 
 # timezone
 ARG TZ
@@ -90,4 +90,10 @@ RUN python3 -m venv $VIRTUAL_ENV \
         'jinja2<3.1'     \
         gcovr==6.0       \
         lizard==1.17.10  \
-        matplotlib
+        matplotlib       \
+        mpi4py
+
+FROM base AS wifi
+RUN $VIRTUAL_ENV/bin/python3 -m pip install      \
+    cupy-cuda12x      \
+    git+https://source.coderefinery.org/Hkorb/wifi.git
