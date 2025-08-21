@@ -47,7 +47,6 @@ output_path.mkdir(exist_ok=True)
 logger.Logger.initialize_logger()
 
 # %%
-grid_builder = gpu.grid_generator.MultipleGridBuilder()
 communicator = parallel.MPICommunicator.get_instance()
 
 config = basics.ConfigurationFile()
@@ -69,7 +68,7 @@ von_karman_constant = config.get_float_value("vonKarmanConstant", 0.4)  # von Ka
 viscosity = config.get_float_value("viscosity", 1.56e-5)
 
 velocity = (
-    0.5 * u_star / von_karman_constant * np.log(boundary_layer_height / z0 + 1)
+    0.5 * u_star / von_karman_constant * np.log(boundary_layer_height / z0)
 )  # 0.5 times max mean velocity at the top in m/s
 
 mach = config.get_float_value("Ma", 0.1)
@@ -78,18 +77,6 @@ nodes_per_height = config.get_uint_value("nz", 64)
 
 write_precursor = config.get_bool_value("writePrecursor", False)
 read_precursor = config.get_bool_value("readPrecursor", False)
-
-if write_precursor:
-    nTWritePrecursor = config.get_int_value("nTimestepsWritePrecursor")
-    t_start_precursor = config.get_float_value("tStartPrecursor")
-    pos_x_precursor = config.get_float_value("posXPrecursor")
-
-if read_precursor:
-    nTReadPrecursor = config.get_int_value("nTimestepsReadPrecursor")
-
-if write_precursor or read_precursor:
-    use_distributions = config.get_bool_value("useDistributions", False)
-    precursor_directory = config.get_string_value("precursorDirectory")
 
 # all in s
 t_start_out = config.get_float_value("tStartOut")
@@ -136,18 +123,20 @@ para.set_timestep_start_out(int(t_start_out / dt))
 para.set_timestep_out(int(t_out / dt))
 para.set_timestep_end(int(t_end / dt))
 para.set_is_body_force(config.get_bool_value("bodyForce"))
-para.set_devices(np.arange(10))
-para.set_max_dev(communicator.get_number_of_processes())
 # %%
 tm_factory = gpu.TurbulenceModelFactory(para)
 tm_factory.read_config_file(config)
 # %%
-grid_builder.add_coarse_grid(0.0, 0.0, 0.0, *length, dx)
+grid_dimesions = gpu.grid_generator.GridDimensions(0, length[0], 0, length[1], 0, length[2], dx)
+grid_builder = gpu.grid_generator.MultipleGridBuilderFacade(grid_dimesions)
 grid_builder.set_periodic_boundary_condition(not read_precursor, True, False)
-grid_builder.build_grids(False)
+grid_builder.create_grids(communicator.get_process_id())
 
 sampling_offset = 2
 if read_precursor:
+    precursor_directory = config.get_string_value("precursorDirectory")
+    nTReadPrecursor = config.get_int_value("nTimestepsReadPrecursor")
+
     precursor = gpu.create_file_collection(precursor_directory, "precursor", gpu.TransientBCFileType.VTK)
     grid_builder.set_precursor_boundary_condition(gpu.SideType.MX, precursor, nTReadPrecursor, 0, 0, 0)
 
@@ -157,9 +146,7 @@ grid_builder.set_slip_boundary_condition(gpu.SideType.PZ, 0, 0, -1)
 if read_precursor:
     grid_builder.set_pressure_boundary_condition(gpu.SideType.PX, 0)
     bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
-    bc_factory.set_precursor_boundary_condition(
-        gpu.PrecursorBC.PrecursorDistributions if use_distributions else gpu.PrecursorBC.PrecursorNonReflectiveCompressible
-    )
+    bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.PrecursorDistributions)
 
 bc_factory.set_stress_boundary_condition(gpu.StressBC.StressBounceBackCompressible)
 bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipCompressible)
@@ -201,7 +188,7 @@ wall_model_probe = gpu.probes.wall_model_probe.WallModelProbe(
     True,
     True,
     para.get_is_body_force(),
-    False
+    False,
 )
 para.add_sampler(wall_model_probe)
 
@@ -222,13 +209,18 @@ for n_probe, probe_pos in enumerate(plane_locs):
         int(t_start_out_probe / dt),
         int(t_out_probe / dt),
         False,
-        False
+        False,
     )
     plane_probe.set_probe_plane(probe_pos, 0, 0, dx, length[1], length[2])
     plane_probe.add_all_available_statistics()
     para.add_sampler(plane_probe)
 
 if write_precursor:
+    nTWritePrecursor = config.get_int_value("nTimestepsWritePrecursor")
+    t_start_precursor = config.get_float_value("tStartPrecursor")
+    pos_x_precursor = config.get_float_value("posXPrecursor")
+    precursor_directory = config.get_string_value("precursorDirectory")
+
     precursor_writer = gpu.PrecursorWriter(
         para,
         cuda_memory_manager,
@@ -241,13 +233,16 @@ if write_precursor:
         length[2],
         int(t_start_precursor / dt),
         nTWritePrecursor,
-        gpu.OutputVariable.Distributions if use_distributions else gpu.OutputVariable.Velocities,
-        10000
+        gpu.OutputVariable.Distributions,
+        10000,
     )
     para.add_sampler(precursor_writer)
 
 # %%
-sim = gpu.Simulation(para, grid_builder, bc_factory, tm_factory, grid_scaling_factory)
+sim = gpu.Simulation(para, grid_builder.get_grid_builder(), bc_factory, tm_factory, grid_scaling_factory)
 # %%
-sim.run()
+sim.init_timers()
+for t in range(1, para.get_timestep_end() + 1):
+    sim.calculate_timestep(t)
+sim.finalize()
 MPI.Finalize()

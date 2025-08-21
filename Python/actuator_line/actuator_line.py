@@ -278,5 +278,8 @@ for n_probe, probe_pos in enumerate(plane_locs):
 # %%
 sim = gpu.Simulation(para, cuda_memory_manager, grid_builder.get_grid_builder(), bc_factory, tm_factory, grid_scaling_factory)
 # %%
-sim.run()
+sim.init_timers()
+for t in range(1, para.get_timestep_end() + 1):
+    sim.calculate_timestep(t)
+sim.finalize()
 MPI.Finalize()
