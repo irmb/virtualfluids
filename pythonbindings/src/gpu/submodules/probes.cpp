@@ -61,6 +61,7 @@ namespace probes
                         uint,
                         uint,
                         bool,
+                        bool,
                         bool>(), 
                         py::arg("para"),
                         py::arg("cuda_memory_manager"),
@@ -71,7 +72,8 @@ namespace probes
                         py::arg("t_start_out"),
                         py::arg("t_out"),
                         py::arg("output_timeseries"),
-                        py::arg("average_every_timestep"))
+                        py::arg("average_every_timestep"),
+                        py::arg("sample_scalar")=false)
         .def("add_statistic", &Probe::addStatistic, py::arg("variable"))
         .def("set_file_name_to_n_out", &Probe::setFileNameToNOut)
         .def("add_all_available_statistics", &Probe::addAllAvailableStatistics)
