@@ -103,6 +103,7 @@ namespace simulation
         .def("run", &Simulation::run)
         .def("init_timers", &Simulation::initTimers)
         .def("calculate_timestep", &Simulation::calculateTimestep, py::arg("time_step"))
+        .def("finalize", &Simulation::finalize)
         .def("addKineticEnergyAnalyzer", &Simulation::addKineticEnergyAnalyzer, py::arg("t_analyse"))
         .def("addEnstrophyAnalyzer", &Simulation::addEnstrophyAnalyzer, py::arg("t_analyse"));
     }
