@@ -42,7 +42,6 @@
 #include <basics/constants/NumericConstants.h>
 #include <logger/Logger.h>
 #include <stdexcept>
-#include <vector>
 
 //!\brief Interactor to compute Coriolis force. All parameters in SI units.
 class CoriolisForce : public PreCollisionInteractor
@@ -64,7 +63,7 @@ public:
 
     void init() override {};
     void interact(int level, uint t) override;
-    void getTaggedFluidNodes(GridProvider* gridProvider) override {};
+    void getTaggedFluidNodes(GridProvider* /**/) override {};
     ~CoriolisForce() override = default;
 
 private:

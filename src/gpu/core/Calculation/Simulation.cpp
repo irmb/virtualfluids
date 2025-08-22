@@ -434,14 +434,7 @@ void Simulation::run()
     //    }
     //}
     //  //////////////////////////////////////////////////////////////////////////
-    averageTimer.end();
-    metaData.simulation.runtimeSeconds += averageTimer.getTimeInSeconds();
-    performanceOutput->log(averageTimer, para->getTimestepEnd(), communicator);
-    metaData.simulation.nups = performanceOutput->getNups();
-    metaData.simulation.runtimeSeconds = performanceOutput->totalRuntimeInSeconds();
-    vf::basics::logPostSimulation(metaData);
-
-    vf::basics::writeYAML(metaData, para->getFName() + ".yaml");
+    finalize();
 }
 
 void Simulation::calculateTimestep(uint timestep)
@@ -595,6 +588,19 @@ void Simulation::calculateTimestep(uint timestep)
         averageTimer.start();
     }
 }
+
+void Simulation::finalize()
+{
+    averageTimer.end();
+    metaData.simulation.runtimeSeconds += averageTimer.getTimeInSeconds();
+    performanceOutput->log(averageTimer, para->getTimestepEnd(), communicator);
+    metaData.simulation.nups = performanceOutput->getNups();
+    metaData.simulation.runtimeSeconds = performanceOutput->totalRuntimeInSeconds();
+    vf::basics::logPostSimulation(metaData);
+
+    vf::basics::writeYAML(metaData, para->getFName() + ".yaml");
+}
+
 
 void Simulation::readAndWriteFiles(uint timestep)
 {

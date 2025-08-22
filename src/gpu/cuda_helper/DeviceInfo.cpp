@@ -132,14 +132,18 @@ void printCudaInformation(int deviceId)
     printf(" --- General Information for device %d ---\n", deviceId);
     printf("Name: %s\n", prop.name);
     printf("Compute capability: %d.%d\n", prop.major, prop.minor);
-    printf("Clock rate: %d\n", prop.clockRate);
+    int clockRate;
+    cudaDeviceGetAttribute(&clockRate, cudaDevAttrClockRate, deviceId);
+    printf("Clock rate: %d\n", clockRate);
     printf("Device copy overlap: ");
-    if (prop.deviceOverlap)
+    if (prop.asyncEngineCount > 0)
         printf("Enabled\n");
     else
         printf("Disabled\n");
-    printf("Kernel execition timeout : ");
-    if (prop.kernelExecTimeoutEnabled)
+    printf("Kernel execution timeout : ");
+    int kernelExecTimeoutEnabled;
+    cudaDeviceGetAttribute(&kernelExecTimeoutEnabled, cudaDevAttrKernelExecTimeout, deviceId);
+    if (kernelExecTimeoutEnabled != 0)
         printf("Enabled\n");
     else
         printf("Disabled\n");

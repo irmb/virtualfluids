@@ -2,6 +2,27 @@
 <!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
 # Changelog
 
+## [0.1.3]() - 2025-08-25
+### Added
+- [ALL] More refined CMake presets including build presets
+- [GPU] Checks and recommendations for viscosity and velocity for K17 kernel
+- [GPU] Ability to sample concentration with samplers
+- [GPU] Adds multi-GPU communication hiding for advection-diffusion
+- [GPU] Adds turbulent diffusivity models for advection-diffusion
+
+- [GPU] Adds interactors for buoyancy and coriolis force computation
+- [GPU] Adds example apps for advection-diffusion: GaussianHillOfConcentration and HeatedCube
+- [GPU] Adds new "surface layer" boundary condition to apply Monin-Obukhov similarity theory for thermally stratified atmospheric boundary layers
+
+### Fixes
+- [GPU] fix in multiple Grid Builder Facade for Multi GPU and periodic boundary conditions
+- [GPU] fix bug in probe for cases with refinement
+- [GPU] fix computation of temporal averages in WallModel and PlanarAverage probes
+
+### Refactoring
+- [GPU] Make boundary conditions for advection diffusion solver more flexible
+- [GPU] Make use of template programming and constant expressions to simplify many boundary conditions
+
 ## [0.1.2](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/milestones/3) - 2024-07-09
 
 ### Added

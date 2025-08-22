@@ -50,7 +50,6 @@ def get_velocity(z, u_star, kappa, z0):
 # %%
 logger.Logger.initialize_logger()
 
-grid_builder = gpu.grid_generator.MultipleGridBuilder()
 communicator = parallel.MPICommunicator.get_instance()
 
 config = basics.ConfigurationFile()
@@ -78,9 +77,9 @@ mach = config.get_float_value("Ma", 0.1)
 nodes_per_height = config.get_uint_value("nz", 64)
 
 length = np.array([6, 4, 1]) * boundary_layer_height
-turbine_positions_x = np.ones(1) * boundary_layer_height
-turbine_positions_y = np.ones(1) * length[1] / 2
-turbine_positions_z = np.ones(1) * turbine_height
+turbine_positions_x = np.ones(1, dtype=np.float32) * boundary_layer_height
+turbine_positions_y = np.ones(1, dtype=np.float32) * length[1] / 2
+turbine_positions_z = np.ones(1, dtype=np.float32) * turbine_height
 level = 0
 
 density = config.get_float_value("Density", 1.225)
@@ -88,10 +87,6 @@ n_blade_nodes = config.get_int_value("NumberOfNodesPerAL", 32)
 
 read_precursor = config.get_bool_value("readPrecursor", False)
 
-if read_precursor:
-    nTReadPrecursor = config.get_int_value("nTimestepsReadPrecursor")
-    use_distributions = config.get_bool_value("useDistributions", False)
-    precursor_directory = config.get_string_value("precursorDirectory")
 
 # all in s
 t_start_out = config.get_float_value("tStartOut")
@@ -146,11 +141,13 @@ tm_factory.read_config_file(config)
 grid_scaling_factory = gpu.GridScalingFactory()
 grid_scaling_factory.set_scaling_factory(gpu.GridScaling.ScaleCompressible)
 
-grid_builder.add_coarse_grid(0.0, 0.0, 0.0, length[0], length[1], length[2], dx)
+grid_dimensions = gpu.grid_generator.GridDimensions(0, length[0], 0, length[1], 0, length[2], dx)
+grid_builder = gpu.grid_generator.MultipleGridBuilderFacade(grid_dimensions)
+
 
 if use_refinement:
     level = 1
-    grid_builder.add_grid(
+    grid_builder.add_fine_grid(
         gpu.grid_generator.Cuboid(
             turbine_positions_x[0] - 3 * turbine_diameter,
             turbine_positions_y[0] - 3 * turbine_diameter,
@@ -162,26 +159,25 @@ if use_refinement:
         level,
     )
 grid_builder.set_periodic_boundary_condition(not read_precursor, True, False)
-grid_builder.build_grids(False)
+grid_builder.create_grids(communicator.get_process_id())
 
 sampling_offset = 2
-if read_precursor:
-    precursor = gpu.create_file_collection(precursor_directory + "/precursor", gpu.TransientBCFileType.VTK)
-    grid_builder.set_precursor_boundary_condition(gpu.SideType.MX, precursor, nTReadPrecursor, 0, 0, 0)
+if read_precursor:    
+    nTReadPrecursor = config.get_int_value("nTimestepsReadPrecursor")
+    precursor_directory = config.get_string_value("precursorDirectory")
+    precursor = gpu.create_file_collection(precursor_directory, "precursor", gpu.TransientBCFileType.VTK)
+    grid_builder.set_precursor_boundary_condition(gpu.SideType.MX, precursor, nTReadPrecursor, False, 0, 0, 0)
 
-grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, z0, dx)
-para.set_has_wall_model_monitor(True)
+grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, z0, kappa, dx)
 grid_builder.set_slip_boundary_condition(gpu.SideType.PZ, 0, 0, -1)
 
 if read_precursor:
     grid_builder.set_pressure_boundary_condition(gpu.SideType.PX, 0)
-bc_factory.set_stress_boundary_condition(gpu.StressBC.StressBounceBackPressureCompressible)
+bc_factory.set_stress_boundary_condition(gpu.StressBC.StressBounceBackCompressible)
 bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipTurbulentViscosityCompressible)
 bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
 if read_precursor:
-    bc_factory.set_precursor_boundary_condition(
-        gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.PrecursorNonReflectiveCompressible
-    )
+    bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.PrecursorDistributions)
 para.set_outflow_pressure_correction_factor(0.0)
 # %%
 # don't use python init functions, they are very slow! Just kept as an example.
@@ -231,7 +227,8 @@ planar_average_probe = gpu.probes.planar_average_probe.PlanarAverageProbe(
     int(t_start_out_probe / dt),
     int(t_out_probe / dt),
     basics.geometry3d.Axis.z,
-    True, False
+    True,
+    False,
 )
 planar_average_probe.add_all_available_statistics()
 planar_average_probe.set_file_name_to_n_out()
@@ -250,7 +247,8 @@ wall_model_probe = gpu.probes.wall_model_probe.WallModelProbe(
     False,
     True,
     False,
-    False
+    False,
+    False,
 )
 
 para.add_sampler(wall_model_probe)
@@ -272,13 +270,16 @@ for n_probe, probe_pos in enumerate(plane_locs):
         int(t_start_out_probe / dt),
         int(t_out_probe / dt),
         False,
-        False
+        False,
     )
     plane_probe.set_probe_plane(probe_pos, 0, 0, dx, length[1], length[2])
     plane_probe.add_all_available_statistics()
     para.add_sampler(plane_probe)
 # %%
-sim = gpu.Simulation(para, cuda_memory_manager, grid_builder, bc_factory, tm_factory, grid_scaling_factory)
+sim = gpu.Simulation(para, cuda_memory_manager, grid_builder.get_grid_builder(), bc_factory, tm_factory, grid_scaling_factory)
 # %%
-sim.run()
+sim.init_timers()
+for t in range(1, para.get_timestep_end() + 1):
+    sim.calculate_timestep(t)
+sim.finalize()
 MPI.Finalize()
