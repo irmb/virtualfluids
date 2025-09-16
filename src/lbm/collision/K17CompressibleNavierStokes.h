@@ -151,12 +151,6 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
     real drho = 0.0, oneOverRho = 0.0, vvx = 0.0, vvy = 0.0, vvz = 0.0;
     getCompressibleMacroscopicValues(distribution, drho, oneOverRho, vvx, vvy, vvz);
     
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    //! - needed for Kahan summation algorithm
-    const real vvxWithoutForce = vvx;
-    const real vvyWithoutForce = vvy;
-    const real vvzWithoutForce = vvz;
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
@@ -165,12 +159,6 @@ constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, Mac
     vvx += parameter.forceX * c1o2;
     vvy += parameter.forceY * c1o2;
     vvz += parameter.forceZ * c1o2;
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    //! - Compute round off errors using Kahan summation algorithm <a href=https://en.wikipedia.org/wiki/Kahan_summation_algorithm">
-    parameter.forceX -= c2o1*(vvx - vvxWithoutForce);
-    parameter.forceY -= c2o1*(vvy - vvyWithoutForce);
-    parameter.forceZ -= c2o1*(vvz - vvzWithoutForce);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // calculate the square of velocities for this lattice node

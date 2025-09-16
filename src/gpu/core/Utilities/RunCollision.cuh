@@ -90,6 +90,9 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
         para.forceX = (collisionParameter.forces[0] + collisionParameter.bodyForceX[k_000]) * collisionParameter.forceFactor;
         para.forceY = (collisionParameter.forces[1] + collisionParameter.bodyForceY[k_000]) * collisionParameter.forceFactor;
         para.forceZ = (collisionParameter.forces[2] + collisionParameter.bodyForceZ[k_000]) * collisionParameter.forceFactor;
+        collisionParameter.bodyForceX[k_000] = basics::constant::c0o1;
+        collisionParameter.bodyForceY[k_000] = basics::constant::c0o1;
+        collisionParameter.bodyForceZ[k_000] = basics::constant::c0o1;
     } else {
         para.forceX = collisionParameter.forces[0] * collisionParameter.forceFactor;
         para.forceY = collisionParameter.forces[1] * collisionParameter.forceFactor;
@@ -112,14 +115,6 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
 
     vf::lbm::MacroscopicValues macroscopicValues;
     collision(para, macroscopicValues, turbulentViscosity);
-    
-    // set body force to round off error
-    if(applyBodyForce)
-    {
-        collisionParameter.bodyForceX[k_000] = para.forceX / collisionParameter.forceFactor;
-        collisionParameter.bodyForceY[k_000] = para.forceY / collisionParameter.forceFactor;
-        collisionParameter.bodyForceZ[k_000] = para.forceZ / collisionParameter.forceFactor;
-    }
 
     if (writeMacroscopicVariables || turbulenceModel == vf::lbm::TurbulenceModel::AMD) {
         collisionParameter.vx[k_000] = macroscopicValues.vx;
