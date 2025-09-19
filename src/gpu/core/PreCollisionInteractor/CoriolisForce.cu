@@ -52,5 +52,5 @@ void CoriolisForce::interact(int level, uint /**/)
     auto parD = para->getParD(level);
     vf::cuda::CudaGrid grid(parD->numberofthreads, parD->numberOfNodes);
     computeCoriolis<<<grid.grid, grid.threads>>>(parD->numberOfNodes, parD->velocityX, parD->velocityY, parD->forceX_SP,
-                                                 parD->forceY_SP, geostrophicWindX, geostrophicWindY, coriolisParameter);
+                                                 parD->forceY_SP, geostrophicWindX, geostrophicWindY, coriolisParameter*std::exp2(-level));
 }
