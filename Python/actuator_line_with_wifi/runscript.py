@@ -124,7 +124,7 @@ def main(sim_name: str, config_file: Path, turbine_file: Path, controller_file: 
     para.set_viscosity_LB(viscosity_LB)    
     para.set_velocity_ratio(dx/dt)
     para.set_viscosity_ratio(dx*dx/dt)
-    para.set_density_ratio(1.0)
+    para.set_density_ratio(density)
 
     para.configure_main_kernel(gpu.kernel.compressible.K17CompressibleNavierStokes)
 

@@ -69,7 +69,6 @@ namespace actuator_farm
                         const std::vector<real>,
                         const std::vector<real>,
                         const real,
-                        const real,
                         const int,
                         const real,
                         const real,
@@ -81,7 +80,6 @@ namespace actuator_farm
                         py::arg("turbine_positions_x"),
                         py::arg("turbine_positions_y"),
                         py::arg("turbine_positions_z"),
-                        py::arg("density"), 
                         py::arg("smearing_width"),
                         py::arg("level"), 
                         py::arg("delta_t"), 
@@ -93,7 +91,6 @@ namespace actuator_farm
         .def_property_readonly("number_of_blades_per_turbine", &ActuatorFarm::getNumberOfBladesPerTurbine)
         .def_property_readonly("number_of_grid_nodes", &ActuatorFarm::getNumberOfGridNodes)
         .def_property_readonly("number_of_indices", &ActuatorFarm::getNumberOfIndices)
-        .def_property_readonly("density", &ActuatorFarm::getDensity)
         .def_property_readonly("delta_t", &ActuatorFarm::getDeltaT)
         .def_property_readonly("delta_x", &ActuatorFarm::getDeltaX)
 
@@ -176,7 +173,6 @@ namespace actuator_farm
                         const std::vector<real>,
                         const std::vector<real>,
                         const real,
-                        const real,
                         const int,
                         const real,
                         const real>(),
@@ -188,7 +184,6 @@ namespace actuator_farm
                         py::arg("turbine_positions_y"),
                         py::arg("turbine_positions_z"),
                         py::arg("rotor_speeds"),
-                        py::arg("density"), 
                         py::arg("smearing_width"),
                         py::arg("level"), 
                         py::arg("delta_t"), 
