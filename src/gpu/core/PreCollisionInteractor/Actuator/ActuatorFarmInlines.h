@@ -110,14 +110,7 @@ __host__ __device__ __inline__ bool inBoundingSphere(real distX, real distY, rea
 
 __host__ __device__ __inline__ real gaussianSmearing(real distX, real distY, real distZ, real epsilon, real factorGaussian)
 {
-    return factorGaussian * exp(-distSqrd(distX, distY, distZ) / (epsilon * epsilon));
-}
-
-__inline__ void swapArrays(real*& arr1, real*& arr2)
-{
-    real* tmp = arr1;
-    arr1 = arr2;
-    arr2 = tmp;
+    return factorGaussian * std::exp(-distSqrd(distX, distY, distZ) / (epsilon * epsilon));
 }
 
 #endif

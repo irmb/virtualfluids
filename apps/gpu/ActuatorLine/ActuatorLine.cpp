@@ -75,6 +75,7 @@ void run(const vf::basics::ConfigurationFile& config)
     const real viscosity = 1.56e-5F;
     const real machNumber = c1o10;
     const uint timeStepAverageTimeSeriesProbe = 1;
+    const real density = 1.225F;
 
     const real rotorDiameter = config.getValue<real>("RotorDiameter");
     const uint nodesPerDiameter = config.getValue<uint>("NodesPerDiameter");
@@ -110,7 +111,7 @@ void run(const vf::basics::ConfigurationFile& config)
     //////////////////////////////////////////////////////////////////////////
 
     const real deltaX = rotorDiameter / real(nodesPerDiameter);
-    const real deltaT = deltaX * machNumber / (sqrt(3) * velocity);
+    const real deltaT = deltaX * machNumber / (std::sqrt(3) * velocity);
     const real velocityLB = velocity * deltaT / deltaX;              // LB units
     const real viscosityLB = viscosity * deltaT / (deltaX * deltaX); // LB units
 
@@ -149,6 +150,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio(deltaX / deltaT);
     para->setViscosityRatio(deltaX * deltaX / deltaT);
+    para->setDensityRatio(density);
     para->configureMainKernel(vf::collision_kernel::compressible::K17CompressibleNavierStokes);
 
     para->setInitialCondition([&](real, real, real, real& rho, real& vx, real& vy, real& vz) {
@@ -192,7 +194,6 @@ void run(const vf::basics::ConfigurationFile& config)
 
     const int level = 0; // grid level at which the turbine samples velocities and distributes forces
     const real smearingWidth = deltaX * std::exp2(-level) * c2o1; // width of gaussian smearing
-    const real density = 1.225F;
     const uint actuatorNodesPerBlade = 32;
     const real tipSpeedRatio = 7.5F; // tipspeed ratio = angular vel * radius / inflow vel
     const real rotorSpeed = c2o1 * tipSpeedRatio * velocity / rotorDiameter;
@@ -200,7 +201,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     auto actuatorFarm = std::make_shared<ActuatorFarmStandalone>(
         para, cudaMemoryManager, rotorDiameter, actuatorNodesPerBlade, turbinePositionsX, turbinePositionsY,
-        turbinePositionsZ, rotorSpeeds, density, smearingWidth, level, deltaT, deltaX);
+        turbinePositionsZ, rotorSpeeds, smearingWidth, level, deltaT, deltaX);
     para->addInteractor(actuatorFarm);
 
     actuatorFarm->enableOutput("ActuatorLineForcesAndVelocities", timeStepStartOutProbe, timeStepOutProbe);
