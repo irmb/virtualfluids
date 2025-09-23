@@ -35,6 +35,7 @@
 
 #include <iostream>
 #include <string>
+#include <array>
 
 #include "DataTypes.h"
 #include "K17CompressibleNavierStokes.h"
@@ -134,7 +135,7 @@ void run(string configname)
       BoundaryConditionsBlockVisitor bcVisitor;
 
       SPtr<LBMKernel> kernel(new K17CompressibleNavierStokes());
-      real quadricLimiter[3] = { 1e9, 1e9, 1e9 };
+      std::array<real,3> quadricLimiter = { 1e9, 1e9, 1e9 };
       //real quadricLimiter[3] = { 0.01, 0.01, 0.01 };
       static_pointer_cast<K17CompressibleNavierStokes>(kernel)->setQuadricLimiter(quadricLimiter);
 
