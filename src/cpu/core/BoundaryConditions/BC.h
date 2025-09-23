@@ -81,7 +81,7 @@ protected:
 
     char type{ 0 };
 
-    char bcStrategyKey{ -1 };
+    char bcStrategyKey{ 0 };
 
     static const char TIMEDEPENDENT = 1 << 0; //'1';
     static const char TIMEPERIODIC  = 1 << 1; //'2';

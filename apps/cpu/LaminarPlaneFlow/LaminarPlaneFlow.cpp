@@ -55,18 +55,23 @@ void run(const vf::basics::ConfigurationFile& config)
     real cpStep = config.getValue<real>("cpStep");
     real cpStart = config.getValue<real>("cpStart");
     bool newStart = config.getValue<bool>("newStart");
+    real dpFactor = config.getValue<real>("dpFactor");
+    
 
     SPtr<vf::parallel::Communicator> comm = vf::parallel::MPICommunicator::getInstance();
     int myid = comm->getProcessID();
 
-    real rhoLB1 = 0.00001;
-    real rhoLB2 = 0.0;
+    real rhoLB1 = 0.00001 / dpFactor;
+    real rhoLB2 = 0;
     real nu = 0.0064;
 
     real h = boundingBox[1] / 2.0;
     real dp = (rhoLB1 / 3. - rhoLB2 / 3.);
     real L = boundingBox[0];
     real u_max = h * h / (2. * nu) * (dp / L);
+    
+    //real forcing = dp / 64.0 /dpFactor;// /8.0;// /8.0;
+    //real u_max = h * h / (2. * nu) * (forcing);
     real Re = u_max * 2 * h / nu;
 
     SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
@@ -84,7 +89,17 @@ void run(const vf::basics::ConfigurationFile& config)
 
     // bc
     SPtr<BC> noSlipBC(new NoSlipBC());
-    noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
+    // noSlipBC->setBCStrategy(SPtr<BCStrategy>(new NoSlipInterpolated()));
+    SPtr<NoSlipInterpolatedRelaxed> noSlipRelaxed = SPtr<NoSlipInterpolatedRelaxed>(new NoSlipInterpolatedRelaxed());
+    noSlipRelaxed->thirdMomentsOff();
+    noSlipBC->setBCStrategy(noSlipRelaxed);
+
+
+    // mu::Parser fct;
+    // fct.SetExpr("u");
+    // fct.DefineConst("u", 0.0);
+    // auto noSlipBC = std::make_shared<VelocityBC>(false, false, false, fct, 0, BCFunction::INFCONST);
+    // noSlipBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBounceBack()));
 
     SPtr<BC> pressureBC1(new PressureBC(rhoLB1));
     pressureBC1->setBCStrategy(SPtr<BCStrategy>(new PressureNonEquilibrium()));
@@ -121,6 +136,10 @@ void run(const vf::basics::ConfigurationFile& config)
 
     SPtr<LBMKernel> kernel;
     kernel = SPtr<LBMKernel>(new K17CompressibleNavierStokes());
+    //kernel = SPtr<LBMKernel>(new K15CompressibleNavierStokes());
+
+    // kernel->setWithForcing(true);
+    // kernel->setForcingX1(forcing);
 
     SPtr<BCSet> bcProc;
     bcProc = std::make_shared<BCSet>();

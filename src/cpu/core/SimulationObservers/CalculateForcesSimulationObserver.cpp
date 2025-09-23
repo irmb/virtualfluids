@@ -64,26 +64,7 @@ CalculateForcesSimulationObserver::CalculateForcesSimulationObserver(SPtr<Grid3D
             if (!ostr)
                 throw UbException(UB_EXARGS, "couldn't open file " + fname);
         }
-        ostr.width(12);
-        ostr << "step"
-             << "\t";
-        ostr.width(12);
-        ostr << "Cx"
-             << "\t";
-        ostr.width(12);
-        ostr << "Cy"
-             << "\t";
-        ostr.width(12);
-        ostr << "Cz"
-             << "\t";
-        ostr.width(12);
-        ostr << "Fx"
-             << "\t";
-        ostr.width(12);
-        ostr << "Fy"
-             << "\t";
-        ostr.width(12);
-        ostr << "Fz" << std::endl;
+        ostr << "step" << ";" << "Cx" << ";" << "Cy" << ";" << "Cz" << ";" << "Fx" << ";" << "Fy" << ";" << "Fz" << std::endl;
         ostr.close();
     }
 }
@@ -119,16 +100,7 @@ void CalculateForcesSimulationObserver::collectData(real step)
         }
 
         calculateCoefficients();
-
-        ostr.width(12);
-        ostr.setf(std::ios::fixed);
-        ostr << istep << "\t";
-        write(&ostr, C1, (char *)"\t");
-        write(&ostr, C2, (char *)"\t");
-        write(&ostr, C3, (char *)"\t");
-        write(&ostr, forceX1global, (char *)"\t");
-        write(&ostr, forceX2global, (char *)"\t");
-        write(&ostr, forceX3global, (char *)"\t");
+        ostr << istep << ";" << C1 << ";" << C2 << ";" << C3 << ";" << forceX1global << ";" << forceX2global << ";" << forceX3global;
         ostr << std::endl;
         ostr.close();
     }
@@ -233,7 +205,7 @@ UbTupleDouble3 CalculateForcesSimulationObserver::getForces(int x1, int x2, int 
         double &forceX3 = val<3>(force);
         double f, fnbr;
 
-        dynamicPointerCast<EsoTwist3D>(distributions)->swap();
+        //dynamicPointerCast<EsoTwist3D>(distributions)->swap();
 
         for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
             if (bc->hasNoSlipBoundaryFlag(fdir)) {
@@ -249,7 +221,7 @@ UbTupleDouble3 CalculateForcesSimulationObserver::getForces(int x1, int x2, int 
                 forceX3 += (f + fnbr) * d3q27_system::DX3[invDir];
             }
         }
-        dynamicPointerCast<EsoTwist3D>(distributions)->swap();
+        //dynamicPointerCast<EsoTwist3D>(distributions)->swap();
     }
 
     return force;
@@ -269,15 +241,10 @@ void CalculateForcesSimulationObserver::calculateCoefficients()
     C3 = c2o1 * F3 / (v * v * a);
 }
 //////////////////////////////////////////////////////////////////////////
-void CalculateForcesSimulationObserver::addInteractor(SPtr<D3Q27Interactor> interactor) { interactors.push_back(interactor); }
-//////////////////////////////////////////////////////////////////////////
-void CalculateForcesSimulationObserver::write(std::ofstream *fileObject, real value, char *separator)
-{
-    (*fileObject).width(12);
-    //(*fileObject).precision(2);
-    (*fileObject).setf(std::ios::fixed);
-    (*fileObject) << value;
-    (*fileObject) << separator;
+void CalculateForcesSimulationObserver::addInteractor(SPtr<D3Q27Interactor> interactor) 
+{ 
+    interactors.push_back(interactor); 
 }
+
 
 //! \}

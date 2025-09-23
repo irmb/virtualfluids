@@ -56,6 +56,7 @@ public:
     //! control of coProcessors
     void addSimulationObserver(SPtr<SimulationObserver> coProcessor);
     void notifyObservers(real step);
+    void notifyObserversQAD(real step);
 
     virtual void run();
 

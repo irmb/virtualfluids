@@ -26,61 +26,34 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup cpu_SimulationObservers SimulationObservers
+//! \addtogroup cpu_BoundaryConditions BoundaryConditions
 //! \ingroup cpu_core core
 //! \{
 //! \author Konstantin Kutscher
 //=======================================================================================
-#ifndef D3Q27ForcesSimulationObserver_H
-#define D3Q27ForcesSimulationObserver_H
 
+#ifndef NoSlipInterpolatedRelaxed_h__
+#define NoSlipInterpolatedRelaxed_h__
+
+#include "BCStrategy.h"
 #include <PointerDefinitions.h>
-#include <string>
-#include <vector>
 
-#include "SimulationObserver.h"
-#include "UbTuple.h"
-#include "lbm/constants/D3Q27.h"
-
-class ForceCalculator;
-namespace vf::parallel {class Communicator;}
-class Grid3D;
-class UbScheduler;
-class D3Q27Interactor;
 class DistributionArray3D;
-class BoundaryConditions;
 
-class CalculateForcesSimulationObserver : public SimulationObserver
+//! A class implements no-slip boundary condition
+class NoSlipInterpolatedRelaxed : public BCStrategy
 {
 public:
-    //! Constructor
-    //! \param v - velocity of fluid in LB units
-    //! \param a - area of object in LB units
-    CalculateForcesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path, std::shared_ptr<vf::parallel::Communicator> comm, real v, real a);
-    ~CalculateForcesSimulationObserver() override;
-    void update(real step) override;
-    void addInteractor(SPtr<D3Q27Interactor> interactor);
-
-protected:
-    void collectData(real step);
-    void calculateForces();
-    UbTupleDouble3 getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc);
-    void calculateCoefficients();
+    NoSlipInterpolatedRelaxed();
+    SPtr<BCStrategy> clone() override;
+    void addDistributions(SPtr<DistributionArray3D> distributions) override;
+    void applyBC() override;
+    void thirdMomentsOn();
+    void thirdMomentsOff();
 
 private:
-    std::string path;
-    std::shared_ptr<vf::parallel::Communicator> comm;
-    std::vector<SPtr<D3Q27Interactor>> interactors;
-    real forceX1global;
-    real forceX2global;
-    real forceX3global;
-    real v; //!< is the speed of the object relative to the fluid
-    real a; //!< is the reference area
-    real C1;
-    real C2;
-    real C3;
+    real thirdMomentsFactor{1.0};
 };
-
-#endif /* D3Q27ForcesSimulationObserver_H */
+#endif
 
 //! \}

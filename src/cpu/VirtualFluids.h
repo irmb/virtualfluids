@@ -112,6 +112,7 @@
 #include <cpu/core/BoundaryConditions/BoundaryConditions.h>
 #include <cpu/core/BoundaryConditions/NoSlipBC.h>
 #include <cpu/core/BoundaryConditions/NoSlipInterpolated.h>
+#include <cpu/core/BoundaryConditions/NoSlipInterpolatedRelaxed.h>
 #include <cpu/core/BoundaryConditions/OutflowNonReflecting.h>
 #include <cpu/core/BoundaryConditions/OutflowNonReflectingWithPressure.h>
 #include <cpu/core/BoundaryConditions/PressureBC.h>

@@ -40,6 +40,7 @@
 
 #include <basics/DataTypes.h>
 #include <lbm/collision/CollisionParameter.h>
+#include <lbm/collision/CollisionParameter.h>
 
 #include "LBMKernel.h"
 
