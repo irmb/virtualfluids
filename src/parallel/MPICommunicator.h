@@ -30,6 +30,7 @@
 //! \{
 //! \author Konstantin Kutscher
 //=======================================================================================
+#include <stdexcept>
 #if defined VF_MPI
 
 #ifndef MPI_MPICOMMUNICATOR_H
@@ -213,7 +214,11 @@ void MPICommunicator::allGather(std::vector<T> &svalues, std::vector<T> &rvalues
     MPI_Allgather(&scount, 1, MPI_INT, &rcounts[0], 1, MPI_INT, comm);
     displs.resize(numprocs);
 
+    if(numprocs < 1)
+        throw std::runtime_error("No processors!");
+
     displs[0] = 0;
+
     for (int i = 1; i < numprocs; ++i) {
         displs[i] = displs[i - 1] + rcounts[i - 1];
     }

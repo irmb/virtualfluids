@@ -28,47 +28,23 @@
 //
 //! \author Henry Korb
 //=======================================================================================
-#include <pybind11/pybind11.h>
-#include "submodules/pre_collision_interactor.cpp"
-#include "submodules/simulation.cpp"
-#include "submodules/parameter.cpp"
-#include "submodules/boundary_conditions.cpp"
-#include "submodules/cuda_memory_manager.cpp"
-#include "submodules/probes.cpp"
-#include "submodules/precursor_writer.cpp"
-#include "submodules/grid_provider.cpp"
-#include "submodules/grid_generator.cpp"
-#include "submodules/turbulence_models.cpp"
-#include "submodules/transient_bc_setter.cpp"
-#include "submodules/actuator_farm.cpp"
-#include "submodules/grid_scaling_factory.cpp"
-#include "submodules/kernel.cpp"
-#include "submodules/sampler.cpp"
-#include "submodules/coriolis_force.cpp"
-#include "submodules/damping_layer.cpp"
-#include "submodules/buoyancy_provider.cpp"
 
-namespace gpu_bindings
+#include <pybind11/pybind11.h>
+#include <gpu/core/PreCollisionInteractor/BuoyancyProvider/BuoyancyProvider.h>
+
+namespace buoyancy_provider
 {
-PYBIND11_MODULE(gpu, m)
-{
-    simulation::makeModule(m);
-    parameter::makeModule(m);
-    pre_collision_interactor::makeModule(m);
-    actuator_farm::makeModule(m);
-    boundary_conditions::makeModule(m);
-    transient_bc_setter::makeModule(m);
-    cuda_memory_manager::makeModule(m);
-    sampler::makeModule(m);
-    probes::makeModule(m);
-    precursor_writer::makeModule(m);
-    grid_generator::makeModule(m);
-    grid_provider::makeModule(m);
-    turbulence_model::makeModule(m);
-    grid_scaling_factory::makeModule(m);
-    kernel::makeModule(m);
-    coriolis_force::makeModule(m);
-    damping_layer::makeModule(m);
-    buoyancy_provider::makeModule(m);
+    namespace py = pybind11;
+
+    void makeModule(py::module_ &parentModule)
+    {
+        
+        py::class_<BuoyancyProviderConstantValue, PreCollisionInteractor, std::shared_ptr<BuoyancyProviderConstantValue>>(parentModule, "BuoyancyProviderConstantValue")
+        .def(py::init<SPtr<Parameter>, SPtr<CudaMemoryManager>>(),
+             py::arg("para"), py::arg("cuda_memory_manager"));
+        
+        py::class_<BuoyancyProviderPlanarAverage, PreCollisionInteractor, std::shared_ptr<BuoyancyProviderPlanarAverage>>(parentModule, "BuoyancyProviderPlanarAverage")
+        .def(py::init<SPtr<Parameter>, SPtr<CudaMemoryManager>>(),
+             py::arg("para"), py::arg("cuda_memory_manager"));
+    }
 }
-} // namespace gpu_bindings

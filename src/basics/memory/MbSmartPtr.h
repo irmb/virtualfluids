@@ -65,17 +65,17 @@ class MbSmartPtr : public MbSmartPtrBase
 {
 public:
     // Konstruktoren //bei explicit geht der implizite cast nicht mehr, aber um keinen stress zu verursachen
-    /*explicit*/ MbSmartPtr<ObjType>(const ObjType *pPtr = NULL) : MbSmartPtrBase(), mpPtr(NULL) { init(pPtr); }
+    /*explicit*/ MbSmartPtr(const ObjType *pPtr = NULL) : MbSmartPtrBase(), mpPtr(NULL) { init(pPtr); }
     template <class ParamType>
-    MbSmartPtr<ObjType>(const MbSmartPtr<ParamType> &ptr) : MbSmartPtrBase(), mpPtr(NULL)
+    MbSmartPtr(const MbSmartPtr<ParamType> &ptr) : MbSmartPtrBase(), mpPtr(NULL)
     {
         init(ptr.get());
     }
     // Destruktor
-    ~MbSmartPtr<ObjType>() override { init(NULL); }
+    ~MbSmartPtr() override { init(NULL); }
     //---------------------------------------------------
     // Kopierkonstruktor
-    MbSmartPtr<ObjType>(const MbSmartPtr<ObjType> &ptr) : MbSmartPtrBase(), mpPtr(NULL) { init(ptr.get()); }
+    MbSmartPtr(const MbSmartPtr<ObjType> &ptr) : MbSmartPtrBase(), mpPtr(NULL) { init(ptr.get()); }
     //---------------------------------------------------
     // Zuweisungsoperatoren
     template <class ParamType>

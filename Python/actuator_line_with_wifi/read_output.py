@@ -30,39 +30,43 @@ r"""
 =======================================================================================
 """
 #%%
-from pandas import HDFStore
+import tables as tb
 from matplotlib import pyplot as plt
 import numpy as np
+import pandas as pd
 from pathlib import Path
 
 from wiFI.turbine import create_turbine_from_farm_json
 
-def get_blade_array(hdf5: HDFStore, key: str):
-    blade_df = hdf5.get(key)
-    _, n_turbines, n_blades, n_nodes = blade_df.columns[-1]
-    return blade_df.to_numpy().reshape(-1, 3, n_turbines+1, n_blades+1, n_nodes+1)
+
+def average_data(file: tb.File, key: str):
+    return np.array(file.root[key]["averages"].data)
+
+def instantaneous_data(file: tb.File, key: str):
+    return np.array(file.root[key]["instantaneous"].data)
+
 
 #%%
 turbine_file = Path(__file__).parent/"SingleTurbine.json"
 output_dir = Path(__file__).parents[2]/"output"
-wifi_output = HDFStore(output_dir/"wifi.h5", mode="r")
+wifi_output = tb.File(output_dir/"wifi.h5", mode="r")
 turbine_model = create_turbine_from_farm_json(turbine_file, number_of_blade_nodes=32)
 # %%
-print(wifi_output.keys())
+print(wifi_output.root)
 #%%
-
-plt.plot(wifi_output["/Rotor_speed"])
+rotor_speed = pd.DataFrame(wifi_output.root.rotor_speed.averages.data, wifi_output.root.rotor_speed.averages.times, copy=False)
+plt.plot(rotor_speed)
 # %%
-blade_forces = get_blade_array(wifi_output, "Blade_forces")
+blade_forces = average_data(wifi_output, "blade_forces")
 
 plt.plot(blade_forces[-1, 0, 0, :, :].T)
 
 # %%
-blade_coordinates = get_blade_array(wifi_output, "Blade_coordinates")
+blade_coordinates = instantaneous_data(wifi_output, "blade_coordinates")
 plt.scatter(blade_coordinates[-1,1,0,:,:], blade_coordinates[-1,2,0,:,:])
 
 # %%
-blade_velocities = get_blade_array(wifi_output, "Blade_velocities")
+blade_velocities = average_data(wifi_output, "blade_velocities")
 plt.plot(blade_velocities[-1, 0, 0, :, :].T)
 # %%
 plt.plot(blade_velocities[-1, 1, 0,:,:].T)

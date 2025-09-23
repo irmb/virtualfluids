@@ -26,10 +26,7 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-#include "Calculation/Calculation.h"
 #include "CoriolisForce.h"
-
-#include <cmath>
 
 #include <cstdlib>
 
@@ -37,8 +34,6 @@
 #include <basics/constants/NumericConstants.h>
 
 #include "cuda_helper/CudaGrid.h"
-#include "gpu/core/Cuda/CudaMemoryManager.h"
-#include "gpu/core/Parameter/Parameter.h"
 #include <cuda_helper/CudaIndexCalculation.h>
 
 __global__ void computeCoriolis(unsigned long long numberOfNodes, const real* velocityX, const real* velocityY, real* forceX,
