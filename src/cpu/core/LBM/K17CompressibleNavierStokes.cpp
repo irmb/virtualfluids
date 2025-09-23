@@ -35,7 +35,7 @@
 
 #include <lbm/collision/K17CompressibleNavierStokes.h>
 #include <lbm/collision/TurbulentViscosity.h>
-#include <logger/Logger.h>
+//#include <logger/Logger.h>
 
 #include "BCArray3D.h"
 #include "BCSet.h"
@@ -165,11 +165,11 @@ void K17CompressibleNavierStokes::calculate(int step)
 void K17CompressibleNavierStokes::setQuadricLimiter(std::array<real,3> limiter)
 {
     if (isLimiterValid(limiter) && (limiter[0] > 0 && limiter[1] > 0 && limiter[2] > 0) ) {
-            quadricLimiter = limiter;
+        quadricLimiter = limiter;
     }
     else {
         quadricLimiter = {0.01, 0.01, 0.01};
-        VF_LOG_WARNING("The quadric limiter array was not properly initialized. It was given a default initialization of {0.01, 0.01, 0.01.}.");
+        //VF_LOG_WARNING("The quadric limiter array was not properly initialized. It was given a default initialization of {0.01, 0.01, 0.01.}.");
     }
 }
 
