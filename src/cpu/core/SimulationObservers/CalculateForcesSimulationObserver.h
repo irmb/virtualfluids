@@ -64,7 +64,6 @@ public:
 protected:
     void collectData(real step);
     void calculateForces();
-    UbTupleDouble3 getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc);
     void calculateCoefficients();
 
 private:
