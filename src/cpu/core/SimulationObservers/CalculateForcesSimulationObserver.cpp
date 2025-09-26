@@ -129,7 +129,6 @@ void CalculateForcesSimulationObserver::calculateForces()
             SPtr<LBMKernel> kernel                 = block->getKernel();
             SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-            distributions->swap();
 
             int ghostLayerWidth = kernel->getGhostLayerWidth();
             int minX1           = ghostLayerWidth;
@@ -164,8 +163,6 @@ void CalculateForcesSimulationObserver::calculateForces()
             forceX1 *= deltaXquadrat;
             forceX2 *= deltaXquadrat;
             forceX3 *= deltaXquadrat;
-
-            distributions->swap();
 
             forceX1global += forceX1;
             forceX2global += forceX2;
