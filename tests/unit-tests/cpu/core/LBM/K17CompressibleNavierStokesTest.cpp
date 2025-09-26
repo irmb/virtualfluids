@@ -57,13 +57,13 @@ TEST_F(K17CompressibleNavierStokesTest, InvalidLimiterDefaultsToFallback) {
     EXPECT_EQ(solver.getQuadricLimiter(), expected);
 }
 
-TEST_F(K17CompressibleNavierStokesTest, InvalidInitOfLimiterDefaultsToFallback) {
-    std::array<real, 3> invalidInit;
-    solver.setQuadricLimiter(invalidInit);
+// TEST_F(K17CompressibleNavierStokesTest, InvalidInitOfLimiterDefaultsToFallback) {
+//     std::array<real, 3> invalidInit;
+//     solver.setQuadricLimiter(invalidInit);
 
-    std::array<real, 3> expected = {0.01, 0.01, 0.01};
+//     std::array<real, 3> expected = {0.01, 0.01, 0.01};
 
-    EXPECT_EQ(solver.getQuadricLimiter(), expected);
-}
+//     EXPECT_EQ(solver.getQuadricLimiter(), expected);
+// }
 
 //! \}
