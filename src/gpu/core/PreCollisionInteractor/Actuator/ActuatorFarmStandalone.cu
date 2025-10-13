@@ -61,7 +61,7 @@ std::vector<real> ActuatorFarmStandalone::computeBladeRadii(const real diameter,
     return blade_radii;
 }
 
-void ActuatorFarmStandalone::updateForcesAndCoordinates()
+void ActuatorFarmStandalone::updateForcesAndCoordinates([[maybe_unused]] real time, real deltaT)
 {
     const real lift_coefficient = c1o1;
     const real drag_coefficient = c0o1;

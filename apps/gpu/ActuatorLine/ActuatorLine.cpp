@@ -140,7 +140,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     auto para = std::make_shared<Parameter>(&config);
 
-    para->worldLength = rotorDiameter;
+    para->worldLength = lengthX;
 
     para->setOutputPrefix(simulationName);
 
@@ -193,7 +193,7 @@ void run(const vf::basics::ConfigurationFile& config)
     //////////////////////////////////////////////////////////////////////////
 
     const int level = 0; // grid level at which the turbine samples velocities and distributes forces
-    const real smearingWidth = deltaX * std::exp2(-level) * c2o1; // width of gaussian smearing
+    const real smearingWidth = c2o1 * deltaX * std::exp2(-level);
     const uint actuatorNodesPerBlade = 32;
     const real tipSpeedRatio = 7.5F; // tipspeed ratio = angular vel * radius / inflow vel
     const real rotorSpeed = c2o1 * tipSpeedRatio * velocity / rotorDiameter;
@@ -201,7 +201,7 @@ void run(const vf::basics::ConfigurationFile& config)
 
     auto actuatorFarm = std::make_shared<ActuatorFarmStandalone>(
         para, cudaMemoryManager, rotorDiameter, actuatorNodesPerBlade, turbinePositionsX, turbinePositionsY,
-        turbinePositionsZ, rotorSpeeds, smearingWidth, level, deltaT, deltaX);
+        turbinePositionsZ, rotorSpeeds, smearingWidth, level);
     para->addInteractor(actuatorFarm);
 
     actuatorFarm->enableOutput("ActuatorLineForcesAndVelocities", timeStepStartOutProbe, timeStepOutProbe);

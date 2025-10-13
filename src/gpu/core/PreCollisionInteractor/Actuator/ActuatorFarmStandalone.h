@@ -39,22 +39,22 @@ class ActuatorFarmStandalone : public ActuatorFarm
 {
 public:
     ActuatorFarmStandalone(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const real diameter,
-                           const uint numberOfNodesPerBlade, const std::vector<real> turbinePositionsX,
-                           const std::vector<real> turbinePositionsY, const std::vector<real> turbinePositionsZ,
-                           const std::vector<real> rotorSpeeds, const real smearingWidth,
-                           const int level, const real deltaT, const real deltaX)
+                           const uint numberOfNodesPerBlade, const std::vector<real>& turbinePositionsX,
+                           const std::vector<real>& turbinePositionsY, const std::vector<real>& turbinePositionsZ,
+                           const std::vector<real>& rotorSpeeds, const real smearingWidth,
+                           const int level)
         : rotorSpeeds(rotorSpeeds),
           ActuatorFarm(std::move(para), std::move(cudaMemoryManager), diameter, computeBladeRadii(diameter, numberOfNodesPerBlade),
-                       turbinePositionsX, turbinePositionsY, turbinePositionsZ, smearingWidth, level, deltaT,
-                       deltaX, true)
+                       turbinePositionsX, turbinePositionsY, turbinePositionsZ, smearingWidth, level, true)
     {
         if(numberOfTurbines != rotorSpeeds.size())
             throw std::runtime_error("ActuatorFarmStandalone::ActuatorFarmStandalone: rotor speeds need to have same length as turbine positions!");
+        VF_LOG_INFO("rotor speed [rad/s] = {}", this->rotorSpeeds[0]);
     }
 
     ~ActuatorFarmStandalone() override = default;
 
-    void updateForcesAndCoordinates() override;
+    void updateForcesAndCoordinates(real time, real deltaT) override;
     static std::vector<real> computeBladeRadii(real diameter, uint numberOfNodesPerBlade);
 
 private:

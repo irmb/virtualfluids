@@ -32,7 +32,9 @@
 #ifndef ActuatorFarm_H
 #define ActuatorFarm_H
 
+#include "Parameter/Parameter.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
+#include "logger/Logger.h"
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
 #include <stdexcept>
@@ -53,8 +55,6 @@ public:
         const std::vector<real>& turbinePositionsZ,
         const real smearingWidth,
         const int level,
-        const real deltaT,
-        const real deltaX,
         const bool useHostArrays
     ) :
         diameter(diameter),
@@ -68,16 +68,25 @@ public:
         smearingWidth(smearingWidth),
         level(level),
         useHostArrays(useHostArrays),
-        deltaT(deltaT*std::exp2(-level)),
-        deltaX(deltaX*std::exp2(-level)),
-        invDeltaX(vf::basics::constant::c1o1/deltaX),
         PreCollisionInteractor(std::move(para), std::move(cudaMemoryManager))
     {
-        if(this->smearingWidth < this->deltaX)
+        using namespace vf::basics::constant;
+        const real deltaX = this->para->getScaledLengthRatio(level);
+        const real smearingWidthOverDx = this->smearingWidth / deltaX;
+        if(smearingWidthOverDx < c1o1)
             throw std::runtime_error("ActuatorFarm::ActuatorFarm: smearing width needs to be larger than dx!");
         if(numberOfTurbines != turbinePositionsY.size() || numberOfTurbines != turbinePositionsZ.size())
             throw std::runtime_error("ActuatorFarm::ActuatorFarm: turbine positions need to have the same length!");
-        azimuths = std::vector<real>(numberOfTurbines, 0.0);
+        azimuths = std::vector<real>(numberOfTurbines, c0o1);
+        VF_LOG_INFO("ActuatorFarm parameters:");
+        VF_LOG_INFO("--------------");
+        VF_LOG_INFO("level               = {}", this->level);
+        VF_LOG_INFO("number of turbines  = {}", this->numberOfTurbines );
+        VF_LOG_INFO("nodes per blade:    = {}", this->numberOfNodesPerBlade);
+        VF_LOG_INFO("rotor diameter [m]  = {}", this->diameter);
+        VF_LOG_INFO("nodes per diameter  = {}", this->diameter / deltaX);
+        VF_LOG_INFO("smearing width [m]  = {} ", this->smearingWidth);
+        VF_LOG_INFO("smearing width / dx = {} ",this->smearingWidth/deltaX);
     }
 
     ~ActuatorFarm() override;
@@ -93,9 +102,6 @@ public:
     }
 
     void write(const std::string& filename) const;
-
-    real getDeltaT() const { return this->deltaT; };
-    real getDeltaX() const { return this->deltaX; };
 
     uint getNumberOfTurbines() const { return this->numberOfTurbines; };
     uint getNumberOfNodesPerTurbine() const { return this->numberOfNodesPerTurbine; };
@@ -163,7 +169,7 @@ public:
 
     void setTurbineAzimuth(size_t turbine, real azimuth){azimuths[turbine] = azimuth;}
 
-    virtual void updateForcesAndCoordinates()=0;
+    virtual void updateForcesAndCoordinates(real time, real deltaT)=0;
 
 private:
     void initTurbineGeometries();
@@ -198,14 +204,12 @@ protected:
     std::vector<real> azimuths;
     const real diameter;
     const bool useHostArrays;
-    const real deltaT, deltaX, invDeltaX;
     const uint numberOfTurbines, numberOfNodesPerBlade, numberOfNodesPerTurbine;
     const real smearingWidth; // in m
     const int level;
     uint numberOfIndices{0};
     uint numberOfGridNodes{0};
 
-    real factorGaussian;
     int streamIndex;
 
     bool writeOutput{false};

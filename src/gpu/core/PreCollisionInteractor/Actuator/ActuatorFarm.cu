@@ -61,14 +61,14 @@ struct GridData
     const uint *neighborsX, *neighborsY, *neighborsZ, *neighborsWSB;
     const real *vx, *vy, *vz;
     real *fx, *fy, *fz;
-    const real inverseDeltaX, velocityRatio, forceRatio;
+    const real deltaX, velocityRatio, forceRatio;
 };
 
 struct TurbineData
 {
     const real *posX, *posY, *posZ;
     const uint numberOfTurbines;
-    const real smearingWidth, factorGaussian;
+    const real smearingWidth;
 };
 
 struct ComponentData
@@ -103,9 +103,9 @@ __global__ void interpolateVelocities(const GridData gridData, const TurbineData
     getNeighborIndicesOfBSW(kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, gridData.neighborsX, gridData.neighborsY,
                             gridData.neighborsZ);
 
-    const real distX = gridData.inverseDeltaX * (coordX - gridData.coordsX[kMMM]);
-    const real distY = gridData.inverseDeltaX * (coordY - gridData.coordsY[kMMM]);
-    const real distZ = gridData.inverseDeltaX * (coordZ - gridData.coordsZ[kMMM]);
+    const real distX = (coordX - gridData.coordsX[kMMM]) / gridData.deltaX;
+    const real distY = (coordY - gridData.coordsY[kMMM]) / gridData.deltaX;
+    const real distZ = (coordZ - gridData.coordsZ[kMMM]) / gridData.deltaX;
 
     componentData.velocitiesX[nodeIndex] =
         trilinearInterpolation(distX, distY, distZ, kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, gridData.vx) *
@@ -150,7 +150,7 @@ __global__ void applyBodyForces(GridData gridData, const TurbineData turbineData
             const real distY = componentData.coordsY[node] - gridCoordY;
             const real distZ = componentData.coordsZ[node] - gridCoordZ;
 
-            const real eta = gaussianSmearing(distX, distY, distZ, turbineData.smearingWidth, turbineData.factorGaussian);
+            const real eta = gaussianSmearing(distX, distY, distZ, turbineData.smearingWidth);
             gridForceX += componentData.forcesX[node] * eta;
             gridForceY += componentData.forcesY[node] * eta;
             gridForceZ += componentData.forcesZ[node] * eta;
@@ -210,12 +210,12 @@ void ActuatorFarm::interact(int level, uint t)
                               para->getParD(this->level)->forceX_SP,
                               para->getParD(this->level)->forceY_SP,
                               para->getParD(this->level)->forceZ_SP,
-                              this->invDeltaX,
+                              para->getScaledLengthRatio(level),
                               para->getVelocityRatio(),
-                            para->getScaledForceRatio(level) };
+                              para->getScaledForceRatio(level) };
 
     const TurbineData turbineData { this->turbinePosXD,     this->turbinePosYD,  this->turbinePosZD,
-                                    this->numberOfTurbines, this->smearingWidth, this->factorGaussian };
+                                    this->numberOfTurbines, this->smearingWidth};
 
     const ComponentData bladeData { this->diameter,
                                     this->numberOfNodesPerTurbine,
@@ -237,7 +237,10 @@ void ActuatorFarm::interact(int level, uint t)
     if (useHostArrays)
         cudaMemoryManager->cudaCopyBladeVelocitiesDtoH(this);
 
-    this->updateForcesAndCoordinates();
+    const uint subIterationTimestep = para->getTimeStep(level, t, false);
+    const real deltaT = para->getScaledTimeRatio(level);
+    const real time = subIterationTimestep * deltaT;
+    this->updateForcesAndCoordinates(time, deltaT);
     this->swapDeviceArrays();
 
     if (useHostArrays)
@@ -276,8 +279,6 @@ void ActuatorFarm::initTurbineGeometries()
     std::copy(initialTurbinePositionsZ.begin(), initialTurbinePositionsZ.end(), turbinePosZH);
 
     cudaMemoryManager->cudaCopyBladeGeometriesHtoD(this);
-
-    this->factorGaussian = std::pow(this->smearingWidth * std::sqrt(cPi), -c3o1);
 }
 
 void ActuatorFarm::initBladeCoords()
@@ -348,11 +349,12 @@ void ActuatorFarm::initBladeIndices()
 
 void ActuatorFarm::initBoundingSpheres()
 {
-    std::vector<int> nodesInSpheres;
+    std::vector<uint> nodesInSpheres;
     const real sphereRadius = getBoundingSphereRadius(this->diameter, this->smearingWidth);
     const real sphereRadiusSqrd = sphereRadius * sphereRadius;
+    const real deltaX = para->getScaledLengthRatio(level);
     const uint minimumNumberOfNodesPerSphere =
-        uint(c4o3 * cPi * std::pow(sphereRadius - this->deltaX, c3o1) / std::pow(this->deltaX, c3o1));
+        uint(c4o3 * cPi * std::pow(sphereRadius - deltaX, c3o1) / std::pow(deltaX, c3o1));
 
     for (uint turbine = 0; turbine < this->numberOfTurbines; turbine++) {
 

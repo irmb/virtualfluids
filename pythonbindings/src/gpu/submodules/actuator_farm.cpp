@@ -40,9 +40,9 @@ class PyActuatorFarm : public ActuatorFarm
 {
 public:
     using ActuatorFarm::ActuatorFarm; // Inherit constructors
-    void updateForcesAndCoordinates() override 
+    void updateForcesAndCoordinates(real time, real deltaT) override 
     { 
-        PYBIND11_OVERRIDE_PURE_NAME(void, ActuatorFarm, "update_forces_and_coordinates", updateForcesAndCoordinates); 
+        PYBIND11_OVERRIDE_PURE_NAME(void, ActuatorFarm, "update_forces_and_coordinates", updateForcesAndCoordinates, time, deltaT); 
     }
 };
 
@@ -64,14 +64,12 @@ namespace actuator_farm
         .def(py::init<  SPtr<Parameter>,
                         SPtr<CudaMemoryManager>,
                         const real,
-                        const std::vector<real>,
-                        const std::vector<real>,
-                        const std::vector<real>,
-                        const std::vector<real>,
+                        const std::vector<real>&,
+                        const std::vector<real>&,
+                        const std::vector<real>&,
+                        const std::vector<real>&,
                         const real,
                         const int,
-                        const real,
-                        const real,
                         const bool>(),
                         py::arg("para"),
                         py::arg("cuda_memory_manager"),
@@ -82,8 +80,6 @@ namespace actuator_farm
                         py::arg("turbine_positions_z"),
                         py::arg("smearing_width"),
                         py::arg("level"), 
-                        py::arg("delta_t"), 
-                        py::arg("delta_x"),
                         py::arg("use_host_arrays"))
         .def_property_readonly("number_of_nodes_per_blade", &ActuatorFarm::getNumberOfNodesPerBlade)
         .def_property_readonly("number_of_turbines", &ActuatorFarm::getNumberOfTurbines)
@@ -91,8 +87,6 @@ namespace actuator_farm
         .def_property_readonly("number_of_blades_per_turbine", &ActuatorFarm::getNumberOfBladesPerTurbine)
         .def_property_readonly("number_of_grid_nodes", &ActuatorFarm::getNumberOfGridNodes)
         .def_property_readonly("number_of_indices", &ActuatorFarm::getNumberOfIndices)
-        .def_property_readonly("delta_t", &ActuatorFarm::getDeltaT)
-        .def_property_readonly("delta_x", &ActuatorFarm::getDeltaX)
 
         .def("get_turbine_pos", [](ActuatorFarm& al, uint turbine){ 
             real position[3] = {al.getTurbinePosX(turbine), al.getTurbinePosY(turbine), al.getTurbinePosZ(turbine)}; return arr(3,  position);
@@ -159,7 +153,7 @@ namespace actuator_farm
         .def("set_turbine_blade_forces", [](ActuatorFarm& al, uint turbine, arr forcesX, arr forcesY, arr forcesZ){ 
             al.setTurbineBladeForces(turbine, np_to_arr(forcesX), np_to_arr(forcesY), np_to_arr(forcesZ)); 
         }, py::arg("turbine"), py::arg("blade_forces_x"), py::arg("blade_forces_y"), py::arg("blade_forces_z") )
-        .def("update_forces_and_coordinates", &ActuatorFarm::updateForcesAndCoordinates)
+        .def("update_forces_and_coordinates", &ActuatorFarm::updateForcesAndCoordinates, py::arg("time"), py::arg("deltaT"))
         .def("enable_output", &ActuatorFarm::enableOutput, py::arg("output_name"), py::arg("t_start_out"), py::arg("t_out"))
         .def("set_turbine_azimuth", &ActuatorFarm::setTurbineAzimuth, py::arg("turbine"), py::arg("azimuth"));
 
@@ -168,14 +162,12 @@ namespace actuator_farm
                         SPtr<CudaMemoryManager>,
                         const real,
                         const uint,
-                        const std::vector<real>,
-                        const std::vector<real>,
-                        const std::vector<real>,
-                        const std::vector<real>,
+                        const std::vector<real>&,
+                        const std::vector<real>&,
+                        const std::vector<real>&,
+                        const std::vector<real>&,
                         const real,
-                        const int,
-                        const real,
-                        const real>(),
+                        const int>(),
                         py::arg("para"),
                         py::arg("cuda_memory_manager"),
                         py::arg("diameter"),
@@ -185,9 +177,7 @@ namespace actuator_farm
                         py::arg("turbine_positions_z"),
                         py::arg("rotor_speeds"),
                         py::arg("smearing_width"),
-                        py::arg("level"), 
-                        py::arg("delta_t"), 
-                        py::arg("delta_x"));
+                        py::arg("level"));
     }
 
 
