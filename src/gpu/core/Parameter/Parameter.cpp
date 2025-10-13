@@ -596,7 +596,7 @@ real Parameter::getPressureRatio() const
 }
 real Parameter::getTimeRatio() const
 {
-    return this->getViscosityRatio() * pow(this->getVelocityRatio(), -2);
+    return this->getViscosityRatio() * std::pow(this->getVelocityRatio(), -2);
 }
 real Parameter::getLengthRatio() const
 {
@@ -604,7 +604,7 @@ real Parameter::getLengthRatio() const
 }
 real Parameter::getForceRatio() const
 {
-    return (this->getDensityRatio()) * this->getVelocityRatio()/this->getTimeRatio();
+    return this->getDensityRatio() * this->getVelocityRatio() / this->getTimeRatio();
 }
 real Parameter::getScaledViscosityRatio(int level) const
 {
