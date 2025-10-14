@@ -596,19 +596,19 @@ real Parameter::getPressureRatio() const
 }
 real Parameter::getTimeRatio() const
 {
-    return this->getViscosityRatio() * std::pow(this->getVelocityRatio(), -2);
+    return this->getScaledTimeRatio(0);
 }
 real Parameter::getLengthRatio() const
 {
-    return this->getViscosityRatio() / this->getVelocityRatio();
+    return this->getScaledLengthRatio(0);
 }
 real Parameter::getForceRatio() const
 {
-    return this->getDensityRatio() * this->getVelocityRatio() / this->getTimeRatio();
+    return this->getScaledForceRatio(0);
 }
 real Parameter::getScaledViscosityRatio(int level) const
 {
-    return this->getViscosityRatio() * std::exp2(level);
+    return this->getViscosityRatio() * std::exp2(-level);
 }
 real Parameter::getScaledVelocityRatio(int /*level*/) const
 {
@@ -624,19 +624,19 @@ real Parameter::getScaledPressureRatio(int /*level*/) const
 }
 real Parameter::getScaledTimeRatio(int level) const
 {
-    return this->getTimeRatio() * std::exp2(-level);
+    return this->getScaledViscosityRatio(level) / std::pow(this->getScaledVelocityRatio(level), 2);
 }
 real Parameter::getScaledLengthRatio(int level) const
 {
-    return this->getLengthRatio() * std::exp2(-level);
+    return this->getScaledViscosityRatio(level) / this->getScaledVelocityRatio(level);
 }
 real Parameter::getScaledForceRatio(int level) const
 {
-    return this->getForceRatio() * std::exp2(-level);
+    return this->getScaledDensityRatio(level) * this->getScaledVelocityRatio(level) / this->getScaledTimeRatio(level);
 }
-real Parameter::getScaledStressRatio(int /*level*/) const
+real Parameter::getScaledStressRatio(int level) const
 {
-    return this->getVelocityRatio()*this->getVelocityRatio();
+    return std::pow(this->getScaledVelocityRatio(level), 2);
 }
 real Parameter::getScaledBuoyancyFactor(int level) const
 {
