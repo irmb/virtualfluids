@@ -369,7 +369,7 @@ void ActuatorFarm::initBoundingSpheres()
             const real distY = para->getParH(this->level)->coordinateY[pos] - posY;
             const real distZ = para->getParH(this->level)->coordinateZ[pos] - posZ;
             if (distSqrd(distX, distY, distZ) < sphereRadiusSqrd) {
-                nodesInSpheres.push_back((int)pos);
+                nodesInSpheres.push_back(uint(pos));
                 nodesInThisSphere++;
             }
         }
