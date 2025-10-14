@@ -195,7 +195,7 @@ struct Probe::GridParams
     real *velocityX, *velocityY, *velocityZ, *density, *scalar;
 };
 
-bool isValidProbePoint(unsigned long long pointIndex, Parameter* para, int level);
+void removeInterpolationCells(std::vector<uint>& indices, Parameter* para, int level);
 
 #endif
 //! \}
