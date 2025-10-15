@@ -484,7 +484,7 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
             para->getParD(level)->precursorBC.next = tmp;
 
             //read second timestep of precursor into next and copy next to device
-            real nextTime = para->getParD(level)->precursorBC.timeStepsBetweenReads*pow(2,-((real)level))*para->getTimeRatio();
+            real nextTime = para->getParD(level)->precursorBC.timeStepsBetweenReads * para->getScaledTimeRatio(level);
             for(auto& reader : para->getParH(level)->transientBCInputFileReader)
             {
                 reader->getNextData(para->getParH(level)->precursorBC.next, para->getParH(level)->precursorBC.numberOfPrecursorNodes, nextTime);
