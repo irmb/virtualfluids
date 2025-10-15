@@ -211,7 +211,7 @@ void ActuatorFarm::interact(int level, uint t)
                               para->getParD(this->level)->forceY_SP,
                               para->getParD(this->level)->forceZ_SP,
                               para->getScaledLengthRatio(level),
-                              para->getVelocityRatio(),
+                              para->getScaledVelocityRatio(level),
                               para->getScaledForceRatio(level) };
 
     const TurbineData turbineData { this->turbinePosXD,     this->turbinePosYD,  this->turbinePosZD,
