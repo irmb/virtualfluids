@@ -34,7 +34,6 @@
 
 #include "Probe.h"
 
-#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <stdexcept>
@@ -47,7 +46,6 @@
 #include <basics/geometry3d/GbPoint3D.h>
 
 #include <logger/Logger.h>
-#include <utility>
 
 #include "gpu/core/Calculation/Calculation.h"
 #include "gpu/core/Cuda/CudaMemoryManager.h"
@@ -292,9 +290,7 @@ void Probe::addLevelData(int level)
     const real* nodeCoordinatesX = para->getParH(level)->coordinateX;
     const real* nodeCoordinatesY = para->getParH(level)->coordinateY;
     const real* nodeCoordinatesZ = para->getParH(level)->coordinateZ;
-    const uint* typeOfGridNode = para->getParH(level)->typeOfGridNode;
-    const real deltaX = para->getScaledLengthRatio(level);
-
+    const real deltaX = nodeCoordinatesX[para->getParH(level)->neighborX[1]] - nodeCoordinatesX[1];
     for (unsigned long long pos = 1; pos < para->getParH(level)->numberOfNodes; pos++) {
         const real nodeCoordX = nodeCoordinatesX[pos];
         const real nodeCoordY = nodeCoordinatesY[pos];
@@ -305,19 +301,14 @@ void Probe::addLevelData(int level)
         for (auto& object : probeObjects) {
             if ((object->isInsideCell(nodeCoordX, nodeCoordY, nodeCoordZ, maxX, maxY, maxZ) ||
                  object->isPointInGbObject3D(nodeCoordX, nodeCoordY, nodeCoordZ)) &&
-                GEO_FLUID == typeOfGridNode[pos]) {
+                isValidProbePoint(pos, para.get(), level)) {
                 indices.push_back(static_cast<uint>(pos));
+                coordinatesX.push_back(nodeCoordX);
+                coordinatesY.push_back(nodeCoordY);
+                coordinatesZ.push_back(nodeCoordZ);
                 continue;
             }
         }
-    }
-
-    removeInterpolationCells(indices, para.get(), level);
-
-    for (auto index : indices) {
-        coordinatesX.push_back(nodeCoordinatesX[index]);
-        coordinatesY.push_back(nodeCoordinatesY[index]);
-        coordinatesZ.push_back(nodeCoordinatesZ[index]);
     }
 
     const uint numberOfQuantities = static_cast<uint>(getPostProcessingVariables(Statistic::Instantaneous, 0).size());
@@ -575,43 +566,42 @@ Probe::GridParams Probe::getGridParams(LBMSimulationParameter* para)
     return { para->velocityX, para->velocityY, para->velocityZ, para->rho, para->concentration };
 }
 
-void removeCoarseInterpolationCells(std::vector<uint>& indices, Parameter* para, int level)
+bool isCoarseInterpolationCell(unsigned long long pointIndex, Parameter* para, int level)
 {
     if (level == para->getMaxLevel())
-        return;
+        return false;
     auto interpolationCells = para->getParH(level)->fineToCoarse;
-    std::vector<uint> newIndices;
-    std::set_difference(indices.begin(), indices.end(), interpolationCells.coarseCellIndices,
-                        interpolationCells.coarseCellIndices + interpolationCells.numberOfCells,
-                        std::back_inserter(newIndices));
-    std::swap(indices, newIndices);
+    for (uint i = 0; i < interpolationCells.numberOfCells; i++) {
+        if (interpolationCells.coarseCellIndices[i] == pointIndex) {
+            return true;
+        }
+    }
+    return false;
 }
 
-void removeFineInterpolationCells(std::vector<uint>& indices, Parameter* para, int level)
+bool isFineInterpolationCell(unsigned long long pointIndex, Parameter* para, int level)
 {
     if (level == 0)
-        return;
+        return false;
     auto interpolationCells = para->getParH(level - 1)->coarseToFine;
     const uint* neighborX = para->getParH(level)->neighborX;
     const uint* neighborY = para->getParH(level)->neighborY;
     const uint* neighborZ = para->getParH(level)->neighborZ;
-    for(uint i=0; i<interpolationCells.numberOfCells; i++)
-    {
+    for (uint i = 0; i < interpolationCells.numberOfCells; i++) {
         const uint kMMM = interpolationCells.fineCellIndices[i];
-         uint kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP;
+        uint kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP;
         getNeighborIndicesOfBSW(kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, neighborX, neighborY, neighborZ);
-        indices.erase(std::remove_if(indices.begin(), indices.end(), [&](const uint& index){
-            return (kMMM == index || kPMM == index || kMPM == index || kMMP == index || kPPM == index ||
-                kPMP == index || kMPP == index || kPPP == index);
-            }), indices.end());
+        if (kMMM == pointIndex || kPMM == pointIndex || kMPM == pointIndex || kMMP == pointIndex || kPPM == pointIndex ||
+            kPMP == pointIndex || kMPP == pointIndex || kPPP == pointIndex) {
+            return true;
+        }
     }
+    return false;
 }
-void removeInterpolationCells(std::vector<uint> &indices, Parameter *para, int level)
+
+bool isValidProbePoint(unsigned long long pointIndex, Parameter* para, int level)
 {
-    removeCoarseInterpolationCells(indices, para, level);
-    removeFineInterpolationCells(indices, para, level);
+    return GEO_FLUID == para->getParH(level)->typeOfGridNode[pointIndex] &&
+           !isCoarseInterpolationCell(pointIndex, para, level) && !isFineInterpolationCell(pointIndex, para, level);
 }
-
-
-
 //! \}
