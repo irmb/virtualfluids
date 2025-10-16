@@ -45,10 +45,12 @@ def average_data(file: tb.File, key: str):
 def instantaneous_data(file: tb.File, key: str):
     return np.array(file.root[key]["instantaneous"].data)
 
-
+radius = 63
+n_nodes = 32
+velocity = 9
 #%%
 turbine_file = Path(__file__).parent/"SingleTurbine.json"
-output_dir = Path(__file__).parents[2]/"output"
+output_dir = Path(__file__).parent/"output"
 wifi_output = tb.File(output_dir/"wifi.h5", mode="r")
 turbine_model = create_turbine_from_farm_json(turbine_file, number_of_blade_nodes=32)
 # %%
@@ -58,17 +60,24 @@ rotor_speed = pd.DataFrame(wifi_output.root.rotor_speed.averages.data, wifi_outp
 plt.plot(rotor_speed)
 # %%
 blade_forces = average_data(wifi_output, "blade_forces")
-
-plt.plot(blade_forces[-1, 0, 0, :, :].T)
+fig, ax = plt.subplots(3, sharex=True)
+force_factor = 1.225*radius*velocity**2
+dr = radius/n_nodes
+ax[0].plot(blade_forces[-1, 0, 0, :, :].T/dr/force_factor)
+ax[1].plot(-blade_forces[-1, 1, 0, :, :].T/dr/force_factor)
+ax[2].plot(-blade_forces[-1, 2, 0, :, :].T/dr/force_factor)
 
 # %%
 blade_coordinates = instantaneous_data(wifi_output, "blade_coordinates")
-plt.scatter(blade_coordinates[-1,1,0,:,:], blade_coordinates[-1,2,0,:,:])
+for i in range(3):
+    plt.scatter(blade_coordinates[-1,1,0,i,:], blade_coordinates[-1,2,0,i,:])
 
 # %%
 blade_velocities = average_data(wifi_output, "blade_velocities")
 plt.plot(blade_velocities[-1, 0, 0, :, :].T)
 # %%
-plt.plot(blade_velocities[-1, 1, 0,:,:].T)
+fig, ax = plt.subplots(3, sharex=True)
+for i, axis in enumerate(ax):
+    axis.plot(blade_velocities[-1, i, 0,:,:].T)
 
 # %%
