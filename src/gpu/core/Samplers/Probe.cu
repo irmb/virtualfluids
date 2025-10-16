@@ -63,9 +63,10 @@
 
 using namespace vf::basics::constant;
 
-Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, const std::string& outputPath,
-             const std::string& probeName, uint tStartSampling, uint tBetweenSamples, uint tStartWritingOutput,
-             uint tBetweenWriting, bool outputTimeSeries, bool sampleEveryTimestep, bool sampleScalar)
+Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager,
+             const std::string& outputPath, const std::string& probeName, uint tStartSampling, uint tBetweenSamples,
+             uint tStartWritingOutput, uint tBetweenWriting, bool outputTimeSeries, bool sampleEveryTimestep,
+             bool sampleScalar)
     : para(std::move(para)), cudaMemoryManager(std::move(cudaMemoryManager)), tStartSampling(tStartSampling),
       tBetweenSamples(tBetweenSamples), tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting),
       outputTimeSeries(outputTimeSeries), sampleEveryTimestep(sampleEveryTimestep), sampleScalar(sampleScalar),
@@ -287,7 +288,6 @@ void Probe::init()
 void Probe::addLevelData(int level)
 {
     std::vector<uint> indices;
-    std::vector<real> coordinatesX, coordinatesY, coordinatesZ;
 
     const real* nodeCoordinatesX = para->getParH(level)->coordinateX;
     const real* nodeCoordinatesY = para->getParH(level)->coordinateY;
@@ -296,6 +296,8 @@ void Probe::addLevelData(int level)
     const real deltaX = para->getScaledLengthRatio(level);
 
     for (unsigned long long pos = 1; pos < para->getParH(level)->numberOfNodes; pos++) {
+        if (GEO_FLUID != typeOfGridNode[pos])
+            continue;
         const real nodeCoordX = nodeCoordinatesX[pos];
         const real nodeCoordY = nodeCoordinatesY[pos];
         const real nodeCoordZ = nodeCoordinatesZ[pos];
@@ -304,7 +306,7 @@ void Probe::addLevelData(int level)
         const real maxZ = nodeCoordZ + deltaX;
         for (auto& object : probeObjects) {
             if ((object->isInsideCell(nodeCoordX, nodeCoordY, nodeCoordZ, maxX, maxY, maxZ) ||
-                 object->isPointInGbObject3D(nodeCoordX, nodeCoordY, nodeCoordZ)) && GEO_FLUID == typeOfGridNode[pos]) {
+                 object->isPointInGbObject3D(nodeCoordX, nodeCoordY, nodeCoordZ))) {
                 indices.push_back(static_cast<uint>(pos));
                 continue;
             }
@@ -312,6 +314,11 @@ void Probe::addLevelData(int level)
     }
 
     removeInterpolationCells(indices, para.get(), level);
+
+    std::vector<real> coordinatesX, coordinatesY, coordinatesZ;
+    coordinatesX.reserve(indices.size());
+    coordinatesY.reserve(indices.size());
+    coordinatesZ.reserve(indices.size());
 
     for (auto index : indices) {
         coordinatesX.push_back(nodeCoordinatesX[index]);
@@ -580,7 +587,7 @@ void removeCoarseInterpolationCells(std::vector<uint>& indices, Parameter* para,
     if (level == para->getMaxLevel())
         return;
     auto interpolationCells = para->getParH(level)->fineToCoarse;
-    for(uint i=0; i<interpolationCells.numberOfCells; i++)
+    for (uint i = 0; i < interpolationCells.numberOfCells; i++)
         indices.erase(std::remove(indices.begin(), indices.end(), interpolationCells.coarseCellIndices[i]), indices.end());
 }
 
@@ -592,18 +599,19 @@ void removeFineInterpolationCells(std::vector<uint>& indices, Parameter* para, i
     const uint* neighborX = para->getParH(level)->neighborX;
     const uint* neighborY = para->getParH(level)->neighborY;
     const uint* neighborZ = para->getParH(level)->neighborZ;
-    for(uint i=0; i<interpolationCells.numberOfCells; i++)
-    {
+    for (uint i = 0; i < interpolationCells.numberOfCells; i++) {
         const uint kMMM = interpolationCells.fineCellIndices[i];
-         uint kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP;
+        uint kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP;
         getNeighborIndicesOfBSW(kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, neighborX, neighborY, neighborZ);
-        indices.erase(std::remove_if(indices.begin(), indices.end(), [&](const uint& index){
-            return (kMMM == index || kPMM == index || kMPM == index || kMMP == index || kPPM == index ||
-                kPMP == index || kMPP == index || kPPP == index);
-            }), indices.end());
+        indices.erase(std::remove_if(indices.begin(), indices.end(),
+                                     [&](const uint& index) {
+                                         return (kMMM == index || kPMM == index || kMPM == index || kMMP == index ||
+                                                 kPPM == index || kPMP == index || kMPP == index || kPPP == index);
+                                     }),
+                      indices.end());
     }
 }
-void removeInterpolationCells(std::vector<uint> &indices, Parameter *para, int level)
+void removeInterpolationCells(std::vector<uint>& indices, Parameter* para, int level)
 {
     removeCoarseInterpolationCells(indices, para, level);
     removeFineInterpolationCells(indices, para, level);
