@@ -36,6 +36,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iterator>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -582,13 +583,23 @@ Probe::GridParams Probe::getGridParams(LBMSimulationParameter* para)
     return { para->velocityX, para->velocityY, para->velocityZ, para->rho, para->concentration };
 }
 
+void removeCells(std::vector<uint>& indices, std::vector<uint>& cellIndices)
+{
+    std::sort(cellIndices.begin(), cellIndices.end());
+    cellIndices.erase(std::unique(cellIndices.begin(), cellIndices.end()), cellIndices.end());
+    std::vector<uint> newIndices;
+    std::set_difference(indices.begin(), indices.end(), cellIndices.begin(), cellIndices.end(), std::back_inserter(newIndices));
+    std::swap(newIndices, indices);
+}
+
 void removeCoarseInterpolationCells(std::vector<uint>& indices, Parameter* para, int level)
 {
     if (level == para->getMaxLevel())
         return;
     auto interpolationCells = para->getParH(level)->fineToCoarse;
-    for (uint i = 0; i < interpolationCells.numberOfCells; i++)
-        indices.erase(std::remove(indices.begin(), indices.end(), interpolationCells.coarseCellIndices[i]), indices.end());
+    std::vector<uint> coarseCells(interpolationCells.coarseCellIndices,
+                                  interpolationCells.coarseCellIndices + interpolationCells.numberOfCells);
+   removeCells(indices, coarseCells);
 }
 
 void removeFineInterpolationCells(std::vector<uint>& indices, Parameter* para, int level)
@@ -599,17 +610,23 @@ void removeFineInterpolationCells(std::vector<uint>& indices, Parameter* para, i
     const uint* neighborX = para->getParH(level)->neighborX;
     const uint* neighborY = para->getParH(level)->neighborY;
     const uint* neighborZ = para->getParH(level)->neighborZ;
+    std::vector<uint> allFineCells;
+    allFineCells.reserve(8 * std::size_t(interpolationCells.numberOfCells));
     for (uint i = 0; i < interpolationCells.numberOfCells; i++) {
         const uint kMMM = interpolationCells.fineCellIndices[i];
         uint kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP;
         getNeighborIndicesOfBSW(kMMM, kPMM, kMPM, kMMP, kPPM, kPMP, kMPP, kPPP, neighborX, neighborY, neighborZ);
-        indices.erase(std::remove_if(indices.begin(), indices.end(),
-                                     [&](const uint& index) {
-                                         return (kMMM == index || kPMM == index || kMPM == index || kMMP == index ||
-                                                 kPPM == index || kPMP == index || kMPP == index || kPPP == index);
-                                     }),
-                      indices.end());
+        allFineCells.push_back(kMMM);
+        allFineCells.push_back(kPMM);
+        allFineCells.push_back(kMPM);
+        allFineCells.push_back(kMMP);
+        allFineCells.push_back(kPPM);
+        allFineCells.push_back(kPMP);
+        allFineCells.push_back(kMPP);
+        allFineCells.push_back(kPPP);
     }
+    removeCells(indices, allFineCells);
+
 }
 void removeInterpolationCells(std::vector<uint>& indices, Parameter* para, int level)
 {
