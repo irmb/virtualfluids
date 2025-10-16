@@ -131,6 +131,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setViscosityLB(viscosityLB);
 
     para->setVelocityRatio(velocity / velocityLB);
+    para->setViscosityRatio(velocity / velocityLB * deltaX);
     para->setDensityRatio(1.0);
 
     para->setTimestepOut(timeStepOut);
