@@ -304,7 +304,7 @@ void Probe::addLevelData(int level)
         const real maxZ = nodeCoordZ + deltaX;
         for (auto& object : probeObjects) {
             if ((object->isInsideCell(nodeCoordX, nodeCoordY, nodeCoordZ, maxX, maxY, maxZ) ||
-                 object->isPointInGbObject3D(nodeCoordX, nodeCoordY, nodeCoordZ))) {
+                 object->isPointInGbObject3D(nodeCoordX, nodeCoordY, nodeCoordZ)) && GEO_FLUID == typeOfGridNode[pos]) {
                 indices.push_back(static_cast<uint>(pos));
                 continue;
             }
@@ -580,11 +580,8 @@ void removeCoarseInterpolationCells(std::vector<uint>& indices, Parameter* para,
     if (level == para->getMaxLevel())
         return;
     auto interpolationCells = para->getParH(level)->fineToCoarse;
-    std::vector<uint> newIndices;
-    std::set_difference(indices.begin(), indices.end(), interpolationCells.coarseCellIndices,
-                        interpolationCells.coarseCellIndices + interpolationCells.numberOfCells,
-                        std::back_inserter(newIndices));
-    std::swap(indices, newIndices);
+    for(uint i=0; i<interpolationCells.numberOfCells; i++)
+        indices.erase(std::remove(indices.begin(), indices.end(), interpolationCells.coarseCellIndices[i]), indices.end());
 }
 
 void removeFineInterpolationCells(std::vector<uint>& indices, Parameter* para, int level)
