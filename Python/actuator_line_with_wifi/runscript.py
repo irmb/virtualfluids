@@ -41,7 +41,7 @@ import numpy as np
 
 #%%
 sim_name = "ABL"
-config_file = Path(__file__).parent/"configActuatorLine.txt"
+config_file = Path(__file__).parent/"configActuatorLine.cfg"
 turbine_file = Path(__file__).parent/"SingleTurbine.json"
 controller_file = Path(__file__).parent/"controller.json"
 
@@ -124,7 +124,7 @@ def main(sim_name: str, config_file: Path, turbine_file: Path, controller_file: 
     para.set_viscosity_LB(viscosity_LB)    
     para.set_velocity_ratio(dx/dt)
     para.set_viscosity_ratio(dx*dx/dt)
-    para.set_density_ratio(1.0)
+    para.set_density_ratio(density)
 
     para.configure_main_kernel(gpu.kernel.compressible.K17CompressibleNavierStokes)
 
@@ -167,7 +167,7 @@ def main(sim_name: str, config_file: Path, turbine_file: Path, controller_file: 
     para.set_initial_condition_uniform(velocity_LB, 0, 0)
 
 
-    logging_config = LoggerConfig("wifi", output_path, start_time=1000, log_period=100)
+    logging_config = LoggerConfig("wifi", output_path, start_time_instantaneous=10, period_instantaneous=10, log_period_statistics=10, log_start_time_statistics=10, sample_period_statistics=10, sample_start_time_statistics=10)
     logging_dict = {"wind_farm": [LogEntry("rotor_speed", True, True),
                                   LogEntry("azimuth", True, True),
                                   LogEntry("blade", True, True)]}
@@ -179,9 +179,21 @@ def main(sim_name: str, config_file: Path, turbine_file: Path, controller_file: 
 
     memory_manager = gpu.CudaMemoryManager(para)
 
-    farm = create_standard_actuator_farm(para, memory_manager, logging_config, logging_dict, turbine_model, density, smearing_width,
-                                         level, dt, dx, communicator.get_process_id(),
-                                         ControllerTypes.Greedy, controller_file, rotor_speeds, SmearingCorrectionModel.NONE)
+    farm = create_standard_actuator_farm(
+        para,
+        memory_manager,
+        logging_config,
+        logging_dict,
+        turbine_model,
+        density,
+        smearing_width,
+        level,
+        communicator.get_process_id(),
+        ControllerTypes.Greedy,
+        controller_file,
+        rotor_speeds,
+        SmearingCorrectionModel.NONE,
+    )
 
     # farm = gpu.ActuatorFarmStandalone(turbine_model.blade_tip_radius*2, turbine_model.n_nodes_per_blade, turbine_model.hub_positions.x, turbine_model.hub_positions.y, turbine_model.hub_positions.z, rotor_speeds, density, smearing_width, level, dt, dx)
     farm.enable_output("ALM", 0, int(t_out_probe/dt))

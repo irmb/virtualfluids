@@ -132,7 +132,7 @@ void CudaMemoryManager::cudaCopyBodyForce(int lev)
 }
 void CudaMemoryManager::cudaFreeBodyForce(int lev)
 {
-       checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->forceX_SP   ));
+    checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->forceX_SP   ));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->forceY_SP   ));
     checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->forceZ_SP   ));
 

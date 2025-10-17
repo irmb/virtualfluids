@@ -50,7 +50,10 @@ __global__ void computeCoriolis(unsigned long long numberOfNodes, const real* ve
 void CoriolisForce::interact(int level, uint /**/)
 {
     auto parD = para->getParD(level);
+    const real velocityRatio = para->getScaledVelocityRatio(level);
+    const real timeRatio = para->getScaledTimeRatio(level);
     vf::cuda::CudaGrid grid(parD->numberofthreads, parD->numberOfNodes);
     computeCoriolis<<<grid.grid, grid.threads>>>(parD->numberOfNodes, parD->velocityX, parD->velocityY, parD->forceX_SP,
-                                                 parD->forceY_SP, geostrophicWindX, geostrophicWindY, coriolisParameter);
+                                                 parD->forceY_SP, geostrophicWindX / velocityRatio,
+                                                 geostrophicWindY / velocityRatio, coriolisParameter * timeRatio);
 }

@@ -169,11 +169,13 @@ void Simulation::init(GridProvider &gridProvider, const BoundaryConditionFactory
     allocNeighborsOffsetsScalesAndBoundaries(gridProvider, bcFactory);
 
     //! Get tagged fluid nodes with corresponding value for CollisionTemplate from interactors
+    VF_LOG_INFO("Start initializing precollision interactors");
     for (SPtr<PreCollisionInteractor>& interactor : para->getInteractors()) {
         interactor->init();
         interactor->getTaggedFluidNodes(&gridProvider);
     }
 
+    VF_LOG_INFO("Start initializing samplers");
     for (SPtr<Sampler>& sampler : para->getSamplers()) {
         sampler->init();
         sampler->getTaggedFluidNodes(&gridProvider);

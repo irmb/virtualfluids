@@ -108,16 +108,11 @@ __host__ __device__ __inline__ bool inBoundingSphere(real distX, real distY, rea
     return distSqrd(distX, distY, distZ) < boundingSphereRadius * boundingSphereRadius;
 }
 
-__host__ __device__ __inline__ real gaussianSmearing(real distX, real distY, real distZ, real epsilon, real factorGaussian)
+__host__ __device__ __inline__ real gaussianSmearing(real distX, real distY, real distZ, real smearingWidth)
 {
-    return factorGaussian * exp(-distSqrd(distX, distY, distZ) / (epsilon * epsilon));
-}
+    using namespace vf::basics::constant;
 
-__inline__ void swapArrays(real*& arr1, real*& arr2)
-{
-    real* tmp = arr1;
-    arr1 = arr2;
-    arr2 = tmp;
+    return std::pow(smearingWidth * std::sqrt(cPi), -3) * std::exp(-distSqrd(distX, distY, distZ) / (smearingWidth * smearingWidth)) ;
 }
 
 #endif

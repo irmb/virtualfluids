@@ -61,7 +61,7 @@ std::vector<real> ActuatorFarmStandalone::computeBladeRadii(const real diameter,
     return blade_radii;
 }
 
-void ActuatorFarmStandalone::updateForcesAndCoordinates()
+void ActuatorFarmStandalone::updateForcesAndCoordinates([[maybe_unused]] real time, real deltaT)
 {
     const real lift_coefficient = c1o1;
     const real drag_coefficient = c0o1;
@@ -101,14 +101,14 @@ void ActuatorFarmStandalone::updateForcesAndCoordinates()
 
                 v_rel += current_node_radius * rotor_speed;
                 const real u_rel_sq = u_rel * u_rel + v_rel * v_rel;
-                const real phi = atan2(u_rel, v_rel);
+                const real phi = std::atan2(u_rel, v_rel);
 
                 const real tmp = c4o1 * current_node_radius / this->diameter - c1o1;
-                const real chord = c0 * sqrt(c1o1 - tmp * tmp);
-                const real normal_coefficient = lift_coefficient * cos(phi) + drag_coefficient * sin(phi);
-                const real tangential_coefficient = lift_coefficient * sin(phi) - drag_coefficient * cos(phi);
-                const real fx = -c1o2 * u_rel_sq * chord * this->density * normal_coefficient * dr;
-                const real fy = -c1o2 * u_rel_sq * chord * this->density * tangential_coefficient * dr;
+                const real chord = c0 * std::sqrt(c1o1 - tmp * tmp);
+                const real normal_coefficient = lift_coefficient * std::cos(phi) + drag_coefficient * std::sin(phi);
+                const real tangential_coefficient = lift_coefficient * std::sin(phi) - drag_coefficient * std::cos(phi);
+                const real fx = -c1o2 * u_rel_sq * chord * para->getDensityRatio() * normal_coefficient * dr;
+                const real fy = -c1o2 * u_rel_sq * chord * para->getDensityRatio() * tangential_coefficient * dr;
 
                 rotateFromBladeToGlobal(fx, fy, c0o1,
                                         this->bladeForcesXH[node], this->bladeForcesYH[node], this->bladeForcesZH[node],

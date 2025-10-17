@@ -86,17 +86,17 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
     para.omega = collisionParameter.omega;
     para.quadricLimiter = collisionParameter.quadricLimiters;
 
+    para.forceX = collisionParameter.forces[0] * collisionParameter.forceFactor;
+    para.forceY = collisionParameter.forces[1] * collisionParameter.forceFactor;
+    para.forceZ = collisionParameter.forces[2] * collisionParameter.forceFactor;
+    
     if (applyBodyForce) {
-        para.forceX = (collisionParameter.forces[0] + collisionParameter.bodyForceX[k_000]) * collisionParameter.forceFactor;
-        para.forceY = (collisionParameter.forces[1] + collisionParameter.bodyForceY[k_000]) * collisionParameter.forceFactor;
-        para.forceZ = (collisionParameter.forces[2] + collisionParameter.bodyForceZ[k_000]) * collisionParameter.forceFactor;
+        para.forceX += collisionParameter.bodyForceX[k_000];
+        para.forceY += collisionParameter.bodyForceY[k_000];
+        para.forceZ += collisionParameter.bodyForceZ[k_000];
         collisionParameter.bodyForceX[k_000] = basics::constant::c0o1;
         collisionParameter.bodyForceY[k_000] = basics::constant::c0o1;
         collisionParameter.bodyForceZ[k_000] = basics::constant::c0o1;
-    } else {
-        para.forceX = collisionParameter.forces[0] * collisionParameter.forceFactor;
-        para.forceY = collisionParameter.forces[1] * collisionParameter.forceFactor;
-        para.forceZ = collisionParameter.forces[2] * collisionParameter.forceFactor;
     }
 
     vf::lbm::TurbulentViscosity turbulentViscosity;

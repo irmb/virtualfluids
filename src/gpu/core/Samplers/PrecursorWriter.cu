@@ -193,7 +193,7 @@ void PrecursorWriter::init()
         }
 
         precursorStructs[level].numberOfPointsInBC = (uint)indicesOnGrid.size();
-        precursorStructs[level].spacing = makeUbTuple(deltaX, deltaX, tSave * para->getTimeRatio() * pow(2, -level));
+        precursorStructs[level].spacing = makeUbTuple(deltaX, deltaX, tSave * para->getScaledTimeRatio(level));
         precursorStructs[level].origin = makeUbTuple(lowestY, lowestZ);
         precursorStructs[level].extent = makeUbTuple(0, ny - 1, 0, nz - 1);
         precursorStructs[level].numberOfPointsInData = ny * nz;

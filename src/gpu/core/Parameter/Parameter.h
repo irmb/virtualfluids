@@ -766,7 +766,7 @@ private:
     real vis_ratio{ 1.0 };
     real u0{ 0.01 };
     real u0_ratio{ 1.0 };
-    real delta_rho{ 0.0 };
+    real delta_rho{ 1.0 };
     real delta_press{ 1.0 };
     real SGSConstant{ 0.0 };
     real outflowPressureCorrectionFactor{ 0.0 };
