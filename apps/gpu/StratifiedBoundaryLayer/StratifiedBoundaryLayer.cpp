@@ -383,12 +383,12 @@ void run(const vf::basics::ConfigurationFile& config)
     para->addSampler(wallModelProbe);
     
     if(addHorizontalPlanarProbes)
-        for (int probeHeight : {  37, 153,335 }) {
+        for (int probeHeight : {  37, 185, 333 }) {
             std::string name = "planeProbe_" + std::to_string(probeHeight);
             SPtr<Probe> planeProbe =
                 std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), name, tStartSampling / deltaT,
                                         tOutProbe / deltaT, tStartOutProbe / deltaT, tOutProbe / deltaT, false, false, true);
-            planeProbe->addProbePlane(0, 0, static_cast<real>(probeHeight), lengthX, lengthY, deltaX);
+            planeProbe->addProbePlane(0, 0, static_cast<real>(probeHeight)-deltaX*c1o2, lengthX, lengthY, deltaX);
             planeProbe->addAllAvailableStatistics();
             para->addSampler(planeProbe);
         }
