@@ -38,8 +38,6 @@
 
 #include "Samplers/Sampler.h"
 
-#include <functional>
-#include <stdexcept>
 #include <string>
 
 #include <basics/DataTypes.h>
@@ -184,8 +182,8 @@ struct Probe::LevelData
     uint numberOfAveragedValues {};
     LevelData(ProbeData probeDataH, ProbeData probeDataD, std::vector<real> coordinatesX, std::vector<real> coordinatesY,
               std::vector<real> coordinatesZ)
-        : probeDataH(probeDataH), probeDataD(probeDataD), coordinatesX(coordinatesX), coordinatesY(coordinatesY),
-          coordinatesZ(coordinatesZ)
+        : probeDataH(probeDataH), probeDataD(probeDataD), coordinatesX(std::move(coordinatesX)), coordinatesY(std::move(coordinatesY)),
+          coordinatesZ(std::move(coordinatesZ))
     {
     }
 };
@@ -195,7 +193,7 @@ struct Probe::GridParams
     real *velocityX, *velocityY, *velocityZ, *density, *scalar;
 };
 
-bool isValidProbePoint(unsigned long long pointIndex, Parameter* para, int level);
+void removeInterpolationCells(std::vector<uint>& indices, Parameter* para, int level);
 
 #endif
 //! \}
