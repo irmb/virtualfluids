@@ -610,6 +610,7 @@ void CudaMemoryManager::cudaCopyProcessNeighborFsHtoD(ProcessNeighbor27* neighbo
         checkCudaErrors(cudaMemcpy(neighborDevice->populations[0], neighborHost->populations[0], neighborDevice->memsizeFs, cudaMemcpyHostToDevice));
         if (parameter->getDiffOn())
             checkCudaErrors(cudaMemcpy(neighborDevice->populationsAD[0], neighborHost->populationsAD[0], neighborDevice->memsizeFs, cudaMemcpyHostToDevice));
+    } else {
         checkCudaErrors(cudaMemcpyAsync(neighborDevice->populations[0], neighborHost->populations[0], neighborDevice->memsizeFs,cudaMemcpyHostToDevice,parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
         if (parameter->getDiffOn()) {
             checkCudaErrors(cudaMemcpyAsync(neighborDevice->populationsAD[0], neighborHost->populationsAD[0], neighborDevice->memsizeFs,cudaMemcpyHostToDevice,parameter->getStreamManager()->getStream(CudaStreamIndex::SubDomainBorder)));
