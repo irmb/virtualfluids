@@ -70,6 +70,11 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     ProcessNeighbor27& recvNeighborAfterFtoCDevice, const int level, const int direction) const
 {
     VF_LOG_INFO("Communication: reorder send indices in direction {}", direction);
+    
+    copyProcessNeighborToCommAfterFtoC(recvNeighborHost, recvNeighborAfterFtoCHost);
+    copyProcessNeighborToCommAfterFtoC(sendNeighborHost, sendNeighborAfterFtoCHost);
+    copyProcessNeighborToCommAfterFtoC(recvNeighborDevice, recvNeighborAfterFtoCDevice);
+    copyProcessNeighborToCommAfterFtoC(sendNeighborDevice, sendNeighborAfterFtoCDevice);
 
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
     const uint numberOfNodesSend =
@@ -82,11 +87,6 @@ void IndexRearrangementForStreams::initCommunicationArraysForCommAfterFinetoCoar
     const uint numberOfNodesRecv =
         reorderRecvIndicesForCommAfterFtoC(recvNeighborHost, direction, level, recvIndicesForCommAfterFtoCPositions);
     setNumberOfNodes(recvNeighborAfterFtoCHost, recvNeighborAfterFtoCDevice, numberOfNodesRecv);
-
-    copyProcessNeighborToCommAfterFtoC(recvNeighborHost, recvNeighborAfterFtoCHost);
-    copyProcessNeighborToCommAfterFtoC(sendNeighborHost, sendNeighborAfterFtoCHost);
-    copyProcessNeighborToCommAfterFtoC(recvNeighborDevice, recvNeighborAfterFtoCDevice);
-    copyProcessNeighborToCommAfterFtoC(sendNeighborDevice, sendNeighborAfterFtoCDevice);
 }
 
 std::vector<uint>
