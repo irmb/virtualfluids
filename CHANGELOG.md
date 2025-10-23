@@ -2,7 +2,7 @@
 <!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
 # Changelog
 
-## [0.1.3]() - 2025-08-25
+## [0.2.0]() - 2025-10-23
 ### Added
 - [ALL] More refined CMake presets including build presets
 - [GPU] Checks and recommendations for viscosity and velocity for K17 kernel
@@ -22,6 +22,7 @@
 ### Refactoring
 - [GPU] Make boundary conditions for advection diffusion solver more flexible
 - [GPU] Make use of template programming and constant expressions to simplify many boundary conditions
+- [GPU] Body force field contains level wise forces in lattice units of related level instead of coarse level
 
 ## [0.1.2](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/milestones/3) - 2024-07-09
 
