@@ -207,11 +207,8 @@ alm = gpu.ActuatorFarmStandalone(
     turbine_positions_y,
     turbine_positions_z,
     rotor_speeds,
-    density,
     smearing_width,
-    level,
-    dt,
-    dx,
+    level
 )
 alm.enable_output("ALM", int(t_start_out_probe / dt), int(t_out_probe / dt))
 para.add_interactor(alm)

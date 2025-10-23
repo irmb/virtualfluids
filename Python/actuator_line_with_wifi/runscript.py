@@ -182,17 +182,15 @@ def main(sim_name: str, config_file: Path, turbine_file: Path, controller_file: 
     farm = create_standard_actuator_farm(
         para,
         memory_manager,
+        level,
         logging_config,
         logging_dict,
         turbine_model,
-        density,
         smearing_width,
-        level,
-        communicator.get_process_id(),
+        SmearingCorrectionModel.NONE,
         ControllerTypes.Greedy,
         controller_file,
         rotor_speeds,
-        SmearingCorrectionModel.NONE,
     )
 
     # farm = gpu.ActuatorFarmStandalone(turbine_model.blade_tip_radius*2, turbine_model.n_nodes_per_blade, turbine_model.hub_positions.x, turbine_model.hub_positions.y, turbine_model.hub_positions.z, rotor_speeds, density, smearing_width, level, dt, dx)

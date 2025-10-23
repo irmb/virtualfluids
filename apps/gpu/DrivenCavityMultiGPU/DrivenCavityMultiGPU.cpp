@@ -170,13 +170,15 @@ void run(const vf::basics::ConfigurationFile& config)
         gridBuilderFacade->addDomainSplit(zSplit, Axis::z);
     }
 
+    // configure periodic boundary conditions
+    // needs to be called before createGrids() 
+    gridBuilderFacade->setPeriodicBoundaryCondition(false, false, false);
+
     // create grids
     gridBuilderFacade->createGrids(processID);
-
+    
     // configure boundary conditions
-
     // call after createGrids()
-    gridBuilderFacade->setPeriodicBoundaryCondition(false, false, false);
     gridBuilderFacade->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
     gridBuilderFacade->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
     gridBuilderFacade->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
