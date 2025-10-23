@@ -60,16 +60,16 @@ public:
    void setRelaxationParameter(Parameter p);
 protected:
    virtual void initDataSet();
-   real f[D3Q27System::ENDF+1];
+   real f[d3q27_system::ENDF+1];
 
    vf::basics::Timer timer;
 
    real OxyyMxzz;
    Parameter parameter;
 
-   CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
-   CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
-   CbArray3D<real,IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
+   CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr splitA;
+   CbArray4D<real,IndexerX4X3X2X1>::CbArray4DPtr splitB;
+   CbArray3D<real,IndexerX3X2X1>::CbArray3DPtr   split0;
 
    mu::value_type muX1,muX2,muX3;
    mu::value_type muDeltaT;

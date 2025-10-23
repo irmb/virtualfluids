@@ -7,10 +7,10 @@ Welcome to the VirtualFluids Documentation!
 
 ## Getting Started
 
-We recommend using VirtualFludis with Docker
+We recommend using VirtualFluids with Docker
 - <!-- DOXYGEN_MAKE_REF -->[Getting Started with Docker](Getting-Started-with-Docker.md)
 
-If Docker cannot be used, the dependecies for VirtualFluids can also be installed manually directly on your machine:
+If Docker cannot be used, the dependencies for VirtualFluids can also be installed manually directly on your machine:
 - <!-- DOXYGEN_MAKE_REF -->[Installing the Dependencies manually](Getting-Started-Not-Using-Docker.md)
 
  After the installation VirtualFluids can be compiled and executed:
@@ -18,6 +18,7 @@ If Docker cannot be used, the dependecies for VirtualFluids can also be installe
 
 ## Development
 
+- <!-- DOXYGEN_MAKE_REF -->[Project Structure](Project-Structure.md)
 - <!-- DOXYGEN_MAKE_REF -->[Contributing](../../Contributing.md)
 - <!-- DOXYGEN_MAKE_REF -->[Document Code](How-To-Document-Code.md)
 - <!-- DOXYGEN_MAKE_REF -->[Debugging in VS Code](Debugging-with-Vscode.md)
@@ -26,7 +27,6 @@ If Docker cannot be used, the dependecies for VirtualFluids can also be installe
 - <!-- DOXYGEN_MAKE_REF -->[Performance Tests](Performance-Tests.md)
 
 ## Maintenance
-- <!-- DOXYGEN_MAKE_REF -->[Document Code](How-To-Document-Code.md)
 - <!-- DOXYGEN_MAKE_REF -->[Review Merge Request](Review-Merge-Request.md)
 - <!-- DOXYGEN_MAKE_REF -->[How to License](How-to-License.md)
 - <!-- DOXYGEN_MAKE_REF -->[Release](Release.md)

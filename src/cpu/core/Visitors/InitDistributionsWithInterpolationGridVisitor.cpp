@@ -88,7 +88,7 @@ void InitDistributionsWithInterpolationGridVisitor::visit(SPtr<Grid3D> grid)
                 }
             } else {
                 int newlevel    = newBlock->getLevel();
-                Vector3D coords = newGrid->getNodeCoordinates(newBlock, 1, 1, 1);
+                GbVector3D coords = newGrid->getNodeCoordinates(newBlock, 1, 1, 1);
 
                 UbTupleInt3 oldGridBlockIndexes =
                     oldGrid->getBlockIndexes(coords[0], coords[1], coords[2], newlevel - 1);
@@ -152,43 +152,43 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(SPtr<Block3D
         SPtr<EsoTwist3D> oldDistributions =
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplit0();
 
-        MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
     } else if (newBlockRank == newGridRank && newBlock->isActive()) {
         SPtr<LBMKernel> newKernel = newBlock->getKernel();
         if (!newKernel)
             throw UbException(UB_EXARGS, "The LBM kernel isn't exist in new block: " + newBlock->toString() +
-                                             UbSystem::toString(newGridRank));
+                                             ub_system::toString(newGridRank));
 
         SPtr<EsoTwist3D> newDistributions =
             dynamicPointerCast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(newDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(newDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(newDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(newDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(newDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(newDistributions)->getSplit0();
 
-        MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
     }
 }
@@ -202,8 +202,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
     D3Q27ICell icellF;
     real xoff, yoff, zoff;
 
-    real omegaC = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-    real omegaF = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+    real omegaC = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+    real omegaF = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
     iProcessor->setOmegas(omegaC, omegaF);
 
@@ -236,7 +236,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
     for (int ix3 = minX3; ix3 < maxX3; ix3 += 2)
         for (int ix2 = minX2; ix2 < maxX2; ix2 += 2)
             for (int ix1 = minX1; ix1 < maxX1; ix1 += 2) {
-                Vector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
+                GbVector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
                 UbTupleInt3 oldGridIndexMin = oldGrid->getNodeIndexes(oldBlock, coords[0], coords[1], coords[2]);
                 int howManySolids           = iProcessor->iCellHowManySolids(bcArrayOldBlock, val<1>(oldGridIndexMin),
                                                                    val<2>(oldGridIndexMin), val<3>(oldGridIndexMin));
@@ -250,9 +250,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
                                                       val<1>(oldGridIndexMin), val<2>(oldGridIndexMin),
                                                       val<3>(oldGridIndexMin), xoff, yoff, zoff)) {
                         // std::string err = "For "+oldBlock->toString()+
-                        //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                        //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                        //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                        //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                        //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                        //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                         //   " interpolation is not implemented for other direction"+
                         //   " by using in: "+(std::string)typeid(*this).name()+
                         //   " or maybe you have a solid on the block boundary";
@@ -270,9 +270,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
                             icellF.TNE[i] = c0o1;
                         }
                         //                     std::string err = "For "+oldBlock->toString()+
-                        //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                        //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                        //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                        //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                        //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                        //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                         //   " interpolation is not implemented for other direction"+
                         //   " by using in: "+(std::string)typeid(*this).name()+
                         //   " or maybe you have a solid on the block boundary";
@@ -302,19 +302,19 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
         SPtr<EsoTwist3D> oldDistributions =
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplit0();
 
-        MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
 
         SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCSet()->getBCArray();
         std::vector<int> &bcDataVector  = bcArrayOldBlock->getBcindexmatrixDataVector();
@@ -324,8 +324,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
         D3Q27ICell icellF;
         real xoff, yoff, zoff;
 
-        real omegaC = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-        real omegaF = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+        real omegaC = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+        real omegaF = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
         iProcessor->setOmegas(omegaC, omegaF);
 
@@ -350,21 +350,21 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
 
         SPtr<EsoTwist3D> oldDistributions(new EsoSplit(bMaxX1, bMaxX2, bMaxX3, 0));
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplit0();
 
-        MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
 
         SPtr<BCArray3D> bcArrayOldBlock(new BCArray3D(bMaxX1, bMaxX2, bMaxX3, BCArray3D::FLUID));
@@ -375,7 +375,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
         for (int ix3 = minX3; ix3 < maxX3; ix3 += 2)
             for (int ix2 = minX2; ix2 < maxX2; ix2 += 2)
                 for (int ix1 = minX1; ix1 < maxX1; ix1 += 2) {
-                    Vector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
+                    GbVector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
                     UbTupleInt3 oldGridIndexMin = oldGrid->getNodeIndexes(oldBlock, coords[0], coords[1], coords[2]);
 
                     int howManySolids = iProcessor->iCellHowManySolids(
@@ -390,9 +390,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
                                                           bMaxX3, val<1>(oldGridIndexMin), val<2>(oldGridIndexMin),
                                                           val<3>(oldGridIndexMin), xoff, yoff, zoff)) {
                             // std::string err = "For "+oldBlock->toString()+
-                            //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                            //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                            //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                            //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                            //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                            //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                             //   " interpolation is not implemented for other direction"+
                             //   " by using in: "+(std::string)typeid(*this).name()+
                             //   " or maybe you have a solid on the block boundary";
@@ -410,9 +410,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
                                 icellF.TNE[i] = c0o1;
                             }
                             //                     std::string err = "For "+oldBlock->toString()+
-                            //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                            //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                            //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                            //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                            //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                            //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                             //   " interpolation is not implemented for other direction"+
                             //   " by using in: "+(std::string)typeid(*this).name()+
                             //   " or maybe you have a solid on the block boundary";
@@ -436,8 +436,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
     D3Q27ICell icellF;
     real xoff, yoff, zoff;
 
-    real omegaF = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-    real omegaC = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+    real omegaF = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+    real omegaC = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
     iProcessor->setOmegas(omegaC, omegaF);
 
@@ -470,7 +470,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
     for (int ix3 = minX3; ix3 < maxX3; ix3 += 2)
         for (int ix2 = minX2; ix2 < maxX2; ix2 += 2)
             for (int ix1 = minX1; ix1 < maxX1; ix1 += 2) {
-                Vector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
+                GbVector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
                 UbTupleInt3 oldGridIndexMin = oldGrid->getNodeIndexes(oldBlock, coords[0], coords[1], coords[2]);
 
                 int howManySolids = iProcessor->iCellHowManySolids(bcArrayOldBlock, val<1>(oldGridIndexMin),
@@ -485,9 +485,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
                                                       val<1>(oldGridIndexMin), val<2>(oldGridIndexMin),
                                                       val<3>(oldGridIndexMin), xoff, yoff, zoff)) {
                         // std::string err = "For "+oldBlock->toString()+
-                        //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                        //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                        //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                        //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                        //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                        //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                         //   " interpolation is not implemented for other direction"+
                         //   " by using in: "+(std::string)typeid(*this).name()+
                         //   " or maybe you have a solid on the block boundary";
@@ -505,9 +505,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
                             icellF.TNE[i] = c0o1;
                         }
                         //                     std::string err = "For "+oldBlock->toString()+
-                        //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                        //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                        //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                        //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                        //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                        //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                         //   " interpolation is not implemented for other direction"+
                         //   " by using in: "+(std::string)typeid(*this).name()+
                         //   " or maybe you have a solid on the block boundary";
@@ -537,19 +537,19 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
         SPtr<EsoTwist3D> oldDistributions =
             dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplit0();
 
-        MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
-        MPI_Send(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
+        MPI_Send(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
 
         SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCSet()->getBCArray();
         std::vector<int> &bcDataVector  = bcArrayOldBlock->getBcindexmatrixDataVector();
@@ -559,8 +559,8 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
         D3Q27ICell icellF;
         real xoff, yoff, zoff;
 
-        real omegaF = LBMSystem::calcCollisionFactor(nu, oldBlock->getLevel());
-        real omegaC = LBMSystem::calcCollisionFactor(nu, newBlock->getLevel());
+        real omegaF = lbm_system::calcCollisionFactor(nu, oldBlock->getLevel());
+        real omegaC = lbm_system::calcCollisionFactor(nu, newBlock->getLevel());
 
         iProcessor->setOmegas(omegaC, omegaF);
 
@@ -585,21 +585,21 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
 
         SPtr<EsoTwist3D> oldDistributions(new EsoSplit(bMaxX1, bMaxX2, bMaxX3, 0));
 
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getLocalDistributions();
-        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getNonLocalDistributions();
-        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributions =
-            dynamicPointerCast<EsoSplit>(oldDistributions)->getZeroDistributions();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitA =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitA();
+        CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr splitB =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplitB();
+        CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr split0 =
+            dynamicPointerCast<EsoSplit>(oldDistributions)->getSplit0();
 
-        MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitA->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitA->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0),
-                 (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(splitB->getStartAdressOfSortedArray(0, 0, 0, 0),
+                 (int)splitB->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
-        MPI_Recv(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0),
-                 (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
+        MPI_Recv(split0->getStartAdressOfSortedArray(0, 0, 0),
+                 (int)split0->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD,
                  MPI_STATUS_IGNORE);
 
         SPtr<BCArray3D> bcArrayOldBlock(new BCArray3D(bMaxX1, bMaxX2, bMaxX3, BCArray3D::FLUID));
@@ -610,7 +610,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
         for (int ix3 = minX3; ix3 < maxX3; ix3 += 2)
             for (int ix2 = minX2; ix2 < maxX2; ix2 += 2)
                 for (int ix1 = minX1; ix1 < maxX1; ix1 += 2) {
-                    Vector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
+                    GbVector3D coords             = newGrid->getNodeCoordinates(newBlock, ix1, ix2, ix3);
                     UbTupleInt3 oldGridIndexMin = oldGrid->getNodeIndexes(oldBlock, coords[0], coords[1], coords[2]);
 
                     int howManySolids = iProcessor->iCellHowManySolids(
@@ -625,9 +625,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
                                                           bMaxX3, val<1>(oldGridIndexMin), val<2>(oldGridIndexMin),
                                                           val<3>(oldGridIndexMin), xoff, yoff, zoff)) {
                             // std::string err = "For "+oldBlock->toString()+
-                            //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                            //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                            //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                            //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                            //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                            //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                             //   " interpolation is not implemented for other direction"+
                             //   " by using in: "+(std::string)typeid(*this).name()+
                             //   " or maybe you have a solid on the block boundary";
@@ -645,9 +645,9 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
                                 icellF.TNE[i] = c0o1;
                             }
                             //                     std::string err = "For "+oldBlock->toString()+
-                            //   " x1="+UbSystem::toString(val<1>(oldGridIndexMin))+
-                            //   ", x2=" + UbSystem::toString(val<2>(oldGridIndexMin))+
-                            //   ", x3=" + UbSystem::toString(val<3>(oldGridIndexMin))+
+                            //   " x1="+ub_system::toString(val<1>(oldGridIndexMin))+
+                            //   ", x2=" + ub_system::toString(val<2>(oldGridIndexMin))+
+                            //   ", x3=" + ub_system::toString(val<3>(oldGridIndexMin))+
                             //   " interpolation is not implemented for other direction"+
                             //   " by using in: "+(std::string)typeid(*this).name()+
                             //   " or maybe you have a solid on the block boundary";

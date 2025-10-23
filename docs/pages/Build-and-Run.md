@@ -21,7 +21,7 @@ Then we can clone the repository onto the machine:
    git clone https://git.rz.tu-bs.de/irmb/virtualfluids.git
 ```
 
-Naviagting to the project folder:
+Navigating to the project folder:
 ```
    cd virtualfluids
 ```
@@ -39,14 +39,33 @@ VirtualFluids cmake provides the following presets:
 - all_make: build all targets with Make
 - cpu_make: build only the CPU targets with Make
 - gpu_make: build only the GPU targets with Make
+- cpu_make_debug: build only the CPU targets with Make in debug mode
+- gpu_make_debug: build only the GPU targets with Make in debug mode
 - all_msvc: build all targets with MSVC
 - cpu_msvc: build only the CPU targets with MSVC
+- cpu_msvc_debug: build only the CPU targets with MSVC in debug mode
 - gpu_msvc: build only the GPU targets with MSVC
+- gpu_msvc_debug: build only the GPU targets with MSVC in debug mode
 
-Additionaly, the following options can be passed to cmake:
+Additionally, the following options can be passed to cmake:
 - -DVF_ENABLE_UNIT_TESTS=ON: enable unit tests (included in all_make and all_msvc)
 - -DVF_ENABLE_DOUBLE_ACCURACY=ON: enable double precision (included in all_make, all_msvc, cpu_make and cpu_msvc)
 - -DVF_ENABLE_PYTHON_BINDINGS=ON: enable python bindings (included in all_make and all_msvc)
+
+VirtualFluids also provides CMake Build Presets and targets to facilitate the build process
+```
+   cmake --preset=make_gpu -DCMAKE_CUDA_ARCHITECTURE=70
+   cmake --build --preset=make_gpu --target=LaminarPipeFlowGPU
+```
+
+### Python bindings
+VirtualFluids can also be used from Python. To compile and install the VirtualFluids Python library called pyfluids, run
+```
+   pip install . -v -C cmake.define.VF_ENABLE_GPU=ON -C cmake.define.CMAKE_CUDA_ARCHITECTURE=70
+```
+VirtualFluids uses [skbuild_core](https://scikit-build-core.readthedocs.io/en/latest/guide/getting_started.html) and [pybind11](https://pybind11.readthedocs.io/en/stable/) to build the python bindings. All flags available in cmake can be passed with ``-C cmake.define.OPTION=ON``. This requires pip>=23.1.
+
+
 
 ## Run the examples
 

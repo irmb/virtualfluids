@@ -29,12 +29,8 @@
 //! \addtogroup gpu_Samplers Samplers
 //! \ingroup gpu_core core
 //! \{
-//! \author Henrik Asmuth
+//! \author Henrik Asmuth, Henry Korb
 //! \date 13/05/2022
-//! \brief Probe computing statistics across planes spanning the entire domain
-//!
-
-//!
 //=======================================================================================
 
 #ifndef PlanarAverageProbe_H
@@ -42,77 +38,67 @@
 
 #include "Sampler.h"
 
-#include <stdexcept>
 #include <string>
 #include <vector>
 
 #include <basics/DataTypes.h>
+#include <basics/geometry3d/Axis.h>
 
 class Parameter;
 class CudaMemoryManager;
-struct PlanarAverageProbeLevelData
-{
-    unsigned long long *indicesOfFirstPlaneH, *indicesOfFirstPlaneD;
-    uint numberOfPlanes, numberOfPointsPerPlane, numberOfTimestepsInTimeAverage;
-    std::vector<real> coordinateX, coordinateY, coordinateZ;
-    std::vector<std::vector<real>> instantaneous;
-    std::vector<std::vector<real>> timeAverages;
-};
-
 
 //! \brief Computes spatial statistics across x, y or z-normal planes defined by planeNormal.
 //! The planes include all points of the domain at each respective position along that normal direction.
 //! The spatial statistics can additionally be averaged in time.
+//! The name phi is used to denote the scalar field.
 class PlanarAverageProbe : public Sampler
 {
 public:
-    enum class PlaneNormal { x, y, z };
     enum class Statistic {
         Means,
         Covariances,
         Skewness,
         Flatness,
     };
+    struct LevelData;
 
 public:
-    PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string outputPath,
-                       const std::string probeName, uint tStartAveraging, uint tStartTemporalAveraging,
-                       uint tBetweenAverages, uint tStartWritingOutput, uint tBetweenWriting,
-                       PlanarAverageProbe::PlaneNormal planeNormal, bool computeTimeAverages)
-        : para(para), cudaMemoryManager(cudaMemoryManager), tStartAveraging(tStartAveraging), tStartTemporalAveraging(tStartTemporalAveraging),
-          tBetweenAverages(tBetweenAverages), tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting),
-          computeTimeAverages(computeTimeAverages), planeNormal(planeNormal),
-          Sampler(outputPath, probeName)
-    {
-        if (tStartTemporalAveraging < tStartAveraging && computeTimeAverages)
-            throw std::runtime_error("PlaneAverageProbe: tStartTemporalAveraging must be larger than tStartAveraging!");
-        if (tBetweenWriting == 0)
-            throw std::runtime_error("PlaneAverageProbe: tBetweenWriting must be larger than 0!");
-    }
-    ~PlanarAverageProbe();
+//! \param tStartSampling The first timestep at which the probe samples planar averages.
+//! \param tStartTemporalAveraging The first timestep at which temporal averaging starts.
+//! \param tBetweenSamples The number of timesteps between samples.
+//! \param tStartWritingOutput The first timestep at which the probe writes output.
+//! \param tBetweenWriting The number of timesteps between writing output.
+//! \param planeNormal The normal direction of the planes along which the probe samples.
+//! \param computeTimeAverages If true, the probe computes time averages.
+//! \param sampleScalar If true, the probe samples statistics related to the scalar.
+    PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string& outputPath,
+                       const std::string& probeName, uint tStartSampling, uint tStartTemporalAveraging, uint tBetweenSamples,
+                       uint tStartWritingOutput, uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages,
+                       bool sampleScalar);
+    ~PlanarAverageProbe() override;
 
     void init() override;
     void sample(int level, uint t) override;
-    void getTaggedFluidNodes(GridProvider* gridProvider) override {};
-    PlanarAverageProbeLevelData* getLevelData(int level)
+    void getTaggedFluidNodes(GridProvider* /**/) override {};
+    LevelData* getLevelData(int level)
     {
         return &levelData[level];
     }
     void addAllAvailableStatistics()
     {
-        addStatistic(PlanarAverageProbe::Statistic::Means);
-        addStatistic(PlanarAverageProbe::Statistic::Covariances);
-        addStatistic(PlanarAverageProbe::Statistic::Skewness);
-        addStatistic(PlanarAverageProbe::Statistic::Flatness);
+        addStatistic(Statistic::Means);
+        addStatistic(Statistic::Covariances);
+        addStatistic(Statistic::Skewness);
+        addStatistic(Statistic::Flatness);
     }
-    void addStatistic(PlanarAverageProbe::Statistic statistic);
+    void addStatistic(Statistic statistic);
     void setFileNameToNOut()
     {
         nameFilesWithFileCount = true;
     }
 
 private:
-    std::vector<std::string> getVariableNames(PlanarAverageProbe::Statistic statistic, bool namesForTimeAverages);
+    std::vector<std::string> getVariableNames(Statistic statistic, bool namesForTimeAverages) const;
     void copyDataToNodedata(std::vector<std::vector<real>>& data, std::vector<std::vector<double>>& nodeData);
     void calculateQuantities(int level, bool doTimeAverages);
     std::vector<unsigned long long> findIndicesInPlane(int level);
@@ -128,15 +114,25 @@ private:
 private:
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
-    uint tStartAveraging, tStartTemporalAveraging, tBetweenAverages, tStartWritingOutput, tBetweenWriting;
-    bool computeTimeAverages, nameFilesWithFileCount = false;
-    PlaneNormal planeNormal;
-    std::vector<PlanarAverageProbe::Statistic> statistics;
-    std::vector<PlanarAverageProbeLevelData> levelData;
+    const uint tStartSampling, tStartTemporalAveraging, tBetweenSamples, tStartWritingOutput, tBetweenWriting;
+    const bool computeTimeAverages, sampleScalar;
+    bool nameFilesWithFileCount = false;
+    const Axis planeNormal;
+    std::vector<Statistic> statistics;
+    std::vector<LevelData> levelData;
     std::vector<std::string> fileNamesForCollectionFile;
 };
 
 bool isStatisticIn(PlanarAverageProbe::Statistic statistic, std::vector<PlanarAverageProbe::Statistic> statistics);
+
+struct PlanarAverageProbe::LevelData
+{
+    unsigned long long *indicesOfFirstPlaneH, *indicesOfFirstPlaneD;
+    uint numberOfPlanes {}, numberOfPointsPerPlane {}, numberOfTimestepsInTimeAverage {};
+    std::vector<real> coordinateX, coordinateY, coordinateZ;
+    std::vector<std::vector<real>> instantaneous;
+    std::vector<std::vector<real>> timeAverages;
+};
 
 #endif
 //! \}

@@ -114,7 +114,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setOutputPrefix(simulationName);
     para->setPrintFiles(true);
 
-    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
+    para->configureMainKernel(vf::collision_kernel::compressible::K17CompressibleNavierStokes);
     scalingFactory.setScalingFactory(GridScalingFactory::GridScaling::ScaleCompressible);
 
     vf::logging::Logger::changeLogPath(outPath + "vflog_process" + std::to_string(processID) );
@@ -170,13 +170,15 @@ void run(const vf::basics::ConfigurationFile& config)
         gridBuilderFacade->addDomainSplit(zSplit, Axis::z);
     }
 
+    // configure periodic boundary conditions
+    // needs to be called before createGrids() 
+    gridBuilderFacade->setPeriodicBoundaryCondition(false, false, false);
+
     // create grids
     gridBuilderFacade->createGrids(processID);
-
+    
     // configure boundary conditions
-
     // call after createGrids()
-    gridBuilderFacade->setPeriodicBoundaryCondition(false, false, false);
     gridBuilderFacade->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
     gridBuilderFacade->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
     gridBuilderFacade->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);

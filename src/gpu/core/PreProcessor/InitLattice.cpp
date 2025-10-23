@@ -76,17 +76,10 @@ void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<Pre
                 para->getParD(lev)->numberofthreads, 
                 para->getParD(lev)->isEvenTimestep);
         }
-        // advection - diffusion
-        if (para->getDiffOn()) {
 
-            cudaMemoryManager->cudaAllocConcentration(lev);
-
-            for (size_t index = 0; index < para->getParH(lev)->numberOfNodes; index++) {
-                para->getParH(lev)->concentration[index] = para->getConcentrationInit();
-            }
-
+        if (para->getDiffOn())
             preProcessorAD->init(para, lev);
-        }
+
     }
 }
 

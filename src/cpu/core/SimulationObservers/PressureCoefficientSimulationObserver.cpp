@@ -75,7 +75,7 @@ void PressureCoefficientSimulationObserver::collectData(real step)
 //////////////////////////////////////////////////////////////////////////
 void PressureCoefficientSimulationObserver::calculateRho()
 {
-    real f[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
     real vx1, vx2, vx3, rho;
     std::vector<real> values;
     std::vector<real> rvalues;
@@ -96,9 +96,9 @@ void PressureCoefficientSimulationObserver::calculateRho()
             real dx                 = grid->getDeltaX(block);
 
             if (kernel->getCompressible()) {
-                calcMacros = &D3Q27System::calcCompMacroscopicValues;
+                calcMacros = &d3q27_system::calcCompMacroscopicValues;
             } else {
-                calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+                calcMacros = &d3q27_system::calcIncompMacroscopicValues;
             }
 
             int ghostLayerWidth = kernel->getGhostLayerWidth();
@@ -161,13 +161,13 @@ void PressureCoefficientSimulationObserver::writeValues(int step)
         data.resize(datanames.size());
 
         std::ofstream ostr;
-        std::string fname = path + UbSystem::toString(step) + ".csv";
+        std::string fname = path + ub_system::toString(step) + ".csv";
         ostr.open(fname.c_str(), std::ios_base::out);
         if (!ostr) {
             ostr.clear();
-            std::string path = UbSystem::getPathFromString(fname);
+            std::string path = ub_system::getPathFromString(fname);
             if (path.size() > 0) {
-                UbSystem::makeDirectory(path);
+                ub_system::makeDirectory(path);
                 ostr.open(fname.c_str(), std::ios_base::out);
             }
             if (!ostr)
@@ -189,16 +189,16 @@ void PressureCoefficientSimulationObserver::writeValues(int step)
 
         ostr.close();
 
-        WbWriterVtkXmlASCII::getInstance()->writeNodesWithNodeData(path + UbSystem::toString(step), nodes, datanames,
+        WbWriterVtkXmlASCII::getInstance()->writeNodesWithNodeData(path + ub_system::toString(step), nodes, datanames,
                                                                    data);
 
-        fname = path + UbSystem::toString(step) + ".bin";
+        fname = path + ub_system::toString(step) + ".bin";
         std::ofstream out(fname.c_str(), std::ios::out | std::ios::binary);
         if (!out) {
             out.clear(); // flags ruecksetzen (ansonsten liefert utern if(!out) weiterhin true!!!
-            std::string path = UbSystem::getPathFromString(fname);
+            std::string path = ub_system::getPathFromString(fname);
             if (path.size() > 0) {
-                UbSystem::makeDirectory(path);
+                ub_system::makeDirectory(path);
                 out.open(fname.c_str(), std::ios::out | std::ios::binary);
             }
             if (!out)
@@ -215,7 +215,7 @@ void PressureCoefficientSimulationObserver::writeValues(int step)
 void PressureCoefficientSimulationObserver::readValues(int step)
 {
     if (comm->isRoot()) {
-        std::string fname = path + UbSystem::toString(step) + ".bin";
+        std::string fname = path + ub_system::toString(step) + ".bin";
         std::ifstream in(fname.c_str(), std::ios::in | std::ios::binary);
         if (!in) {
             throw UbException(UB_EXARGS, "couldn't open file " + fname);

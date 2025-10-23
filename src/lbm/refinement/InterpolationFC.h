@@ -33,13 +33,6 @@
 #ifndef LBM_INTERPOLATION_FC_H
 #define LBM_INTERPOLATION_FC_H
 
-#ifndef __host__
-#define __host__
-#endif
-#ifndef __device__
-#define __device__
-#endif
-
 #include <basics/constants/NumericConstants.h>
 
 #include "lbm/constants/D3Q27.h"
@@ -47,20 +40,12 @@
 
 #include "lbm/interpolation/InterpolationCoefficients.h"
 
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
-
 namespace vf::lbm
 {
 
-inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, const real omegaC, const InterpolationCoefficients& coefficients)
+constexpr void interpolateFC(real* const f, const real epsnew, const real omegaC, const InterpolationCoefficients& coefficients)
 {
-
-    const real kxyAverage    = c0o1;
-    const real kyzAverage    = c0o1;
-    const real kxzAverage    = c0o1;
-    const real kxxMyyAverage = c0o1;
-    const real kxxMzzAverage = c0o1;
+    using namespace vf::basics::constant;
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Set all moments to zero
@@ -124,36 +109,36 @@ inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, 
     real& fPMM = m200;
     real& fMMM = m000;
 
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Declare local variables for destination nodes
-    //!
-    real vvx, vvy, vvz, vxsq, vysq, vzsq;
-    real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-    real useNEQ = c1o1; // zero; //one;   //.... one = on ..... zero = off
-    real press;
+    constexpr real useNEQ = c1o1;
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set macroscopic values on destination node (zeroth and first order moments)
     //!
-    press = coefficients.d000 - c2o1 * coefficients.LaplaceRho * c1o8;
-    vvx   = coefficients.a000;
-    vvy   = coefficients.b000;
-    vvz   = coefficients.c000;
+    const real press = coefficients.d000 - c2o1 * coefficients.LaplaceRho * c1o8;
+    const real vvx = coefficients.a000;
+    const real vvy = coefficients.b000;
+    const real vvz = coefficients.c000;
 
     m000 = press; // m000 is press, if drho is interpolated directly
 
-    vxsq = vvx * vvx;
-    vysq = vvy * vvy;
-    vzsq = vvz * vvz;
+    const real vxsq = vvx * vvx;
+    const real vysq = vvy * vvy;
+    const real vzsq = vvz * vvz;
 
     ////////////////////////////////////////////////////////////////////////////////
     //! - Set moments (second to sixth order) on destination node
     //!
     // linear combinations for second order moments
-    mxxPyyPzz = m000;
+    const real mxxPyyPzz = m000;
 
-    mxxMyy = -c2o3 * ((coefficients.a100 - coefficients.b010) + kxxMyyAverage) * epsnew / omegaC * (c1o1 + press);
-    mxxMzz = -c2o3 * ((coefficients.a100 - coefficients.c001) + kxxMzzAverage) * epsnew / omegaC * (c1o1 + press);
+    constexpr real kxyAverage = c0o1;
+    constexpr real kyzAverage = c0o1;
+    constexpr real kxzAverage = c0o1;
+    constexpr real kxxMyyAverage = c0o1;
+    constexpr real kxxMzzAverage = c0o1;
+
+    const real mxxMyy = -c2o3 * ((coefficients.a100 - coefficients.b010) + kxxMyyAverage) * epsnew / omegaC * (c1o1 + press);
+    const real mxxMzz = -c2o3 * ((coefficients.a100 - coefficients.c001) + kxxMzzAverage) * epsnew / omegaC * (c1o1 + press);
 
     m011 = -c1o3 * ((coefficients.b001 + coefficients.c010) + kyzAverage) * epsnew / omegaC * (c1o1 + press);
     m101 = -c1o3 * ((coefficients.a001 + coefficients.c100) + kxzAverage) * epsnew / omegaC * (c1o1 + press);
@@ -166,12 +151,12 @@ inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, 
     // linear combinations for third order moments
     m111 = c0o1;
 
-    mxxyPyzz = c0o1;
-    mxxyMyzz = c0o1;
-    mxxzPyyz = c0o1;
-    mxxzMyyz = c0o1;
-    mxyyPxzz = c0o1;
-    mxyyMxzz = c0o1;
+    constexpr real mxxyPyzz = c0o1;
+    constexpr real mxxyMyzz = c0o1;
+    constexpr real mxxzPyyz = c0o1;
+    constexpr real mxxzMyyz = c0o1;
+    constexpr real mxyyPxzz = c0o1;
+    constexpr real mxyyMxzz = c0o1;
 
     m210 = ( mxxyMyzz + mxxyPyzz) * c1o2;
     m012 = (-mxxyMyzz + mxxyPyzz) * c1o2;
@@ -199,67 +184,67 @@ inline __host__ __device__ void interpolateFC(real* const f, const real epsnew, 
     //!
     ////////////////////////////////////////////////////////////////////////////////////
     // X - Dir
-    backwardInverseChimeraWithK(m000, m100, m200, vvx, vxsq, c1o1, c1o1);
+    backwardChimeraWithInverseK(m000, m100, m200, vvx, vxsq, c1o1, c1o1);
     backwardChimera(            m010, m110, m210, vvx, vxsq);
-    backwardInverseChimeraWithK(m020, m120, m220, vvx, vxsq, c3o1, c1o3);
+    backwardChimeraWithInverseK(m020, m120, m220, vvx, vxsq, c3o1, c1o3);
     backwardChimera(            m001, m101, m201, vvx, vxsq);
     backwardChimera(            m011, m111, m211, vvx, vxsq);
     backwardChimera(            m021, m121, m221, vvx, vxsq);
-    backwardInverseChimeraWithK(m002, m102, m202, vvx, vxsq, c3o1, c1o3);
+    backwardChimeraWithInverseK(m002, m102, m202, vvx, vxsq, c3o1, c1o3);
     backwardChimera(            m012, m112, m212, vvx, vxsq);
-    backwardInverseChimeraWithK(m022, m122, m222, vvx, vxsq, c9o1, c1o9);
+    backwardChimeraWithInverseK(m022, m122, m222, vvx, vxsq, c9o1, c1o9);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // Y - Dir
-    backwardInverseChimeraWithK(m000, m010, m020, vvy, vysq, c6o1, c1o6);
+    backwardChimeraWithInverseK(m000, m010, m020, vvy, vysq, c6o1, c1o6);
     backwardChimera(            m001, m011, m021, vvy, vysq);
-    backwardInverseChimeraWithK(m002, m012, m022, vvy, vysq, c18o1, c1o18);
-    backwardInverseChimeraWithK(m100, m110, m120, vvy, vysq, c3o2, c2o3);
+    backwardChimeraWithInverseK(m002, m012, m022, vvy, vysq, c18o1, c1o18);
+    backwardChimeraWithInverseK(m100, m110, m120, vvy, vysq, c3o2, c2o3);
     backwardChimera(            m101, m111, m121, vvy, vysq);
-    backwardInverseChimeraWithK(m102, m112, m122, vvy, vysq, c9o2, c2o9);
-    backwardInverseChimeraWithK(m200, m210, m220, vvy, vysq, c6o1, c1o6);
+    backwardChimeraWithInverseK(m102, m112, m122, vvy, vysq, c9o2, c2o9);
+    backwardChimeraWithInverseK(m200, m210, m220, vvy, vysq, c6o1, c1o6);
     backwardChimera(            m201, m211, m221, vvy, vysq);
-    backwardInverseChimeraWithK(m202, m212, m222, vvy, vysq, c18o1, c1o18);
+    backwardChimeraWithInverseK(m202, m212, m222, vvy, vysq, c18o1, c1o18);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // Z - Dir
-    backwardInverseChimeraWithK(m000, m001, m002, vvz, vzsq, c36o1, c1o36);
-    backwardInverseChimeraWithK(m010, m011, m012, vvz, vzsq, c9o1,  c1o9);
-    backwardInverseChimeraWithK(m020, m021, m022, vvz, vzsq, c36o1, c1o36);
-    backwardInverseChimeraWithK(m100, m101, m102, vvz, vzsq, c9o1,  c1o9);
-    backwardInverseChimeraWithK(m110, m111, m112, vvz, vzsq, c9o4,  c4o9);
-    backwardInverseChimeraWithK(m120, m121, m122, vvz, vzsq, c9o1,  c1o9);
-    backwardInverseChimeraWithK(m200, m201, m202, vvz, vzsq, c36o1, c1o36);
-    backwardInverseChimeraWithK(m210, m211, m212, vvz, vzsq, c9o1,  c1o9);
-    backwardInverseChimeraWithK(m220, m221, m222, vvz, vzsq, c36o1, c1o36);
+    backwardChimeraWithInverseK(m000, m001, m002, vvz, vzsq, c36o1, c1o36);
+    backwardChimeraWithInverseK(m010, m011, m012, vvz, vzsq, c9o1,  c1o9);
+    backwardChimeraWithInverseK(m020, m021, m022, vvz, vzsq, c36o1, c1o36);
+    backwardChimeraWithInverseK(m100, m101, m102, vvz, vzsq, c9o1,  c1o9);
+    backwardChimeraWithInverseK(m110, m111, m112, vvz, vzsq, c9o4,  c4o9);
+    backwardChimeraWithInverseK(m120, m121, m122, vvz, vzsq, c9o1,  c1o9);
+    backwardChimeraWithInverseK(m200, m201, m202, vvz, vzsq, c36o1, c1o36);
+    backwardChimeraWithInverseK(m210, m211, m212, vvz, vzsq, c9o1,  c1o9);
+    backwardChimeraWithInverseK(m220, m221, m222, vvz, vzsq, c36o1, c1o36);
 
-    f[d000] = f000;
-    f[dP00] = fP00;
-    f[dM00] = fM00;
-    f[d0P0] = f0P0;
-    f[d0M0] = f0M0;
-    f[d00P] = f00P;
-    f[d00M] = f00M;
-    f[dPP0] = fPP0;
-    f[dMM0] = fMM0;
-    f[dPM0] = fPM0;
-    f[dMP0] = fMP0;
-    f[dP0P] = fP0P;
-    f[dM0M] = fM0M;
-    f[dP0M] = fP0M;
-    f[dM0P] = fM0P;
-    f[d0PP] = f0PP;
-    f[d0MM] = f0MM;
-    f[d0PM] = f0PM;
-    f[d0MP] = f0MP;
-    f[dPPP] = fPPP;
-    f[dMPP] = fMPP;
-    f[dPMP] = fPMP;
-    f[dMMP] = fMMP;
-    f[dPPM] = fPPM;
-    f[dMPM] = fMPM;
-    f[dPMM] = fPMM;
-    f[dMMM] = fMMM;
+    f[dir::d000] = f000;
+    f[dir::dP00] = fP00;
+    f[dir::dM00] = fM00;
+    f[dir::d0P0] = f0P0;
+    f[dir::d0M0] = f0M0;
+    f[dir::d00P] = f00P;
+    f[dir::d00M] = f00M;
+    f[dir::dPP0] = fPP0;
+    f[dir::dMM0] = fMM0;
+    f[dir::dPM0] = fPM0;
+    f[dir::dMP0] = fMP0;
+    f[dir::dP0P] = fP0P;
+    f[dir::dM0M] = fM0M;
+    f[dir::dP0M] = fP0M;
+    f[dir::dM0P] = fM0P;
+    f[dir::d0PP] = f0PP;
+    f[dir::d0MM] = f0MM;
+    f[dir::d0PM] = f0PM;
+    f[dir::d0MP] = f0MP;
+    f[dir::dPPP] = fPPP;
+    f[dir::dMPP] = fMPP;
+    f[dir::dPMP] = fPMP;
+    f[dir::dMMP] = fMMP;
+    f[dir::dPPM] = fPPM;
+    f[dir::dMPM] = fMPM;
+    f[dir::dPMM] = fPMM;
+    f[dir::dMMM] = fMMM;
 }
 
 }

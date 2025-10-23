@@ -42,7 +42,7 @@
 
 //! \brief namespace for global system-functions
 
-namespace LBMSystem
+namespace lbm_system
 {
 
 //#define SINGLEPRECISION

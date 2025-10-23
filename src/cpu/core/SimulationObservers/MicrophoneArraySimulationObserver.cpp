@@ -42,7 +42,6 @@
 #include "Grid3D.h"
 #include "LBMKernel.h"
 #include "UbScheduler.h"
-#include "Vector3D.h"
 #include <sstream>
 
 MicrophoneArraySimulationObserver::MicrophoneArraySimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
@@ -67,7 +66,7 @@ void MicrophoneArraySimulationObserver::update(real step)
     UBLOG(logDEBUG3, "MicrophoneArraySimulationObserver::update:" << step);
 }
 
-bool MicrophoneArraySimulationObserver::addMicrophone(Vector3D coords)
+bool MicrophoneArraySimulationObserver::addMicrophone(GbVector3D coords)
 {
     micID++;
     //   UbTupleInt3 blockIndexes = grid->getBlockIndexes(coords[0], coords[1], coords[2]);
@@ -86,9 +85,9 @@ bool MicrophoneArraySimulationObserver::addMicrophone(Vector3D coords)
                 if (!bcarray->isUndefined(val<1>(nodes), val<2>(nodes), val<3>(nodes))) {
 
                     if (kernel->getCompressible()) {
-                        calcMacros = &D3Q27System::calcCompMacroscopicValues;
+                        calcMacros = &d3q27_system::calcCompMacroscopicValues;
                     } else {
-                        calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+                        calcMacros = &d3q27_system::calcIncompMacroscopicValues;
                     }
                     SPtr<Mic> mic(new Mic);
                     mic->id           = micID;
@@ -98,14 +97,14 @@ bool MicrophoneArraySimulationObserver::addMicrophone(Vector3D coords)
 
                     strVector.push_back(SPtr<std::stringstream>(new std::stringstream));
 
-                    std::string fname = path + "/mic/mic_" + UbSystem::toString(micID) + ".csv";
+                    std::string fname = path + "/mic/mic_" + ub_system::toString(micID) + ".csv";
                     std::ofstream ostr;
                     ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
                     if (!ostr) {
                         ostr.clear();
-                        std::string path = UbSystem::getPathFromString(fname);
+                        std::string path = ub_system::getPathFromString(fname);
                         if (path.size() > 0) {
-                            UbSystem::makeDirectory(path);
+                            ub_system::makeDirectory(path);
                             ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
                         }
                         if (!ostr)
@@ -125,7 +124,7 @@ bool MicrophoneArraySimulationObserver::addMicrophone(Vector3D coords)
 void MicrophoneArraySimulationObserver::collectData(real step)
 {
     for (std::size_t i = 0; i < microphones.size(); i++) {
-        real f[D3Q27System::ENDF + 1];
+        real f[d3q27_system::ENDF + 1];
         microphones[i]->distridution->getPreCollisionDistribution(f, val<1>(microphones[i]->nodeIndexes),
                                                       val<2>(microphones[i]->nodeIndexes),
                                                       val<3>(microphones[i]->nodeIndexes));
@@ -138,14 +137,14 @@ void MicrophoneArraySimulationObserver::collectData(real step)
 void MicrophoneArraySimulationObserver::writeFile(real /*step*/)
 {
     for (std::size_t i = 0; i < microphones.size(); i++) {
-        std::string fname = path + "/mic/mic_" + UbSystem::toString(microphones[i]->id) + ".csv";
+        std::string fname = path + "/mic/mic_" + ub_system::toString(microphones[i]->id) + ".csv";
         std::ofstream ostr;
         ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
         if (!ostr) {
             ostr.clear();
-            std::string path = UbSystem::getPathFromString(fname);
+            std::string path = ub_system::getPathFromString(fname);
             if (path.size() > 0) {
-                UbSystem::makeDirectory(path);
+                ub_system::makeDirectory(path);
                 ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
             }
             if (!ostr)

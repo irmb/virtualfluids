@@ -413,7 +413,7 @@ GbPoint3D *GbTriangle3D::calculateIntersectionPoints3D(GbPoint3D *linePoint1, Gb
     double d     = -Normal.Dot(GbPoint3D1);
     double denom = Normal.Dot(direction);
 
-    if (UbMath::zero(denom))
+    if (ub_math::zero(denom))
         return NULL; // line does not intersect the plane of the triangle !
     else {
         double mu = -1. * (d + Point1.Dot(Normal)) / denom; // mu = -(d+ Normal.Point1)/denom
@@ -440,11 +440,11 @@ GbPoint3D *GbTriangle3D::calculateIntersectionPoints3D(GbPoint3D *linePoint1, Gb
             GbVector3D Q1Q2 = Q1 + Q2;
             GbVector3D Q    = Q1Q2 + Q3;
 
-            if (UbMath::less(Q.Dot(Q1), 0.0))
+            if (ub_math::less(Q.Dot(Q1), 0.0))
                 test = false;
-            if (UbMath::less(Q.Dot(Q2), 0.0))
+            if (ub_math::less(Q.Dot(Q2), 0.0))
                 test = false;
-            if (UbMath::less(Q.Dot(Q3), 0.0))
+            if (ub_math::less(Q.Dot(Q3), 0.0))
                 test = false;
 
             if (test == true)
@@ -480,7 +480,7 @@ double GbTriangle3D::calculateDistanceToPoint3D(const double &x1, const double &
 
     // Determine normal to triangle
     GbVector3D Normal = (P1 - P2).Cross(P1 - P3);
-    double alpha      = UbMath::ACos((P1 - P0).Dot(Normal) / ((P1 - P0).Length() * Normal.Length()));
+    double alpha      = ub_math::ACos((P1 - P0).Dot(Normal) / ((P1 - P0).Length() * Normal.Length()));
 
     double P0P0dash = (P0 - P1).Length() * cos(alpha);
     Normal.Normalize();
@@ -579,7 +579,7 @@ double GbTriangle3D::calculateNormalizedDistanceToPoint3D(const double &x1, cons
                                   ((-1.0 * zb + zc) * ya + (-1.0 * yc + yb) * za - 1.0 * zc * yb + zb * yc) * x2 +
                                   ((-1.0 * zc + zb) * xa + (-1.0 * xb + xc) * za + xb * zc - 1.0 * xc * zb) * y2 +
                                   ((yc - 1.0 * yb) * xa + (xb - 1.0 * xc) * ya + xc * yb - 1.0 * xb * yc) * z2));
-    if (UbMath::greater(nenner, 0.0))
+    if (ub_math::greater(nenner, 0.0))
         tt = zaehler / nenner;
     else
         tt = -999.;
@@ -602,7 +602,7 @@ double GbTriangle3D::calculateNormalizedDistanceToPoint3D(const double &x1, cons
                                   ((zb - 1.0 * zc) * ya + (-1.0 * yb + yc) * za + zc * yb - 1.0 * zb * yc) * x2 +
                                   ((zc - 1.0 * zb) * xa + (xb - 1.0 * xc) * za - 1.0 * xb * zc + xc * zb) * y2 +
                                   ((yb - 1.0 * yc) * xa + (xc - 1.0 * xb) * ya + xb * yc - 1.0 * xc * yb) * z2));
-    if (UbMath::greater(nenner, 0.0))
+    if (ub_math::greater(nenner, 0.0))
         xi = zaehler / nenner;
     else
         xi = -999.;
@@ -618,15 +618,15 @@ double GbTriangle3D::calculateNormalizedDistanceToPoint3D(const double &x1, cons
                                   ((zb - 1.0 * zc) * ya + (-1.0 * yb + yc) * za + zc * yb - 1.0 * zb * yc) * x2 +
                                   ((zc - 1.0 * zb) * xa + (xb - 1.0 * xc) * za - 1.0 * xb * zc + xc * zb) * y2 +
                                   ((yb - 1.0 * yc) * xa + (xc - 1.0 * xb) * ya + xb * yc - 1.0 * xc * yb) * z2));
-    if (UbMath::greater(nenner, 0.0))
+    if (ub_math::greater(nenner, 0.0))
         eta = static_cast<double>((zaehler / nenner) * wurzel3 * -1.);
     else
         eta = -999.;
 
-    if (tt >= -1.0 - UbMath::Epsilon<double>::val() && tt <= 1.0) {
-        if (xi >= -1.0 + eta / wurzel3 - UbMath::Epsilon<double>::val() &&
-            xi <= 1.0 - eta / wurzel3 + UbMath::Epsilon<double>::val()) {
-            if (eta >= 0 - UbMath::Epsilon<double>::val() && eta <= wurzel3 + UbMath::Epsilon<double>::val()) {
+    if (tt >= -1.0 - ub_math::Epsilon<double>::val() && tt <= 1.0) {
+        if (xi >= -1.0 + eta / wurzel3 - ub_math::Epsilon<double>::val() &&
+            xi <= 1.0 - eta / wurzel3 + ub_math::Epsilon<double>::val()) {
+            if (eta >= 0 - ub_math::Epsilon<double>::val() && eta <= wurzel3 + ub_math::Epsilon<double>::val()) {
                 /*xp = x1*(0.5-tt/2)+x2*(0.5+tt/2);
                 yp = y1*(0.5-tt/2)+y2*(0.5+tt/2);
                 zp = z1*(0.5-tt/2)+z2*(0.5+tt/2);*/
@@ -680,7 +680,7 @@ bool GbTriangle3D::enclosesPoint2D(double x1, double x2)
     if (x1 < this->getX1Maximum() && x1 > getX1Minimum() && x2 < this->getX2Maximum() && x2 > getX2Minimum()) {
         GbPoint3D *dummy = NULL;
         // ueberpruefen, ob der Punkt innerhalb des Dreiecks liegt
-        dummy = GbSystem3D::calculateIntersectionPoint3D(p1, p2, dp1, dp2);
+        dummy = gb_system_3d::calculateIntersectionPoint3D(p1, p2, dp1, dp2);
         if (dummy != NULL) {
             if (dummy->getX1Coordinate() == p1.getX1Coordinate() && dummy->getX2Coordinate() == p1.getX2Coordinate()) {
                 delete dummy;
@@ -694,7 +694,7 @@ bool GbTriangle3D::enclosesPoint2D(double x1, double x2)
         if (dummy)
             delete dummy;
 
-        dummy = GbSystem3D::calculateIntersectionPoint3D(p1, p2, dp2, dp3);
+        dummy = gb_system_3d::calculateIntersectionPoint3D(p1, p2, dp2, dp3);
         if (dummy != NULL) {
             if (dummy->getX1Coordinate() == p1.getX1Coordinate() && dummy->getX2Coordinate() == p1.getX2Coordinate()) {
                 if (dummy)
@@ -709,7 +709,7 @@ bool GbTriangle3D::enclosesPoint2D(double x1, double x2)
         if (dummy)
             delete dummy;
 
-        dummy = GbSystem3D::calculateIntersectionPoint3D(p1, p2, dp3, dp1);
+        dummy = gb_system_3d::calculateIntersectionPoint3D(p1, p2, dp3, dp1);
         if (dummy != NULL) {
             if (dummy->getX1Coordinate() == p1.getX1Coordinate() && dummy->getX2Coordinate() == p1.getX2Coordinate()) {
                 if (dummy)
@@ -739,7 +739,7 @@ bool GbTriangle3D::enclosesPoint2D(double x1, double x2)
 //*/
 GbPolygon3D *GbTriangle3D::createClippedPolygon3D(GbCuboid3D *cube)
 {
-    return (GbSystem3D::clipPolygon3D(this->getPoints(), cube->getPoint1()->getX1Coordinate(),
+    return (gb_system_3d::clipPolygon3D(this->getPoints(), cube->getPoint1()->getX1Coordinate(),
                                       cube->getPoint1()->getX2Coordinate(), cube->getPoint1()->getX3Coordinate(),
                                       cube->getPoint2()->getX1Coordinate(), cube->getPoint2()->getX2Coordinate(),
                                       cube->getPoint2()->getX3Coordinate()));
@@ -765,7 +765,7 @@ GbPolygon3D *GbTriangle3D::createClippedPolygon3D(GbCuboid3D *cube)
 GbPolygon3D *GbTriangle3D::createClippedPolygon3D(const double &p1x1, const double &p1x2, const double &p1x3,
                                                   const double &p2x1, const double &p2x2, const double &p2x3)
 {
-    return (GbSystem3D::clipPolygon3D(this->getPoints(), p1x1, p1x2, p1x3, p2x1, p2x2, p2x3));
+    return (gb_system_3d::clipPolygon3D(this->getPoints(), p1x1, p1x2, p1x3, p2x1, p2x2, p2x3));
 }
 
 /*

@@ -54,6 +54,7 @@
 #include "Calculation/Calculation.h"
 #include "Calculation/UpdateGrid27.h"
 #include "Communication/ExchangeData27.h"
+#include "Cuda/CudaMemoryManager.h"
 #include "Cuda/CudaStreamManager.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "GridScaling/GridScalingFactory.h"
@@ -75,7 +76,6 @@
 #include "PostProcessor/Calc2ndMoments.h"
 #include "PostProcessor/CalcMean.h"
 #include "PostProcessor/CalcTurbulenceIntensity.h"
-#include "PostProcessor/Concentration.cuh"
 #include "PostProcessor/Cp.h"
 #include "PostProcessor/DragLift.h"
 #include "PostProcessor/EnstrophyAnalyzer.h"
@@ -169,11 +169,13 @@ void Simulation::init(GridProvider &gridProvider, const BoundaryConditionFactory
     allocNeighborsOffsetsScalesAndBoundaries(gridProvider, bcFactory);
 
     //! Get tagged fluid nodes with corresponding value for CollisionTemplate from interactors
+    VF_LOG_INFO("Start initializing precollision interactors");
     for (SPtr<PreCollisionInteractor>& interactor : para->getInteractors()) {
         interactor->init();
         interactor->getTaggedFluidNodes(&gridProvider);
     }
 
+    VF_LOG_INFO("Start initializing samplers");
     for (SPtr<Sampler>& sampler : para->getSamplers()) {
         sampler->init();
         sampler->getTaggedFluidNodes(&gridProvider);
@@ -197,10 +199,14 @@ void Simulation::init(GridProvider &gridProvider, const BoundaryConditionFactory
     //////////////////////////////////////////////////////////////////////////
     VF_LOG_TRACE("make Kernels");
     kernels = kernelFactory->makeKernels(para);
+    for (const auto& kernel : kernels) {
+        kernel->checkKernelParameters(para->getMaxLevel(), para->getVelocity(),
+                                      para->getParH(para->getMaxLevel())->viscosity);
+    }
 
     if (para->getDiffOn()) {
         VF_LOG_TRACE("make AD Kernels");
-        adKernels = kernelFactory->makeAdvDifKernels(para);
+        adKernels = kernelFactory->makeAdvectionDiffusionKernels(para);
         std::vector<PreProcessorType> preProADTypes = adKernels.at(0)->getPreProcessorTypes();
         preProcessorAD = preProcessorFactory->makePreProcessor(preProADTypes, para);
     }
@@ -430,14 +436,7 @@ void Simulation::run()
     //    }
     //}
     //  //////////////////////////////////////////////////////////////////////////
-    averageTimer.end();
-    metaData.simulation.runtimeSeconds += averageTimer.getTimeInSeconds();
-    performanceOutput->log(averageTimer, para->getTimestepEnd(), communicator);
-    metaData.simulation.nups = performanceOutput->getNups();
-    metaData.simulation.runtimeSeconds = performanceOutput->totalRuntimeInSeconds();
-    vf::basics::logPostSimulation(metaData);
-
-    vf::basics::writeYAML(metaData, para->getFName() + ".yaml");
+    finalize();
 }
 
 void Simulation::calculateTimestep(uint timestep)
@@ -592,6 +591,19 @@ void Simulation::calculateTimestep(uint timestep)
     }
 }
 
+void Simulation::finalize()
+{
+    averageTimer.end();
+    metaData.simulation.runtimeSeconds += averageTimer.getTimeInSeconds();
+    performanceOutput->log(averageTimer, para->getTimestepEnd(), communicator);
+    metaData.simulation.nups = performanceOutput->getNups();
+    metaData.simulation.runtimeSeconds = performanceOutput->totalRuntimeInSeconds();
+    vf::basics::logPostSimulation(metaData);
+
+    vf::basics::writeYAML(metaData, para->getFName() + ".yaml");
+}
+
+
 void Simulation::readAndWriteFiles(uint timestep)
 {
     VF_LOG_INFO("Write files t = {} ...", timestep);
@@ -659,20 +671,8 @@ void Simulation::readAndWriteFiles(uint timestep)
         if (this->enstrophyAnalyzer)
             this->enstrophyAnalyzer->writeToFile(fname);
         //////////////////////////////////////////////////////////////////////////
-        if (para->getDiffOn()) {
-               CalcConcentration27(
-                              para->getParD(lev)->numberofthreads,
-                              para->getParD(lev)->concentration,
-                              para->getParD(lev)->typeOfGridNode,
-                              para->getParD(lev)->neighborX,
-                              para->getParD(lev)->neighborY,
-                              para->getParD(lev)->neighborZ,
-                              para->getParD(lev)->numberOfNodes,
-                              para->getParD(lev)->distributionsAD.f[0],
-                              para->getParD(lev)->isEvenTimestep);
+        if (para->getDiffOn())
             cudaMemoryManager->cudaCopyConcentrationDeviceToHost(lev);
-            //cudaMemoryCopy(para->getParH(lev)->Conc, para->getParD(lev)->Conc,  para->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost);
-        }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////print cp
         //if ((para->getParH(lev)->cpTop.size() > 0) && (t > para->getTStartOut()))
@@ -763,15 +763,33 @@ Simulation::~Simulation()
         }
     }
 
+
+    //Boundary conditions
+    for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
+        cudaMemoryManager->cudaFreeNoSlipBC(lev);
+        cudaMemoryManager->cudaFreeSlipBC(lev);
+        cudaMemoryManager->cudaFreeVeloBC(lev);
+        cudaMemoryManager->cudaFreeGeomBC(lev);
+        cudaMemoryManager->cudaFreeStressBC(lev);
+        cudaMemoryManager->cudaFreePrecursorBC(lev);
+        cudaMemoryManager->cudaFreeOutflowBC(lev);
+    }
+
     //////////////////////////////////////////////////////////////////////////
     // Temp
     if (para->getDiffOn()) {
         for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->concentration));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.concentration));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionNoSlipBC.k));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionDirichletBC.concentration));
-            checkCudaErrors(cudaFreeHost(para->getParH(lev)->AdvectionDiffusionDirichletBC.k));
+            cudaMemoryManager->cudaFreeConcentration(lev);
+            cudaMemoryManager->cudaFreeConcentrationNoFluxBC(lev);
+            cudaMemoryManager->cudaFreeConcentrationFluxBC(lev);
+            cudaMemoryManager->cudaFreeConcentrationDirichletBC(lev);
+            cudaMemoryManager->cudaFreeConcentrationNeumannBC(lev);
+            cudaMemoryManager->cudaFreeSurfaceLayerBC(lev);
+
+            if(para->getUseTurbulentDiffusivity())
+                cudaMemoryManager->cudaFreeTurbulentDiffusivity(lev);
+            if(para->getBuoyancyEnabled())
+                cudaMemoryManager->cudaFreeLocalReferenceTemperature(lev);
         }
     }
 
@@ -803,17 +821,22 @@ Simulation::~Simulation()
     //3D domain decomposition
     if (para->getNumprocs() > 1) {
         for (int lev = para->getCoarse(); lev < para->getFine(); lev++) {
+            auto& parH = para->getParHostAsReference(lev);
+            auto& parD = para->getParDeviceAsReference(lev);
             //////////////////////////////////////////////////////////////////////////
-            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++) {
-                cudaMemoryManager->cudaFreeProcessNeighborX(lev, i);
+            for (uint i = 0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++) {
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsX[i], parD.sendProcessNeighborsX[i],
+                                                           parH.recvProcessNeighborsX[i], parD.recvProcessNeighborsX[i]);
             }
             //////////////////////////////////////////////////////////////////////////
-            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++) {
-                cudaMemoryManager->cudaFreeProcessNeighborY(lev, i);
+            for (uint i = 0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++) {
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsY[i], parD.sendProcessNeighborsY[i],
+                                                           parH.recvProcessNeighborsY[i], parD.recvProcessNeighborsY[i]);
             }
             //////////////////////////////////////////////////////////////////////////
-            for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++) {
-                cudaMemoryManager->cudaFreeProcessNeighborZ(lev, i);
+            for (uint i = 0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++) {
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsZ[i], parD.sendProcessNeighborsZ[i],
+                                                           parH.recvProcessNeighborsZ[i], parD.recvProcessNeighborsZ[i]);
             }
         }
     }

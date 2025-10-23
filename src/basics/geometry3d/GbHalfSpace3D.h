@@ -71,20 +71,20 @@ public:
     /*=============================================*/
     bool ptInside(const double &x, const double &y, const double &z)
     {
-        return UbMath::greaterEqual(normalX * x + normalY * y + normalZ * z, this->d);
+        return ub_math::greaterEqual(normalX * x + normalY * y + normalZ * z, this->d);
     }
     /*=============================================*/
     bool ptInside(GbPoint3D *pointX)
     {
         // GbVector3D X(PointX->x1, PointX->x2, PointX->x3 );
-        // return UbMath::greaterEqual(this->Normal.Dot(X), this->d);
-        return UbMath::greaterEqual(normalX * pointX->x1 + normalY * pointX->x2 + normalZ * pointX->x3, this->d);
+        // return ub_math::greaterEqual(this->Normal.Dot(X), this->d);
+        return ub_math::greaterEqual(normalX * pointX->x1 + normalY * pointX->x2 + normalZ * pointX->x3, this->d);
     }
     /*=============================================*/
     bool ptInside(GbVector3D &x)
     {
-        // return UbMath::greaterEqual(this->Normal.Dot(X), this->d);
-        return UbMath::greaterEqual(normalX * x[0] + normalY * x[1] + normalZ * x[2], this->d);
+        // return ub_math::greaterEqual(this->Normal.Dot(X), this->d);
+        return ub_math::greaterEqual(normalX * x[0] + normalY * x[1] + normalZ * x[2], this->d);
     }
     /*=============================================*/
     double getDistance(const double &x1p, const double &x2p, const double &x3p)

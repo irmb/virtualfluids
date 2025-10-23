@@ -104,19 +104,19 @@ void run(const vf::basics::ConfigurationFile& config)
 
     SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
     if (myid == 0)
-        GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
+        gb_system_3d::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
     real k1 = 4;
 
     SPtr<GbObject3D> refineCube1_1(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2 / k1 - 1.0, g_maxX3));
     if (myid == 0)
-        GbSystem3D::writeGeoObject(refineCube1_1.get(), pathname + "/geo/refineCube1_1",
+        gb_system_3d::writeGeoObject(refineCube1_1.get(), pathname + "/geo/refineCube1_1",
                                    WbWriterVtkXmlBinary::getInstance());
 
     SPtr<GbObject3D> refineCube1_2(
         new GbCuboid3D(g_minX1, g_maxX2 - g_maxX2 / k1 + 1.0, g_minX3, g_maxX1, g_maxX2, g_maxX3));
     if (myid == 0)
-        GbSystem3D::writeGeoObject(refineCube1_2.get(), pathname + "/geo/refineCube1_2",
+        gb_system_3d::writeGeoObject(refineCube1_2.get(), pathname + "/geo/refineCube1_2",
                                    WbWriterVtkXmlBinary::getInstance());
 
     SPtr<LBMKernel> kernel;
@@ -159,24 +159,24 @@ void run(const vf::basics::ConfigurationFile& config)
         GbCuboid3DPtr addWallYmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength,
                                                  g_maxX1 + blockLength, g_minX2, g_maxX3 + blockLength));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(addWallYmin.get(), pathname + "/geo/addWallYmin", WbWriterVtkXmlASCII::getInstance());
+            gb_system_3d::writeGeoObject(addWallYmin.get(), pathname + "/geo/addWallYmin", WbWriterVtkXmlASCII::getInstance());
 
         GbCuboid3DPtr addWallYmax(new GbCuboid3D(g_minX1 - blockLength, g_maxX2, g_minX3 - blockLength,
                                                  g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(addWallYmax.get(), pathname + "/geo/addWallYmax", WbWriterVtkXmlASCII::getInstance());
+            gb_system_3d::writeGeoObject(addWallYmax.get(), pathname + "/geo/addWallYmax", WbWriterVtkXmlASCII::getInstance());
 
         // inflow
         GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_minX1,
                                                g_maxX2 + blockLength, g_maxX3 + blockLength));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
+            gb_system_3d::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
 
         // outflow
         GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength,
                                                 g_maxX2 + blockLength, g_maxX3 + blockLength));
         if (myid == 0)
-            GbSystem3D::writeGeoObject(geoOutflow.get(), pathname + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
+            gb_system_3d::writeGeoObject(geoOutflow.get(), pathname + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
         SPtr<SimulationObserver> ppblocks(new WriteBlocksSimulationObserver(
             grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
@@ -232,7 +232,7 @@ void run(const vf::basics::ConfigurationFile& config)
         ppblocks.reset();
 
         if (myid == 0)
-            VF_LOG_INFO("{}", Utilities::toString(grid, comm->getNumberOfProcesses()));
+            VF_LOG_INFO("{}", utilities::toString(grid, comm->getNumberOfProcesses()));
 
         SetKernelBlockVisitor kernelVisitor(kernel, nu);
         grid->accept(kernelVisitor);

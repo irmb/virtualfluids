@@ -51,7 +51,7 @@
 #include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 
-namespace UnstructuredGridWriter
+namespace unstructured_grid_writer
 {
 
 void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::string& filenameVec2)
@@ -401,7 +401,7 @@ void writeUnstrucuredGridLTwithTurbulentViscosity(Parameter* para, int level, ve
                 nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
                 nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
                 nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
-                nodedata[6][dn1] = (double)para->getParH(level)->turbViscosity[pos];
+                nodedata[6][dn1] = (double)para->getParH(level)->turbulentViscosity[pos];
                 //////////////////////////////////////////////////////////////////////////
                 number2 = para->getParH(level)->neighborX[number1];
                 number3 = para->getParH(level)->neighborY[number2];
@@ -544,7 +544,7 @@ void writeUnstrucuredGridLTwithTurbulentViscosityDebug(Parameter* para, int leve
                 nodedata[3][dn1] = (double)para->getParH(level)->velocityY[pos] * (double)para->getVelocityRatio();
                 nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
                 nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
-                nodedata[6][dn1] = (double)para->getParH(level)->turbViscosity[pos] * (double)para->getViscosityRatio();
+                nodedata[6][dn1] = (double)para->getParH(level)->turbulentViscosity[pos] * (double)para->getViscosityRatio();
                 nodedata[7][dn1] = (double)para->getParH(level)->gSij[pos] * (double)para->getVelocityRatio();
                 nodedata[8][dn1] = (double)para->getParH(level)->gSDij[pos] * (double)para->getVelocityRatio();
                 nodedata[9][dn1] = (double)para->getParH(level)->gDxvx[pos] * (double)para->getVelocityRatio();

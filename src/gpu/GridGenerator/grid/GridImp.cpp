@@ -1737,27 +1737,27 @@ int GridImp::getShiftedCommunicationIndex(uint index, int direction)
 
     switch (direction)
     {
-    case CommunicationDirections::MX:
+    case communication_directions::MX:
         y = wrapCoord(y - (this->periodicShiftOnXinY + delta), startY - c1o2*delta, endY + c1o2*delta);
         z = wrapCoord(z - (this->periodicShiftOnXinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
         break;
-    case CommunicationDirections::PX:
+    case communication_directions::PX:
         y = wrapCoord(y + (this->periodicShiftOnXinY + delta), startY - c1o2*delta, endY + c1o2*delta);
         z = wrapCoord(z + (this->periodicShiftOnXinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
         break;
-    case CommunicationDirections::MY:
+    case communication_directions::MY:
         x = wrapCoord(x - (this->periodicShiftOnYinX + delta), startX - c1o2*delta, endX + c1o2*delta);
         z = wrapCoord(z - (this->periodicShiftOnYinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
         break;
-    case CommunicationDirections::PY:
+    case communication_directions::PY:
         x = wrapCoord(x + (this->periodicShiftOnYinX + delta), startX - c1o2*delta, endX + c1o2*delta);
         z = wrapCoord(z + (this->periodicShiftOnYinZ + delta), startZ - c1o2*delta, endZ + c1o2*delta);
         break;
-    case CommunicationDirections::MZ:
+    case communication_directions::MZ:
         x = wrapCoord(x - (this->periodicShiftOnZinX + delta), startX - c1o2*delta, endX + c1o2*delta);
         y = wrapCoord(y - (this->periodicShiftOnZinY + delta), startY - c1o2*delta, endY + c1o2*delta);
         break;
-    case CommunicationDirections::PZ:
+    case communication_directions::PZ:
         x = wrapCoord(x + (this->periodicShiftOnZinX + delta), startX - c1o2*delta, endX + c1o2*delta);
         y = wrapCoord(y + (this->periodicShiftOnZinY + delta), startY - c1o2*delta, endY + c1o2*delta);
         break;
@@ -1788,12 +1788,12 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
 
         switch(direction)
         {
-            case CommunicationDirections::MX: findCommunicationIndex( shiftedIndex, x, subDomainBox->minX, direction); break;
-            case CommunicationDirections::PX: findCommunicationIndex( shiftedIndex, x, subDomainBox->maxX, direction); break;
-            case CommunicationDirections::MY: findCommunicationIndex( shiftedIndex, y, subDomainBox->minY, direction); break;
-            case CommunicationDirections::PY: findCommunicationIndex( shiftedIndex, y, subDomainBox->maxY, direction); break;
-            case CommunicationDirections::MZ: findCommunicationIndex( shiftedIndex, z, subDomainBox->minZ, direction); break;
-            case CommunicationDirections::PZ: findCommunicationIndex( shiftedIndex, z, subDomainBox->maxZ, direction); break;
+            case communication_directions::MX: findCommunicationIndex( shiftedIndex, x, subDomainBox->minX, direction); break;
+            case communication_directions::PX: findCommunicationIndex( shiftedIndex, x, subDomainBox->maxX, direction); break;
+            case communication_directions::MY: findCommunicationIndex( shiftedIndex, y, subDomainBox->minY, direction); break;
+            case communication_directions::PY: findCommunicationIndex( shiftedIndex, y, subDomainBox->maxY, direction); break;
+            case communication_directions::MZ: findCommunicationIndex( shiftedIndex, z, subDomainBox->minZ, direction); break;
+            case communication_directions::PZ: findCommunicationIndex( shiftedIndex, z, subDomainBox->maxZ, direction); break;
         }
     }
 }
@@ -1801,6 +1801,9 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
 void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, int direction ){
     // negative direction get a negative sign
     real s = ( direction % 2 == 0 ) ? ( -1.0 ) : ( 1.0 );
+
+    // the following code adds an index to the communication indices, when the coordinate is around + or - 0.5 * delta from the limit (see unit tests for
+    // details)
 
     if (std::abs(coordinate - (limit + s * 0.5 * this->delta)) < 0.1 * this->delta)
         this->communicationIndices[direction].receiveIndices.push_back(index);
@@ -2195,145 +2198,181 @@ uint GridImp::getNumberOfFluidNodesBorder() const
     return (uint)this->fluidNodeIndicesBorder.size();
 }
 
-void GridImp::getFluidNodeIndicesBorder(uint *fluidNodeIndicesBorder) const
+void GridImp::getFluidNodeIndicesBorder(uint* fluidNodeIndicesBorder) const
 {
     for (uint nodeNumber = 0; nodeNumber < (uint)this->fluidNodeIndicesBorder.size(); nodeNumber++)
         fluidNodeIndicesBorder[nodeNumber] = this->fluidNodeIndicesBorder[nodeNumber];
 }
 
-void GridImp::addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars)
+void GridImp::addFluidNodeIndicesMacroVars(std::vector<uint> fluidNodeIndicesMacroVars)
 {
-    size_t newSize = this->fluidNodeIndicesMacroVars.size()+_fluidNodeIndicesMacroVars.size();
+    size_t newSize = this->fluidNodeIndicesMacroVars.size() + fluidNodeIndicesMacroVars.size();
     this->fluidNodeIndicesMacroVars.reserve(newSize);
-    std::copy(_fluidNodeIndicesMacroVars.begin(), _fluidNodeIndicesMacroVars.end(), std::back_inserter(this->fluidNodeIndicesMacroVars));
+    std::copy(fluidNodeIndicesMacroVars.begin(), fluidNodeIndicesMacroVars.end(),
+              std::back_inserter(this->fluidNodeIndicesMacroVars));
 }
 
-void GridImp::addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce)
+void GridImp::addFluidNodeIndicesApplyBodyForce(std::vector<uint> fluidNodeIndicesApplyBodyForce)
 {
 
-    size_t newSize = this->fluidNodeIndicesApplyBodyForce.size()+_fluidNodeIndicesApplyBodyForce.size();
+    size_t newSize = this->fluidNodeIndicesApplyBodyForce.size() + fluidNodeIndicesApplyBodyForce.size();
     this->fluidNodeIndicesApplyBodyForce.reserve(newSize);
-    std::copy(_fluidNodeIndicesApplyBodyForce.begin(), _fluidNodeIndicesApplyBodyForce.end(), std::back_inserter(this->fluidNodeIndicesApplyBodyForce));
+    std::copy(fluidNodeIndicesApplyBodyForce.begin(), fluidNodeIndicesApplyBodyForce.end(),
+              std::back_inserter(this->fluidNodeIndicesApplyBodyForce));
 }
 
-void GridImp::addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures)
+void GridImp::addFluidNodeIndicesAllFeatures(std::vector<uint> fluidNodeIndicesAllFeatures)
 {
 
-    size_t newSize = this->fluidNodeIndicesAllFeatures.size()+_fluidNodeIndicesAllFeatures.size();
+    size_t newSize = this->fluidNodeIndicesAllFeatures.size() + fluidNodeIndicesAllFeatures.size();
     this->fluidNodeIndicesAllFeatures.reserve(newSize);
-    std::copy(_fluidNodeIndicesAllFeatures.begin(), _fluidNodeIndicesAllFeatures.end(), std::back_inserter(this->fluidNodeIndicesAllFeatures));
+    std::copy(fluidNodeIndicesAllFeatures.begin(), fluidNodeIndicesAllFeatures.end(),
+              std::back_inserter(this->fluidNodeIndicesAllFeatures));
+}
+
+void GridImp::addAllFluidNodeIndicesToAllFeatures()
+{
+    this->fluidNodeIndicesAllFeatures.clear();
+    this->fluidNodeIndicesApplyBodyForce.clear();
+    this->fluidNodeIndicesMacroVars.clear();
+    this->fluidNodeIndicesAllFeatures.swap(this->fluidNodeIndices);
 }
 
 void GridImp::sortFluidNodeIndicesMacroVars()
 {
-    if(this->fluidNodeIndicesMacroVars.size()>0)
-    {
+    if (!this->fluidNodeIndicesMacroVars.empty()) {
         sort(this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end());
         // Remove duplicates
-        this->fluidNodeIndicesMacroVars.erase( unique( this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end() ), this->fluidNodeIndicesMacroVars.end() );
+        this->fluidNodeIndicesMacroVars.erase(
+            unique(this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end()),
+            this->fluidNodeIndicesMacroVars.end());
 
-         // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndicesMacroVars
-        if(this->fluidNodeIndicesAllFeatures.size()>0)
-        {
-            this->fluidNodeIndicesMacroVars.erase(   std::remove_if(   this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end(),
-                                                    [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
-                                                    this->fluidNodeIndicesMacroVars.end() );
+        // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndicesMacroVars
+        if (!this->fluidNodeIndicesAllFeatures.empty()) {
+            this->fluidNodeIndicesMacroVars.erase(
+                std::remove_if(this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end(),
+                               [&](auto x) {
+                                   return binary_search(fluidNodeIndicesAllFeatures.begin(),
+                                                        fluidNodeIndicesAllFeatures.end(), x);
+                               }),
+                this->fluidNodeIndicesMacroVars.end());
         }
 
         // Remove all indices in fluidNodeIndicesBorder from fluidNodeIndicesApplyBodyForce
-        if(this->fluidNodeIndicesBorder.size()>0)
-        {
-            this->fluidNodeIndicesMacroVars.erase(  std::remove_if(   this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end(),
-                                                    [&](auto x){return binary_search(fluidNodeIndicesBorder.begin(),fluidNodeIndicesBorder.end(),x);} ),
-                                                    this->fluidNodeIndicesMacroVars.end() );
+        if (!this->fluidNodeIndicesBorder.empty()) {
+            this->fluidNodeIndicesMacroVars.erase(
+                std::remove_if(
+                    this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end(),
+                    [&](auto x) { return binary_search(fluidNodeIndicesBorder.begin(), fluidNodeIndicesBorder.end(), x); }),
+                this->fluidNodeIndicesMacroVars.end());
         }
 
         // Remove indices of fluidNodeIndicesMacroVars from fluidNodeIndices
-        this->fluidNodeIndices.erase(   std::remove_if(   this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
-                                                        [&](auto x){return binary_search(fluidNodeIndicesMacroVars.begin(),fluidNodeIndicesMacroVars.end(),x);} ),
-                                        this->fluidNodeIndices.end() );
+        this->fluidNodeIndices.erase(std::remove_if(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
+                                                    [&](auto x) {
+                                                        return binary_search(fluidNodeIndicesMacroVars.begin(),
+                                                                             fluidNodeIndicesMacroVars.end(), x);
+                                                    }),
+                                     this->fluidNodeIndices.end());
     }
 }
 
 void GridImp::sortFluidNodeIndicesApplyBodyForce()
 {
-    if(this->fluidNodeIndicesApplyBodyForce.size()>0)
-    {
+    if (!this->fluidNodeIndicesApplyBodyForce.empty()) {
         sort(this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end());
         // Remove duplicates
-        this->fluidNodeIndicesApplyBodyForce.erase( unique( this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end() ), this->fluidNodeIndicesApplyBodyForce.end() );
+        this->fluidNodeIndicesApplyBodyForce.erase(
+            unique(this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end()),
+            this->fluidNodeIndicesApplyBodyForce.end());
 
-         // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndicesApplyBodyForce
-        if(this->fluidNodeIndicesAllFeatures.size()>0)
-        {
-            this->fluidNodeIndicesApplyBodyForce.erase( std::remove_if(   this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end(),
-                                                        [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
-                                                        this->fluidNodeIndicesApplyBodyForce.end() );
+        // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndicesApplyBodyForce
+        if (!this->fluidNodeIndicesAllFeatures.empty()) {
+            this->fluidNodeIndicesApplyBodyForce.erase(
+                std::remove_if(this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end(),
+                               [&](auto x) {
+                                   return binary_search(fluidNodeIndicesAllFeatures.begin(),
+                                                        fluidNodeIndicesAllFeatures.end(), x);
+                               }),
+                this->fluidNodeIndicesApplyBodyForce.end());
         }
 
         // Remove all indices in fluidNodeIndicesBorder from fluidNodeIndicesApplyBodyForce
-        if(this->fluidNodeIndicesBorder.size()>0)
-        {
-            this->fluidNodeIndicesApplyBodyForce.erase( std::remove_if(   this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end(),
-                                                        [&](auto x){return binary_search(fluidNodeIndicesBorder.begin(),fluidNodeIndicesBorder.end(),x);} ),
-                                                        this->fluidNodeIndicesApplyBodyForce.end() );
+        if (!this->fluidNodeIndicesBorder.empty()) {
+            this->fluidNodeIndicesApplyBodyForce.erase(
+                std::remove_if(
+                    this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end(),
+                    [&](auto x) { return binary_search(fluidNodeIndicesBorder.begin(), fluidNodeIndicesBorder.end(), x); }),
+                this->fluidNodeIndicesApplyBodyForce.end());
         }
 
         // Remove indices of fluidNodeIndicesMacroVars from fluidNodeIndices
-        this->fluidNodeIndices.erase(   std::remove_if(   this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
-                                        [&](auto x){return binary_search(fluidNodeIndicesApplyBodyForce.begin(),fluidNodeIndicesApplyBodyForce.end(),x);} ),
-                                        this->fluidNodeIndices.end() );
+        this->fluidNodeIndices.erase(std::remove_if(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
+                                                    [&](auto x) {
+                                                        return binary_search(fluidNodeIndicesApplyBodyForce.begin(),
+                                                                             fluidNodeIndicesApplyBodyForce.end(), x);
+                                                    }),
+                                     this->fluidNodeIndices.end());
     }
 }
 
 void GridImp::sortFluidNodeIndicesAllFeatures()
 {
-    if(this->fluidNodeIndicesAllFeatures.size()>0)
-    {
+    if (!this->fluidNodeIndicesAllFeatures.empty()) {
         sort(this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end());
         // Remove duplicates
-        this->fluidNodeIndicesAllFeatures.erase( unique( this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end() ), this->fluidNodeIndicesAllFeatures.end() );
+        this->fluidNodeIndicesAllFeatures.erase(
+            unique(this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end()),
+            this->fluidNodeIndicesAllFeatures.end());
 
         // Remove all indices in fluidNodeIndicesBorder from fluidNodeIndicesAllFeatures
-        if(this->fluidNodeIndicesBorder.size()>0)
-        {
-            this->fluidNodeIndicesAllFeatures.erase(    std::remove_if(   this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end(),
-                                                        [&](auto x){return binary_search(fluidNodeIndicesBorder.begin(),fluidNodeIndicesBorder.end(),x);} ),
-                                                        this->fluidNodeIndicesAllFeatures.end() );
+        if (!this->fluidNodeIndicesBorder.empty()) {
+            this->fluidNodeIndicesAllFeatures.erase(
+                std::remove_if(
+                    this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end(),
+                    [&](auto x) { return binary_search(fluidNodeIndicesBorder.begin(), fluidNodeIndicesBorder.end(), x); }),
+                this->fluidNodeIndicesAllFeatures.end());
         }
 
         // Remove indices of fluidNodeIndicesAllFeatures from fluidNodeIndices
-        this->fluidNodeIndices.erase(   std::remove_if(   this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
-                                                        [&](auto x){return binary_search(fluidNodeIndicesAllFeatures.begin(),fluidNodeIndicesAllFeatures.end(),x);} ),
-                                        this->fluidNodeIndices.end() );
+        this->fluidNodeIndices.erase(std::remove_if(this->fluidNodeIndices.begin(), this->fluidNodeIndices.end(),
+                                                    [&](auto x) {
+                                                        return binary_search(fluidNodeIndicesAllFeatures.begin(),
+                                                                             fluidNodeIndicesAllFeatures.end(), x);
+                                                    }),
+                                     this->fluidNodeIndices.end());
     }
 }
 
-uint GridImp::getNumberOfFluidNodeIndicesMacroVars() const {
+uint GridImp::getNumberOfFluidNodeIndicesMacroVars() const
+{
     return (uint)this->fluidNodeIndicesMacroVars.size();
 }
 
-uint GridImp::getNumberOfFluidNodeIndicesApplyBodyForce() const {
+uint GridImp::getNumberOfFluidNodeIndicesApplyBodyForce() const
+{
     return (uint)this->fluidNodeIndicesApplyBodyForce.size();
 }
 
-uint GridImp::getNumberOfFluidNodeIndicesAllFeatures() const {
+uint GridImp::getNumberOfFluidNodeIndicesAllFeatures() const
+{
     return (uint)this->fluidNodeIndicesAllFeatures.size();
 }
 
-void GridImp::getFluidNodeIndicesMacroVars(uint *_fluidNodeIndicesMacroVars) const
+void GridImp::getFluidNodeIndicesMacroVars(uint* fluidNodeIndicesMacroVars) const
 {
-    std::copy(fluidNodeIndicesMacroVars.begin(), fluidNodeIndicesMacroVars.end(), _fluidNodeIndicesMacroVars);
+    std::copy(this->fluidNodeIndicesMacroVars.begin(), this->fluidNodeIndicesMacroVars.end(), fluidNodeIndicesMacroVars);
 }
-void GridImp::getFluidNodeIndicesApplyBodyForce(uint *_fluidNodeIndicesApplyBodyForce) const
+void GridImp::getFluidNodeIndicesApplyBodyForce(uint* fluidNodeIndicesApplyBodyForce) const
 {
-    std::copy(fluidNodeIndicesApplyBodyForce.begin(), fluidNodeIndicesApplyBodyForce.end(), _fluidNodeIndicesApplyBodyForce);
+    std::copy(this->fluidNodeIndicesApplyBodyForce.begin(), this->fluidNodeIndicesApplyBodyForce.end(),
+              fluidNodeIndicesApplyBodyForce);
 }
-void GridImp::getFluidNodeIndicesAllFeatures(uint *_fluidNodeIndicesAllFeatures) const
+void GridImp::getFluidNodeIndicesAllFeatures(uint* fluidNodeIndicesAllFeatures) const
 {
-    std::copy(fluidNodeIndicesAllFeatures.begin(), fluidNodeIndicesAllFeatures.end(), _fluidNodeIndicesAllFeatures);
+    std::copy(this->fluidNodeIndicesAllFeatures.begin(), this->fluidNodeIndicesAllFeatures.end(),
+              fluidNodeIndicesAllFeatures);
 }
-
 
 std::vector<SideType> GridImp::getBCAlreadySet() {
     return this->bcAlreadySet;
@@ -2342,6 +2381,15 @@ std::vector<SideType> GridImp::getBCAlreadySet() {
 void GridImp::addBCalreadySet(SideType side)
 {
     this->bcAlreadySet.push_back(side);
+}
+
+std::vector<SideType> GridImp::getADBCAlreadySet() {
+    return this->adBCAlreadySet;
+}
+
+void GridImp::addADBCalreadySet(SideType side)
+{
+    this->adBCAlreadySet.push_back(side);
 }
 
 

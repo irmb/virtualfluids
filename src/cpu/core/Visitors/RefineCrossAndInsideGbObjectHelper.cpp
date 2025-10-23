@@ -88,7 +88,7 @@ void RefineCrossAndInsideGbObjectHelper::refine()
 
     std::vector<int> dirs;
 
-    for (int i = D3Q27System::FSTARTDIR; i <= D3Q27System::FENDDIR; i++) {
+    for (int i = d3q27_system::FSTARTDIR; i <= d3q27_system::FENDDIR; i++) {
         dirs.push_back(i);
     }
     SetInterpolationDirsBlockVisitor interDirsVisitor(dirs);

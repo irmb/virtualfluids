@@ -54,6 +54,8 @@
 #include "gpu/core/Samplers/Probe.h"
 #include "gpu/core/Cuda/CudaMemoryManager.h"
 
+using namespace vf::basics::constant;
+
 void run(const vf::basics::ConfigurationFile& config)
 {
     //////////////////////////////////////////////////////////////////////////
@@ -129,12 +131,13 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setViscosityLB(viscosityLB);
 
     para->setVelocityRatio(velocity / velocityLB);
+    para->setViscosityRatio(velocity / velocityLB * deltaX);
     para->setDensityRatio(1.0);
 
     para->setTimestepOut(timeStepOut);
     para->setTimestepEnd(timeStepEnd);
 
-    para->configureMainKernel(vf::collisionKernel::compressible::K17CompressibleNavierStokes);
+    para->configureMainKernel(vf::collision_kernel::compressible::K17CompressibleNavierStokes);
 
     //////////////////////////////////////////////////////////////////////////
     // set boundary conditions

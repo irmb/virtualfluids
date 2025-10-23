@@ -89,8 +89,8 @@ void ShearStressSimulationObserver::collectData(real step)
     int istep = int(step);
     addData();
 
-    // string partName = writer->writeNodesWithNodeData(path+ UbSystem::toString(gridRank)+ "_" +
-    // UbSystem::toString(istep),nodes,datanames,data); size_t found=partName.find_last_of("//"); string piece =
+    // string partName = writer->writeNodesWithNodeData(path+ ub_system::toString(gridRank)+ "_" +
+    // ub_system::toString(istep),nodes,datanames,data); size_t found=partName.find_last_of("//"); string piece =
     // partName.substr(found+1);
 
     // vector<string> cellDataNames;
@@ -100,7 +100,7 @@ void ShearStressSimulationObserver::collectData(real step)
     // if (comm->getProcessID() == comm->getRoot())
     //{
     //   string pname =
-    //   WbWriterVtkXmlASCII::getInstance()->writeParallelFile(path+"_"+UbSystem::toString(istep),pieces,datanames,cellDataNames);
+    //   WbWriterVtkXmlASCII::getInstance()->writeParallelFile(path+"_"+ub_system::toString(istep),pieces,datanames,cellDataNames);
 
     //   vector<string> filenames;
     //   filenames.push_back(pname);
@@ -116,10 +116,10 @@ void ShearStressSimulationObserver::collectData(real step)
     //}
 
     string pfilePath, partPath, subfolder, cfilePath;
-    subfolder = "shs" + UbSystem::toString(istep);
+    subfolder = "shs" + ub_system::toString(istep);
     pfilePath = path + "/shs/" + subfolder;
     cfilePath = path + "/shs/shs_collection";
-    partPath  = pfilePath + "/shs" + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep);
+    partPath  = pfilePath + "/shs" + ub_system::toString(gridRank) + "_" + ub_system::toString(istep);
 
     string partName = writer->writeNodesWithNodeData(partPath, nodes, datanames, data);
     size_t found    = partName.find_last_of("/");
@@ -158,7 +158,7 @@ void ShearStressSimulationObserver::clearData()
 void ShearStressSimulationObserver::calculateShearStress(real timeStep)
 {
     using namespace vf::lbm::dir;
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     using namespace vf::basics::constant;
 
     real f[27];
@@ -600,36 +600,36 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
 
     else {
         {
-            UB_THROW(UbException(UB_EXARGS, "there is no cell  ix1=" + UbSystem::toString(ix1) +
-                                                "ix2=" + UbSystem::toString(ix2) + "ix3=" + UbSystem::toString(ix3) +
-                                                "GlobalID=" + UbSystem::toString(block->getGlobalID()) +
-                                                "dx=" + UbSystem::toString(dx) +
-                                                "T=" + UbSystem::toString(bcPtr->getQ(d00P)) +
-                                                "B=" + UbSystem::toString(bcPtr->getQ(d00M)) +
-                                                "E=" + UbSystem::toString(bcPtr->getQ(dP00)) +
-                                                "W=" + UbSystem::toString(bcPtr->getQ(dM00)) +
-                                                "N=" + UbSystem::toString(bcPtr->getQ(d0P0)) +
-                                                "S=" + UbSystem::toString(bcPtr->getQ(d0M0)) +
-                                                "NE=" + UbSystem::toString(bcPtr->getQ(dPP0)) +
-                                                "SW=" + UbSystem::toString(bcPtr->getQ(dMM0)) +
-                                                "SE=" + UbSystem::toString(bcPtr->getQ(dPM0)) +
-                                                "NW=" + UbSystem::toString(bcPtr->getQ(dMP0)) +
-                                                "TE=" + UbSystem::toString(bcPtr->getQ(dP0P)) +
-                                                "BW=" + UbSystem::toString(bcPtr->getQ(dM0M)) +
-                                                "BE=" + UbSystem::toString(bcPtr->getQ(dP0M)) +
-                                                "TW=" + UbSystem::toString(bcPtr->getQ(dM0P)) +
-                                                "TN=" + UbSystem::toString(bcPtr->getQ(d0PP)) +
-                                                "BS=" + UbSystem::toString(bcPtr->getQ(d0MM)) +
-                                                "BN=" + UbSystem::toString(bcPtr->getQ(d0PM)) +
-                                                "TS=" + UbSystem::toString(bcPtr->getQ(d0MP)) +
-                                                "TNE=" + UbSystem::toString(bcPtr->getQ(dPPP)) +
-                                                "TNW=" + UbSystem::toString(bcPtr->getQ(dMPP)) +
-                                                "TSE=" + UbSystem::toString(bcPtr->getQ(dPMP)) +
-                                                "TSW=" + UbSystem::toString(bcPtr->getQ(dMMP)) +
-                                                "BNE=" + UbSystem::toString(bcPtr->getQ(dPPM)) +
-                                                "BNW=" + UbSystem::toString(bcPtr->getQ(dMPM)) +
-                                                "BSE=" + UbSystem::toString(bcPtr->getQ(dPMM)) +
-                                                "BSW=" + UbSystem::toString(bcPtr->getQ(dMMM) * dx)));
+            UB_THROW(UbException(UB_EXARGS, "there is no cell  ix1=" + ub_system::toString(ix1) +
+                                                "ix2=" + ub_system::toString(ix2) + "ix3=" + ub_system::toString(ix3) +
+                                                "GlobalID=" + ub_system::toString(block->getGlobalID()) +
+                                                "dx=" + ub_system::toString(dx) +
+                                                "T=" + ub_system::toString(bcPtr->getQ(d00P)) +
+                                                "B=" + ub_system::toString(bcPtr->getQ(d00M)) +
+                                                "E=" + ub_system::toString(bcPtr->getQ(dP00)) +
+                                                "W=" + ub_system::toString(bcPtr->getQ(dM00)) +
+                                                "N=" + ub_system::toString(bcPtr->getQ(d0P0)) +
+                                                "S=" + ub_system::toString(bcPtr->getQ(d0M0)) +
+                                                "NE=" + ub_system::toString(bcPtr->getQ(dPP0)) +
+                                                "SW=" + ub_system::toString(bcPtr->getQ(dMM0)) +
+                                                "SE=" + ub_system::toString(bcPtr->getQ(dPM0)) +
+                                                "NW=" + ub_system::toString(bcPtr->getQ(dMP0)) +
+                                                "TE=" + ub_system::toString(bcPtr->getQ(dP0P)) +
+                                                "BW=" + ub_system::toString(bcPtr->getQ(dM0M)) +
+                                                "BE=" + ub_system::toString(bcPtr->getQ(dP0M)) +
+                                                "TW=" + ub_system::toString(bcPtr->getQ(dM0P)) +
+                                                "TN=" + ub_system::toString(bcPtr->getQ(d0PP)) +
+                                                "BS=" + ub_system::toString(bcPtr->getQ(d0MM)) +
+                                                "BN=" + ub_system::toString(bcPtr->getQ(d0PM)) +
+                                                "TS=" + ub_system::toString(bcPtr->getQ(d0MP)) +
+                                                "TNE=" + ub_system::toString(bcPtr->getQ(dPPP)) +
+                                                "TNW=" + ub_system::toString(bcPtr->getQ(dMPP)) +
+                                                "TSE=" + ub_system::toString(bcPtr->getQ(dPMP)) +
+                                                "TSW=" + ub_system::toString(bcPtr->getQ(dMMP)) +
+                                                "BNE=" + ub_system::toString(bcPtr->getQ(dPPM)) +
+                                                "BNW=" + ub_system::toString(bcPtr->getQ(dMPM)) +
+                                                "BSE=" + ub_system::toString(bcPtr->getQ(dPMM)) +
+                                                "BSW=" + ub_system::toString(bcPtr->getQ(dMMM) * dx)));
         }
     }
 
@@ -637,7 +637,7 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
         for (int i = x; i <= x + 1; i++) {
             for (int j = y; j <= y + 1; j++) {
                 for (int k = z; k <= z + 1; k++) {
-                    Vector3D pointplane1 = grid->getNodeCoordinates(block, i, j, k);
+                    GbVector3D pointplane1 = grid->getNodeCoordinates(block, i, j, k);
 
                     real iph = pointplane1[0];
                     real jph = pointplane1[1];
@@ -646,7 +646,7 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
                     if (!bcArray->isSolid(i, j, k)) {
                         SPtr<BoundaryConditions> bcPtrIn = bcArray->getBC(i, j, k);
                         if (bcPtrIn) {
-                            for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+                            for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
                                 if (ii <= 2) {
                                     real q = bcPtrIn->getQ(fdir);
                                     if (q != 999.00000) {
@@ -827,35 +827,35 @@ void ShearStressSimulationObserver::findPlane(int ix1, int ix2, int ix3, SPtr<Gr
         {
             {
                 UB_THROW(UbException(
-                    UB_EXARGS, "ii is=" + UbSystem::toString(ii) + "  ix1=" + UbSystem::toString(ix1) +
-                                   " ix2=" + UbSystem::toString(ix2) + " ix3=" + UbSystem::toString(ix3) +
-                                   " Block3D::GlobalID=" + UbSystem::toString(block->getGlobalID()) + " dx=" +
-                                   UbSystem::toString(dx) + " T=" + UbSystem::toString(bcPtr->getQ(d00P)) +
-                                   " B=" + UbSystem::toString(bcPtr->getQ(d00M)) +
-                                   " E=" + UbSystem::toString(bcPtr->getQ(dP00)) +
-                                   " W=" + UbSystem::toString(bcPtr->getQ(dM00)) +
-                                   " N=" + UbSystem::toString(bcPtr->getQ(d0P0)) +
-                                   " S=" + UbSystem::toString(bcPtr->getQ(d0M0)) +
-                                   " NE=" + UbSystem::toString(bcPtr->getQ(dPP0)) +
-                                   " SW=" + UbSystem::toString(bcPtr->getQ(dMM0)) +
-                                   " SE=" + UbSystem::toString(bcPtr->getQ(dPM0)) +
-                                   " NW=" + UbSystem::toString(bcPtr->getQ(dMP0)) +
-                                   " TE=" + UbSystem::toString(bcPtr->getQ(dP0P)) +
-                                   " BW=" + UbSystem::toString(bcPtr->getQ(dM0M)) +
-                                   " BE=" + UbSystem::toString(bcPtr->getQ(dP0M)) +
-                                   " TW=" + UbSystem::toString(bcPtr->getQ(dM0P)) +
-                                   " TN=" + UbSystem::toString(bcPtr->getQ(d0PP)) +
-                                   " BS=" + UbSystem::toString(bcPtr->getQ(d0MM)) +
-                                   " BN=" + UbSystem::toString(bcPtr->getQ(d0PM)) +
-                                   " TS=" + UbSystem::toString(bcPtr->getQ(d0MP)) +
-                                   " TNE=" + UbSystem::toString(bcPtr->getQ(dPPP)) +
-                                   " TNW=" + UbSystem::toString(bcPtr->getQ(dMPP)) +
-                                   " TSE=" + UbSystem::toString(bcPtr->getQ(dPMP)) +
-                                   " TSW=" + UbSystem::toString(bcPtr->getQ(dMMP)) +
-                                   " BNE=" + UbSystem::toString(bcPtr->getQ(dPPM)) +
-                                   " BNW=" + UbSystem::toString(bcPtr->getQ(dMPM)) +
-                                   " BSE=" + UbSystem::toString(bcPtr->getQ(dPMM)) +
-                                   " BSW=" + UbSystem::toString(bcPtr->getQ(dMMM))));
+                    UB_EXARGS, "ii is=" + ub_system::toString(ii) + "  ix1=" + ub_system::toString(ix1) +
+                                   " ix2=" + ub_system::toString(ix2) + " ix3=" + ub_system::toString(ix3) +
+                                   " Block3D::GlobalID=" + ub_system::toString(block->getGlobalID()) + " dx=" +
+                                   ub_system::toString(dx) + " T=" + ub_system::toString(bcPtr->getQ(d00P)) +
+                                   " B=" + ub_system::toString(bcPtr->getQ(d00M)) +
+                                   " E=" + ub_system::toString(bcPtr->getQ(dP00)) +
+                                   " W=" + ub_system::toString(bcPtr->getQ(dM00)) +
+                                   " N=" + ub_system::toString(bcPtr->getQ(d0P0)) +
+                                   " S=" + ub_system::toString(bcPtr->getQ(d0M0)) +
+                                   " NE=" + ub_system::toString(bcPtr->getQ(dPP0)) +
+                                   " SW=" + ub_system::toString(bcPtr->getQ(dMM0)) +
+                                   " SE=" + ub_system::toString(bcPtr->getQ(dPM0)) +
+                                   " NW=" + ub_system::toString(bcPtr->getQ(dMP0)) +
+                                   " TE=" + ub_system::toString(bcPtr->getQ(dP0P)) +
+                                   " BW=" + ub_system::toString(bcPtr->getQ(dM0M)) +
+                                   " BE=" + ub_system::toString(bcPtr->getQ(dP0M)) +
+                                   " TW=" + ub_system::toString(bcPtr->getQ(dM0P)) +
+                                   " TN=" + ub_system::toString(bcPtr->getQ(d0PP)) +
+                                   " BS=" + ub_system::toString(bcPtr->getQ(d0MM)) +
+                                   " BN=" + ub_system::toString(bcPtr->getQ(d0PM)) +
+                                   " TS=" + ub_system::toString(bcPtr->getQ(d0MP)) +
+                                   " TNE=" + ub_system::toString(bcPtr->getQ(dPPP)) +
+                                   " TNW=" + ub_system::toString(bcPtr->getQ(dMPP)) +
+                                   " TSE=" + ub_system::toString(bcPtr->getQ(dPMP)) +
+                                   " TSW=" + ub_system::toString(bcPtr->getQ(dMMP)) +
+                                   " BNE=" + ub_system::toString(bcPtr->getQ(dPPM)) +
+                                   " BNW=" + ub_system::toString(bcPtr->getQ(dMPM)) +
+                                   " BSE=" + ub_system::toString(bcPtr->getQ(dPMM)) +
+                                   " BSW=" + ub_system::toString(bcPtr->getQ(dMMM))));
             }
         }
     }
@@ -950,13 +950,13 @@ void ShearStressSimulationObserver::initDistance()
                     //////get normal and distance//////
                     real A, B, C, D, ii = c0o1;
                     findPlane(ix1, ix2, ix3, grid, block, A, B, C, D, ii);
-                    Vector3D pointplane1 = grid->getNodeCoordinates(block, ix1, ix2, ix3);
+                    GbVector3D pointplane1 = grid->getNodeCoordinates(block, ix1, ix2, ix3);
                     real ix1ph         = pointplane1[0];
                     real ix2ph         = pointplane1[1];
                     real ix3ph         = pointplane1[2];
                     real normalDis;
                     if (ii != 3) {
-                        UB_THROW(UbException(UB_EXARGS, "not enough points to create plane" + UbSystem::toString(ii)));
+                        UB_THROW(UbException(UB_EXARGS, "not enough points to create plane" + ub_system::toString(ii)));
                     } else {
                         real s = A * ix1ph + B * ix2ph + C * ix3ph +
                                    D; // The sign of s = Ax + By + Cz + D determines which side the point (x,y,z) lies

@@ -15,5 +15,5 @@ The reviewer is responsible for checking the code changes in the merge request. 
 - The code changes are documented in the documentation (markdown pages)
 - The code changes are tested with unit tests (existing or new tests)
 - The code changes are tested with regression tests (existing or new tests)
-- The code changes fullfill our coding guidelines (see  <!-- DOXYGEN_MAKE_REF -->[Coding Guidelines](Coding-Guidelines.md))
+- The code changes fulfill our coding guidelines (see  <!-- DOXYGEN_MAKE_REF -->[Coding Guidelines](Coding-Guidelines.md))
     - e.g. the variable names are meaningful and the code is readable in general

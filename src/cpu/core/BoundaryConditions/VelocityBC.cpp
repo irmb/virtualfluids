@@ -100,11 +100,11 @@ VelocityBC::VelocityBC(const BCFunction &velBC, bool x1Dir, bool x2Dir, bool x3D
 /*==========================================================*/
 VelocityBC::VelocityBC(const BCFunction &velVx1BC, const BCFunction &velVx2BC, const BCFunction &velVx3BC)
 {
-    if (velVx1BC.getEndTime() != -Ub::inf)
+    if (velVx1BC.getEndTime() != -ub_math::inf)
         this->vx1BCs.push_back(velVx1BC);
-    if (velVx2BC.getEndTime() != -Ub::inf)
+    if (velVx2BC.getEndTime() != -ub_math::inf)
         this->vx2BCs.push_back(velVx2BC);
-    if (velVx3BC.getEndTime() != -Ub::inf)
+    if (velVx3BC.getEndTime() != -ub_math::inf)
         this->vx3BCs.push_back(velVx3BC);
     this->init();
 }
@@ -185,8 +185,8 @@ void VelocityBC::init()
 void VelocityBC::init(std::vector<BCFunction> &vxBCs)
 {
     for (size_t pos = 0; pos < vxBCs.size(); ++pos) {
-        if (!(UbMath::equal(BCFunction::INFCONST, vxBCs[pos].getEndTime()) &&
-              UbMath::greaterEqual(this->timeStep, vxBCs[pos].getStartTime()))) {
+        if (!(ub_math::equal(BCFunction::INFCONST, vxBCs[pos].getEndTime()) &&
+              ub_math::greaterEqual(this->timeStep, vxBCs[pos].getStartTime()))) {
             this->setTimeDependent();
         }
 
@@ -205,70 +205,70 @@ void VelocityBC::init(const D3Q27Interactor *const &interactor, const real &time
     this->tmpVx1Function = this->tmpVx2Function = this->tmpVx3Function = NULL;
 
     // aktuelle velocityfunction bestimmen
-    real maxEndtime = -Ub::inf;
+    real maxEndtime = -ub_math::inf;
 
     for (size_t pos = 0; pos < vx1BCs.size(); ++pos) {
-        if (UbMath::equal(vx1BCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
-            maxEndtime = Ub::inf;
-        maxEndtime = UbMath::max(maxEndtime, vx1BCs[pos].getStartTime(),
+        if (ub_math::equal(vx1BCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
+            maxEndtime = ub_math::inf;
+        maxEndtime = ub_math::max(maxEndtime, vx1BCs[pos].getStartTime(),
                                  vx1BCs[pos].getEndTime()); // startTime abfragen, da  INFCONST=-10
 
-        if (UbMath::greaterEqual(this->timeStep, vx1BCs[pos].getStartTime())) {
-            if (UbMath::lessEqual(this->timeStep, vx1BCs[pos].getEndTime()) ||
-                UbMath::equal(vx1BCs[pos].getEndTime(), (real)BCFunction::INFCONST) ||
-                UbMath::equal(vx1BCs[pos].getEndTime(), (real)BCFunction::INFTIMEDEPENDENT)) {
+        if (ub_math::greaterEqual(this->timeStep, vx1BCs[pos].getStartTime())) {
+            if (ub_math::lessEqual(this->timeStep, vx1BCs[pos].getEndTime()) ||
+                ub_math::equal(vx1BCs[pos].getEndTime(), (real)BCFunction::INFCONST) ||
+                ub_math::equal(vx1BCs[pos].getEndTime(), (real)BCFunction::INFTIMEDEPENDENT)) {
                 tmpVx1Function = &vx1BCs[pos].getFunction();
                 break;
             }
         }
     }
     for (size_t pos = 0; pos < vx2BCs.size(); ++pos) {
-        if (UbMath::equal(vx2BCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
-            maxEndtime = Ub::inf;
-        maxEndtime = UbMath::max(maxEndtime, vx2BCs[pos].getStartTime(),
+        if (ub_math::equal(vx2BCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
+            maxEndtime = ub_math::inf;
+        maxEndtime = ub_math::max(maxEndtime, vx2BCs[pos].getStartTime(),
                                  vx2BCs[pos].getEndTime()); // startTime abfragen, da  INFCONST=-10
 
-        if (UbMath::greaterEqual(this->timeStep, vx2BCs[pos].getStartTime())) {
-            if (UbMath::lessEqual(this->timeStep, vx2BCs[pos].getEndTime()) ||
-                UbMath::equal(vx2BCs[pos].getEndTime(), (real)BCFunction::INFCONST) ||
-                UbMath::equal(vx2BCs[pos].getEndTime(), (real)BCFunction::INFTIMEDEPENDENT)) {
+        if (ub_math::greaterEqual(this->timeStep, vx2BCs[pos].getStartTime())) {
+            if (ub_math::lessEqual(this->timeStep, vx2BCs[pos].getEndTime()) ||
+                ub_math::equal(vx2BCs[pos].getEndTime(), (real)BCFunction::INFCONST) ||
+                ub_math::equal(vx2BCs[pos].getEndTime(), (real)BCFunction::INFTIMEDEPENDENT)) {
                 tmpVx2Function = &vx2BCs[pos].getFunction();
                 break;
             }
         }
     }
     for (size_t pos = 0; pos < vx3BCs.size(); ++pos) {
-        if (UbMath::equal(vx3BCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
-            maxEndtime = Ub::inf;
-        maxEndtime = UbMath::max(maxEndtime, vx3BCs[pos].getStartTime(),
+        if (ub_math::equal(vx3BCs[pos].getEndTime(), BCFunction::INFTIMEDEPENDENT))
+            maxEndtime = ub_math::inf;
+        maxEndtime = ub_math::max(maxEndtime, vx3BCs[pos].getStartTime(),
                                  vx3BCs[pos].getEndTime()); // startTime abfragen, da  INFCONST=-10
 
-        if (UbMath::greaterEqual(this->timeStep, vx3BCs[pos].getStartTime())) {
-            if (UbMath::lessEqual(this->timeStep, vx3BCs[pos].getEndTime()) ||
-                UbMath::equal(vx3BCs[pos].getEndTime(), (real)BCFunction::INFCONST) ||
-                UbMath::equal(vx3BCs[pos].getEndTime(), (real)BCFunction::INFTIMEDEPENDENT)) {
+        if (ub_math::greaterEqual(this->timeStep, vx3BCs[pos].getStartTime())) {
+            if (ub_math::lessEqual(this->timeStep, vx3BCs[pos].getEndTime()) ||
+                ub_math::equal(vx3BCs[pos].getEndTime(), (real)BCFunction::INFCONST) ||
+                ub_math::equal(vx3BCs[pos].getEndTime(), (real)BCFunction::INFTIMEDEPENDENT)) {
                 tmpVx3Function = &vx3BCs[pos].getFunction();
                 break;
             }
         }
     }
 
-    if (UbMath::greaterEqual(time, maxEndtime)) {
+    if (ub_math::greaterEqual(time, maxEndtime)) {
         if (!this->isTimePeriodic())
             this->unsetTimeDependent();
         else // bei peridoic die interavalle neu setzen:
         {
-            if (UbMath::equal(maxEndtime, BCFunction::INFCONST))
+            if (ub_math::equal(maxEndtime, BCFunction::INFCONST))
                 for (size_t pos = 0; pos < vx1BCs.size(); ++pos) {
                     vx1BCs[pos].setStartTime(vx1BCs[pos].getStartTime() + timeStep);
                     vx1BCs[pos].setEndTime(vx1BCs[pos].getEndTime() + timeStep);
                 }
-            if (UbMath::equal(maxEndtime, BCFunction::INFCONST))
+            if (ub_math::equal(maxEndtime, BCFunction::INFCONST))
                 for (size_t pos = 0; pos < vx2BCs.size(); ++pos) {
                     vx2BCs[pos].setStartTime(vx2BCs[pos].getStartTime() + timeStep);
                     vx2BCs[pos].setEndTime(vx2BCs[pos].getEndTime() + timeStep);
                 }
-            if (UbMath::equal(maxEndtime, BCFunction::INFCONST))
+            if (ub_math::equal(maxEndtime, BCFunction::INFCONST))
                 for (size_t pos = 0; pos < vx3BCs.size(); ++pos) {
                     vx3BCs[pos].setStartTime(vx3BCs[pos].getStartTime() + timeStep);
                     vx3BCs[pos].setEndTime(vx3BCs[pos].getEndTime() + timeStep);
@@ -295,7 +295,7 @@ void VelocityBC::adaptBCForDirection(const D3Q27Interactor & /*interactor*/, SPt
                                             const real & /*worldX3*/, const real &q, const int &fdirection,
                                             const real & /*time*/)
 {
-    bc->setVelocityBoundaryFlag(D3Q27System::INVDIR[fdirection], secondaryBcOption);
+    bc->setVelocityBoundaryFlag(d3q27_system::INVDIR[fdirection], secondaryBcOption);
     bc->setQ((real)q, fdirection);
 }
 /*==========================================================*/

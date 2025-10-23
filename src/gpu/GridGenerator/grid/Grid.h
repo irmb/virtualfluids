@@ -183,6 +183,9 @@ public:
 
     virtual std::vector<SideType> getBCAlreadySet() = 0;
     virtual void addBCalreadySet(SideType side) = 0;
+    virtual std::vector<SideType> getADBCAlreadySet() = 0;
+    virtual void addADBCalreadySet(SideType side) = 0;
+
 
     // needed for CUDA Streams 
     virtual void findFluidNodeIndices(bool onlyBulk) = 0;
@@ -196,6 +199,7 @@ public:
     virtual void addFluidNodeIndicesMacroVars(std::vector<uint> _fluidNodeIndicesMacroVars) = 0;
     virtual void addFluidNodeIndicesApplyBodyForce(std::vector<uint> _fluidNodeIndicesApplyBodyForce) = 0;
     virtual void addFluidNodeIndicesAllFeatures(std::vector<uint> _fluidNodeIndicesAllFeatures) = 0;
+    virtual void addAllFluidNodeIndicesToAllFeatures() = 0;
     virtual void sortFluidNodeIndicesMacroVars() = 0;
     virtual void sortFluidNodeIndicesApplyBodyForce() = 0;
     virtual void sortFluidNodeIndicesAllFeatures() = 0;

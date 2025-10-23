@@ -29,23 +29,24 @@ r"""
 
 =======================================================================================
 """
-#%%
+
+# %%
 import numpy as np
 from pathlib import Path
 from mpi4py import MPI
 from pyfluids import basics, gpu, logger, parallel
-#%%
+
+# %%
 sim_name = "ABL"
-config_file = Path(__file__).parent/"configBoundaryLayer.txt"
-output_path = Path(__file__).parent/Path("output")
+config_file = Path(__file__).parent / "configBoundaryLayer.cfg"
+output_path = Path(__file__).parent / Path("output")
 output_path.mkdir(exist_ok=True)
 
 
-#%%
+# %%
 logger.Logger.initialize_logger()
 
-#%%
-grid_builder = gpu.grid_generator.MultipleGridBuilder()
+# %%
 communicator = parallel.MPICommunicator.get_instance()
 
 config = basics.ConfigurationFile()
@@ -57,144 +58,190 @@ bc_factory = gpu.BoundaryConditionFactory()
 grid_scaling_factory = gpu.GridScalingFactory()
 grid_scaling_factory.set_scaling_factory(gpu.GridScaling.ScaleCompressible)
 
-#%%
+# %%
 boundary_layer_height = config.get_float_value("boundaryLayerHeight", 1000)
 z0 = config.get_float_value("z0", 0.1)
 u_star = config.get_float_value("u_star", 0.4)
 
-kappa = config.get_float_value("vonKarmanConstant", 0.4) # von Karman constant
+von_karman_constant = config.get_float_value("vonKarmanConstant", 0.4)  # von Karman constant
 
 viscosity = config.get_float_value("viscosity", 1.56e-5)
 
-velocity  = 0.5*u_star/kappa*np.log(boundary_layer_height/z0+1) #0.5 times max mean velocity at the top in m/s
+velocity = (
+    0.5 * u_star / von_karman_constant * np.log(boundary_layer_height / z0)
+)  # 0.5 times max mean velocity at the top in m/s
 
 mach = config.get_float_value("Ma", 0.1)
 nodes_per_height = config.get_uint_value("nz", 64)
 
 
-
-write_precursor = config.get_bool_value("_p", False)
+write_precursor = config.get_bool_value("writePrecursor", False)
 read_precursor = config.get_bool_value("readPrecursor", False)
 
-if write_precursor:
-    nTWritePrecursor      = config.get_int_value("nTimestepsWritePrecursor")
-    t_start_precursor      = config.get_float_value("tStartPrecursor")
-    pos_x_precursor        = config.get_float_value("posXPrecursor")
-
-if read_precursor:
-    nTReadPrecursor = config.get_int_value("nTimestepsReadPrecursor")
-
-if write_precursor or read_precursor:
-    use_distributions = config.get_bool_value("useDistributions", False)
-    precursor_directory = config.get_string_value("precursorDirectory")
-
 # all in s
-t_start_out   = config.get_float_value("tStartOut")
-t_out        = config.get_float_value("tOut")
-t_end        = config.get_float_value("tEnd") # total time of simulation
+t_start_out = config.get_float_value("tStartOut")
+t_out = config.get_float_value("tOut")
+t_end = config.get_float_value("tEnd")  # total time of simulation
 
-t_start_averaging     =  config.get_float_value("tStartAveraging")
-t_start_tmp_averaging  =  config.get_float_value("tStartTmpAveraging")
-t_averaging          =  config.get_float_value("tAveraging")
-t_start_out_probe      =  config.get_float_value("tStartOutProbe")
-t_out_probe           =  config.get_float_value("tOutProbe")
+t_start_averaging = config.get_float_value("tStartAveraging")
+t_start_tmp_averaging = config.get_float_value("tStartTmpAveraging")
+t_averaging = config.get_float_value("tAveraging")
+t_start_out_probe = config.get_float_value("tStartOutProbe")
+t_out_probe = config.get_float_value("tOutProbe")
 
-#%%
-length = np.array([6,4,1])*boundary_layer_height
-dx = boundary_layer_height/nodes_per_height
+# %%
+length = np.array([6, 4, 1]) * boundary_layer_height
+dx = boundary_layer_height / nodes_per_height
 dt = dx * mach / (np.sqrt(3) * velocity)
-velocity_LB = velocity * dt / dx # LB units
-viscosity_LB = viscosity * dt / (dx * dx) # LB units
+velocity_LB = velocity * dt / dx  # LB units
+viscosity_LB = viscosity * dt / (dx * dx)  # LB units
 pressure_gradient = u_star * u_star / boundary_layer_height
-pressure_gradient_LB = pressure_gradient * (dt*dt)/dx
+pressure_gradient_LB = pressure_gradient * (dt * dt) / dx
 
 logger.vf_log_info(f"velocity  [dx/dt] = {velocity_LB}")
 logger.vf_log_info(f"dt   = {dt}")
 logger.vf_log_info(f"dx   = {dx}")
-logger.vf_log_info(f"viscosity [10^8 dx^2/dt] = {viscosity_LB*1e8}")
-logger.vf_log_info(f"u* /(dx/dt) = {u_star*dt/dx}")
+logger.vf_log_info(f"viscosity [10^8 dx^2/dt] = {viscosity_LB * 1e8}")
+logger.vf_log_info(f"u* /(dx/dt) = {u_star * dt / dx}")
 logger.vf_log_info(f"dpdx  = {pressure_gradient}")
 logger.vf_log_info(f"dpdx /(dx/dt^2) = {pressure_gradient_LB}")
 
-#%%
-
-#%%
+# %%
 para.set_output_prefix(sim_name)
 para.set_print_files(True)
 
 para.set_forcing(pressure_gradient_LB, 0, 0)
 para.set_velocity_LB(velocity_LB)
-para.set_viscosity_LB(viscosity_LB)    
-para.set_velocity_ratio(dx/dt)
-para.set_viscosity_ratio(dx*dx/dt)
+para.set_viscosity_LB(viscosity_LB)
+para.set_velocity_ratio(dx / dt)
+para.set_viscosity_ratio(dx * dx / dt)
 para.set_density_ratio(1.0)
 
 para.configure_main_kernel(gpu.kernel.compressible.K17CompressibleNavierStokes)
 
-para.set_timestep_start_out(int(t_start_out/dt))
-para.set_timestep_out(int(t_out/dt))
-para.set_timestep_end(int(t_end/dt))
+para.set_timestep_start_out(int(t_start_out / dt))
+para.set_timestep_out(int(t_out / dt))
+para.set_timestep_end(int(t_end / dt))
 para.set_is_body_force(config.get_bool_value("bodyForce"))
-para.set_devices(np.arange(10))
-para.set_max_dev(communicator.get_number_of_processes())
-#%%
+# %%
 tm_factory = gpu.TurbulenceModelFactory(para)
 tm_factory.read_config_file(config)
-#%%
-grid_builder.add_coarse_grid(0.0, 0.0, 0.0, *length, dx)
+# %%
+grid_dimesions = gpu.grid_generator.GridDimensions(0, length[0], 0, length[1], 0, length[2], dx)
+grid_builder = gpu.grid_generator.MultipleGridBuilderFacade(grid_dimesions)
 grid_builder.set_periodic_boundary_condition(not read_precursor, True, False)
-grid_builder.build_grids(False)
+grid_builder.create_grids(communicator.get_process_id())
 
 sampling_offset = 2
 if read_precursor:
-    precursor = gpu.create_file_collection(precursor_directory + "/precursor", gpu.FileType.VTK)
+    precursor_directory = config.get_string_value("precursorDirectory")
+    nTReadPrecursor = config.get_int_value("nTimestepsReadPrecursor")
+
+    precursor = gpu.create_file_collection(precursor_directory, "precursor", gpu.TransientBCFileType.VTK)
     grid_builder.set_precursor_boundary_condition(gpu.SideType.MX, precursor, nTReadPrecursor, 0, 0, 0)
 
-grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, z0, dx)
-para.set_has_wall_model_monitor(True)
+grid_builder.set_stress_boundary_condition(gpu.SideType.MZ, 0, 0, 1, sampling_offset, von_karman_constant, z0, dx)
 grid_builder.set_slip_boundary_condition(gpu.SideType.PZ, 0, 0, -1)
 
 if read_precursor:
     grid_builder.set_pressure_boundary_condition(gpu.SideType.PX, 0)
     bc_factory.set_pressure_boundary_condition(gpu.PressureBC.OutflowNonReflective)
-    bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.DistributionsPrecursor if use_distributions else gpu.PrecursorBC.VelocityPrecursor)
+    bc_factory.set_precursor_boundary_condition(gpu.PrecursorBC.PrecursorDistributions)
 
-bc_factory.set_stress_boundary_condition(gpu.StressBC.StressBounceBackPressureCompressible)
-bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipCompressible) 
-para.set_outflow_pressure_correction_factor(0.0); 
-#%%
-para.set_initial_condition_perturbed_log_law(u_star, z0, length[0], length[2], boundary_layer_height, dx/dx)
+bc_factory.set_stress_boundary_condition(gpu.StressBC.StressBounceBackCompressible)
+bc_factory.set_slip_boundary_condition(gpu.SlipBC.SlipCompressible)
+para.set_outflow_pressure_correction_factor(0.0)
+# %%
+para.set_initial_condition_perturbed_log_law(u_star, z0, length[0], length[2], boundary_layer_height, dx / dt)
 cuda_memory_manager = gpu.CudaMemoryManager(para)
 
-#%%
-planar_average_probe = gpu.probes.PlanarAverageProbe(para, cuda_memory_manager, "horizontalPlanes", para.get_output_path(), 0, int(t_start_tmp_averaging/dt), int(t_averaging/dt) , int(t_start_out_probe/dt), int(t_out_probe/dt), 'z')
+# %%
+planar_average_probe = gpu.probes.planar_average_probe.PlanarAverageProbe(
+    para,
+    cuda_memory_manager,
+    para.get_output_path(),
+    "horizontalPlanes",
+    0,
+    int(t_start_tmp_averaging / dt),
+    int(t_averaging / dt),
+    int(t_start_out_probe / dt),
+    int(t_out_probe / dt),
+    basics.geometry3d.Axis.z,
+    True,
+    False,
+)
 planar_average_probe.add_all_available_statistics()
 planar_average_probe.set_file_name_to_n_out()
 para.add_sampler(planar_average_probe)
-#%%
-wall_model_probe = gpu.probes.WallModelProbe(para, cuda_memory_manager, "wallModelProbe", para.get_output_path(), 0, int(t_start_tmp_averaging/dt), int(t_averaging/dt/4), int(t_start_out_probe/dt), int(t_out_probe/dt))
-wall_model_probe.add_all_available_statistics()
-wall_model_probe.set_file_name_to_n_out()
-wall_model_probe.set_force_output_to_stress(True)
-if para.get_is_body_force():
-    wall_model_probe.set_evaluate_pressure_gradient(True)
+# %%
+wall_model_probe = gpu.probes.wall_model_probe.WallModelProbe(
+    para,
+    cuda_memory_manager,
+    para.get_output_path(),
+    "wallModelProbe",
+    0,
+    int(t_start_tmp_averaging / dt),
+    int(t_averaging / dt / 4),
+    int(t_start_out_probe / dt),
+    int(t_out_probe / dt),
+    False,
+    True,
+    True,
+    para.get_is_body_force(),
+    False,
+)
 para.add_sampler(wall_model_probe)
 
-plane_locs = [100,]
-if read_precursor: plane_locs.extend([1000, 1500, 2000, 2500, 0])
+plane_locs = [
+    100,
+]
+if read_precursor:
+    plane_locs.extend([1000, 1500, 2000, 2500, 0])
 
 for n_probe, probe_pos in enumerate(plane_locs):
-    plane_probe = gpu.probes.PlaneProbe(para, cuda_memory_manager, f"planeProbe_{n_probe+1}", para.get_output_path(), int(t_start_averaging/dt), 10, int(t_start_out_probe/dt), int(t_out_probe/dt))
+    plane_probe = gpu.probes.probe.Probe(
+        para,
+        cuda_memory_manager,
+        para.get_output_path(),
+        f"planeProbe_{n_probe + 1}",
+        int(t_start_averaging / dt),
+        10,
+        int(t_start_out_probe / dt),
+        int(t_out_probe / dt),
+        False,
+        False,
+    )
     plane_probe.set_probe_plane(probe_pos, 0, 0, dx, length[1], length[2])
     plane_probe.add_all_available_statistics()
     para.add_sampler(plane_probe)
 
 if write_precursor:
-    precursor_writer = gpu.PrecursorWriter(para, cuda_memory_manager, "precursor", para.get_output_path() + precursor_directory, pos_x_precursor, 0,length[1], 0, length[2], t_start_precursor/dt, nTWritePrecursor, gpu.OutputVariable.Distributions if use_distributions else gpu.OutputVariable.Velocities)
-    para.add_sampler(precursor_writer)
+    nTWritePrecursor = config.get_int_value("nTimestepsWritePrecursor")
+    t_start_precursor = config.get_float_value("tStartPrecursor")
+    pos_x_precursor = config.get_float_value("posXPrecursor")
+    precursor_directory = config.get_string_value("precursorDirectory")
 
-#%%
-sim = gpu.Simulation(para, grid_builder, bc_factory, tm_factory, grid_scaling_factory)
-#%%
-sim.run()
+    precursor_writer = gpu.PrecursorWriter(
+        para,
+        cuda_memory_manager,
+        para.get_output_path() + precursor_directory,
+        "precursor",
+        pos_x_precursor,
+        0,
+        length[1],
+        0,
+        length[2],
+        int(t_start_precursor / dt),
+        nTWritePrecursor,
+        gpu.OutputVariable.Distributions,
+        10000,
+    )
+    para.add_sampler(precursor_writer)
+# %%
+sim = gpu.Simulation(para, grid_builder.get_grid_builder(), bc_factory, tm_factory, grid_scaling_factory)
+# %%
+sim.init_timers()
+for t in range(1, para.get_timestep_end() + 1):
+    sim.calculate_timestep(t)
+sim.finalize()
 MPI.Finalize()

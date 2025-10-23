@@ -66,7 +66,7 @@ vf::gpu::GPUCollisionParameter getCollisionParameter(const std::shared_ptr<Param
                                                         para->getParD(level)->velocityX,
                                                         para->getParD(level)->velocityY,
                                                         para->getParD(level)->velocityZ,
-                                                        para->getParD(level)->turbViscosity,
+                                                        para->getParD(level)->turbulentViscosity,
                                                         para->getSGSConstant(),
                                                         (int)para->getParD(level)->numberOfNodes,
                                                         vf::gpu::getForceFactor(level),
@@ -105,37 +105,26 @@ void K17CompressibleNavierStokes<turbulenceModel>::runOnIndices(const unsigned i
                                                                 CudaStreamIndex streamIndex)
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
+    vf::cuda::CudaGrid cudaGrid(para->getParD(level)->numberofthreads, size_indices);
 
     auto collision = [] __device__(vf::lbm::CollisionParameter& parameter, vf::lbm::MacroscopicValues& macroscopicValues, vf::lbm::TurbulentViscosity& turbulentViscosity) {
         return vf::lbm::runK17CompressibleNavierStokes<turbulenceModel>(parameter, macroscopicValues, turbulentViscosity);
     };
-
+    vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
     switch (collisionTemplate) {
-        case CollisionTemplate::Default: {
-            vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
+        case CollisionTemplate::Default:
             vf::gpu::runCollision<decltype(collision), turbulenceModel, false, false><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
-
             break;
-        }
-        case CollisionTemplate::WriteMacroVars: {
-            vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
+        case CollisionTemplate::WriteMacroVars:
             vf::gpu::runCollision<decltype(collision), turbulenceModel, true, false><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
-
             break;
-        }
         case CollisionTemplate::SubDomainBorder:
-        case CollisionTemplate::AllFeatures: {
-            vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
+        case CollisionTemplate::AllFeatures:
             vf::gpu::runCollision<decltype(collision), turbulenceModel, true, true><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
-
             break;
-        }
-        case CollisionTemplate::ApplyBodyForce: {
-            vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
+        case CollisionTemplate::ApplyBodyForce:
             vf::gpu::runCollision<decltype(collision), turbulenceModel, false, true><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
-
             break;
-        }
         default:
             throw std::runtime_error("Invalid CollisionTemplate in CumulantK17::runOnIndices()");
             break;
@@ -145,17 +134,21 @@ void K17CompressibleNavierStokes<turbulenceModel>::runOnIndices(const unsigned i
 }
 
 template <vf::lbm::TurbulenceModel turbulenceModel>
-K17CompressibleNavierStokes<turbulenceModel>::K17CompressibleNavierStokes(std::shared_ptr<Parameter> para, int level) : KernelImp(para, level)
+K17CompressibleNavierStokes<turbulenceModel>::K17CompressibleNavierStokes(std::shared_ptr<Parameter> para, int level)
+    : KernelImp(para, level,
+                /*recommended limit for viscosity*/ 0.001,
+                /*hard limit for viscosity (from DOI:10.1016/j.jcp.2017.05.040)*/ 1. / 42)
 {
     myPreProcessorTypes.push_back(InitNavierStokesCompressible);
 
     this->cudaGrid = vf::cuda::CudaGrid(para->getParD(level)->numberofthreads, para->getParD(level)->numberOfNodes);
     this->kernelUsesFluidNodeIndices = true;
 
-    VF_LOG_INFO("Using turbulence model: {}", turbulenceModel);
+    VF_LOG_INFO("Using turbulence model: {}", static_cast<int>(turbulenceModel));
 }
 
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::AMD>;
+template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::AMDStratified>;
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::Smagorinsky>;
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::QR>;
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::None>;

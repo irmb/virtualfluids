@@ -89,7 +89,7 @@ void DecreaseViscositySimulationObserver::setViscosity(real step)
             for (SPtr<Block3D> block : blockVector) {
                 SPtr<LBMKernel> kernel = block->getKernel();
                 if (kernel) {
-                    real collFactor = LBMSystem::calcCollisionFactor(nue, block->getLevel());
+                    real collFactor = lbm_system::calcCollisionFactor(nue, block->getLevel());
                     kernel->setCollisionFactor(collFactor);
                 }
             }

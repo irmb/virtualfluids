@@ -154,14 +154,14 @@ GbPoint3D *GbLine3D::calculateIntersectionPoint3D(GbLine3D * /*line*/)
 /*======================================================================*/
 GbLine3D *GbLine3D::createClippedLine3D(GbCuboid3D *cuboid)
 {
-    return GbSystem3D::createClipLine3D(*this->p1, *this->p2, cuboid->getPoint1()->x1, cuboid->getPoint1()->x2,
+    return gb_system_3d::createClipLine3D(*this->p1, *this->p2, cuboid->getPoint1()->x1, cuboid->getPoint1()->x2,
                                         cuboid->getPoint1()->x3, cuboid->getPoint2()->x1, cuboid->getPoint2()->x2,
                                         cuboid->getPoint2()->x3);
 }
 /*======================================================================*/
 GbLine3D *GbLine3D::createClippedLine3D(GbPoint3D *pA, GbPoint3D *pE)
 {
-    return GbSystem3D::createClipLine3D(*this->p1, *this->p2, pA->x1, pA->x2, pA->x3, pE->x1, pE->x2, pE->x3);
+    return gb_system_3d::createClipLine3D(*this->p1, *this->p2, pA->x1, pA->x2, pA->x3, pE->x1, pE->x2, pE->x3);
 }
 /*======================================================================*/
 double GbLine3D::getDistance(const GbPoint3D &point) { return this->getDistance(point.x1, point.x2, point.x3); }

@@ -48,6 +48,8 @@
 #include "geometries/BoundingBox/BoundingBox.h"
 #include "utilities/communication.h"
 
+using namespace testing;
+
 // This test is commented out because it causes a compiler error in Clang 10 --> The bug is fixed in Clang 14 (https://github.com/google/googletest/issues/2271)
 
 // class FieldDouble : public Field
@@ -863,7 +865,7 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, PX)
 
     gridBuilder->buildGrids();
     auto grid = gridBuilder->getGrid(0);
-    grid->findCommunicationIndices(CommunicationDirections::PX, subdomain, direction!=6);
+    grid->findCommunicationIndices(communication_directions::PX, subdomain, direction!=6);
     uint nodeIndex=0;
     for(uint iz=1; iz<grid->getNumberOfNodesZ()-1; iz++){
     for(uint iy=1; iy<grid->getNumberOfNodesY()-1; iy++){
@@ -873,12 +875,12 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, PX)
             y = wrap(y+shift, (ny+2)*dx);
         if(direction==1)
             z = wrap(z+shift, (nz+2)*dx);
-        compareNodeToCoordinates(grid, grid->getSendIndex(CommunicationDirections::PX, nodeIndex), x, y, z, "Send");
-        compareNodeToCoordinates(grid, grid->getReceiveIndex(CommunicationDirections::PX, nodeIndex), x+dx, y, z, "Receive");
+        compareNodeToCoordinates(grid, grid->getSendIndex(communication_directions::PX, nodeIndex), x, y, z, "Send");
+        compareNodeToCoordinates(grid, grid->getReceiveIndex(communication_directions::PX, nodeIndex), x+dx, y, z, "Receive");
         nodeIndex++;
     }}; 
-    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(CommunicationDirections::PX));
-    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(CommunicationDirections::PX));
+    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(communication_directions::PX));
+    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(communication_directions::PX));
 }
 
 TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, MX)
@@ -896,7 +898,7 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, MX)
     }
     gridBuilder->buildGrids();
     auto grid = gridBuilder->getGrid(0);
-    grid->findCommunicationIndices(CommunicationDirections::MX, subdomain, direction!=6);
+    grid->findCommunicationIndices(communication_directions::MX, subdomain, direction!=6);
     uint nodeIndex=0;
     for(uint iz=1; iz<grid->getNumberOfNodesZ()-1; iz++){
     for(uint iy=1; iy<grid->getNumberOfNodesY()-1; iy++){
@@ -906,12 +908,12 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, MX)
             y = wrap(y-shift, (ny+2)*dx);
         if(direction==1)
             z = wrap(z-shift, (nz+2)*dx);
-        compareNodeToCoordinates(grid, grid->getSendIndex(CommunicationDirections::MX, nodeIndex), x, y, z, "Send");
-        compareNodeToCoordinates(grid, grid->getReceiveIndex(CommunicationDirections::MX, nodeIndex), x-dx, y, z, "Receive");
+        compareNodeToCoordinates(grid, grid->getSendIndex(communication_directions::MX, nodeIndex), x, y, z, "Send");
+        compareNodeToCoordinates(grid, grid->getReceiveIndex(communication_directions::MX, nodeIndex), x-dx, y, z, "Receive");
         nodeIndex++;
     }};
-    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(CommunicationDirections::MX));
-    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(CommunicationDirections::MX));
+    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(communication_directions::MX));
+    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(communication_directions::MX));
 }
 
 TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, PY)
@@ -931,7 +933,7 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, PY)
 
     gridBuilder->buildGrids();
     auto grid = gridBuilder->getGrid(0);
-    grid->findCommunicationIndices(CommunicationDirections::PY, subdomain, direction!=6);
+    grid->findCommunicationIndices(communication_directions::PY, subdomain, direction!=6);
     uint nodeIndex=0;
     for(uint iz=1; iz<grid->getNumberOfNodesZ()-1; iz++){
     for(uint ix=1; ix<grid->getNumberOfNodesX()-1; ix++){
@@ -941,12 +943,12 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, PY)
             x = wrap(x+shift, (nx+2)*dx);
         if(direction==3)
             z = wrap(z+shift, (nz+2)*dx);
-        compareNodeToCoordinates(grid, grid->getSendIndex(CommunicationDirections::PY, nodeIndex), x, y, z, "Send");
-        compareNodeToCoordinates(grid, grid->getReceiveIndex(CommunicationDirections::PY, nodeIndex), x, y+dx, z, "Receive");
+        compareNodeToCoordinates(grid, grid->getSendIndex(communication_directions::PY, nodeIndex), x, y, z, "Send");
+        compareNodeToCoordinates(grid, grid->getReceiveIndex(communication_directions::PY, nodeIndex), x, y+dx, z, "Receive");
         nodeIndex++;
     }}; 
-    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(CommunicationDirections::PY));
-    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(CommunicationDirections::PY));
+    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(communication_directions::PY));
+    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(communication_directions::PY));
 }
 
 TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, MY)
@@ -964,7 +966,7 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, MY)
     }
     gridBuilder->buildGrids();
     auto grid = gridBuilder->getGrid(0);
-    grid->findCommunicationIndices(CommunicationDirections::MY, subdomain, direction!=6);
+    grid->findCommunicationIndices(communication_directions::MY, subdomain, direction!=6);
     uint nodeIndex=0;
     for(uint iz=1; iz<grid->getNumberOfNodesZ()-1; iz++){
     for(uint ix=1; ix<grid->getNumberOfNodesX()-1; ix++){
@@ -974,12 +976,12 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, MY)
             x = wrap(x-shift, (nx+2)*dx);
         if(direction==3)
             z = wrap(z-shift, (nz+2)*dx);
-        compareNodeToCoordinates(grid, grid->getSendIndex(CommunicationDirections::MY, nodeIndex), x, y, z, "Send");
-        compareNodeToCoordinates(grid, grid->getReceiveIndex(CommunicationDirections::MY, nodeIndex), x, y-dx, z, "Receive");
+        compareNodeToCoordinates(grid, grid->getSendIndex(communication_directions::MY, nodeIndex), x, y, z, "Send");
+        compareNodeToCoordinates(grid, grid->getReceiveIndex(communication_directions::MY, nodeIndex), x, y-dx, z, "Receive");
         nodeIndex++;
     }};
-    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(CommunicationDirections::MY));
-    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(CommunicationDirections::MY));
+    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(communication_directions::MY));
+    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(communication_directions::MY));
 }
 
 TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, PZ)
@@ -999,7 +1001,7 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, PZ)
 
     gridBuilder->buildGrids();
     auto grid = gridBuilder->getGrid(0);
-    grid->findCommunicationIndices(CommunicationDirections::PZ, subdomain, direction!=6);
+    grid->findCommunicationIndices(communication_directions::PZ, subdomain, direction!=6);
     uint nodeIndex=0;
     for(uint iy=1; iy<grid->getNumberOfNodesY()-1; iy++){
     for(uint ix=1; ix<grid->getNumberOfNodesX()-1; ix++){
@@ -1009,12 +1011,12 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, PZ)
             x = wrap(x+shift, (nx+2)*dx);
         if(direction==5)
             y = wrap(y+shift, (ny+2)*dx);
-        compareNodeToCoordinates(grid, grid->getSendIndex(CommunicationDirections::PZ, nodeIndex), x, y, z, "Send");
-        compareNodeToCoordinates(grid, grid->getReceiveIndex(CommunicationDirections::PZ, nodeIndex), x, y, z+dx, "Receive");
+        compareNodeToCoordinates(grid, grid->getSendIndex(communication_directions::PZ, nodeIndex), x, y, z, "Send");
+        compareNodeToCoordinates(grid, grid->getReceiveIndex(communication_directions::PZ, nodeIndex), x, y, z+dx, "Receive");
         nodeIndex++;
     }}; 
-    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(CommunicationDirections::PZ));
-    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(CommunicationDirections::PZ));
+    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(communication_directions::PZ));
+    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(communication_directions::PZ));
 }
 
 TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, MZ)
@@ -1032,23 +1034,178 @@ TEST_P(PeriodicBoundaryShiftMultiGPUIntegrationTest, MZ)
     }
     gridBuilder->buildGrids();
     auto grid = gridBuilder->getGrid(0);
-    grid->findCommunicationIndices(CommunicationDirections::MZ, subdomain, direction!=6);
+    grid->findCommunicationIndices(communication_directions::MZ, subdomain, direction!=6);
     uint nodeIndex=0;
-    for(uint iy=1; iy<grid->getNumberOfNodesY()-1; iy++){
-    for(uint ix=1; ix<grid->getNumberOfNodesX()-1; ix++){
+    for (uint iy = 1; iy < grid->getNumberOfNodesY() - 1; iy++) {
+        for (uint ix = 1; ix < grid->getNumberOfNodesX() - 1; ix++) {
         real x, y, z;
         grid->transIndexToCoords(getIndex(grid, ix, iy, 2), x, y, z);
-        if(direction==4)
-            x = wrap(x-shift, (nx+2)*dx);
-        if(direction==5)
-            y = wrap(y-shift, (ny+2)*dx);
-        compareNodeToCoordinates(grid, grid->getSendIndex(CommunicationDirections::MZ, nodeIndex), x, y, z, "Send");
-        compareNodeToCoordinates(grid, grid->getReceiveIndex(CommunicationDirections::MZ, nodeIndex), x, y, z-dx, "Receive");
+        if (direction == 4)
+            x = wrap(x - shift, (nx + 2) * dx);
+        if (direction == 5)
+            y = wrap(y - shift, (ny + 2) * dx);
+        compareNodeToCoordinates(grid, grid->getSendIndex(communication_directions::MZ, nodeIndex), x, y, z, "Send");
+        compareNodeToCoordinates(grid, grid->getReceiveIndex(communication_directions::MZ, nodeIndex), x, y, z - dx,
+                                 "Receive");
         nodeIndex++;
-    }};
-    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(CommunicationDirections::MZ));
-    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(CommunicationDirections::MZ));
+        }
+    };
+    EXPECT_EQ(nodeIndex, grid->getNumberOfSendNodes(communication_directions::MZ));
+    EXPECT_EQ(nodeIndex, grid->getNumberOfReceiveNodes(communication_directions::MZ));
 }
-INSTANTIATE_TEST_SUITE_P(PeriodicBoundaryShiftMultiGPUIntegration, PeriodicBoundaryShiftMultiGPUIntegrationTest, testing::Combine(testing::Values(5), testing::Range(0,7)));
+INSTANTIATE_TEST_SUITE_P(PeriodicBoundaryShiftMultiGPUIntegration, PeriodicBoundaryShiftMultiGPUIntegrationTest,
+                         testing::Combine(testing::Values(5), testing::Range(0, 7)));
+
+namespace
+{
+
+void logForFindCommunicationIndexData(real coordinate, real coordinateLimit,
+                                      communication_directions::CommunicationDirection direction, real delta)
+{
+    VF_LOG_INFO("coordinate = {},\tcoordinateLimit = {},\tdirection = {} (isPositive: {}),\tdelta = {}", coordinate, coordinateLimit,
+                static_cast<int>(direction), communication_directions::isPositive(direction), delta);
+}
+
+TEST(GridImpTest, findCommunicationIndex_MX)
+{
+    real minCoordinate = 10;
+    real maxCoordinate = 20;
+    real delta = 1.5;
+    auto sut = GridImp::makeShared(nullptr, minCoordinate, minCoordinate, minCoordinate, maxCoordinate, maxCoordinate,
+                                   maxCoordinate, delta, "D3Q27", 0);
+    auto direction = communication_directions::MX;
+    auto index = 42;
+
+    // send
+    real coordinate = minCoordinate + 0.39 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    auto result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate + 0.5 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(1)) << "Send index should be added";
+    EXPECT_THAT(result.sendIndices.at(0), Eq(index));
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No receive index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate + 0.61 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    // receive
+
+    coordinate = minCoordinate - 0.39 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate - 0.5 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.receiveIndices.size(), Eq(1)) << "Receive index should be added";
+    EXPECT_THAT(result.receiveIndices.at(0), Eq(index));
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No send index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate - 0.61 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+}
+
+TEST(GridImpTest, findCommunicationIndex_PX)
+{
+    real minCoordinate = -10;
+    real maxCoordinate = -20;
+    real delta = 1.5;
+    auto sut = GridImp::makeShared(nullptr, minCoordinate, minCoordinate, minCoordinate, maxCoordinate, maxCoordinate,
+                                   maxCoordinate, delta, "D3Q27", 0);
+    auto direction = communication_directions::PX;
+    auto index = 42;
+
+    // send
+    real coordinate = minCoordinate + 0.39 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    auto result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate + 0.5 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.receiveIndices.size(), Eq(1)) << "Receive index should be added";
+    EXPECT_THAT(result.receiveIndices.at(0), Eq(index));
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No send index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate + 0.61 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    // receive
+
+    coordinate = minCoordinate - 0.39 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate - 0.5 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(1)) << "Send index should be added";
+    EXPECT_THAT(result.sendIndices.at(0), Eq(index));
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No receive index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate - 0.61 * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+}
+
+}// namespace
 
 //! \}

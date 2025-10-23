@@ -98,6 +98,8 @@ public:
     void calculateTimestep(uint timestep);
     //! \brief needed to initialize the simulation timers if calculateTimestep is used instead of run()
     void initTimers();
+    //! \brief finalize simulation. Only needs to be called when using calculateTimestep!
+    void finalize();
 
 private:
     void init(GridProvider &gridProvider, const BoundaryConditionFactory *bcFactory, SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory *scalingFactory);

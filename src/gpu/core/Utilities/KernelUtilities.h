@@ -47,14 +47,13 @@
 
 #include <basics/constants/NumericConstants.h>
 
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
-
 namespace vf::gpu
 {
 
 inline real getForceFactor(size_t level)
 {
+    using namespace vf::basics::constant;
+
     real factor = c1o1;
     for (size_t i = 1; i <= level; i++) {
         factor *= c2o1;
@@ -63,8 +62,11 @@ inline real getForceFactor(size_t level)
     return factor;
 }
 
-__inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &dist, real *distributionArray, const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
+constexpr void getPointersToDistributions(Distributions27& dist, real* distributionArray,
+                                          const unsigned long long numberOfLBnodes, const bool isEvenTimestep)
 {
+    using namespace vf::lbm::dir;
+
     if (isEvenTimestep) {
         dist.f[d000] = &distributionArray[d000 * numberOfLBnodes];
         dist.f[dP00] = &distributionArray[dP00 * numberOfLBnodes];
@@ -131,14 +133,19 @@ __inline__ __device__ __host__ void getPointersToDistributions(Distributions27 &
  *  @params isEvenTimestep: stored data dependent on timestep is based on the esoteric twist algorithm
  *  @return a data struct containing the addresses to the 27 directions within the 1D distribution array
  */
-__inline__ __device__ __host__ DistributionReferences27 getDistributionReferences27(real* distributions, const unsigned long long numberOfLBnodes, const bool isEvenTimestep){
+constexpr DistributionReferences27 getDistributionReferences27(real* distributions, const unsigned long long numberOfLBnodes,
+                                                               const bool isEvenTimestep)
+{
     DistributionReferences27 distribution_references;
     getPointersToDistributions(distribution_references, distributions, numberOfLBnodes, isEvenTimestep);
     return distribution_references;
 }
 
-__inline__ __device__ void getPointersToSubgridDistances(SubgridDistances27& subgridD, real* subgridDistances, const unsigned int numberOfSubgridIndices)
+constexpr void getPointersToSubgridDistances(SubgridDistances27& subgridD, real* subgridDistances,
+                                             const unsigned int numberOfSubgridIndices)
 {
+    using namespace vf::lbm::dir;
+
     subgridD.q[dP00] = &subgridDistances[dP00 * numberOfSubgridIndices];
     subgridD.q[dM00] = &subgridDistances[dM00 * numberOfSubgridIndices];
     subgridD.q[d0P0] = &subgridDistances[d0P0 * numberOfSubgridIndices];
@@ -168,61 +175,68 @@ __inline__ __device__ void getPointersToSubgridDistances(SubgridDistances27& sub
     subgridD.q[dMPM] = &subgridDistances[dMPM * numberOfSubgridIndices];
 }
 
-__inline__ __device__ real getEquilibriumForBC(const real& drho, const real& velocity, const real& cu_sq, const real weight)
+constexpr real getEquilibriumForBC(const real& drho, const real& velocity, const real& cu_sq, const real weight)
 {
+    using namespace vf::basics::constant;
+
     return weight * (drho + c9o2 * velocity * velocity * (c1o1 + drho) - cu_sq);
 }
 
-__inline__ __device__ real getInterpolatedDistributionForVeloBC(const real& q, const real& f, const real& fInverse, const real& feq,
-                                                                const real& omega, const real& velocity, const real weight)
+constexpr real getInterpolatedDistributionForVeloBC(const real& q, const real& f, const real& fInverse, const real& feq,
+                                                    const real& omega, const real& velocity, const real weight)
 {
+    using namespace vf::basics::constant;
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse) - c6o1 * weight * velocity) / (c1o1 + q);
 }
 
-__inline__ __device__ real getBounceBackDistributionForVeloBC(  const real& f,
-                                                                const real& velocity, const real weight)
+constexpr real getBounceBackDistributionForVeloBC(const real& f, const real& velocity, const real weight)
 {
+    using namespace vf::basics::constant;
 
     return f - (c6o1 * weight * velocity);
 }
 
-__inline__ __device__ real getInterpolatedDistributionForNoSlipBC(const real& q, const real& f, const real& fInverse, const real& feq,
-                                                                  const real& omega)
+constexpr real getInterpolatedDistributionForNoSlipBC(const real& q, const real& f, const real& fInverse, const real& feq,
+                                                      const real& omega)
 {
+    using namespace vf::basics::constant;
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse)) / (c1o1 + q);
 }
 
-__inline__ __device__ real getInterpolatedDistributionForNoSlipWithPressureBC(const real& q, const real& f, const real& fInverse, const real& feq, 
-                                                                  const real& omega, const real& drho, const real weight)
+constexpr real getInterpolatedDistributionForNoSlipWithPressureBC(const real& q, const real& f, const real& fInverse,
+                                                                  const real& feq, const real& omega, const real& drho,
+                                                                  const real weight)
 {
+    using namespace vf::basics::constant;
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2 
            + (q * (f + fInverse)) / (c1o1 + q) - weight * drho;
 }
 
-
-__inline__ __device__ real getInterpolatedDistributionForVeloWithPressureBC(const real& q, const real& f, const real& fInverse, const real& feq,
-                                                                            const real& omega, const real& drho, const real& velocity, const real weight)
+constexpr real getInterpolatedDistributionForVeloWithPressureBC(const real& q, const real& f, const real& fInverse,
+                                                                const real& feq, const real& omega, const real& drho,
+                                                                const real& velocity, const real weight)
 {
+    using namespace vf::basics::constant;
 
     return (c1o1-q) / (c1o1+q) * (f - fInverse + (f + fInverse - c2o1 * feq * omega) / (c1o1 - omega)) * c1o2
            + (q * (f + fInverse) - c6o1 * weight * velocity) / (c1o1 + q) - weight * drho;
 }
 
-__inline__ __device__ bool isValidFluidNode(uint nodeType)
+constexpr bool isValidFluidNode(uint nodeType)
 {
     return (nodeType == GEO_FLUID || nodeType == GEO_PM_0 || nodeType == GEO_PM_1 || nodeType == GEO_PM_2);
 }
 
 struct ListIndices
 {
-    __device__ ListIndices() {};
-    __device__ ListIndices(unsigned int index, const unsigned int* neighborX, const unsigned int* neighborY,
-                           const unsigned int* neighborZ)
+    constexpr ListIndices() = default;
+    constexpr ListIndices(uint index, const uint* neighborX, const uint* neighborY,
+                           const uint* neighborZ)
     {
         k_000 = index;
         k_M00 = neighborX[k_000];
@@ -234,23 +248,118 @@ struct ListIndices
         k_MMM = neighborZ[k_MM0];
     }
 
-    unsigned int k_000 { 0 };
-    unsigned int k_M00 { 0 };
-    unsigned int k_0M0 { 0 };
-    unsigned int k_00M { 0 };
-    unsigned int k_MM0 { 0 };
-    unsigned int k_M0M { 0 };
-    unsigned int k_0MM { 0 };
-    unsigned int k_MMM { 0 };
+    uint k_000 { 0 };
+    uint k_M00 { 0 };
+    uint k_0M0 { 0 };
+    uint k_00M { 0 };
+    uint k_MM0 { 0 };
+    uint k_M0M { 0 };
+    uint k_0MM { 0 };
+    uint k_MMM { 0 };
+
+    constexpr uint k000() const { return k_000; }
+    constexpr uint kP00() const { return k_000; }
+    constexpr uint kM00() const { return k_M00; }
+    constexpr uint k0P0() const { return k_000; }
+    constexpr uint k0M0() const { return k_0M0; }
+    constexpr uint k00P() const { return k_000; }
+    constexpr uint k00M() const { return k_00M; }
+    constexpr uint kPP0() const { return k_000; }
+    constexpr uint kMM0() const { return k_MM0; }
+    constexpr uint kPM0() const { return k_0M0; }
+    constexpr uint kMP0() const { return k_M00; }
+    constexpr uint kP0P() const { return k_000; }
+    constexpr uint kM0M() const { return k_M0M; }
+    constexpr uint kP0M() const { return k_00M; }
+    constexpr uint kM0P() const { return k_M00; }
+    constexpr uint k0PP() const { return k_000; }
+    constexpr uint k0MM() const { return k_0MM; }
+    constexpr uint k0PM() const { return k_00M; }
+    constexpr uint k0MP() const { return k_0M0; }
+    constexpr uint kPPP() const { return k_000; }
+    constexpr uint kMPP() const { return k_M00; }
+    constexpr uint kPMP() const { return k_0M0; }
+    constexpr uint kMMP() const { return k_MM0; }
+    constexpr uint kPPM() const { return k_00M; }
+    constexpr uint kMPM() const { return k_M0M; }
+    constexpr uint kPMM() const { return k_0MM; }
+    constexpr uint kMMM() const { return k_MMM; }
+
+    
+    template<size_t direction> constexpr uint getIndex() const;
 };
+
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d000>() const { return k000(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dP00>() const { return kP00(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dM00>() const { return kM00(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0P0>() const { return k0P0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0M0>() const { return k0M0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d00P>() const { return k00P(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d00M>() const { return k00M(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPP0>() const { return kPP0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMM0>() const { return kMM0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPM0>() const { return kPM0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMP0>() const { return kMP0(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dP0P>() const { return kP0P(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dM0M>() const { return kM0M(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dP0M>() const { return kP0M(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dM0P>() const { return kM0P(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0PP>() const { return k0PP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0MM>() const { return k0MM(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0PM>() const { return k0PM(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::d0MP>() const { return k0MP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPPP>() const { return kPPP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMPP>() const { return kMPP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPMP>() const { return kPMP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMMP>() const { return kMMP(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPPM>() const { return kPPM(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMPM>() const { return kMPM(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPMM>() const { return kPMM(); }
+template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMMM>() const { return kMMM(); }
+
+template <size_t direction>
+constexpr void writeInInverseDirection(const real population, const vf::gpu::ListIndices& listIndices,
+                                       const Distributions27& populationReferences)
+{
+    const size_t inverseDir = vf::lbm::dir::inverseDir<direction>();
+    const uint writeIndex = listIndices.getIndex<inverseDir>();
+    (populationReferences.f[inverseDir])[writeIndex] = population;
+}
+
+template <size_t direction>
+constexpr real readFromInverseDirection(const vf::gpu::ListIndices& listIndices,
+                                       const Distributions27& populationReferences)
+{
+    const size_t inverseDir = vf::lbm::dir::inverseDir<direction>();
+    const uint readIndex = listIndices.getIndex<inverseDir>();
+    return (populationReferences.f[inverseDir])[readIndex];
+}
+
+template <size_t direction>
+constexpr void writeInSameDirection(const real population, const vf::gpu::ListIndices& listIndices,
+                                       const Distributions27& populationReferences)
+{
+    const uint writeIndex = listIndices.getIndex<direction>();
+    (populationReferences.f[direction])[writeIndex] = population;
+}
+
+template <size_t direction>
+constexpr real readFromSameDirection(const vf::gpu::ListIndices& listIndices,
+                                       const Distributions27& populationReferences)
+{
+    const uint readIndex = listIndices.getIndex<direction>();
+    return (populationReferences.f[direction])[readIndex];
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 //! - Read distributions: style of reading and writing the distributions from/to
 //! stored arrays dependent on timestep is based on the esoteric twist algorithm
 //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
 //! DOI:10.3390/computation5020019 ]</b></a>
-__device__ __inline__ void getPreCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
+constexpr void getPreCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
 {
+    using namespace vf::lbm::dir;
+
     local[d000] = (global.f[d000])[indices.k_000];
     local[dP00] = (global.f[dP00])[indices.k_000];
     local[dM00] = (global.f[dM00])[indices.k_M00];
@@ -280,8 +389,10 @@ __device__ __inline__ void getPreCollisionDistribution(real* local, const Distri
     local[dMMM] = (global.f[dMMM])[indices.k_MMM];
 }
 
-__device__ __inline__ void getPostCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
+constexpr void getPostCollisionDistribution(real* local, const Distributions27& global, const ListIndices& indices)
 {
+    using namespace vf::lbm::dir;
+
     local[d000] = (global.f[d000])[indices.k_000];
     local[dM00] = (global.f[dP00])[indices.k_000];
     local[dP00] = (global.f[dM00])[indices.k_M00];
@@ -316,8 +427,10 @@ __device__ __inline__ void getPostCollisionDistribution(real* local, const Distr
 //! stored arrays dependent on timestep is based on the esoteric twist algorithm
 //! <a href="https://doi.org/10.3390/computation5020019"><b>[ M. Geier et al. (2017),
 //! DOI:10.3390/computation5020019 ]</b></a>
-__inline__ __device__ void setPreCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
+constexpr void setPreCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
 {
+    using namespace vf::lbm::dir;
+
     (global.f[d000])[indices.k_000] = local[d000];
     (global.f[dP00])[indices.k_000] = local[dP00];
     (global.f[dM00])[indices.k_M00] = local[dM00];
@@ -347,8 +460,10 @@ __inline__ __device__ void setPreCollisionDistribution(Distributions27& global, 
     (global.f[dMMM])[indices.k_MMM] = local[dMMM];
 }
 
-__inline__ __device__ void setPostCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
+constexpr void setPostCollisionDistribution(Distributions27& global, const ListIndices& indices, const real* local)
 {
+    using namespace vf::lbm::dir;
+
     (global.f[d000])[indices.k_000] = local[d000];
     (global.f[dP00])[indices.k_000] = local[dM00];
     (global.f[dM00])[indices.k_M00] = local[dP00];

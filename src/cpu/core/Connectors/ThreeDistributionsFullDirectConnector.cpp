@@ -50,8 +50,8 @@ void ThreeDistributionsFullDirectConnector::init()
     fTo = dynamicPointerCast<EsoTwist3D>(to.lock()->getKernel()->getDataSet()->getFdistributions());
     hFrom = dynamicPointerCast<EsoTwist3D>(from.lock()->getKernel()->getDataSet()->getHdistributions());
     hTo = dynamicPointerCast<EsoTwist3D>(to.lock()->getKernel()->getDataSet()->getHdistributions());
-    hFrom2 = dynamicPointerCast<EsoTwist3D>(from.lock()->getKernel()->getDataSet()->getH2distributions());
-    hTo2  = dynamicPointerCast<EsoTwist3D>(to.lock()->getKernel()->getDataSet()->getH2distributions());
+    h2From = dynamicPointerCast<EsoTwist3D>(from.lock()->getKernel()->getDataSet()->getH2distributions());
+    h2To  = dynamicPointerCast<EsoTwist3D>(to.lock()->getKernel()->getDataSet()->getH2distributions());
 }
 
 //! \}

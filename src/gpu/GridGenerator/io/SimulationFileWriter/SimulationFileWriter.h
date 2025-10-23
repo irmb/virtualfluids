@@ -46,7 +46,7 @@
 class UnstructuredGridBuilder;
 class GridBuilder;
 class Grid;
-namespace gg
+namespace grid_generator
 {
 class BoundaryCondition;
 }
@@ -85,7 +85,7 @@ private:
     static void fillRBForNode(int index, int direction, int directionSign, int rb, std::vector<std::vector<std::vector<real> > > &qs, SPtr<Grid> grid);
     static void writeBoundary(std::vector<real> boundary, int rb);
     static void writeBoundaryShort(std::vector<real> boundary, int rb);
-    static void writeBoundaryShort(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint side);
+    static void writeBoundaryShort(SPtr<Grid> grid, SPtr<grid_generator::BoundaryCondition> boundaryCondition, uint side);
 
     static void writeCommunicationFiles(SPtr<GridBuilder> builder);
 

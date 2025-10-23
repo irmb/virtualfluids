@@ -30,6 +30,7 @@
 //=======================================================================================
 #include <pybind11/pybind11.h>
 #include "submodules/configuration_file.cpp"
+#include "submodules/geometry3d.cpp"
 
 namespace basics
 {
@@ -38,5 +39,6 @@ namespace basics
     PYBIND11_MODULE(basics, m)
     {
         configuration::makeModule(m);
+        geometry3d::makeModule(m);
     }
 }

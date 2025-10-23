@@ -49,12 +49,12 @@ class Communicator;
 }
 
 class BoundaryConditionKernelManager;
-class ADKernelManager;
 class GridScalingKernelManager;
 class Kernel;
 class BoundaryConditionFactory;
 class GridScalingFactory;
 class TurbulenceModelFactory;
+class TurbulenceModelManager;
 class UpdateGrid27;
 using CollisionStrategy = std::function<void (UpdateGrid27* updateGrid, Parameter* para, int level, unsigned int t)>;
 using RefinementStrategy = std::function<void (UpdateGrid27* updateGrid, Parameter* para, int level)>;
@@ -64,7 +64,7 @@ class UpdateGrid27
 {
 public:
     UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator& comm, SPtr<CudaMemoryManager> cudaMemoryManager, std::vector<SPtr<Kernel>>& kernels,
-                 std::vector<SPtr<AdvectionDiffusionKernel>>& adkernels, const BoundaryConditionFactory* bcFactory,
+                 std::vector<SPtr<AdvectionDiffusionKernel>>& kernelsAD, const BoundaryConditionFactory* bcFactory,
                  SPtr<TurbulenceModelFactory> tmFactory, GridScalingFactory* scalingFactory);
     void updateGrid(int level, unsigned int t);
     void exchangeData(int level);
@@ -72,7 +72,6 @@ public:
 private:
     void collisionAllNodes(int level, unsigned int t);
     void collisionUsingIndices(int level, unsigned int t, uint *taggedFluidNodeIndices = nullptr, uint numberOfTaggedFluidNodes = 0, CollisionTemplate collisionTemplate = CollisionTemplate::Default, CudaStreamIndex streamIndex=CudaStreamIndex::Legacy);
-    void collisionAdvectionDiffusion(int level);
 
     void postCollisionBC(int level, unsigned int t);
     void preCollisionBC(int level, unsigned int t);
@@ -114,14 +113,13 @@ private:
     vf::parallel::Communicator& comm;
     SPtr<CudaMemoryManager> cudaMemoryManager;
     std::vector<SPtr<Kernel>> kernels;
+    std::vector<std::shared_ptr<AdvectionDiffusionKernel>> kernelsAD;
     //! \property lbKernelManager is a shared pointer to an object of LBKernelManager
     std::shared_ptr<BoundaryConditionKernelManager> bcKernelManager;
-    //! \property adKernelManager is a shared pointer to an object of ADKernelManager
-    std::shared_ptr<ADKernelManager> adKernelManager;
     //! \property gridScalingKernelManager is a shared pointer to an object of GridScalingKernelManager
     std::shared_ptr<GridScalingKernelManager> gridScalingKernelManager;
     //! \property tmFactory is a shared pointer to an object of TurbulenceModelFactory
-    std::shared_ptr<TurbulenceModelFactory> tmFactory;
+    std::shared_ptr<TurbulenceModelManager> tmManager;
 };
 
 #endif

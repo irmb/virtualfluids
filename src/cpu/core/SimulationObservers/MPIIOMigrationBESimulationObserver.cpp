@@ -53,7 +53,7 @@
 #include <MemoryUtil.h>
 #include <UbSystem.h>
 
-using namespace MPIIODataStructures;
+using namespace mpi_io_data_structures;
 
 #define MESSAGE_TAG 80
 #define SEND_BLOCK_SIZE 100000
@@ -101,9 +101,9 @@ void MPIIOMigrationBESimulationObserver::clearAllFiles(int step)
 
     MPIIOSimulationObserver::clearAllFiles(step);
 
-    UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
+    ub_system::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step));
 
-    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC1.bin";
+    std::string filename10 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC1.bin";
     int rc10 =
         MPI_File_open(MPI_COMM_WORLD, filename10.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc10 != MPI_SUCCESS)
@@ -111,7 +111,7 @@ void MPIIOMigrationBESimulationObserver::clearAllFiles(int step)
     MPI_File_set_size(file_handler, new_size);
     MPI_File_close(&file_handler);
 
-    std::string filename11 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC2.bin";
+    std::string filename11 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC2.bin";
     int rc11 =
         MPI_File_open(MPI_COMM_WORLD, filename11.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc11 != MPI_SUCCESS)
@@ -155,7 +155,7 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::writeDataSet start collect data rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     bool multiPhase1 = false;
@@ -163,36 +163,36 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
     DSArraysPresence arrPresence;
     bool firstBlock        = true;
     int doubleCountInBlock = 0;
-    SPtr<EsoSplit> D3Q27EsoTwist3DSplittedVectorPtrF = 0, D3Q27EsoTwist3DSplittedVectorPtrH1 = 0, D3Q27EsoTwist3DSplittedVectorPtrH2 = 0;
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsF = 0, localDistributionsH1 = 0, localDistributionsH2 = 0;
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsF = 0, nonLocalDistributionsH1 = 0, nonLocalDistributionsH2 = 0;
-    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsF = 0, zeroDistributionsH1 = 0, zeroDistributionsH2 = 0;
+    SPtr<EsoSplit> fEsoSplitPtr = 0, h1EsoSplitPtr = 0, h2EsoSplitPtr = 0;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr fSplitA = 0, h1SplitA = 0, h2SplitA = 0;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr fSplitB = 0, h1SplitB = 0, h2SplitB = 0;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr   fSplit0 = 0, h1Split0 = 0, h2Split0 = 0;
     
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
     {
         for (SPtr<Block3D> block : blocksVector[level]) //    blocks of the current level
         {
-            D3Q27EsoTwist3DSplittedVectorPtrF = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getFdistributions());
-            localDistributionsF    = D3Q27EsoTwist3DSplittedVectorPtrF->getLocalDistributions();
-            nonLocalDistributionsF = D3Q27EsoTwist3DSplittedVectorPtrF->getNonLocalDistributions();
-            zeroDistributionsF     = D3Q27EsoTwist3DSplittedVectorPtrF->getZeroDistributions();
+            fEsoSplitPtr = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getFdistributions());
+            fSplitA = fEsoSplitPtr->getSplitA();
+            fSplitB = fEsoSplitPtr->getSplitB();
+            fSplit0 = fEsoSplitPtr->getSplit0();
  
-            D3Q27EsoTwist3DSplittedVectorPtrH1 = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getHdistributions());
-            if (D3Q27EsoTwist3DSplittedVectorPtrH1 != 0)
+            h1EsoSplitPtr = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getHdistributions());
+            if (h1EsoSplitPtr != 0)
             {
                 multiPhase1 = true;
-                localDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getLocalDistributions();
-                nonLocalDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getNonLocalDistributions();
-                zeroDistributionsH1 = D3Q27EsoTwist3DSplittedVectorPtrH1->getZeroDistributions();
+                h1SplitA = h1EsoSplitPtr->getSplitA();
+                h1SplitB = h1EsoSplitPtr->getSplitB();
+                h1Split0 = h1EsoSplitPtr->getSplit0();
             }
 
-            D3Q27EsoTwist3DSplittedVectorPtrH2 = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getH2distributions());
-            if (D3Q27EsoTwist3DSplittedVectorPtrH2 != 0)
+            h2EsoSplitPtr = dynamicPointerCast<EsoSplit>(block->getKernel()->getDataSet()->getH2distributions());
+            if (h2EsoSplitPtr != 0)
             {
                 multiPhase2 = true;
-                localDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getLocalDistributions();
-                nonLocalDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getNonLocalDistributions();
-                zeroDistributionsH2 = D3Q27EsoTwist3DSplittedVectorPtrH2->getZeroDistributions();
+                h2SplitA = h2EsoSplitPtr->getSplitA();
+                h2SplitB = h2EsoSplitPtr->getSplitB();
+                h2Split0 = h2EsoSplitPtr->getSplit0();
             }
 
 
@@ -200,23 +200,23 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
             {
                 firstGlobalID = block->getGlobalID(); // id of the block needed to find it while regenerating the grid
 
-                if (localDistributionsF) {
-                    dataSetParamStr1.nx[0] = static_cast<int>(localDistributionsF->getNX1());
-                    dataSetParamStr1.nx[1] = static_cast<int>(localDistributionsF->getNX2());
-                    dataSetParamStr1.nx[2] = static_cast<int>(localDistributionsF->getNX3());
-                    dataSetParamStr1.nx[3] = static_cast<int>(localDistributionsF->getNX4());
+                if (fSplitA) {
+                    dataSetParamStr1.nx[0] = static_cast<int>(fSplitA->getNX1());
+                    dataSetParamStr1.nx[1] = static_cast<int>(fSplitA->getNX2());
+                    dataSetParamStr1.nx[2] = static_cast<int>(fSplitA->getNX3());
+                    dataSetParamStr1.nx[3] = static_cast<int>(fSplitA->getNX4());
                 }
 
-                if (nonLocalDistributionsF) {
-                    dataSetParamStr2.nx[0] = static_cast<int>(nonLocalDistributionsF->getNX1());
-                    dataSetParamStr2.nx[1] = static_cast<int>(nonLocalDistributionsF->getNX2());
-                    dataSetParamStr2.nx[2] = static_cast<int>(nonLocalDistributionsF->getNX3());
-                    dataSetParamStr2.nx[3] = static_cast<int>(nonLocalDistributionsF->getNX4());
+                if (fSplitB) {
+                    dataSetParamStr2.nx[0] = static_cast<int>(fSplitB->getNX1());
+                    dataSetParamStr2.nx[1] = static_cast<int>(fSplitB->getNX2());
+                    dataSetParamStr2.nx[2] = static_cast<int>(fSplitB->getNX3());
+                    dataSetParamStr2.nx[3] = static_cast<int>(fSplitB->getNX4());
                 }
-                if (zeroDistributionsF) {
-                    dataSetParamStr3.nx[0] = static_cast<int>(zeroDistributionsF->getNX1());
-                    dataSetParamStr3.nx[1] = static_cast<int>(zeroDistributionsF->getNX2());
-                    dataSetParamStr3.nx[2] = static_cast<int>(zeroDistributionsF->getNX3());
+                if (fSplit0) {
+                    dataSetParamStr3.nx[0] = static_cast<int>(fSplit0->getNX1());
+                    dataSetParamStr3.nx[1] = static_cast<int>(fSplit0->getNX2());
+                    dataSetParamStr3.nx[2] = static_cast<int>(fSplit0->getNX3());
                     dataSetParamStr3.nx[3] = 1;
                 }
 
@@ -286,31 +286,31 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
                 firstBlock = false;
             }
 
-            if (localDistributionsF && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
-                doubleValuesArrayF.insert(doubleValuesArrayF.end(), localDistributionsF->getDataVector().begin(), localDistributionsF->getDataVector().end());
-            if (nonLocalDistributionsF && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
-                doubleValuesArrayF.insert(doubleValuesArrayF.end(), nonLocalDistributionsF->getDataVector().begin(), nonLocalDistributionsF->getDataVector().end());
-            if (zeroDistributionsF && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
-                doubleValuesArrayF.insert(doubleValuesArrayF.end(), zeroDistributionsF->getDataVector().begin(), zeroDistributionsF->getDataVector().end());
+            if (fSplitA && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
+                doubleValuesArrayF.insert(doubleValuesArrayF.end(), fSplitA->getDataVector().begin(), fSplitA->getDataVector().end());
+            if (fSplitB && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
+                doubleValuesArrayF.insert(doubleValuesArrayF.end(), fSplitB->getDataVector().begin(), fSplitB->getDataVector().end());
+            if (fSplit0 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
+                doubleValuesArrayF.insert(doubleValuesArrayF.end(), fSplit0->getDataVector().begin(), fSplit0->getDataVector().end());
 
             if (multiPhase1)
             {
-                if (localDistributionsH1 && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
-                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), localDistributionsH1->getDataVector().begin(), localDistributionsH1->getDataVector().end());
-                if (nonLocalDistributionsH1 && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
-                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), nonLocalDistributionsH1->getDataVector().begin(), nonLocalDistributionsH1->getDataVector().end());
-                if (zeroDistributionsH1 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
-                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), zeroDistributionsH1->getDataVector().begin(), zeroDistributionsH1->getDataVector().end());
+                if (h1SplitA && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
+                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), h1SplitA->getDataVector().begin(), h1SplitA->getDataVector().end());
+                if (h1SplitB && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
+                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), h1SplitB->getDataVector().begin(), h1SplitB->getDataVector().end());
+                if (h1Split0 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
+                    doubleValuesArrayH1.insert(doubleValuesArrayH1.end(), h1Split0->getDataVector().begin(), h1Split0->getDataVector().end());
             }
 
             if (multiPhase2)
             {
-                if (localDistributionsH2 && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
-                doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), localDistributionsH2->getDataVector().begin(), localDistributionsH2->getDataVector().end());
-                if (nonLocalDistributionsH2 && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
-                doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), nonLocalDistributionsH2->getDataVector().begin(), nonLocalDistributionsH2->getDataVector().end());
-                if (zeroDistributionsH2 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
-                doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), zeroDistributionsH2->getDataVector().begin(), zeroDistributionsH2->getDataVector().end());
+                if (h2SplitA && (dataSetParamStr1.nx[0] > 0) && (dataSetParamStr1.nx[1] > 0) && (dataSetParamStr1.nx[2] > 0) && (dataSetParamStr1.nx[3] > 0))
+                doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), h2SplitA->getDataVector().begin(), h2SplitA->getDataVector().end());
+                if (h2SplitB && (dataSetParamStr2.nx[0] > 0) && (dataSetParamStr2.nx[1] > 0) && (dataSetParamStr2.nx[2] > 0) && (dataSetParamStr2.nx[3] > 0))
+                doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), h2SplitB->getDataVector().begin(), h2SplitB->getDataVector().end());
+                if (h2Split0 && (dataSetParamStr3.nx[0] > 0) && (dataSetParamStr3.nx[1] > 0) && (dataSetParamStr3.nx[2] > 0))
+                doubleValuesArrayH2.insert(doubleValuesArrayH2.end(), h2Split0->getDataVector().begin(), h2Split0->getDataVector().end());
             }
         }
     }
@@ -321,7 +321,7 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::writeDataSet start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     
@@ -334,7 +334,7 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
 
     // write to the file
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetF.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetF.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -352,7 +352,7 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
     //-------------------------------- H1 ------------------------------------------------
     if (multiPhase1)
     {
-        filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH1.bin";
+        filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH1.bin";
         rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
         if (rc != MPI_SUCCESS)
             throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -367,7 +367,7 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
     //-------------------------------- H2 --------------------------------------------------
     if (multiPhase2)
     {
-        filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH2.bin";
+        filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH2.bin";
         rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
         if (rc != MPI_SUCCESS)
             throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -390,7 +390,7 @@ void MPIIOMigrationBESimulationObserver::writeDataSet(int step)
     }
 
     MPI_File file_handler1;
-    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpArrays.bin";
+    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpArrays.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename1.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler1);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename1);
@@ -460,7 +460,7 @@ void MPIIOMigrationBESimulationObserver::write4DArray(int step, Arrays arrayType
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::write4DArray start collect data rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
@@ -511,7 +511,7 @@ void MPIIOMigrationBESimulationObserver::write4DArray(int step, Arrays arrayType
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::write4DArray start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     // register new MPI-type depending on the block-specific information
@@ -527,7 +527,7 @@ void MPIIOMigrationBESimulationObserver::write4DArray(int step, Arrays arrayType
     MPI_Info info = MPI_INFO_NULL;
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + fname;
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -576,7 +576,7 @@ void MPIIOMigrationBESimulationObserver::write3DArray(int step, Arrays arrayType
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::write3DArray start collect data rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     for (int level = minInitLevel; level <= maxInitLevel; level++) 
@@ -625,7 +625,7 @@ void MPIIOMigrationBESimulationObserver::write3DArray(int step, Arrays arrayType
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::write3DArray start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     // register new MPI-type depending on the block-specific information
@@ -641,7 +641,7 @@ void MPIIOMigrationBESimulationObserver::write3DArray(int step, Arrays arrayType
     MPI_Info info = MPI_INFO_NULL;
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + fname;
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -672,7 +672,7 @@ void MPIIOMigrationBESimulationObserver::writeBoundaryConds(int step)
     if (comm->isRoot())
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::writeBoundaryConds start collect data rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     int blocksCount          = 0; // quantity of blocks, that belong to this process
@@ -767,7 +767,7 @@ void MPIIOMigrationBESimulationObserver::writeBoundaryConds(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::writeBoundaryConds start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     
@@ -785,7 +785,7 @@ void MPIIOMigrationBESimulationObserver::writeBoundaryConds(int step)
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC1.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC1.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -800,7 +800,7 @@ void MPIIOMigrationBESimulationObserver::writeBoundaryConds(int step)
     MPI_Type_free(&bcindexmatrixType);
 
     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC2.bin";
+    filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC2.bin";
     rc       = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, info, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1034,7 +1034,7 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
     if (comm->isRoot())
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readDataSet start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     bool multiPhase1 = false;
@@ -1060,7 +1060,7 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
         start = MPI_Wtime();
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetF.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetF.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1087,7 +1087,7 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
 
     //--------------------------------- H1 ---------------------------------------------------------
     MPI_Offset fsize;
-    filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH1.bin";
+    filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH1.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1103,7 +1103,7 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
     MPI_File_close(&file_handler);
 
     //--------------------------------- H2 ---------------------------------------------------------
-    filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSetH2.bin";
+    filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpDataSetH2.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1125,7 +1125,7 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
         finish = MPI_Wtime();
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readDataSet time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readDataSet start of exchange of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     std::vector<real>* rawDataReceiveF = new std::vector<real>[size];
@@ -1155,7 +1155,7 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
         finish = MPI_Wtime();
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readDataSet time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readDataSet start of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
     
     //-------------------------------------- restore blocks ---------------------------------
@@ -1199,11 +1199,11 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
             index += vectorSize3;
 
             SPtr<DistributionArray3D> mFdistributions(new EsoSplit());
-            dynamicPointerCast<EsoSplit>(mFdistributions)->setLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+            dynamicPointerCast<EsoSplit>(mFdistributions)->setSplitA(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesF1, dataSetParamStr1.nx[0], dataSetParamStr1.nx[1], dataSetParamStr1.nx[2], dataSetParamStr1.nx[3])));
-            dynamicPointerCast<EsoSplit>(mFdistributions)->setNonLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+            dynamicPointerCast<EsoSplit>(mFdistributions)->setSplitB(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesF2, dataSetParamStr2.nx[0], dataSetParamStr2.nx[1], dataSetParamStr2.nx[2], dataSetParamStr2.nx[3])));
-            dynamicPointerCast<EsoSplit>(mFdistributions)->setZeroDistributions(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
+            dynamicPointerCast<EsoSplit>(mFdistributions)->setSplit0(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
                         vectorsOfValuesF3, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
 
             dynamicPointerCast<EsoSplit>(mFdistributions)->setNX1(dataSetParamStr1.nx1);
@@ -1213,11 +1213,11 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
             SPtr<DistributionArray3D> mH1distributions(new EsoSplit());
             if (multiPhase1)
             {
-                dynamicPointerCast<EsoSplit>(mH1distributions)->setLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+                dynamicPointerCast<EsoSplit>(mH1distributions)->setSplitA(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesH11, dataSetParamStr1.nx[0], dataSetParamStr1.nx[1], dataSetParamStr1.nx[2], dataSetParamStr1.nx[3])));
-                dynamicPointerCast<EsoSplit>(mH1distributions)->setNonLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+                dynamicPointerCast<EsoSplit>(mH1distributions)->setSplitB(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesH12, dataSetParamStr2.nx[0], dataSetParamStr2.nx[1], dataSetParamStr2.nx[2], dataSetParamStr2.nx[3])));
-                dynamicPointerCast<EsoSplit>(mH1distributions)->setZeroDistributions(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
+                dynamicPointerCast<EsoSplit>(mH1distributions)->setSplit0(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
                     vectorsOfValuesH13, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
 
                 dynamicPointerCast<EsoSplit>(mH1distributions)->setNX1(dataSetParamStr1.nx1);
@@ -1228,11 +1228,11 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
             SPtr<DistributionArray3D> mH2distributions(new EsoSplit());
             if (multiPhase2)
             {
-                dynamicPointerCast<EsoSplit>(mH2distributions)->setLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+                dynamicPointerCast<EsoSplit>(mH2distributions)->setSplitA(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                     new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesH21, dataSetParamStr1.nx[0], dataSetParamStr1.nx[1], dataSetParamStr1.nx[2], dataSetParamStr1.nx[3])));
-                dynamicPointerCast<EsoSplit>(mH2distributions)->setNonLocalDistributions(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
+                dynamicPointerCast<EsoSplit>(mH2distributions)->setSplitB(CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr(
                         new CbArray4D<real, IndexerX4X3X2X1>(vectorsOfValuesH22, dataSetParamStr2.nx[0], dataSetParamStr2.nx[1], dataSetParamStr2.nx[2], dataSetParamStr2.nx[3])));
-                dynamicPointerCast<EsoSplit>(mH2distributions)->setZeroDistributions(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
+                dynamicPointerCast<EsoSplit>(mH2distributions)->setSplit0(CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<real, IndexerX3X2X1>(
                         vectorsOfValuesH23, dataSetParamStr3.nx[0], dataSetParamStr3.nx[1], dataSetParamStr3.nx[2])));
 
                 dynamicPointerCast<EsoSplit>(mH2distributions)->setNX1(dataSetParamStr1.nx1);
@@ -1245,10 +1245,10 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
             this->lbmKernel->setBlock(block);
             this->lbmKernel->setNX(std::array<int, 3>{ {dataSetParamStr1.nx1, dataSetParamStr1.nx2, dataSetParamStr1.nx3}});
             SPtr<LBMKernel> kernel = this->lbmKernel->clone();
-            real collFactor = LBMSystem::calcCollisionFactor(this->nue, block->getLevel());
+            real collFactor = lbm_system::calcCollisionFactor(this->nue, block->getLevel());
             kernel->setCollisionFactor(collFactor);
             kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
-            kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
+            kernel->setDeltaT(lbm_system::getDeltaT(block->getLevel()));
             SPtr<DataSet3D> dataSetPtr = SPtr<DataSet3D>(new DataSet3D());
             dataSetPtr->setFdistributions(mFdistributions);
             if (multiPhase1)
@@ -1263,14 +1263,14 @@ void MPIIOMigrationBESimulationObserver::readDataSet(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readDataSet end of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     //-------------------------------------------------------------
 
     DSArraysPresence arrPresence;
     MPI_File file_handler1;
-    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpArrays.bin";
+    std::string filename1 = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpArrays.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename1.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler1);
     if (rc != MPI_SUCCESS)
         return; // throw UbException(UB_EXARGS, "couldn't open file " + filename1);
@@ -1325,7 +1325,7 @@ void MPIIOMigrationBESimulationObserver::readArray(int step, Arrays arrType, std
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readArray start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     
@@ -1350,7 +1350,7 @@ void MPIIOMigrationBESimulationObserver::readArray(int step, Arrays arrType, std
     int indexE = indexB + int(myBlocksCount); // the latest "my" block
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + fname;
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + fname;
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1374,7 +1374,7 @@ void MPIIOMigrationBESimulationObserver::readArray(int step, Arrays arrType, std
         finish = MPI_Wtime();
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readArray time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readArray start of exchange of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     std::vector<real> *rawDataReceive = new std::vector<real>[size];
@@ -1389,7 +1389,7 @@ void MPIIOMigrationBESimulationObserver::readArray(int step, Arrays arrType, std
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readArray end of exchange of data, rank = " << rank);
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readArray time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readArray start of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     //----------------------------- restore data ---------------------------------
@@ -1473,7 +1473,7 @@ void MPIIOMigrationBESimulationObserver::readArray(int step, Arrays arrType, std
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readArray end of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 }
 
@@ -1486,7 +1486,7 @@ void MPIIOMigrationBESimulationObserver::readBoundaryConds(int step)
     if (comm->isRoot()) 
     {
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readBoundaryConds start MPI IO rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     
@@ -1510,7 +1510,7 @@ void MPIIOMigrationBESimulationObserver::readBoundaryConds(int step)
     std::vector<int> bcindexmatrixVAll;
 
     MPI_File file_handler;
-    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC1.bin";
+    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC1.bin";
     int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1533,7 +1533,7 @@ void MPIIOMigrationBESimulationObserver::readBoundaryConds(int step)
         finish = MPI_Wtime();
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readBoundaryConds time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readBoundaryConds start of exchange of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
     std::vector<int> *rawDataReceive = new std::vector<int>[size];
@@ -1614,10 +1614,10 @@ void MPIIOMigrationBESimulationObserver::readBoundaryConds(int step)
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readBoundaryConds end of exchange of data, rank = " << rank);
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readBoundaryConds time: " << finish - start << " s");
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readBoundaryConds start of restore of data, rank = " << rank);
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 
-    filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC2.bin";
+    filename = path + "/mpi_io_cp/mpi_io_cp_" + ub_system::toString(step) + "/cpBC2.bin";
     rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
     if (rc != MPI_SUCCESS)
         throw UbException(UB_EXARGS, "couldn't open file " + filename);
@@ -1726,7 +1726,7 @@ void MPIIOMigrationBESimulationObserver::readBoundaryConds(int step)
         finish = MPI_Wtime();
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readBoundaryConds end of restore of data, rank = " << rank);
         UBLOG(logINFO, "MPIIOMigrationBESimulationObserver::readBoundaryConds time: " << finish - start << " s");
-        UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
+        UBLOG(logINFO, "Physical Memory currently used by current process: " << utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
     }
 }
 

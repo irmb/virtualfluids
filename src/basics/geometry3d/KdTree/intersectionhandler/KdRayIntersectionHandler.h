@@ -39,17 +39,17 @@
 
 #include <set>
 
-namespace Kd
+namespace kd_tree
 {
 template <typename T>
 class RayIntersectionHandler
 {
 public:
     virtual int intersectRay(const Ray<T> &ray, Node<T> &parent, Node<T> *&child1, Node<T> *&child2,
-                             std::set<UbKeys::Key3<int>> &mailbox) const = 0;
+                             std::set<ub_keys::Key3<int>> &mailbox) const = 0;
     virtual ~RayIntersectionHandler()                                    = default;
 };
-} // namespace Kd
+} // namespace kd_tree
 
 #endif // KDRAYINTERSECTIONHANDLER_H
 

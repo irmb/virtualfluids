@@ -80,9 +80,6 @@ class FileCollection;
 //!
 //! - 4. set boundary conditions
 //!
-
-using namespace vf::basics::constant;
-
 class MultipleGridBuilderFacade
 {
 public:
@@ -116,16 +113,29 @@ public:
 
     // Boundary conditions, call after createGrids()
     void setSlipBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ) const;
-    void setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset,
-                                    real z0, real dx) const;
+    void setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
+                                    real roughnessLength, real deltaX) const;
+    void setSurfaceLayerBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
+                                          real roughnessLength, real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate,
+                                          real deltaX, real deltaT) const;
     void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz) const;
     void setPressureBoundaryCondition(SideType sideType, real rho) const;
     void setNoSlipBoundaryCondition(SideType sideType) const;
-    void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z) const;
-    void setPeriodicBoundaryCondition(const std::array<bool, 3>& periodicity) const;
-    void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads,
-                                       real velocityX = c0o1, real velocityY = c0o1, real velocityZ = c0o1,
+    void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
+    void setPeriodicBoundaryCondition(const std::array<bool, 3>& periodicity);
+    void setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection, int timeStepsBetweenReads, bool cycleFiles,
+                                       real velocityX = vf::basics::constant::c0o1, real velocityY = vf::basics::constant::c0o1, real velocityZ = vf::basics::constant::c0o1, 
                                        std::vector<uint> fileLevelToGridLevelMap = {}) const;
+    void setADNoFluxBoundaryCondition(SideType sideType);
+    void setADFluxBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX);
+    void setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz);
+    void setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx);
+    void setPeriodicShiftOnXBoundaryInYDirection(real shift);
+    void setPeriodicShiftOnXBoundaryInZDirection(real shift);
+    void setPeriodicShiftOnYBoundaryInXDirection(real shift);
+    void setPeriodicShiftOnYBoundaryInZDirection(real shift);
+    void setPeriodicShiftOnZBoundaryInXDirection(real shift);
+    void setPeriodicShiftOnZBoundaryInYDirection(real shift);
 
     SPtr<MultipleGridBuilder> getGridBuilder() const;
 
@@ -139,6 +149,8 @@ protected:
     uint getIndex1D(const std::array<uint, 3>& index3D) const;
 
 private:
+    void setGlobalPeriodicity();
+    void setLocalPeriodicity(bool periodicX, bool periodicY, bool periodicZ);
     //! \brief calculate the number of subdomains in all coordinate directions
     void calculateNumberOfSubdomains();
 
@@ -167,10 +179,10 @@ private:
     void addGeometriesToGridBuilder();
 
     //! \brief check whether a subdomain is the last one in a direction
-    bool isFinalSubdomainInDirection(CommunicationDirections::CommunicationDirection direction) const;
+    bool isFinalSubdomainInDirection(communication_directions::CommunicationDirection direction) const;
 
     //! \brief get 1D index of the final subdomain in a direction, in the other directions it has the same position as the current subdomain
-    uint getIndexOfFinalSubdomainInDirection(CommunicationDirections::CommunicationDirection direction) const;
+    uint getIndexOfFinalSubdomainInDirection(communication_directions::CommunicationDirection direction) const;
 
     //! \brief call the grid builder's setter for a boundary condition
     template <typename function>
@@ -182,7 +194,7 @@ private:
         }
 
         if (sideType == SideType::GEOMETRY ||
-            !hasNeighbors.at(static_cast<CommunicationDirections::CommunicationDirection>(static_cast<int>(sideType)))) {
+            !hasNeighbors.at(static_cast<communication_directions::CommunicationDirection>(static_cast<int>(sideType)))) {
             boundaryConditionFunction();
         }
     }
@@ -209,13 +221,14 @@ private:
 
     //! \brief index of the current subdomains in relation to all subdomains (computed)
     std::array<uint, 3> index;
+    std::array<bool, 3> periodicity {false, false, false};
 
     //! \brief hasNeighbors, indicates if the current subdomains has a neighbor in a specific direction (computed)
     //! \details use the enum CommunciationDirection to access the data
-    std::map<CommunicationDirections::CommunicationDirection, bool> hasNeighbors = {
-        { CommunicationDirections::MX, false }, { CommunicationDirections::PX, false },
-        { CommunicationDirections::MY, false }, { CommunicationDirections::PY, false },
-        { CommunicationDirections::MZ, false }, { CommunicationDirections::PZ, false }
+    std::map<communication_directions::CommunicationDirection, bool> hasNeighbors = {
+        { communication_directions::MX, false }, { communication_directions::PX, false },
+        { communication_directions::MY, false }, { communication_directions::PY, false },
+        { communication_directions::MZ, false }, { communication_directions::PZ, false }
     };
 
     //! \brief collects fineGrids: uint is the level, Object* the gridShape
@@ -225,6 +238,7 @@ private:
     std::vector<std::shared_ptr<Object>> geometries;
 
     bool createGridsHasBeenCalled = false;
+    real shiftOnXInY{}, shiftOnXInZ{}, shiftOnYInX{}, shiftOnYInZ{}, shiftOnZInX{}, shiftOnZInY{};
 };
 
 #endif

@@ -265,7 +265,7 @@ void D3Q27Interactor::updateInteractor(const real &timestep)
             int x1          = (*setPos)[0];
             int x2          = (*setPos)[1];
             int x3          = (*setPos)[2];
-            Vector3D coords = grid.lock()->getNodeCoordinates(block, x1, x2, x3);
+            GbVector3D coords = grid.lock()->getNodeCoordinates(block, x1, x2, x3);
             real worldX1  = coords[0];
             real worldX2  = coords[1];
             real worldX3  = coords[2];
@@ -329,11 +329,11 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 
     if (geoObject3D->hasRaytracing() || (this->isInverseSolid() && geoObject3D->raytracingSupportsPointsInside())) {
         // if deltaX1==deltaX2==deltaX3 (must for LB!!)
-        if (!UbMath::zero(deltaX1 - deltaX2 + deltaX1 - deltaX3 + deltaX2 - deltaX3))
+        if (!ub_math::zero(deltaX1 - deltaX2 + deltaX1 - deltaX3 + deltaX2 - deltaX3))
             throw UbException(
                 UB_EXARGS, "fuer den bei LB nicht vorkommenden Fall deltaX1!=deltaX2!=deltaX3  nicht implementiert ");
 
-        vector<real> distNeigh(D3Q27System::FENDDIR + 1, vf::basics::constant::cSqrt2 * deltaX1);
+        vector<real> distNeigh(d3q27_system::FENDDIR + 1, vf::basics::constant::cSqrt2 * deltaX1);
         distNeigh[dP00] = distNeigh[dM00] = distNeigh[d0P0] = deltaX1;
         distNeigh[d0M0] = distNeigh[d00P] = distNeigh[d00M] = deltaX1;
         distNeigh[dPP0] = distNeigh[dMP0] = distNeigh[dMM0] =
@@ -359,7 +359,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                     if (bcArray->isUndefined(ix1, ix2, ix3))
                         continue;
 
-                    Vector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
+                    GbVector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
                     internX1        = coords[0];
                     internX2        = coords[1];
                     internX3        = coords[2];
@@ -394,16 +394,16 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
 
                         gotQs = false;
 
-                        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+                        for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
                             q = geoObject3D->getIntersectionRaytraceFactor(internX1, internX2, internX3, rayX1[fdir],
                                                                            rayX2[fdir], rayX3[fdir]);
                             q /= distNeigh[fdir];
 
                             // assert(UbMath::lessEqual(q, c1o1));
 
-                            if (UbMath::inClosedInterval(q, c1o1, c1o1))
+                            if (ub_math::inClosedInterval(q, c1o1, c1o1))
                                 q = c1o1;
-                            if (UbMath::greater(q, c0o1) && UbMath::lessEqual(q, c1o1)) {
+                            if (ub_math::greater(q, c0o1) && ub_math::lessEqual(q, c1o1)) {
                                 //#pragma omp critical (BC_CHANGE)
                                 {
                                     bc = bcArray->getBC(ix1, ix2, ix3);
@@ -465,7 +465,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                     if (bcArray->isSolid(ix1, ix2, ix3) || bcArray->isUndefined(ix1, ix2, ix3))
                         continue;
 
-                    Vector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
+                    GbVector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
                     internX1        = coords[0];
                     internX2        = coords[1];
                     internX3        = coords[2];
@@ -493,10 +493,10 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                         gotQs = false;
 
                         GbPoint3D pointA(internX1, internX2, internX3);
-                        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
-                            real x1B = internX1 + D3Q27System::DX1[fdir] * deltaX1;
-                            real x2B = internX2 + D3Q27System::DX2[fdir] * deltaX2;
-                            real x3B = internX3 + D3Q27System::DX3[fdir] * deltaX3;
+                        for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
+                            real x1B = internX1 + d3q27_system::DX1[fdir] * deltaX1;
+                            real x2B = internX2 + d3q27_system::DX2[fdir] * deltaX2;
+                            real x3B = internX3 + d3q27_system::DX3[fdir] * deltaX3;
 
                             GbPoint3D pointB(x1B, x2B, x3B);
                             GbLine3D *clippedLine = this->geoObject3D->createClippedLine3D(pointA, pointB);
@@ -506,7 +506,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                 if (!this->isInverseSolid()) // A is outside
                                 {
                                     real distanceAB = pointA.getDistance(&pointB); // pointA to B
-                                    real distanceAP = UbMath::min(pointA.getDistance(clippedLine->getPoint1()),
+                                    real distanceAP = ub_math::min(pointA.getDistance(clippedLine->getPoint1()),
                                                                     pointA.getDistance(clippedLine->getPoint2()));
                                     q                 = distanceAP / distanceAB;
                                 } else {
@@ -528,9 +528,9 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block)
                                     }
                                 }
 
-                                if (UbMath::inClosedInterval(q, c1o1, c1o1))
+                                if (ub_math::inClosedInterval(q, c1o1, c1o1))
                                     q = c1o1;
-                                if (UbMath::lessEqual(q, c1o1) && UbMath::greater(q, c0o1)) {
+                                if (ub_math::lessEqual(q, c1o1) && ub_math::greater(q, c0o1)) {
                                     {
                                         bc = bcArray->getBC(ix1, ix2, ix3);
                                         if (!bc) {
@@ -618,8 +618,8 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3> &nodes, std::vecto
                 nodes.push_back(makeUbTuple((float)x1a, (float)x2a, (float)x3a));
                 node1Index = nodes.size() - 1;
 
-                for (int dir = D3Q27System::FSTARTDIR; dir <= D3Q27System::FENDDIR; dir++) {
-                    if (bc->hasBoundaryConditionFlag(D3Q27System::INVDIR[dir])) {
+                for (int dir = d3q27_system::FSTARTDIR; dir <= d3q27_system::FENDDIR; dir++) {
+                    if (bc->hasBoundaryConditionFlag(d3q27_system::INVDIR[dir])) {
                         real x1b, x2b, x3b, q = bc->getQ(dir);
                         switch (dir) {
                             case dP00:
@@ -841,8 +841,8 @@ vector<pair<GbPoint3D, GbPoint3D>> D3Q27Interactor::getQsLineSet()
                     pointpair.first.setX1(x1a);
                     pointpair.first.setX2(x2a);
                     pointpair.first.setX3(x3a);
-                    for (int dir = D3Q27System::FSTARTDIR; dir <= D3Q27System::FENDDIR; dir++) {
-                        if (bc->hasBoundaryConditionFlag(D3Q27System::INVDIR[dir])) {
+                    for (int dir = d3q27_system::FSTARTDIR; dir <= d3q27_system::FENDDIR; dir++) {
+                        if (bc->hasBoundaryConditionFlag(d3q27_system::INVDIR[dir])) {
                             real x1b, x2b, x3b, q = bc->getQ(dir);
                             switch (dir) {
                                 case dP00:

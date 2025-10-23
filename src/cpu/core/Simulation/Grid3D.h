@@ -35,14 +35,15 @@
 #ifndef GRID3D_H
 #define GRID3D_H
 
-#include <PointerDefinitions.h>
 #include <map>
 #include <vector>
 
+#include <basics/PointerDefinitions.h>
+#include <basics/geometry3d/GbVector3D.h>
 #include <basics/utilities/UbKeys.h>
 #include <basics/utilities/UbTuple.h>
-#include <basics/utilities/Vector3D.h>
-#include "lbm/constants/D3Q27.h"
+
+#include <lbm/constants/D3Q27.h>
 
 class CoordinateTransformation3D;
 
@@ -58,7 +59,7 @@ class Interactor3D;
 class Grid3D : public enableSharedFromThis<Grid3D>
 {
 public:
-    using Block3DKey      = UbKeys::Key3<int>;
+    using Block3DKey      = ub_keys::Key3<int>;
     using Block3DMap      = std::map<Block3DKey, SPtr<Block3D>>;
     using BlockIDMap      = std::map<int, SPtr<Block3D>>;
     using LevelSet        = std::vector<Block3DMap>;
@@ -202,7 +203,7 @@ public:
     real getDeltaX(int level) const;
     real getDeltaX(SPtr<Block3D> block) const;
     UbTupleDouble3 getNodeOffset(SPtr<Block3D> block) const;
-    Vector3D getNodeCoordinates(SPtr<Block3D> block, int ix1, int ix2, int ix3) const;
+    GbVector3D getNodeCoordinates(SPtr<Block3D> block, int ix1, int ix2, int ix3) const;
     UbTupleInt3 getNodeIndexes(SPtr<Block3D> block, real nodeX1Coord, real nodeX2Coord, real nodeX3Coord) const;
     void setBlockNX(int nx1, int nx2, int nx3);
     UbTupleInt3 getBlockNX() const;

@@ -48,7 +48,7 @@
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/Utilities/FindNeighbors.h"
 
-namespace QDebugVtkWriter
+namespace q_debug_vtk_writer
 {
 
 using namespace vf::lbm::dir;
@@ -123,7 +123,7 @@ inline void writeQLinesDebug(Parameter *para, QforBoundaryConditions &boundaryQ,
     writeQLines(para->getParH(level).get(), boundaryQ, filePath, writer);
 }
 
-} // namespace QDebugVtkWriter
+} // namespace q_debug_vtk_writer
 
 #endif
 

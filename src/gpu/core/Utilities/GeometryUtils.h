@@ -35,14 +35,16 @@
 #ifndef _GEOMETRYUTILS_H
 #define _GEOMETRYUTILS_H
 
+#include <algorithm>
+
 #include <cuda_runtime.h>
 
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
 
-__inline__ __host__ __device__ void getNeighborIndicesOfBSW(uint k_MMM, uint& k_PMM, uint& k_MPM, uint& k_MMP, uint& k_PPM,
-                                                            uint& k_PMP, uint& k_MPP, uint& k_PPP, const uint* neighborX,
-                                                            const uint* neighborY, const uint* neighborZ)
+constexpr void getNeighborIndicesOfBSW(uint k_MMM, uint& k_PMM, uint& k_MPM, uint& k_MMP, uint& k_PPM, uint& k_PMP,
+                                       uint& k_MPP, uint& k_PPP, const uint* neighborX, const uint* neighborY,
+                                       const uint* neighborZ)
 {
     k_PMM = neighborX[k_MMM];
     k_MPM = neighborY[k_MMM];
@@ -53,53 +55,32 @@ __inline__ __host__ __device__ void getNeighborIndicesOfBSW(uint k_MMM, uint& k_
     k_PPP = neighborX[k_MPP];
 }
 
-__inline__ __host__ __device__ uint findNearestCellBSW(const uint index, const real* coordsX, const real* coordsY,
-                                                       const real* coordsZ, const real posX, const real posY,
-                                                       const real posZ, const uint* neighborsX, const uint* neighborsY,
-                                                       const uint* neighborsZ, const uint* neighborsWSB)
+constexpr uint findNearestCellBSW(const uint index, const real* coordsX, const real* coordsY, const real* coordsZ,
+                                  const real posX, const real posY, const real posZ, const uint* neighborsX,
+                                  const uint* neighborsY, const uint* neighborsZ, const uint* neighborsWSB)
 {
     uint new_index = index;
+    constexpr uint comparisor = 1;
 
-    while (coordsX[new_index] > posX && coordsY[new_index] > posY && coordsZ[new_index] > posZ) {
-        new_index = max(1U, neighborsWSB[new_index]);
-    }
+    while(coordsX[new_index] > posX && coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = std::max(comparisor, neighborsWSB[new_index]);}
 
-    while (coordsX[new_index] > posX && coordsY[new_index] > posY) {
-        new_index = max(1, neighborsZ[neighborsWSB[new_index]]);
-    }
-    while (coordsX[new_index] > posX && coordsZ[new_index] > posZ) {
-        new_index = max(1, neighborsY[neighborsWSB[new_index]]);
-    }
-    while (coordsY[new_index] > posY && coordsZ[new_index] > posZ) {
-        new_index = max(1, neighborsX[neighborsWSB[new_index]]);
-    }
+    while(coordsX[new_index] > posX && coordsY[new_index] > posY ){ new_index = std::max(comparisor, neighborsZ[neighborsWSB[new_index]]);}
+    while(coordsX[new_index] > posX && coordsZ[new_index] > posZ ){ new_index = std::max(comparisor, neighborsY[neighborsWSB[new_index]]);}
+    while(coordsY[new_index] > posY && coordsZ[new_index] > posZ ){ new_index = std::max(comparisor, neighborsX[neighborsWSB[new_index]]);}
 
-    while (coordsX[new_index] > posX) {
-        new_index = max(1U, neighborsY[neighborsZ[neighborsWSB[new_index]]]);
-    }
-    while (coordsY[new_index] > posY) {
-        new_index = max(1U, neighborsX[neighborsZ[neighborsWSB[new_index]]]);
-    }
-    while (coordsZ[new_index] > posZ) {
-        new_index = max(1U, neighborsX[neighborsY[neighborsWSB[new_index]]]);
-    }
+    while(coordsX[new_index] > posX){ new_index = std::max(comparisor, neighborsY[neighborsZ[neighborsWSB[new_index]]]);}
+    while(coordsY[new_index] > posY){ new_index = std::max(comparisor, neighborsX[neighborsZ[neighborsWSB[new_index]]]);}
+    while(coordsZ[new_index] > posZ){ new_index = std::max(comparisor, neighborsX[neighborsY[neighborsWSB[new_index]]]);}
 
-    while (coordsX[new_index] < posX) {
-        new_index = max(1U, neighborsX[new_index]);
-    }
-    while (coordsY[new_index] < posY) {
-        new_index = max(1U, neighborsY[new_index]);
-    }
-    while (coordsZ[new_index] < posZ) {
-        new_index = max(1U, neighborsZ[new_index]);
-    }
+    while(coordsX[new_index] < posX){ new_index = std::max(comparisor, neighborsX[new_index]);}
+    while(coordsY[new_index] < posY){ new_index = std::max(comparisor, neighborsY[new_index]);}
+    while(coordsZ[new_index] < posZ){ new_index = std::max(comparisor, neighborsZ[new_index]);}
 
     return neighborsWSB[new_index];
 }
 
-__inline__ __host__ __device__ real trilinearInterpolation(real dXM, real dYM, real dZM, uint kMMM, uint kPMM, uint kMPM,
-                                                           uint kMMP, uint kPPM, uint kPMP, uint kMPP, uint kPPP,
-                                                           const real* quantity)
+constexpr real trilinearInterpolation(real dXM, real dYM, real dZM, uint kMMM, uint kPMM, uint kMPM, uint kMMP, uint kPPM,
+                                      uint kPMP, uint kMPP, uint kPPP, const real* quantity)
 {
     const real dXP = vf::basics::constant::c1o1 - dXM;
     const real dYP = vf::basics::constant::c1o1 - dYM;
@@ -109,30 +90,28 @@ __inline__ __host__ __device__ real trilinearInterpolation(real dXM, real dYM, r
             dXP * dYM * dZM * quantity[kMPP] + dXM * dYM * dZM * quantity[kPPP]);
 }
 
-__inline__ __host__ __device__ void translate2D(real posX, real posY, real& newPosX, real& newPosY, real translationX,
-                                                real translationY)
+constexpr void translate2D(real posX, real posY, real& newPosX, real& newPosY, real translationX, real translationY)
 {
     newPosX = posX + translationX;
     newPosY = posY + translationY;
 }
 
-__inline__ __host__ __device__ void invTranslate2D(real posX, real posY, real& newPosX, real& newPosY, real translationX,
-                                                   real translationY)
+constexpr void invTranslate2D(real posX, real posY, real& newPosX, real& newPosY, real translationX, real translationY)
 {
     newPosX = posX - translationX;
     newPosY = posY - translationY;
 }
 
-__inline__ __host__ __device__ void translate3D(real posX, real posY, real posZ, real& newPosX, real& newPosY, real& newPosZ,
-                                                real translationX, real translationY, real translationZ)
+constexpr void translate3D(real posX, real posY, real posZ, real& newPosX, real& newPosY, real& newPosZ, real translationX,
+                           real translationY, real translationZ)
 {
     newPosX = posX + translationX;
     newPosY = posY + translationY;
     newPosZ = posZ + translationZ;
 }
 
-__inline__ __host__ __device__ void invTranslate3D(real posX, real posY, real posZ, real& newPosX, real& newPosY,
-                                                   real& newPosZ, real translationX, real translationY, real translationZ)
+constexpr void invTranslate3D(real posX, real posY, real posZ, real& newPosX, real& newPosY, real& newPosZ,
+                              real translationX, real translationY, real translationZ)
 {
     newPosX = posX - translationX;
     newPosY = posY - translationY;
@@ -153,7 +132,6 @@ __inline__ __host__ __device__ void rotate2D(real angle, real posX, real posY, r
     rotate2D(angle, newPosX, newPosY, tmpX, tmpY);
     translate2D(tmpX, tmpY, newPosX, newPosY, originX, originY);
 }
-
 __inline__ __host__ __device__ void invRotate2D(real angle, real posX, real posY, real& newPosX, real& newPosY)
 {
     newPosX = posX * cos(angle) + posY * sin(angle);

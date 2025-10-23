@@ -297,8 +297,8 @@ protected:
                 if (it == this->cbVectorMap.end())
                     throw UbException(UB_EXARGS, "map ist leer");
                 else if (it->first != vectorKey)
-                    throw UbException(UB_EXARGS, "vectorKey = " + UbSystem::toString(vectorKey) +
-                                                     " nicht vorhanden it->first =" + UbSystem::toString(it->first));
+                    throw UbException(UB_EXARGS, "vectorKey = " + ub_system::toString(vectorKey) +
+                                                     " nicht vorhanden it->first =" + ub_system::toString(it->first));
 
                 this->setCbVectorData(*it->second /*vec*/, vectorKey, startIndexInPool, dataSize);
             }
@@ -515,7 +515,7 @@ public:
     std::string toString() const override
     {
         return "TbCbVectorSenderMpiPool<" + (std::string) typeid(T).name() + " to rank (tag)" +
-               UbSystem::toString(getSendTbRank()) + "(" + UbSystem::toString(getSendTbTag()) + ")";
+               ub_system::toString(getSendTbRank()) + "(" + ub_system::toString(getSendTbTag()) + ")";
     }
 
 protected:
@@ -564,7 +564,7 @@ public:
     std::string toString() const override
     {
         return "TbCbVectorReceiverMpiPool<" + (std::string) typeid(T).name() + " to rank (tag)" +
-               UbSystem::toString(getRecvFromRank()) + "(" + UbSystem::toString(getRecvFromTag()) + ")";
+               ub_system::toString(getRecvFromRank()) + "(" + ub_system::toString(getRecvFromTag()) + ")";
     }
 
 protected:

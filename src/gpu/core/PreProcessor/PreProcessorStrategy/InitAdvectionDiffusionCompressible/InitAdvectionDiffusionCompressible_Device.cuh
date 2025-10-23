@@ -38,14 +38,14 @@
 #include <curand.h>
 
 __global__ void InitAdvectionDiffusionCompressible_Device(
-    uint* neighborX,
-    uint* neighborY,
-    uint* neighborZ,
-    uint* typeOfGridNode,
-    real* concentration,
-    real* velocityX,
-    real* velocityY,
-    real* velocityZ,
+    const uint* neighborX,
+    const uint* neighborY,
+    const uint* neighborZ,
+    const uint* typeOfGridNode,
+    const real* concentration,
+    const real* velocityX,
+    const real* velocityY,
+    const real* velocityZ,
     unsigned long long numberOfLBnodes,
     real* distributionsAD,
     bool isEvenTimestep);

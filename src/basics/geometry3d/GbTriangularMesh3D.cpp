@@ -91,7 +91,7 @@ GbTriangularMesh3D::GbTriangularMesh3D(string name, vector<GbTriangle3D *> *tris
     GbPoint3D *p2               = NULL;
     GbPoint3D *p3               = NULL;
     for (int u = 0; u < (int)tris->size(); u++) {
-        if (UbMath::zero((*tris)[u]->getArea())) {
+        if (ub_math::zero((*tris)[u]->getArea())) {
             (*tris)[u]->finalize();
             delete (*tris)[u];
             (*tris)[u] = NULL;
@@ -1194,7 +1194,7 @@ void GbTriangularMesh3D::RandomRay(GbVector3D &ray, int radius)
     /* the sphere is sliced at z, and a random point at angle t
     generated on the circle of intersection. */
     z = 2.0 * (double)rand() / MAX_INT - 1.0;
-    t = 2.0 * UbMath::PI * (double)rand() / MAX_INT;
+    t = 2.0 * ub_math::PI * (double)rand() / MAX_INT;
     w = sqrt(1 - z * z);
     x = w * cos(t);
     y = w * sin(t);
@@ -1231,8 +1231,8 @@ char GbTriangularMesh3D::SegPlaneInt(GbTriangle3D *T, GbVector3D &q, GbVector3D 
 
     if (denom == 0.0) { /* Segment is parallel to plane. */
         if (num == 0.0) /* q is on plane. */
-                        // if (UbMath::zero(denom)) {  /* Segment is parallel to plane. */
-            //   if ( UbMath::zero(num))   /* q is on plane. */
+                        // if (ub_math::zero(denom)) {  /* Segment is parallel to plane. */
+            //   if ( ub_math::zero(num))   /* q is on plane. */
             return 'p';
         else
             return '0';
@@ -1254,9 +1254,9 @@ char GbTriangularMesh3D::SegPlaneInt(GbTriangle3D *T, GbVector3D &q, GbVector3D 
 
     // if ( (0.0 < t) && (t < 1.0) )
     //   return '1';
-    // else if ( UbMath::zero(num))   /* t == 0 */
+    // else if ( ub_math::zero(num))   /* t == 0 */
     //   return 'q';
-    // else if ( UbMath::equal(num , denom) ) /* t == 1 */
+    // else if ( ub_math::equal(num , denom) ) /* t == 1 */
     //   return 'r';
     // else return '0';
 }
@@ -1440,8 +1440,8 @@ char GbTriangularMesh3D::SegTriCross(GbTriangle3D *T, GbVector3D &q, GbVector3D 
 
     /* Same sign: segment intersects interior of triangle. */
     if (((vol0 > 0.) && (vol1 > 0.) && (vol2 > 0.)) || ((vol0 < 0.) && (vol1 < 0.) && (vol2 < 0.)))
-    // if ( ( UbMath::greater(vol0, 0. ) && UbMath::greater(vol1 , 0. ) && UbMath::greater(vol2 , 0. ) ) ||
-    //     ( UbMath::less(vol0, 0. ) && UbMath::less(vol1, 0. ) && UbMath::less(vol2, 0. ) ) )
+    // if ( ( ub_math::greater(vol0, 0. ) && ub_math::greater(vol1 , 0. ) && ub_math::greater(vol2 , 0. ) ) ||
+    //     ( ub_math::less(vol0, 0. ) && ub_math::less(vol1, 0. ) && ub_math::less(vol2, 0. ) ) )
     {
         return 'f';
     }

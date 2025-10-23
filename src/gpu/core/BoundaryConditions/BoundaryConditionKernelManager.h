@@ -48,12 +48,15 @@ class BoundaryConditionFactory;
 class Parameter;
 struct LBMSimulationParameter;
 
-using boundaryCondition = std::function<void(LBMSimulationParameter*, QforBoundaryConditions*)>;
-using directionalBoundaryCondition = std::function<void(LBMSimulationParameter*, QforDirectionalBoundaryCondition*)>;
-using boundaryConditionWithParameter = std::function<void(Parameter*, QforBoundaryConditions*, const int level)>;
-using precursorBoundaryCondition =
+using BoundaryConditionKernel = std::function<void(LBMSimulationParameter*, QforBoundaryConditions*)>;
+using DirectionalBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, QforDirectionalBoundaryCondition*)>;
+using BoundaryConditionWithParameterKernel = std::function<void(Parameter*, QforBoundaryConditions*, const int level)>;
+using PrecursorBoundaryConditionKernel =
     std::function<void(LBMSimulationParameter*, QforPrecursorBoundaryConditions*, real tRatio, real velocityRatio)>;
-
+using ADNoFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNoFluxBoundaryConditions bcParams)>;
+using ADFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionFluxBoundaryConditions bcParams)>;
+using ADDirichletBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionDirichletBoundaryConditions bcParams)>;
+using ADNeumannBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNeumannBoundaryConditions bcParams)>;
 //! \class BCKernelManager
 //! \brief manage the cuda kernel calls to boundary conditions
 //! \details This class stores the boundary conditions and manages the calls to the boundary condition kernels.
@@ -61,7 +64,7 @@ class BoundaryConditionKernelManager
 {
 public:
     //! Class constructor
-    //! \param parameter shared pointer to instance of class Parameter
+    //! \param bcFactory access to boundary condition factory without transfer of ownership
     //! \throws std::runtime_error when the user forgets to specify a boundary condition
     BoundaryConditionKernelManager(SPtr<Parameter> parameter, const BoundaryConditionFactory* bcFactory);
 
@@ -75,7 +78,7 @@ public:
     void runGeoBCKernelPost(int level) const;
 
     //! \brief calls the device function of the geometry boundary condition (pre-collision)
-    void runGeoBCKernelPre(int level, unsigned int t, CudaMemoryManager *cudaMemoryManager) const;
+    void runGeoBCKernelPre(int level, unsigned int t, CudaMemoryManager* cudaMemoryManager) const;
 
     //! \brief calls the device function of the slip boundary condition (post-collision)
     void runSlipBCKernelPost(int level) const;
@@ -92,6 +95,12 @@ public:
     //! \brief calls the device function of the stress wall model (post-collision)
     void runStressWallModelKernelPost(int level) const;
 
+    void runADNoFluxBCKernel(int level) const ;
+    void runADFluxBCKernel(int level) const ;
+    void runADDirichletBCKernel(int level) const ;
+    void runADNeumannBCKernel(int level) const ;
+        //! \brief calls the device function of the surface layer boundary condition (post-collision)
+    void runSurfaceLayerBCKernelPost(int level) const;
 private:
     //! \brief check if a directional boundary condition was set
     //! \throws std::runtime_error if boundary nodes were assigned, but no boundary condition was set in the boundary condition factory
@@ -102,7 +111,7 @@ private:
     void checkBoundaryCondition(const bcFunction& boundaryCondition,
                                 const std::vector<QforDirectionalBoundaryCondition>& bcVector, const std::string& bcName)
     {
-        if (!boundaryCondition && bcVector.size() > 0)
+        if (!boundaryCondition && !bcVector.empty())
             throw std::runtime_error("The boundary condition " + bcName + " was not set!");
     }
 
@@ -123,14 +132,20 @@ private:
 
     SPtr<Parameter> para;
 
-    boundaryCondition velocityBoundaryConditionPost = nullptr;
-    boundaryCondition noSlipBoundaryConditionPost = nullptr;
-    boundaryCondition slipBoundaryConditionPost = nullptr;
-    boundaryCondition geometryBoundaryConditionPost = nullptr;
-    boundaryConditionWithParameter stressBoundaryConditionPost = nullptr;
-    precursorBoundaryCondition precursorBoundaryConditionPost = nullptr;
-    boundaryCondition pressureBoundaryConditionPre = nullptr;
-    directionalBoundaryCondition directionalPressureBoundaryConditionPre = nullptr;
+    BoundaryConditionKernel velocityBoundaryConditionPost = nullptr;
+    BoundaryConditionKernel noSlipBoundaryConditionPost = nullptr;
+    BoundaryConditionKernel slipBoundaryConditionPost = nullptr;
+    BoundaryConditionKernel geometryBoundaryConditionPost = nullptr;
+    BoundaryConditionKernel stressBoundaryConditionPost = nullptr;
+    PrecursorBoundaryConditionKernel precursorBoundaryConditionPost = nullptr;
+    BoundaryConditionKernel pressureBoundaryConditionPre = nullptr;
+    DirectionalBoundaryConditionKernel directionalPressureBoundaryConditionPre = nullptr;
+    ADNoFluxBoundaryConditionKernel ADNoFluxBoundaryConditionPost = nullptr;
+    ADFluxBoundaryConditionKernel ADFluxBoundaryConditionPost = nullptr;
+    ADDirichletBoundaryConditionKernel ADDirichletBoundaryConditionPost = nullptr;
+    ADNeumannBoundaryConditionKernel ADNeumannBoundaryConditionPost = nullptr;
+    BoundaryConditionKernel surfaceLayerBoundaryConditionPost = nullptr;
+
 };
 #endif
 

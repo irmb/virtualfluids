@@ -47,7 +47,7 @@
 //!
 //////////////////////////////////////////////////////////////////////////
 
-namespace UbKeys
+namespace ub_keys
 {
 // nested class
 template <typename T1, typename T2 = T1>
@@ -306,7 +306,7 @@ private:
     T3 t3;
     T4 t4;
 };
-} // namespace UbKeys
+} // namespace ub_keys
 
 #endif // UBKEYS_H
 

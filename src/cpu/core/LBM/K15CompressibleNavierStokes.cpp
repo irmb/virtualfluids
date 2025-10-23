@@ -100,7 +100,7 @@ SPtr<LBMKernel> K15CompressibleNavierStokes::clone()
 //////////////////////////////////////////////////////////////////////////
 void K15CompressibleNavierStokes::calculate(int step)
 {
-   using namespace D3Q27System;
+   using namespace d3q27_system;
    using namespace std;
    using namespace vf::lbm::dir;
 
@@ -131,9 +131,9 @@ void K15CompressibleNavierStokes::calculate(int step)
    }
    /////////////////////////////////////
 
-   localDistributions = dynamicPointerCast<EsoSplit>(dataSet->getFdistributions())->getLocalDistributions();
-   nonLocalDistributions = dynamicPointerCast<EsoSplit>(dataSet->getFdistributions())->getNonLocalDistributions();
-   zeroDistributions = dynamicPointerCast<EsoSplit>(dataSet->getFdistributions())->getZeroDistributions();
+   splitA = dynamicPointerCast<EsoSplit>(dataSet->getFdistributions())->getSplitA();
+   splitB = dynamicPointerCast<EsoSplit>(dataSet->getFdistributions())->getSplitB();
+   split0 = dynamicPointerCast<EsoSplit>(dataSet->getFdistributions())->getSplit0();
 
    SPtr<BCArray3D> bcArray = this->getBCSet()->getBCArray();
 
@@ -184,35 +184,35 @@ void K15CompressibleNavierStokes::calculate(int step)
                 // a b c
                 //-1 0 1
 
-                real mfcbb = (*this->localDistributions)(eP00, x1, x2, x3);
-                real mfbcb = (*this->localDistributions)(e0P0, x1, x2, x3);
-                real mfbbc = (*this->localDistributions)(e00P, x1, x2, x3);
-                real mfccb = (*this->localDistributions)(ePP0, x1, x2, x3);
-                real mfacb = (*this->localDistributions)(eMP0, x1p, x2, x3);
-                real mfcbc = (*this->localDistributions)(eP0P, x1, x2, x3);
-                real mfabc = (*this->localDistributions)(eM0P, x1p, x2, x3);
-                real mfbcc = (*this->localDistributions)(e0PP, x1, x2, x3);
-                real mfbac = (*this->localDistributions)(e0MP, x1, x2p, x3);
-                real mfccc = (*this->localDistributions)(ePPP, x1, x2, x3);
-                real mfacc = (*this->localDistributions)(eMPP, x1p, x2, x3);
-                real mfcac = (*this->localDistributions)(ePMP, x1, x2p, x3);
-                real mfaac = (*this->localDistributions)(eMMP, x1p, x2p, x3);
+                real mfcbb = (*this->splitA)(eP00, x1, x2, x3);
+                real mfbcb = (*this->splitA)(e0P0, x1, x2, x3);
+                real mfbbc = (*this->splitA)(e00P, x1, x2, x3);
+                real mfccb = (*this->splitA)(ePP0, x1, x2, x3);
+                real mfacb = (*this->splitA)(eMP0, x1p, x2, x3);
+                real mfcbc = (*this->splitA)(eP0P, x1, x2, x3);
+                real mfabc = (*this->splitA)(eM0P, x1p, x2, x3);
+                real mfbcc = (*this->splitA)(e0PP, x1, x2, x3);
+                real mfbac = (*this->splitA)(e0MP, x1, x2p, x3);
+                real mfccc = (*this->splitA)(ePPP, x1, x2, x3);
+                real mfacc = (*this->splitA)(eMPP, x1p, x2, x3);
+                real mfcac = (*this->splitA)(ePMP, x1, x2p, x3);
+                real mfaac = (*this->splitA)(eMMP, x1p, x2p, x3);
 
-                real mfabb = (*this->nonLocalDistributions)(eM00, x1p, x2, x3);
-                real mfbab = (*this->nonLocalDistributions)(e0M0, x1, x2p, x3);
-                real mfbba = (*this->nonLocalDistributions)(e00M, x1, x2, x3p);
-                real mfaab = (*this->nonLocalDistributions)(eMM0, x1p, x2p, x3);
-                real mfcab = (*this->nonLocalDistributions)(ePM0, x1, x2p, x3);
-                real mfaba = (*this->nonLocalDistributions)(eM0M, x1p, x2, x3p);
-                real mfcba = (*this->nonLocalDistributions)(eP0M, x1, x2, x3p);
-                real mfbaa = (*this->nonLocalDistributions)(e0MM, x1, x2p, x3p);
-                real mfbca = (*this->nonLocalDistributions)(e0PM, x1, x2, x3p);
-                real mfaaa = (*this->nonLocalDistributions)(eMMM, x1p, x2p, x3p);
-                real mfcaa = (*this->nonLocalDistributions)(ePMM, x1, x2p, x3p);
-                real mfaca = (*this->nonLocalDistributions)(eMPM, x1p, x2, x3p);
-                real mfcca = (*this->nonLocalDistributions)(ePPM, x1, x2, x3p);
+                real mfabb = (*this->splitB)(eM00, x1p, x2, x3);
+                real mfbab = (*this->splitB)(e0M0, x1, x2p, x3);
+                real mfbba = (*this->splitB)(e00M, x1, x2, x3p);
+                real mfaab = (*this->splitB)(eMM0, x1p, x2p, x3);
+                real mfcab = (*this->splitB)(ePM0, x1, x2p, x3);
+                real mfaba = (*this->splitB)(eM0M, x1p, x2, x3p);
+                real mfcba = (*this->splitB)(eP0M, x1, x2, x3p);
+                real mfbaa = (*this->splitB)(e0MM, x1, x2p, x3p);
+                real mfbca = (*this->splitB)(e0PM, x1, x2, x3p);
+                real mfaaa = (*this->splitB)(eMMM, x1p, x2p, x3p);
+                real mfcaa = (*this->splitB)(ePMM, x1, x2p, x3p);
+                real mfaca = (*this->splitB)(eMPM, x1p, x2, x3p);
+                real mfcca = (*this->splitB)(ePPM, x1, x2, x3p);
 
-                real mfbbb = (*this->zeroDistributions)(x1, x2, x3);
+                real mfbbb = (*this->split0)(x1, x2, x3);
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 real drho = ((((mfccc+mfaaa)+(mfaca+mfcac))+((mfacc+mfcaa)+(mfaac+mfcca)))+
@@ -897,44 +897,44 @@ void K15CompressibleNavierStokes::calculate(int step)
                 if (dif > 10.0E-15 || dif < -10.0E-15)
 #endif
                 {
-                    UB_THROW(UbException(UB_EXARGS, "rho="+UbSystem::toString(drho)+", rho_post="+UbSystem::toString(drho_post)
-                    +" dif="+UbSystem::toString(dif)
-                    +" rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3)
-                    +" in " + block.lock()->toString()+" step = "+UbSystem::toString(step)));
+                    UB_THROW(UbException(UB_EXARGS, "rho="+ub_system::toString(drho)+", rho_post="+ub_system::toString(drho_post)
+                    +" dif="+ub_system::toString(dif)
+                    +" rho is not correct for node "+ub_system::toString(x1)+","+ub_system::toString(x2)+","+ub_system::toString(x3)
+                    +" in " + block.lock()->toString()+" step = "+ub_system::toString(step)));
                 }
 #endif
                 //////////////////////////////////////////////////////////////////////////
                 //write distribution
                 //////////////////////////////////////////////////////////////////////////
-                (*this->localDistributions)(eP00, x1, x2, x3)    = mfabb;
-                (*this->localDistributions)(e0P0, x1, x2, x3)    = mfbab;
-                (*this->localDistributions)(e00P, x1, x2, x3)    = mfbba;
-                (*this->localDistributions)(ePP0, x1, x2, x3)   = mfaab;
-                (*this->localDistributions)(eMP0, x1p, x2, x3)   = mfcab;
-                (*this->localDistributions)(eP0P, x1, x2, x3)   = mfaba;
-                (*this->localDistributions)(eM0P, x1p, x2, x3)   = mfcba;
-                (*this->localDistributions)(e0PP, x1, x2, x3)   = mfbaa;
-                (*this->localDistributions)(e0MP, x1, x2p, x3)   = mfbca;
-                (*this->localDistributions)(ePPP, x1, x2, x3)  = mfaaa;
-                (*this->localDistributions)(eMPP, x1p, x2, x3)  = mfcaa;
-                (*this->localDistributions)(ePMP, x1, x2p, x3)  = mfaca;
-                (*this->localDistributions)(eMMP, x1p, x2p, x3)  = mfcca;
+                (*this->splitA)(eP00, x1, x2, x3)    = mfabb;
+                (*this->splitA)(e0P0, x1, x2, x3)    = mfbab;
+                (*this->splitA)(e00P, x1, x2, x3)    = mfbba;
+                (*this->splitA)(ePP0, x1, x2, x3)   = mfaab;
+                (*this->splitA)(eMP0, x1p, x2, x3)   = mfcab;
+                (*this->splitA)(eP0P, x1, x2, x3)   = mfaba;
+                (*this->splitA)(eM0P, x1p, x2, x3)   = mfcba;
+                (*this->splitA)(e0PP, x1, x2, x3)   = mfbaa;
+                (*this->splitA)(e0MP, x1, x2p, x3)   = mfbca;
+                (*this->splitA)(ePPP, x1, x2, x3)  = mfaaa;
+                (*this->splitA)(eMPP, x1p, x2, x3)  = mfcaa;
+                (*this->splitA)(ePMP, x1, x2p, x3)  = mfaca;
+                (*this->splitA)(eMMP, x1p, x2p, x3)  = mfcca;
 
-                (*this->nonLocalDistributions)(eM00, x1p, x2, x3) = mfcbb;
-                (*this->nonLocalDistributions)(e0M0, x1, x2p, x3) = mfbcb;
-                (*this->nonLocalDistributions)(e00M, x1, x2, x3p) = mfbbc;
-                (*this->nonLocalDistributions)(eMM0, x1p, x2p, x3) = mfccb;
-                (*this->nonLocalDistributions)(ePM0, x1, x2p, x3) = mfacb;
-                (*this->nonLocalDistributions)(eM0M, x1p, x2, x3p) = mfcbc;
-                (*this->nonLocalDistributions)(eP0M, x1, x2, x3p) = mfabc;
-                (*this->nonLocalDistributions)(e0MM, x1, x2p, x3p) = mfbcc;
-                (*this->nonLocalDistributions)(e0PM, x1, x2, x3p) = mfbac;
-                (*this->nonLocalDistributions)(eMMM, x1p, x2p, x3p) = mfccc;
-                (*this->nonLocalDistributions)(ePMM, x1, x2p, x3p) = mfacc;
-                (*this->nonLocalDistributions)(eMPM, x1p, x2, x3p) = mfcac;
-                (*this->nonLocalDistributions)(ePPM, x1, x2, x3p) = mfaac;
+                (*this->splitB)(eM00, x1p, x2, x3) = mfcbb;
+                (*this->splitB)(e0M0, x1, x2p, x3) = mfbcb;
+                (*this->splitB)(e00M, x1, x2, x3p) = mfbbc;
+                (*this->splitB)(eMM0, x1p, x2p, x3) = mfccb;
+                (*this->splitB)(ePM0, x1, x2p, x3) = mfacb;
+                (*this->splitB)(eM0M, x1p, x2, x3p) = mfcbc;
+                (*this->splitB)(eP0M, x1, x2, x3p) = mfabc;
+                (*this->splitB)(e0MM, x1, x2p, x3p) = mfbcc;
+                (*this->splitB)(e0PM, x1, x2, x3p) = mfbac;
+                (*this->splitB)(eMMM, x1p, x2p, x3p) = mfccc;
+                (*this->splitB)(ePMM, x1, x2p, x3p) = mfacc;
+                (*this->splitB)(eMPM, x1p, x2, x3p) = mfcac;
+                (*this->splitB)(ePPM, x1, x2, x3p) = mfaac;
 
-                (*this->zeroDistributions)(x1, x2, x3) = mfbbb;
+                (*this->split0)(x1, x2, x3) = mfbbb;
                 //////////////////////////////////////////////////////////////////////////
             }
          }

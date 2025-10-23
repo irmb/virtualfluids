@@ -33,21 +33,11 @@
 #ifndef LBM_SCALING_HELPER_FUNCTIONS_H
 #define LBM_SCALING_HELPER_FUNCTIONS_H
 
-#ifndef __host__
-#define __host__
-#endif
-#ifndef __device__
-#define __device__
-#endif
-
 #include <basics/constants/NumericConstants.h>
 
 #include "lbm/constants/D3Q27.h"
 
 #include "lbm/MacroscopicQuantities.h"
-
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
 
 namespace vf::lbm
 {
@@ -83,8 +73,9 @@ struct MomentsOnSourceNode
     real kxxMyyFromfcNEQ;
     real kxxMzzFromfcNEQ;
 
-    __host__ __device__ void calculate(const real *const f, const real omega)
+    constexpr void calculate(const real *const f, const real omega)
     {
+        using namespace vf::basics::constant;
         // const real f_000 = f[dir::d000];
         const real fP00 = f[dir::dP00];
         const real fM00 = f[dir::dM00];
@@ -113,7 +104,7 @@ struct MomentsOnSourceNode
         const real fPMM = f[dir::dPMM];
         const real fMMM = f[dir::dMMM];
 
-        real oneOverRho;
+        real oneOverRho = 0.0;
         getCompressibleMacroscopicValues(f, this->drho, oneOverRho, this->velocityX, this->velocityY, this->velocityZ);
 
         ////////////////////////////////////////////////////////////////////////////////////
@@ -158,49 +149,51 @@ private:
     vf::lbm::MomentsOnSourceNode momentsMMM;
 
 public:
-    __host__ __device__ void calculatePPP(const real *const f, const real omega)
+    constexpr void calculatePPP(const real *const f, const real omega)
     {
         momentsPPP.calculate(f, omega);
     }
 
-    __host__ __device__ void calculateMPP(const real *const f, const real omega)
+    constexpr void calculateMPP(const real *const f, const real omega)
     {
         momentsMPP.calculate(f, omega);
     }
 
-    __host__ __device__ void calculatePMP(const real *const f, const real omega)
+    constexpr void calculatePMP(const real *const f, const real omega)
     {
         momentsPMP.calculate(f, omega);
     }
 
-    __host__ __device__ void calculateMMP(const real *const f, const real omega)
+    constexpr void calculateMMP(const real *const f, const real omega)
     {
         momentsMMP.calculate(f, omega);
     }
 
-    __host__ __device__ void calculatePPM(const real *const f, const real omega)
+    constexpr void calculatePPM(const real *const f, const real omega)
     {
         momentsPPM.calculate(f, omega);
     }
 
-    __host__ __device__ void calculateMPM(const real *const f, const real omega)
+    constexpr void calculateMPM(const real *const f, const real omega)
     {
         momentsMPM.calculate(f, omega);
     }
 
-    __host__ __device__ void calculatePMM(const real *const f, const real omega)
+    constexpr void calculatePMM(const real *const f, const real omega)
     {
         momentsPMM.calculate(f, omega);
     }
 
-    __host__ __device__ void calculateMMM(const real *const f, const real omega)
+    constexpr void calculateMMM(const real *const f, const real omega)
     {
         momentsMMM.calculate(f, omega);
     }
 
-    __host__ __device__ void calculateCoefficients(InterpolationCoefficients &coefficients, real xoff, real yoff,
+    constexpr void calculateCoefficients(InterpolationCoefficients &coefficients, real xoff, real yoff,
                                                    real zoff) const
     {
+        using namespace vf::basics::constant;
+
         real& a000 = coefficients.a000;
         real& b000 = coefficients.b000;
         real& c000 = coefficients.c000;

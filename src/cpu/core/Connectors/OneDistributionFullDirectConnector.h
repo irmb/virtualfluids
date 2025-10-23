@@ -60,13 +60,13 @@ protected:
     inline void exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To) override;
 
 private:
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsFrom;
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsFrom;
-    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsFrom;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr fSplitAFrom;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr fSplitBFrom;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr   fSplit0From;
 
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr localDistributionsTo;
-    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsTo;
-    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr zeroDistributionsTo;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr fSplitATo;
+    CbArray4D<real, IndexerX4X3X2X1>::CbArray4DPtr fSplitBTo;
+    CbArray3D<real, IndexerX3X2X1>::CbArray3DPtr   fSplit0To;
 
     SPtr<EsoTwist3D> fFrom;
     SPtr<EsoTwist3D> fTo;
@@ -74,74 +74,74 @@ private:
 //////////////////////////////////////////////////////////////////////////
 inline void OneDistributionFullDirectConnector::updatePointers()
 {
-    localDistributionsFrom = dynamicPointerCast<EsoSplit>(this->fFrom)->getLocalDistributions();
-    nonLocalDistributionsFrom = dynamicPointerCast<EsoSplit>(this->fFrom)->getNonLocalDistributions();
-    zeroDistributionsFrom = dynamicPointerCast<EsoSplit>(this->fFrom)->getZeroDistributions();
+    fSplitAFrom = dynamicPointerCast<EsoSplit>(this->fFrom)->getSplitA();
+    fSplitBFrom = dynamicPointerCast<EsoSplit>(this->fFrom)->getSplitB();
+    fSplit0From = dynamicPointerCast<EsoSplit>(this->fFrom)->getSplit0();
 
-    localDistributionsTo = dynamicPointerCast<EsoSplit>(this->fTo)->getLocalDistributions();
-    nonLocalDistributionsTo = dynamicPointerCast<EsoSplit>(this->fTo)->getNonLocalDistributions();
-    zeroDistributionsTo     = dynamicPointerCast<EsoSplit>(this->fTo)->getZeroDistributions();
+    fSplitATo = dynamicPointerCast<EsoSplit>(this->fTo)->getSplitA();
+    fSplitBTo = dynamicPointerCast<EsoSplit>(this->fTo)->getSplitB();
+    fSplit0To = dynamicPointerCast<EsoSplit>(this->fTo)->getSplit0();
 }
 //////////////////////////////////////////////////////////////////////////
 inline void OneDistributionFullDirectConnector::exchangeData(int x1From, int x2From, int x3From, int x1To, int x2To, int x3To)
 {
     using namespace vf::lbm::dir;
 
-    (*this->localDistributionsTo)(eP00, x1To, x2To, x3To) =
-        (*this->localDistributionsFrom)(eP00, x1From, x2From, x3From);
-    (*this->localDistributionsTo)(e0P0, x1To, x2To, x3To) =
-        (*this->localDistributionsFrom)(e0P0, x1From, x2From, x3From);
-    (*this->localDistributionsTo)(e00P, x1To, x2To, x3To) =
-        (*this->localDistributionsFrom)(e00P, x1From, x2From, x3From);
-    (*this->localDistributionsTo)(ePP0, x1To, x2To, x3To) =
-        (*this->localDistributionsFrom)(ePP0, x1From, x2From, x3From);
-    (*this->localDistributionsTo)(eMP0, x1To + 1, x2To, x3To) =
-        (*this->localDistributionsFrom)(eMP0, x1From + 1, x2From, x3From);
-    (*this->localDistributionsTo)(eP0P, x1To, x2To, x3To) =
-        (*this->localDistributionsFrom)(eP0P, x1From, x2From, x3From);
-    (*this->localDistributionsTo)(eM0P, x1To + 1, x2To, x3To) =
-        (*this->localDistributionsFrom)(eM0P, x1From + 1, x2From, x3From);
-    (*this->localDistributionsTo)(e0PP, x1To, x2To, x3To) =
-        (*this->localDistributionsFrom)(e0PP, x1From, x2From, x3From);
-    (*this->localDistributionsTo)(e0MP, x1To, x2To + 1, x3To) =
-        (*this->localDistributionsFrom)(e0MP, x1From, x2From + 1, x3From);
-    (*this->localDistributionsTo)(ePPP, x1To, x2To, x3To) =
-        (*this->localDistributionsFrom)(ePPP, x1From, x2From, x3From);
-    (*this->localDistributionsTo)(eMPP, x1To + 1, x2To, x3To) =
-        (*this->localDistributionsFrom)(eMPP, x1From + 1, x2From, x3From);
-    (*this->localDistributionsTo)(ePMP, x1To, x2To + 1, x3To) =
-        (*this->localDistributionsFrom)(ePMP, x1From, x2From + 1, x3From);
-    (*this->localDistributionsTo)(eMMP, x1To + 1, x2To + 1, x3To) =
-        (*this->localDistributionsFrom)(eMMP, x1From + 1, x2From + 1, x3From);
+    (*this->fSplitATo)(eP00, x1To, x2To, x3To) =
+        (*this->fSplitAFrom)(eP00, x1From, x2From, x3From);
+    (*this->fSplitATo)(e0P0, x1To, x2To, x3To) =
+        (*this->fSplitAFrom)(e0P0, x1From, x2From, x3From);
+    (*this->fSplitATo)(e00P, x1To, x2To, x3To) =
+        (*this->fSplitAFrom)(e00P, x1From, x2From, x3From);
+    (*this->fSplitATo)(ePP0, x1To, x2To, x3To) =
+        (*this->fSplitAFrom)(ePP0, x1From, x2From, x3From);
+    (*this->fSplitATo)(eMP0, x1To + 1, x2To, x3To) =
+        (*this->fSplitAFrom)(eMP0, x1From + 1, x2From, x3From);
+    (*this->fSplitATo)(eP0P, x1To, x2To, x3To) =
+        (*this->fSplitAFrom)(eP0P, x1From, x2From, x3From);
+    (*this->fSplitATo)(eM0P, x1To + 1, x2To, x3To) =
+        (*this->fSplitAFrom)(eM0P, x1From + 1, x2From, x3From);
+    (*this->fSplitATo)(e0PP, x1To, x2To, x3To) =
+        (*this->fSplitAFrom)(e0PP, x1From, x2From, x3From);
+    (*this->fSplitATo)(e0MP, x1To, x2To + 1, x3To) =
+        (*this->fSplitAFrom)(e0MP, x1From, x2From + 1, x3From);
+    (*this->fSplitATo)(ePPP, x1To, x2To, x3To) =
+        (*this->fSplitAFrom)(ePPP, x1From, x2From, x3From);
+    (*this->fSplitATo)(eMPP, x1To + 1, x2To, x3To) =
+        (*this->fSplitAFrom)(eMPP, x1From + 1, x2From, x3From);
+    (*this->fSplitATo)(ePMP, x1To, x2To + 1, x3To) =
+        (*this->fSplitAFrom)(ePMP, x1From, x2From + 1, x3From);
+    (*this->fSplitATo)(eMMP, x1To + 1, x2To + 1, x3To) =
+        (*this->fSplitAFrom)(eMMP, x1From + 1, x2From + 1, x3From);
 
-    (*this->nonLocalDistributionsTo)(eM00, x1To + 1, x2To, x3To) =
-        (*this->nonLocalDistributionsFrom)(eM00, x1From + 1, x2From, x3From);
-    (*this->nonLocalDistributionsTo)(e0M0, x1To, x2To + 1, x3To) =
-        (*this->nonLocalDistributionsFrom)(e0M0, x1From, x2From + 1, x3From);
-    (*this->nonLocalDistributionsTo)(e00M, x1To, x2To, x3To + 1) =
-        (*this->nonLocalDistributionsFrom)(e00M, x1From, x2From, x3From + 1);
-    (*this->nonLocalDistributionsTo)(eMM0, x1To + 1, x2To + 1, x3To) =
-        (*this->nonLocalDistributionsFrom)(eMM0, x1From + 1, x2From + 1, x3From);
-    (*this->nonLocalDistributionsTo)(ePM0, x1To, x2To + 1, x3To) =
-        (*this->nonLocalDistributionsFrom)(ePM0, x1From, x2From + 1, x3From);
-    (*this->nonLocalDistributionsTo)(eM0M, x1To + 1, x2To, x3To + 1) =
-        (*this->nonLocalDistributionsFrom)(eM0M, x1From + 1, x2From, x3From + 1);
-    (*this->nonLocalDistributionsTo)(eP0M, x1To, x2To, x3To + 1) =
-        (*this->nonLocalDistributionsFrom)(eP0M, x1From, x2From, x3From + 1);
-    (*this->nonLocalDistributionsTo)(e0MM, x1To, x2To + 1, x3To + 1) =
-        (*this->nonLocalDistributionsFrom)(e0MM, x1From, x2From + 1, x3From + 1);
-    (*this->nonLocalDistributionsTo)(e0PM, x1To, x2To, x3To + 1) =
-        (*this->nonLocalDistributionsFrom)(e0PM, x1From, x2From, x3From + 1);
-    (*this->nonLocalDistributionsTo)(eMMM, x1To + 1, x2To + 1, x3To + 1) =
-        (*this->nonLocalDistributionsFrom)(eMMM, x1From + 1, x2From + 1, x3From + 1);
-    (*this->nonLocalDistributionsTo)(ePMM, x1To, x2To + 1, x3To + 1) =
-        (*this->nonLocalDistributionsFrom)(ePMM, x1From, x2From + 1, x3From + 1);
-    (*this->nonLocalDistributionsTo)(eMPM, x1To + 1, x2To, x3To + 1) =
-        (*this->nonLocalDistributionsFrom)(eMPM, x1From + 1, x2From, x3From + 1);
-    (*this->nonLocalDistributionsTo)(ePPM, x1To, x2To, x3To + 1) =
-        (*this->nonLocalDistributionsFrom)(ePPM, x1From, x2From, x3From + 1);
+    (*this->fSplitBTo)(eM00, x1To + 1, x2To, x3To) =
+        (*this->fSplitBFrom)(eM00, x1From + 1, x2From, x3From);
+    (*this->fSplitBTo)(e0M0, x1To, x2To + 1, x3To) =
+        (*this->fSplitBFrom)(e0M0, x1From, x2From + 1, x3From);
+    (*this->fSplitBTo)(e00M, x1To, x2To, x3To + 1) =
+        (*this->fSplitBFrom)(e00M, x1From, x2From, x3From + 1);
+    (*this->fSplitBTo)(eMM0, x1To + 1, x2To + 1, x3To) =
+        (*this->fSplitBFrom)(eMM0, x1From + 1, x2From + 1, x3From);
+    (*this->fSplitBTo)(ePM0, x1To, x2To + 1, x3To) =
+        (*this->fSplitBFrom)(ePM0, x1From, x2From + 1, x3From);
+    (*this->fSplitBTo)(eM0M, x1To + 1, x2To, x3To + 1) =
+        (*this->fSplitBFrom)(eM0M, x1From + 1, x2From, x3From + 1);
+    (*this->fSplitBTo)(eP0M, x1To, x2To, x3To + 1) =
+        (*this->fSplitBFrom)(eP0M, x1From, x2From, x3From + 1);
+    (*this->fSplitBTo)(e0MM, x1To, x2To + 1, x3To + 1) =
+        (*this->fSplitBFrom)(e0MM, x1From, x2From + 1, x3From + 1);
+    (*this->fSplitBTo)(e0PM, x1To, x2To, x3To + 1) =
+        (*this->fSplitBFrom)(e0PM, x1From, x2From, x3From + 1);
+    (*this->fSplitBTo)(eMMM, x1To + 1, x2To + 1, x3To + 1) =
+        (*this->fSplitBFrom)(eMMM, x1From + 1, x2From + 1, x3From + 1);
+    (*this->fSplitBTo)(ePMM, x1To, x2To + 1, x3To + 1) =
+        (*this->fSplitBFrom)(ePMM, x1From, x2From + 1, x3From + 1);
+    (*this->fSplitBTo)(eMPM, x1To + 1, x2To, x3To + 1) =
+        (*this->fSplitBFrom)(eMPM, x1From + 1, x2From, x3From + 1);
+    (*this->fSplitBTo)(ePPM, x1To, x2To, x3To + 1) =
+        (*this->fSplitBFrom)(ePPM, x1From, x2From, x3From + 1);
 
-    (*this->zeroDistributionsTo)(x1To, x2To, x3To) = (*this->zeroDistributionsFrom)(x1From, x2From, x3From);
+    (*this->fSplit0To)(x1To, x2To, x3To) = (*this->fSplit0From)(x1From, x2From, x3From);
 }
 #endif
 

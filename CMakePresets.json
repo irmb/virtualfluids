@@ -20,7 +20,7 @@
                 "type": "equals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Windows"
-              }
+            }
         },
         {
             "name": "make",
@@ -30,7 +30,7 @@
                 "type": "notEquals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Windows"
-              }
+            }
         },
         {
             "name": "unit_tests",
@@ -40,13 +40,35 @@
             }
         },
         {
+            "name": "release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "hidden": true
+        },
+        {
+            "name": "debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "hidden": true
+        },
+        {
+            "name": "enable_all_apps",
+            "cacheVariables": {
+                "VF_ENABLE_ALL_APPS": "ON"
+            },
+            "hidden": true
+        },
+        {
             "name": "cpu",
             "inherits": "default",
             "description": "CPU build of VirtualFluids",
             "cacheVariables": {
                 "VF_ENABLE_CPU": "ON",
                 "VF_ENABLE_DOUBLE_ACCURACY": "ON"
-            }
+            },
+            "hidden": true
         },
         {
             "name": "gpu",
@@ -55,7 +77,8 @@
             "cacheVariables": {
                 "VF_ENABLE_GPU": "ON",
                 "VF_ENABLE_DOUBLE_ACCURACY": "OFF"
-            }
+            },
+            "hidden": true
         },
         {
             "name": "python_bindings",
@@ -63,7 +86,8 @@
             "description": "python bindings of VirtualFluids",
             "cacheVariables": {
                 "VF_ENABLE_PYTHON_BINDINGS": "ON"
-            }
+            },
+            "hidden": true
         },
         {
             "name": "gpu_numerical_tests",
@@ -85,31 +109,12 @@
                 "gpu",
                 "python_bindings",
                 "unit_tests",
+                "enable_all_apps",
                 "make"
             ],
-            "displayName": "all make configuration",
-            "cacheVariables": {
-                "VF_ENABLE_ALL_APPS": "ON"
-            }
+            "displayName": "all make configuration"
         },
-        {
-            "name": "make_cpu",
-            "inherits": [
-                "cpu",
-                "unit_tests",
-                "make"
-            ],
-            "displayName": "cpu make configuration"
-        },
-        {
-            "name": "make_gpu",
-            "inherits": [
-                "gpu",
-                "unit_tests",
-                "make"
-            ],
-            "displayName": "gpu make configuration"
-        },
+        
         {
             "name": "msvc_all",
             "inherits": [
@@ -117,30 +122,10 @@
                 "gpu",
                 "python_bindings",
                 "unit_tests",
+                "enable_all_apps",
                 "msvc"
             ],
-            "displayName": "all msvc configuration",
-            "cacheVariables": {
-                "VF_ENABLE_ALL_APPS": "ON"
-            }
-        },
-        {
-            "name": "msvc_cpu",
-            "inherits": [
-                "cpu",
-                "unit_tests",
-                "msvc"
-            ],
-            "displayName": "cpu msvc configuration"
-        },
-        {
-            "name": "msvc_gpu",
-            "inherits": [
-                "gpu",
-                "unit_tests",
-                "msvc"
-            ],
-            "displayName": "gpu msvc configuration"
+            "displayName": "all msvc configuration"
         },
         {
             "name": "make_numerical_tests_gpu",
@@ -157,6 +142,202 @@
                 "gpu_numerical_tests"
             ],
             "displayName": "gpu numerical tests msvc configuration"
+        },
+        {
+            "name": "make_gpu",
+            "inherits": [
+                "make",
+                "gpu",
+                "release",
+                "enable_all_apps"
+            ],
+            "displayName": "make gpu configuration"
+        },
+        {
+            "name": "make_gpu_debug",
+            "inherits": [
+                "make",
+                "gpu",
+                "debug",
+                "enable_all_apps"
+            ],
+            "displayName": "make gpu debug configuration"
+        },
+        {
+            "name": "make_cpu",
+            "inherits": [
+                "make",
+                "cpu",
+                "release",
+                "enable_all_apps"
+            ],
+            "displayName": "make cpu configuration"
+        },
+        {
+            "name": "make_cpu_debug",
+            "inherits": [
+                "make",
+                "cpu",
+                "debug",
+                "enable_all_apps"
+            ],
+            "displayName": "make cpu debug configuration"
+        },
+        {
+            "name": "msvc_cpu",
+            "inherits": [
+                "msvc",
+                "cpu",
+                "release",
+                "enable_all_apps"
+            ],
+            "displayName": "cpu release msvc configuration"
+        },
+        {
+            "name": "msvc_cpu_debug",
+            "inherits": [
+                "msvc",
+                "cpu",
+                "debug",
+                "enable_all_apps"
+            ],
+            "displayName": "cpu debug msvc configuration"
+        },
+        {
+            "name": "msvc_gpu",
+            "inherits": [
+                "msvc",
+                "gpu",
+                "release",
+                "enable_all_apps"
+            ],
+            "displayName": "gpu release msvc configuration"
+        },
+        {
+            "name": "msvc_gpu_debug",
+            "inherits": [
+                "msvc",
+                "gpu",
+                "debug",
+                "enable_all_apps"
+            ],
+            "displayName": "gpu debug msvc configuration"
+        }
+
+    ],
+    "buildPresets": [
+            {
+                "name": "default",
+                "jobs": 16,
+                "hidden": true
+            },
+            {
+            "name": "gpu",
+            "targets": [
+                "ActuatorLine",
+                "AtmosphericBoundaryLayer",
+                "DrivenCavity",
+                "DrivenCavityMultiGPU",
+                "GaussianHillOfConcentration",
+                "HeatedCube",
+                "LaminarPipeFlowGPU",
+                "SphereInChannel",
+                "SphereMultiGPU",
+                "StratifiedBoundaryLayer",
+                "TaylorGreenVortex",
+                "all"
+            ],
+            "configurePreset": "gpu",
+            "inherits": [
+                "default"
+            ],
+            "hidden": true
+        },
+        {
+            "name": "cpu",
+            "targets": [
+                "LaminarPipeFlow",
+                "LaminarPlaneFlow",
+                "LidDrivenCavity",
+                "all"
+            ],
+            "configurePreset": "cpu",
+            "inherits": [
+                "default"
+            ],
+            "hidden": true
+        },
+        {
+            "name": "make_gpu",
+            "configurePreset": "make_gpu",
+            "inherits": [
+                "gpu"
+            ]
+        },
+        {
+            "name": "make_gpu_debug",
+            "configurePreset": "make_gpu_debug",
+            "inherits": [
+                "gpu"
+            ]
+        },
+        {
+            "name": "make_cpu",
+            "configurePreset": "make_cpu",
+            "inherits": [
+                "cpu"
+            ]
+        },
+        {
+            "name": "make_cpu_debug",
+            "configurePreset": "make_cpu_debug",
+            "inherits": [
+                "cpu"
+            ]
+        },
+        {
+            "name": "make_all",
+            "configurePreset": "make_all",
+            "inherits": [
+                "cpu",
+                "gpu"
+            ]
+        },
+        {
+            "name": "msvc_gpu",
+            "configurePreset": "msvc_gpu",
+            "inherits": [
+                "gpu"
+            ]
+        },
+        {
+            "name": "msvc_gpu_debug",
+            "configurePreset": "msvc_gpu_debug",
+            "inherits": [
+                "gpu"
+            ]
+        },
+        {
+            "name": "msvc_cpu",
+            "configurePreset": "msvc_cpu",
+            "inherits": [
+                "cpu"
+            ]
+        },
+        {
+            "name": "msvc_cpu_debug",
+            "configurePreset": "msvc_cpu_debug",
+            "inherits": [
+                "cpu"
+            ]
+        },
+        {
+            "name": "msvc_all",
+            "configurePreset": "msvc_all",
+            "inherits": [
+                "cpu",
+                "gpu"
+            ]
         }
     ]
 }

@@ -124,7 +124,7 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const SPtr<Block3D> 
     for (int ix3 = startIX3; ix3 < stopIX3; ix3++) {
         for (int ix2 = startIX2; ix2 < stopIX2; ix2++) {
             for (int ix1 = startIX1; ix1 < stopIX1; ix1++) {
-                Vector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
+                GbVector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
                 internX1        = coords[0];
                 internX2        = coords[1];
                 internX3        = coords[2];
@@ -217,19 +217,19 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
         deltaMaxX3(finestInitLevel + 1);
 
     // In the Boltzman context, dx1==dx2==dx3 must be!!
-    assert(UbMath::equal(cblockDeltaX1 / (double)blocknx1, cblockDeltaX2 / (double)blocknx2));
-    assert(UbMath::equal(cblockDeltaX1 / (double)blocknx1, cblockDeltaX3 / (double)blocknx3));
+    assert(ub_math::equal(cblockDeltaX1 / (double)blocknx1, cblockDeltaX2 / (double)blocknx2));
+    assert(ub_math::equal(cblockDeltaX1 / (double)blocknx1, cblockDeltaX3 / (double)blocknx3));
 
     for (int level = coarsestInitLevel; level <= finestInitLevel; level++) {
         real nodeDeltaX1 = cblockDeltaX1 / (double)(blocknx1 * (1 << (level - coarsestInitLevel)));
         real nodeDeltaX2 = cblockDeltaX2 / (double)(blocknx2 * (1 << (level - coarsestInitLevel)));
         real nodeDeltaX3 = cblockDeltaX3 / (double)(blocknx3 * (1 << (level - coarsestInitLevel)));
 
-        std::vector<real> distNeigh(D3Q27System::FENDDIR + 1, 0.0);
-        D3Q27System::calcDistanceToNeighbors(distNeigh, nodeDeltaX1, nodeDeltaX2, nodeDeltaX3);
+        std::vector<real> distNeigh(d3q27_system::FENDDIR + 1, 0.0);
+        d3q27_system::calcDistanceToNeighbors(distNeigh, nodeDeltaX1, nodeDeltaX2, nodeDeltaX3);
 
-        nodeDeltaToNeigh[level].resize(D3Q27System::ENDDIR + 1, 0.0);
-        for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+        nodeDeltaToNeigh[level].resize(d3q27_system::ENDDIR + 1, 0.0);
+        for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
             nodeDeltaToNeigh[level][fdir] = distNeigh[fdir];
         }
 
@@ -253,7 +253,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
     std::vector<GbTriFaceMesh3D::Vertex> &nodes      = *mesh->getNodes();
     std::map<SPtr<Block3D>, std::set<UbTupleInt3>> tmpSolidNodesFromOtherInteractors;
 
-    int onePercent = UbMath::integerRounding(triangles.size() * c1o100);
+    int onePercent = ub_math::integerRounding(triangles.size() * c1o100);
     if (onePercent == 0)
         onePercent = 1;
     vf::basics::Timer setQTimer;
@@ -281,7 +281,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
         GbHalfSpace3D halfSpace(v1.x, v1.y, v1.z, triangle.nx, triangle.ny, triangle.nz);
 
         //////////////////////////////////////////////////////////////////////////
-        // for GbMeshTools3D::triBoxOverlap
+        // for gb_mesh_tools_3d::triBoxOverlap
         //////////////////////////////////////////////////////////////////////////
         triPoints[0][0] = v1.x;
         triPoints[0][1] = v1.y;
@@ -355,7 +355,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                 halfBoxSize[2] = (float)(c1o2 * (blockMaxX[2] - blockMinX[2]));
 
                 // if triangle "enlarged cube" does not intersect/touch -> no BC possible -> continue
-                if (!GbMeshTools3D::triBoxOverlap(boxCenter, halfBoxSize, triPoints)) {
+                if (!gb_mesh_tools_3d::triBoxOverlap(boxCenter, halfBoxSize, triPoints)) {
                     continue;
                 }
 
@@ -388,7 +388,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                 for (int ix3 = indexMinX3; ix3 < indexMaxX3; ix3++) {
                     for (int ix2 = indexMinX2; ix2 < indexMaxX2; ix2++) {
                         for (int ix1 = indexMinX1; ix1 < indexMaxX1; ix1++) {
-                            Vector3D pointplane1 = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
+                            GbVector3D pointplane1 = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
                             double internX1      = pointplane1[0];
                             double internX2      = pointplane1[1];
                             double internX3      = pointplane1[2];
@@ -413,13 +413,13 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                             distance = halfSpace.getDistance(internX1, internX2, internX3);
                             // Point in half plane? (no, if distance<0)
                             if (useHalfSpace &&
-                                UbMath::less(distance, 0.0)) //== !halfSpace.ptInside(internX1,internX2,internX3) )
+                                ub_math::less(distance, 0.0)) //== !halfSpace.ptInside(internX1,internX2,internX3) )
                             {
                                 continue;
                             }
 
                             // CheapOBB test: if distance > qInfluenceDelta -> no q
-                            if (UbMath::greater(fabs(distance), qEinflussDelta)) {
+                            if (ub_math::greater(fabs(distance), qEinflussDelta)) {
                                 continue;
                             }
 
@@ -445,7 +445,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                             sx2 = internX2 - v1.y;
                             sx3 = internX3 - v1.z;
 
-                            for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
+                            for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
                                 // p = d x e2
                                 px1 = this->rayX2[fdir] * e2x3 - this->rayX3[fdir] * e2x2;
                                 px2 = this->rayX3[fdir] * e2x1 - this->rayX1[fdir] * e2x3;
@@ -502,11 +502,11 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                                          (z1 - internX3) * (z1 - internX3));
                                 q_ehsan /= nodeDeltaToNeigh[level][fdir];
                                 q = q_ehsan;
-                                if (UbMath::greater(q, c1o1) || UbMath::lessEqual(q, 0.0))
+                                if (ub_math::greater(q, c1o1) || ub_math::lessEqual(q, 0.0))
                                     continue;
 
                                 //Check found q for validity
-                                if (UbMath::zero(q)) {
+                                if (ub_math::zero(q)) {
                                     // new (05/18/2010)
                                     // It can happen that with thin-walled geos there are points on a triangle
                                     // lie, get qs that go through the geo. these points will come later
@@ -517,9 +517,9 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                                     continue;
                                 }
 
-                                if (UbMath::inClosedInterval(q, c1o1, c1o1))
+                                if (ub_math::inClosedInterval(q, c1o1, c1o1))
                                     q = c1o1;
-                                if (UbMath::greater(q, 0.0) && UbMath::lessEqual(q, c1o1)) {
+                                if (ub_math::greater(q, 0.0) && ub_math::lessEqual(q, c1o1)) {
                                     gotQs = blockGotBCs = true;
 
                                     bc = bcMatrix->getBC(ix1, ix2, ix3);
@@ -529,8 +529,8 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                                         bc = SPtr<BoundaryConditions>(new BoundaryConditions);
                                         ;
                                         bcMatrix->setBC(ix1, ix2, ix3, bc);
-                                    } else if (UbMath::less(bc->getQ(fdir), q) &&
-                                               UbMath::equal(-999.0, q)) // schon ein kuerzeres q voehanden?
+                                    } else if (ub_math::less(bc->getQ(fdir), q) &&
+                                               ub_math::equal(-999.0, q)) // schon ein kuerzeres q voehanden?
                                     {
                                         // new:: May 18, 2010
                                         // to avoid incorrect qs that might go through the "wall".
@@ -551,14 +551,14 @@ void D3Q27TriFaceMeshInteractor::setQs(const real &timeStep)
                                     // for accelerated rereading
                                     if (this->reinitWithStoredQsFlag) {
                                         bcNodeIndicesAndQsMap[block][UbTupleInt3(ix1, ix2, ix3)].resize(
-                                            D3Q27System::FENDDIR + 1 + 3, -1.0f);
+                                            d3q27_system::FENDDIR + 1 + 3, -1.0f);
                                         bcNodeIndicesAndQsMap[block][UbTupleInt3(ix1, ix2, ix3)][fdir] = float(q);
                                         bcNodeIndicesAndQsMap[block][UbTupleInt3(ix1, ix2, ix3)]
-                                                             [D3Q27System::FENDDIR + 1 + 0] = float(internX1);
+                                                             [d3q27_system::FENDDIR + 1 + 0] = float(internX1);
                                         bcNodeIndicesAndQsMap[block][UbTupleInt3(ix1, ix2, ix3)]
-                                                             [D3Q27System::FENDDIR + 1 + 1] = float(internX2);
+                                                             [d3q27_system::FENDDIR + 1 + 1] = float(internX2);
                                         bcNodeIndicesAndQsMap[block][UbTupleInt3(ix1, ix2, ix3)]
-                                                             [D3Q27System::FENDDIR + 1 + 2] = float(internX3);
+                                                             [d3q27_system::FENDDIR + 1 + 2] = float(internX3);
                                     }
                                 }
                             }
@@ -609,9 +609,9 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, real startDis
     // or whether you're faster if you don't do a half-space test at all...
     if (!grid.lock())
         throw UbException(UB_EXARGS, "Grid isn't exist!");
-    if (UbMath::greater(startDistance, 0.0))
+    if (ub_math::greater(startDistance, 0.0))
         throw UbException(UB_EXARGS, "startDistance>0.0 not supported by this interactor");
-    if (UbMath::less(stopDistance, 0.0))
+    if (ub_math::less(stopDistance, 0.0))
         throw UbException(UB_EXARGS, "stopDistance<0.0  not supported by this interactor");
 
     SPtr<Grid3D> bgrid    = this->grid.lock();
@@ -645,7 +645,7 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, real startDis
         GbTriFaceMesh3D::Vertex &v3 = nodes[triangle.v3];
 
         // dreick muss normal besitzen!
-        assert(!UbMath::zero(triangle.nx) || !UbMath::zero(triangle.ny) || !UbMath::zero(triangle.nz));
+        assert(!ub_math::zero(triangle.nx) || !ub_math::zero(triangle.ny) || !ub_math::zero(triangle.nz));
         // Normale muss normiert sein!
         assert((fabs(std::sqrt(triangle.nx * triangle.nx + triangle.ny * triangle.ny + triangle.nz * triangle.nz)) -
                 1.0f) < 1.0E-6);
@@ -737,7 +737,7 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, real startDis
                     if (skalarprod < 1.E-8)
                         blockdelta = -c21o20 * startDistance; // startDistance<0!!
                     else if (fabs(skalarprod) < 1.E-8)
-                        blockdelta = c21o20 * UbMath::max(-startDistance, stopDistance);
+                        blockdelta = c21o20 * ub_math::max(-startDistance, stopDistance);
 
                     // adjust block
                     blockMinX[0] = (float)(val<1>(coords) - blockdelta);
@@ -771,7 +771,7 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, real startDis
                     triPoints[2][2] = v3_.z;
 
                     // if block triangle cuts, then it needs to be refined
-                    if (GbMeshTools3D::triBoxOverlap(boxCenter, halfBoxSize, triPoints)) {
+                    if (gb_mesh_tools_3d::triBoxOverlap(boxCenter, halfBoxSize, triPoints)) {
                         bgrid->expandBlock(block->getX1(), block->getX2(), block->getX3(), block->getLevel());
                     }
                 }
@@ -906,9 +906,9 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs(const real & /*timeStep*/)
                 bcMatrix->setBC(val<1>(pos), val<2>(pos), val<3>(pos), bc);
             }
 
-            double x1w = qs[D3Q27System::FENDDIR + 1 + 0];
-            double x2w = qs[D3Q27System::FENDDIR + 1 + 1];
-            double x3w = qs[D3Q27System::FENDDIR + 1 + 2];
+            double x1w = qs[d3q27_system::FENDDIR + 1 + 0];
+            double x2w = qs[d3q27_system::FENDDIR + 1 + 1];
+            double x3w = qs[d3q27_system::FENDDIR + 1 + 2];
 
             // TODO: HACK DOES NOT BELONG HERE!!! - begin
             // it is a static object and the propeller is there
@@ -920,8 +920,8 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs(const real & /*timeStep*/)
             // TODO: HACK DOES NOT BELONG HERE!!! - end
 
             bool gotQs = false;
-            for (int fdir = D3Q27System::FSTARTDIR; fdir <= D3Q27System::FENDDIR; fdir++) {
-                if (UbMath::greater(qs[fdir], -1.0) && UbMath::less(qs[fdir], bc->getQ(fdir))) {
+            for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
+                if (ub_math::greater(qs[fdir], -1.0) && ub_math::less(qs[fdir], bc->getQ(fdir))) {
                     gotQs = true;
                     for (size_t index = 0; index < this->BCs.size(); index++)
                         this->BCs[index]->adaptBCForDirection(*this, bc, x1w, x2w, x3w, qs[fdir], fdir);

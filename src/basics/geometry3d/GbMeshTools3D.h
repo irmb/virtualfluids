@@ -40,7 +40,7 @@
 
 #include <basics/utilities/UbMath.h>
 
-namespace GbMeshTools3D
+namespace gb_mesh_tools_3d
 {
 inline int planeBoxOverlap(float normal[3], float vert[3], float maxbox[3]) // -NJMP-
 {
@@ -279,22 +279,22 @@ inline int triBoxOverlap(float boxcenter[3], float boxhalfsize[3], float trivert
     /*  the triangle against the AABB */
     /* test in X-direction */
     // FINDMINMAX(v0[0],v1[0],v2[0],min,max);
-    min = (float)UbMath::min(v0[0], v1[0], v2[0]);
-    max = (float)UbMath::max(v0[0], v1[0], v2[0]);
+    min = (float)ub_math::min(v0[0], v1[0], v2[0]);
+    max = (float)ub_math::max(v0[0], v1[0], v2[0]);
     if (min > boxhalfsize[0] || max < -boxhalfsize[0])
         return 0;
 
     /* test in Y-direction */
     // FINDMINMAX(v0[1],v1[1],v2[1],min,max);
-    min = (float)UbMath::min(v0[1], v1[1], v2[1]);
-    max = (float)UbMath::max(v0[1], v1[1], v2[1]);
+    min = (float)ub_math::min(v0[1], v1[1], v2[1]);
+    max = (float)ub_math::max(v0[1], v1[1], v2[1]);
     if (min > boxhalfsize[1] || max < -boxhalfsize[1])
         return 0;
 
     /* test in Z-direction */
     // FINDMINMAX(v0[2],v1[2],v2[2],min,max);
-    min = (float)UbMath::min(v0[2], v1[2], v2[2]);
-    max = (float)UbMath::max(v0[2], v1[2], v2[2]);
+    min = (float)ub_math::min(v0[2], v1[2], v2[2]);
+    max = (float)ub_math::max(v0[2], v1[2], v2[2]);
 
     if (min > boxhalfsize[2] || max < -boxhalfsize[2])
         return 0;
@@ -314,7 +314,7 @@ inline int triBoxOverlap(float boxcenter[3], float boxhalfsize[3], float trivert
     return 1;     /* box and triangle overlaps */
 }
 
-} // namespace GbMeshTools3D
+} // namespace gb_mesh_tools_3d
 
 #endif
 

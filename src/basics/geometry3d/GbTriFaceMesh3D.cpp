@@ -34,20 +34,18 @@
 #include <geometry3d/GbTriFaceMesh3D.h>
 
 #include <basics/Timer/Timer.h>
+#include <basics/geometry3d/CoordinateTransformation3D.h>
+#include <basics/geometry3d/GbCuboid3D.h>
+#include <basics/geometry3d/GbHalfSpace3D.h>
+#include <basics/geometry3d/KdTree/KdTree.h>
+#include <basics/geometry3d/KdTree/intersectionhandler/KdCountLineIntersectionHandler.h>
+#include <basics/geometry3d/KdTree/intersectionhandler/KdCountRayIntersectionHandler.h>
+#include <basics/geometry3d/KdTree/splitalgorithms/KdSAHSplit.h>
+#include <basics/geometry3d/KdTree/splitalgorithms/KdSpatiallMedianSplit.h>
 #include <basics/utilities/UbFileInputASCII.h>
 #include <basics/utilities/UbLogger.h>
 #include <basics/utilities/UbRandom.h>
 #include <basics/writer/WbWriter.h>
-
-#include <geometry3d/CoordinateTransformation3D.h>
-#include <geometry3d/GbCuboid3D.h>
-#include <geometry3d/GbHalfSpace3D.h>
-
-#include <geometry3d/KdTree/KdTree.h>
-#include <geometry3d/KdTree/intersectionhandler/KdCountLineIntersectionHandler.h>
-#include <geometry3d/KdTree/intersectionhandler/KdCountRayIntersectionHandler.h>
-#include <geometry3d/KdTree/splitalgorithms/KdSAHSplit.h>
-#include <geometry3d/KdTree/splitalgorithms/KdSpatiallMedianSplit.h>
 
 #define MAX_ITER 10
 
@@ -175,7 +173,7 @@ void GbTriFaceMesh3D::deleteRedundantNodes()
             {
                 for (pos = vertexMap.begin(); pos != vertexMap.end(); pos++) {
                     Vertex rhs = pos->first;
-                    // if(UbMath::inClosedInterval(vert.z,0.01999, 0.02001))
+                    // if(ub_math::inClosedInterval(vert.z,0.01999, 0.02001))
                     if (fabs(vert.x - rhs.x) < 1.E-5 && fabs(vert.y - rhs.y) < 1.E-5 && fabs(vert.z - rhs.z) < 1.E-5) {
                         break;
                     }
@@ -207,15 +205,15 @@ void GbTriFaceMesh3D::deleteRedundantNodes()
     //   Vertex& v2 = tris[t].getNode(1,*nodes);
     //   Vertex& v3 = tris[t].getNode(2,*nodes);
 
-    //   if(UbMath::greater(std::fabs(v1.x), 0.0634) && UbMath::inClosedInterval(v1.z, 0.01999, 0.02001))
+    //   if(ub_math::greater(std::fabs(v1.x), 0.0634) && ub_math::inClosedInterval(v1.z, 0.01999, 0.02001))
     //   {
     //      UBLOG2(logINFO,std::cout, "V1:"<<v1.x<<" "<<v1.y<<" "<<v1.z);
     //   }
-    //   if(UbMath::greater(std::fabs(v2.x), 0.0634) && UbMath::inClosedInterval(v2.z, 0.01999, 0.02001))
+    //   if(ub_math::greater(std::fabs(v2.x), 0.0634) && ub_math::inClosedInterval(v2.z, 0.01999, 0.02001))
     //   {
     //      UBLOG2(logINFO,std::cout, "V2:"<<v2.x<<" "<<v2.y<<" "<<v2.z);
     //   }
-    //   if(UbMath::greater(std::fabs(v3.x), 0.0634) && UbMath::inClosedInterval(v3.z, 0.01999, 0.02001))
+    //   if(ub_math::greater(std::fabs(v3.x), 0.0634) && ub_math::inClosedInterval(v3.z, 0.01999, 0.02001))
     //   {
     //      UBLOG2(logINFO,std::cout, "V3:"<<v3.x<<" "<<v3.y<<" "<<v3.z);
     //   }
@@ -471,13 +469,13 @@ void GbTriFaceMesh3D::calculateValues()
         for (size_t i = 1; i < this->nodes->size(); i++) {
             Vertex &v1 = (*nodes)[i];
 
-            x1min = UbMath::min<double>(x1min, v1.x);
-            x2min = UbMath::min<double>(x2min, v1.y);
-            x3min = UbMath::min<double>(x3min, v1.z);
+            x1min = ub_math::min<double>(x1min, v1.x);
+            x2min = ub_math::min<double>(x2min, v1.y);
+            x3min = ub_math::min<double>(x3min, v1.z);
 
-            x1max = UbMath::max<double>(x1max, v1.x);
-            x2max = UbMath::max<double>(x2max, v1.y);
-            x3max = UbMath::max<double>(x3max, v1.z);
+            x1max = ub_math::max<double>(x1max, v1.x);
+            x2max = ub_math::max<double>(x2max, v1.y);
+            x3max = ub_math::max<double>(x3max, v1.z);
         }
         x1center = 0.5 * (x1min + x1max);
         x2center = 0.5 * (x2min + x2max);
@@ -657,12 +655,12 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &pts, vector<U
 //         if(kdtreeSplitAlg == KDTREE_SAHPLIT     )
 //         {
 //            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
-//            this->kdTree = new Kd::Tree<double>( *this, Kd::SAHSplit<double>()            );
+//            this->kdTree = new kd_tree::Tree<double>( *this, kd_tree::SAHSplit<double>()            );
 //         }
 //         else if(kdtreeSplitAlg == KDTREE_SPATIALSPLIT)
 //         {
 //            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
-//            this->kdTree = new Kd::Tree<double>( *this, Kd::SpatialMedianSplit<double>() );
+//            this->kdTree = new kd_tree::Tree<double>( *this, kd_tree::SpatialMedianSplit<double>() );
 //         }
 //         else throw UbException(UB_EXARGS, "unknown kdtree split option)" );
 //         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in "<<timer.getCurrentRuntimeInSeconds()<<"seconds");
@@ -672,17 +670,17 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &pts, vector<U
 //      //int iSec;
 //      //for(int i=0; i<100; i++)
 //      //{
-//      //   Kd::Ray<double> ray(  x1, x2, x3  //, 1, 0 ,0 );
+//      //   kd_tree::Ray<double> ray(  x1, x2, x3  //, 1, 0 ,0 );
 //      //                        , ( x1 < x1center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
 //      //                        , ( x2 < x2center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
 //      //                        , ( x3 < x3center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
 //      );
 //      //
-//      //   iSec = kdTree->intersectRay( ray, Kd::CountRayIntersectionHandler<double>() );
+//      //   iSec = kdTree->intersectRay( ray, kd_tree::CountRayIntersectionHandler<double>() );
 //      //
-//      //   if( iSec != Kd::Intersection::INTERSECT_EDGE ) //KEINE Kante getroffen
+//      //   if( iSec != kd_tree::Intersection::INTERSECT_EDGE ) //KEINE Kante getroffen
 //      //   {
-//      //      if(iSec == Kd::Intersection::ON_BOUNDARY )
+//      //      if(iSec == kd_tree::Intersection::ON_BOUNDARY )
 //      //      {
 //      //         return true;
 //      //      }
@@ -693,27 +691,27 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &pts, vector<U
 //      //throw UbException(UB_EXARGS, "ups, nach 100 Strahlen immer noch kein Ergebnis");
 //      int iSec1,iSec2;
 //
-//      Kd::Ray<double> ray1(  x1, x2, x3, 1.0, 0.0 ,0.0 );
-//      iSec1 = kdTree->intersectRay( ray1, Kd::CountRayIntersectionHandler<double>() );
-//      Kd::Ray<double> ray2(  x1, x2, x3, -1.0, 0.0 ,0.0 );
-//      iSec2 = kdTree->intersectRay( ray2, Kd::CountRayIntersectionHandler<double>() );
+//      kd_tree::Ray<double> ray1(  x1, x2, x3, 1.0, 0.0 ,0.0 );
+//      iSec1 = kdTree->intersectRay( ray1, kd_tree::CountRayIntersectionHandler<double>() );
+//      kd_tree::Ray<double> ray2(  x1, x2, x3, -1.0, 0.0 ,0.0 );
+//      iSec2 = kdTree->intersectRay( ray2, kd_tree::CountRayIntersectionHandler<double>() );
 //
-//      if(iSec1 == Kd::Intersection::ON_BOUNDARY || iSec2 == Kd::Intersection::ON_BOUNDARY)
+//      if(iSec1 == kd_tree::Intersection::ON_BOUNDARY || iSec2 == kd_tree::Intersection::ON_BOUNDARY)
 //      {
 //         return true;
 //      }
-//      if( iSec1 == Kd::Intersection::INTERSECT_EDGE && iSec2 == Kd::Intersection::INTERSECT_EDGE)
+//      if( iSec1 == kd_tree::Intersection::INTERSECT_EDGE && iSec2 == kd_tree::Intersection::INTERSECT_EDGE)
 //      {
 //         UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.INTERSECT_EDGE");
-//         double eps = UbMath::getEqualityEpsilon<float>()*1000.0;
+//         double eps = ub_math::getEqualityEpsilon<float>()*1000.0;
 //         if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
 //         return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1));
 //      }
-//      else if( iSec1 == Kd::Intersection::INTERSECT_EDGE)
+//      else if( iSec1 == kd_tree::Intersection::INTERSECT_EDGE)
 //      {
 //         return (iSec2&1);
 //      }
-//      else if( iSec2 == Kd::Intersection::INTERSECT_EDGE)
+//      else if( iSec2 == kd_tree::Intersection::INTERSECT_EDGE)
 //      {
 //         return (iSec1&1);
 //      }
@@ -722,7 +720,7 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &pts, vector<U
 //         if((iSec1&1) != (iSec2&1))
 //         {
 //            UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.iSec1&1 != iSec2&1");
-//            double eps = UbMath::getEqualityEpsilon<float>()*1000.0;
+//            double eps = ub_math::getEqualityEpsilon<float>()*1000.0;
 //            if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
 //            return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1));
 //         }
@@ -744,10 +742,10 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
             timer.start();
             if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
-                this->kdTree = new Kd::Tree<double>(*this, Kd::SAHSplit<double>());
+                this->kdTree = new kd_tree::Tree<double>(*this, kd_tree::SAHSplit<double>());
             } else if (kdtreeSplitAlg == KDTREE_SPATIALSPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
-                this->kdTree = new Kd::Tree<double>(*this, Kd::SpatialMedianSplit<double>());
+                this->kdTree = new kd_tree::Tree<double>(*this, kd_tree::SpatialMedianSplit<double>());
             } else
                 throw UbException(UB_EXARGS, "unknown kdtree split option)");
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.getCurrentRuntimeInSeconds() << "seconds");
@@ -757,17 +755,17 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         // int iSec;
         // for(int i=0; i<100; i++)
         //{
-        //   Kd::Ray<double> ray(  x1, x2, x3  //, 1, 0 ,0 );
+        //   kd_tree::Ray<double> ray(  x1, x2, x3  //, 1, 0 ,0 );
         //                        , ( x1 < x1center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
         //                        , ( x2 < x2center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
         //                        , ( x3 < x3center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
         //                        );
         //
-        //   iSec = kdTree->intersectRay( ray, Kd::CountRayIntersectionHandler<double>() );
+        //   iSec = kdTree->intersectRay( ray, kd_tree::CountRayIntersectionHandler<double>() );
         //
-        //   if( iSec != Kd::Intersection::INTERSECT_EDGE ) //KEINE Kante getroffen
+        //   if( iSec != kd_tree::Intersection::INTERSECT_EDGE ) //KEINE Kante getroffen
         //   {
-        //      if(iSec == Kd::Intersection::ON_BOUNDARY )
+        //      if(iSec == kd_tree::Intersection::ON_BOUNDARY )
         //      {
         //         return true;
         //      }
@@ -778,27 +776,27 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         // throw UbException(UB_EXARGS, "ups, nach 100 Strahlen immer noch kein Ergebnis");
         int iSec1, iSec2;
         double eps = 0.05;
-        Kd::Ray<double> ray1(x1, x2, x3, 1.0 + eps * ((double)counter), eps * ((double)counter),
+        kd_tree::Ray<double> ray1(x1, x2, x3, 1.0 + eps * ((double)counter), eps * ((double)counter),
                              eps * ((double)counter));
-        iSec1 = kdTree->intersectRay(ray1, Kd::CountRayIntersectionHandler<double>());
-        Kd::Ray<double> ray2(x1, x2, x3, -1.0 - eps * ((double)counter), -eps * ((double)counter),
+        iSec1 = kdTree->intersectRay(ray1, kd_tree::CountRayIntersectionHandler<double>());
+        kd_tree::Ray<double> ray2(x1, x2, x3, -1.0 - eps * ((double)counter), -eps * ((double)counter),
                              -eps * ((double)counter));
 
-        iSec2 = kdTree->intersectRay(ray2, Kd::CountRayIntersectionHandler<double>());
+        iSec2 = kdTree->intersectRay(ray2, kd_tree::CountRayIntersectionHandler<double>());
 
-        if (iSec1 == Kd::Intersection::ON_BOUNDARY || iSec2 == Kd::Intersection::ON_BOUNDARY) {
+        if (iSec1 == kd_tree::Intersection::ON_BOUNDARY || iSec2 == kd_tree::Intersection::ON_BOUNDARY) {
             return true;
         }
-        if (iSec1 == Kd::Intersection::INTERSECT_EDGE && iSec2 == Kd::Intersection::INTERSECT_EDGE) {
+        if (iSec1 == kd_tree::Intersection::INTERSECT_EDGE && iSec2 == kd_tree::Intersection::INTERSECT_EDGE) {
             // UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.INTERSECT_EDGE");
 
             if (counter > 20) {
                 return (iSec1 & 1); /*UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");*/
             }
             return this->isPointInGbObject3D(x1, x2, x3, (counter + 1));
-        } else if (iSec1 == Kd::Intersection::INTERSECT_EDGE) {
+        } else if (iSec1 == kd_tree::Intersection::INTERSECT_EDGE) {
             return (iSec2 & 1);
-        } else if (iSec2 == Kd::Intersection::INTERSECT_EDGE) {
+        } else if (iSec2 == kd_tree::Intersection::INTERSECT_EDGE) {
             return (iSec1 & 1);
         } else {
             if ((iSec1 & 1) != (iSec2 & 1)) {
@@ -827,10 +825,10 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
             if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
                 //cout << "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit" << std::endl;
-                this->kdTree = new Kd::Tree<double>(*this, Kd::SAHSplit<double>());
+                this->kdTree = new kd_tree::Tree<double>(*this, kd_tree::SAHSplit<double>());
             } else if (kdtreeSplitAlg == KDTREE_SPATIALSPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
-                this->kdTree = new Kd::Tree<double>(*this, Kd::SpatialMedianSplit<double>());
+                this->kdTree = new kd_tree::Tree<double>(*this, kd_tree::SpatialMedianSplit<double>());
             } else
                 throw UbException(UB_EXARGS, "unknown kdtree split option)");
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.getCurrentRuntimeInSeconds() << "seconds");
@@ -840,17 +838,17 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         // eigentlicher PIO-Test
         int iSec;
         for (int i = 0; i < MAX_ITER; i++) {
-            Kd::Ray<double> ray(x1, x2, x3 //, 1, 0 ,0 );
+            kd_tree::Ray<double> ray(x1, x2, x3 //, 1, 0 ,0 );
                                 ,
                                 (x1 < x1center ? UbRandom::rand(-1.0, -0.001, 10) : UbRandom::rand(0.001, 1.0, 10)),
                                 (x2 < x2center ? UbRandom::rand(-1.0, -0.001, 10) : UbRandom::rand(0.001, 1.0, 10)),
                                 (x3 < x3center ? UbRandom::rand(-1.0, -0.001, 10) : UbRandom::rand(0.001, 1.0, 10)));
 
-            iSec = kdTree->intersectRay(ray, Kd::CountRayIntersectionHandler<double>());
+            iSec = kdTree->intersectRay(ray, kd_tree::CountRayIntersectionHandler<double>());
 
-            if (iSec != Kd::Intersection::INTERSECT_EDGE) // KEINE Kante getroffen
+            if (iSec != kd_tree::Intersection::INTERSECT_EDGE) // KEINE Kante getroffen
             {
-                if (iSec == Kd::Intersection::ON_BOUNDARY) {
+                if (iSec == kd_tree::Intersection::ON_BOUNDARY) {
                     return true;
                 }
                 return (iSec & 1); // ungerade anzahl an schnitten --> drinnen
@@ -861,27 +859,27 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
 
         //   int iSec1,iSec2;
         //
-        //   Kd::Ray<double> ray1(  x1, x2, x3, 1.0, 0.0 ,0.0 );
-        //   iSec1 = kdTree->intersectRay( ray1, Kd::CountRayIntersectionHandler<double>() );
-        //   Kd::Ray<double> ray2(  x1, x2, x3, -1.0, 0.0 ,0.0 );
-        //   iSec2 = kdTree->intersectRay( ray2, Kd::CountRayIntersectionHandler<double>() );
+        //   kd_tree::Ray<double> ray1(  x1, x2, x3, 1.0, 0.0 ,0.0 );
+        //   iSec1 = kdTree->intersectRay( ray1, kd_tree::CountRayIntersectionHandler<double>() );
+        //   kd_tree::Ray<double> ray2(  x1, x2, x3, -1.0, 0.0 ,0.0 );
+        //   iSec2 = kdTree->intersectRay( ray2, kd_tree::CountRayIntersectionHandler<double>() );
 
-        //   if(iSec1 == Kd::Intersection::ON_BOUNDARY || iSec2 == Kd::Intersection::ON_BOUNDARY)
+        //   if(iSec1 == kd_tree::Intersection::ON_BOUNDARY || iSec2 == kd_tree::Intersection::ON_BOUNDARY)
         //   {
         //      return true;
         //   }
-        //   if( iSec1 == Kd::Intersection::INTERSECT_EDGE && iSec2 == Kd::Intersection::INTERSECT_EDGE)
+        //   if( iSec1 == kd_tree::Intersection::INTERSECT_EDGE && iSec2 == kd_tree::Intersection::INTERSECT_EDGE)
         //   {
         //      //UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.INTERSECT_EDGE");
-        //      double eps = UbMath::getEqualityEpsilon<double>();
+        //      double eps = ub_math::getEqualityEpsilon<double>();
         //      if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
         //      return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1));
         //   }
-        //   else if( iSec1 == Kd::Intersection::INTERSECT_EDGE)
+        //   else if( iSec1 == kd_tree::Intersection::INTERSECT_EDGE)
         //   {
         //      return (iSec2&1);
         //   }
-        //   else if( iSec2 == Kd::Intersection::INTERSECT_EDGE)
+        //   else if( iSec2 == kd_tree::Intersection::INTERSECT_EDGE)
         //   {
         //      return (iSec1&1);
         //   }
@@ -890,7 +888,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         //      if((iSec1&1) != (iSec2&1))
         //      {
         //         UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.iSec1&1 != iSec2&1");
-        //         double eps = UbMath::getEqualityEpsilon<double>();
+        //         double eps = ub_math::getEqualityEpsilon<double>();
         //         if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
         //         return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1));
         //      }
@@ -911,10 +909,10 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
             timer.start();
             if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
-                this->kdTree = new Kd::Tree<double>(*this, Kd::SAHSplit<double>());
+                this->kdTree = new kd_tree::Tree<double>(*this, kd_tree::SAHSplit<double>());
             } else if (kdtreeSplitAlg == KDTREE_SPATIALSPLIT) {
                 UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
-                this->kdTree = new Kd::Tree<double>(*this, Kd::SpatialMedianSplit<double>());
+                this->kdTree = new kd_tree::Tree<double>(*this, kd_tree::SpatialMedianSplit<double>());
             } else
                 throw UbException(UB_EXARGS, "unknown kdtree split option)");
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.getCurrentRuntimeInSeconds() << "seconds");
@@ -923,16 +921,16 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double &x1, const double &x2, co
         // eigentlicher PIO-Test
         int iSec;
         for (int i = 0; i < MAX_ITER; i++) {
-            Kd::Ray<double> ray(
+            kd_tree::Ray<double> ray(
                 x1, x2, x3, float((x1 < x1center ? UbRandom::rand(-1.0, -0.001, 10) : UbRandom::rand(0.001, 1.0, 10))),
                 float((x2 < x2center ? UbRandom::rand(-1.0, -0.001, 10) : UbRandom::rand(0.001, 1.0, 10))),
                 float((x3 < x3center ? UbRandom::rand(-1.0, -0.001, 10) : UbRandom::rand(0.001, 1.0, 10))));
 
-            iSec = kdTree->intersectRay(ray, Kd::CountRayIntersectionHandler<double>());
+            iSec = kdTree->intersectRay(ray, kd_tree::CountRayIntersectionHandler<double>());
 
-            if (iSec != Kd::Intersection::INTERSECT_EDGE) // KEINE Kante getroffen
+            if (iSec != kd_tree::Intersection::INTERSECT_EDGE) // KEINE Kante getroffen
             {
-                if (iSec == Kd::Intersection::ON_BOUNDARY) {
+                if (iSec == kd_tree::Intersection::ON_BOUNDARY) {
                     pointIsOnBoundary = true;
                     return true;
                 }
@@ -957,19 +955,19 @@ bool GbTriFaceMesh3D::intersectLine(const double &p1_x1, const double &p1_x2, co
         timer.start();
         if (kdtreeSplitAlg == KDTREE_SAHPLIT) {
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
-            this->kdTree = new Kd::Tree<double>(*this, Kd::SAHSplit<double>());
+            this->kdTree = new kd_tree::Tree<double>(*this, kd_tree::SAHSplit<double>());
         } else if (kdtreeSplitAlg == KDTREE_SPATIALSPLIT) {
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
-            this->kdTree = new Kd::Tree<double>(*this, Kd::SpatialMedianSplit<double>());
+            this->kdTree = new kd_tree::Tree<double>(*this, kd_tree::SpatialMedianSplit<double>());
         } else
             throw UbException(UB_EXARGS, "unknown kdtree split option)");
         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.getCurrentRuntimeInSeconds() << "seconds");
     }
 
     int iSec = kdTree->intersectLine(UbTupleDouble3(p1_x1, p1_x2, p1_x3), UbTupleDouble3(p2_x1, p2_x2, p2_x3),
-                                     Kd::CountLineIntersectionHandler<double>());
+                                     kd_tree::CountLineIntersectionHandler<double>());
 
-    return (iSec != Kd::Intersection::NO_INTERSECTION);
+    return (iSec != kd_tree::Intersection::NO_INTERSECTION);
 }
 /*======================================================================*/
 GbLine3D *GbTriFaceMesh3D::createClippedLine3D(GbPoint3D & /*point1*/, GbPoint3D & /*point2*/)

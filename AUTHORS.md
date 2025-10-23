@@ -16,7 +16,7 @@ VF has been developed essentially over several years by various researchers at I
 - Dr. Jan Hegewald
 - Dr. Christian Janßen
 - Alena Karanchuk
-- Henry Korb, M.Sc.
+- Dipl.-Ing. Henry Korb
 - Prof. Dr.-Ing. habil. Manfred Krafczyk
 - Dr. Konstantin Kutscher
 - Dr. Stephan Lenz

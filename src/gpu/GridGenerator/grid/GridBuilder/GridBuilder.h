@@ -62,7 +62,7 @@ class Grid;
 
 enum class SideType;
 
-namespace gg
+namespace grid_generator
 {
 class BoundaryCondition;
 }
@@ -101,12 +101,15 @@ public:
     virtual void getSlipQs(real* qs[27], int level) const = 0;
 
     virtual uint getStressSize(int level) const = 0;
-    virtual void getStressValues(real *normalX, real *normalY, real *normalZ, 
-                                real* vx1,     real* vy1,     real* vz1, 
-                                real* vx, real* vy, real* vz, 
-                                int *indices, int* samplingIndices, int*        samplingOffsets, real* z0, int level) const = 0;
+    virtual void getStressValues(real* normalX, real* normalY, real* normalZ, int* indices, uint* samplingIndices, real* samplingDistance, real* vonKarmanConstants,
+                                 real* roughnessLengths, int level) const = 0;
     virtual void getStressQs(real* qs[27], int level) const = 0;
-
+    virtual uint getSurfaceLayerSize(int level) const = 0;
+    virtual void getSurfaceLayerValues(real* normalX, real* normalY, real* normalZ, int* indices, real* samplingDistances,
+                                       uint* samplingIndices, real* vonKarmanConstants, real* roughnessLengths,
+                                       real* roughnessLengthsTemperature, real* surfaceHeatFluxes, real* surfaceTemperatures,
+                                       real* heatingRates, int level) const = 0;
+    virtual void getSurfaceLayerQs(real* qs[27], int level) const = 0;
     virtual uint getVelocitySize(int level) const = 0;
     virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const = 0;
     virtual void getVelocityQs(real* qs[27], int level) const = 0;
@@ -131,13 +134,29 @@ public:
 
     virtual void getPrecursorQs(real* qs[27], int level) const  = 0;
 
+    virtual uint getADNoFluxSize(int level) const = 0;
+    virtual void getADNoFluxValues(int* indices, int level) const = 0;
+    virtual void getADNoFluxQs(real* qs[27], int level) const = 0;
+
+    virtual uint getADFluxSize(int level) const = 0;
+    virtual void getADFluxValues(real* normalX, real* normalY, real* normalZ, real* gradient, int* indices, int level) const = 0;
+    virtual void getADFluxQs(real* qs[27], int level) const = 0;
+
+    virtual uint getADDirichletSize(int level) const = 0;
+    virtual void getADDirichletValues(real* values, real* vx, real* vy, real* vz, int* indices, int level) const = 0;
+    virtual void getADDirichletQs(real* qs[27], int level) const = 0;
+
+    virtual uint getADNeumannSize(int level) const = 0;
+    virtual void getADNeumannValues(real* gradients, real* vx, real* vy, real* vz, int* indices, int level) const = 0;
+    virtual void getADNeumannQs(real* qs[27], int level) const = 0;
+
     virtual uint getGeometrySize(int level) const                                 = 0;
     virtual void getGeometryIndices(int *indices, int level) const                = 0;
     virtual void getGeometryQs(real *qs[27], int level) const                     = 0;
     virtual bool hasGeometryValues() const                                        = 0;
     virtual void getGeometryValues(real *vx, real *vy, real *vz, int level) const = 0;
 
-    virtual SPtr<gg::BoundaryCondition> getBoundaryCondition(SideType side, uint level) const = 0;
+    virtual SPtr<grid_generator::BoundaryCondition> getBoundaryCondition(SideType side, uint level) const = 0;
 
     virtual SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition(uint level) const = 0;
 
@@ -150,14 +169,15 @@ public:
 
     virtual uint getNumberOfSendIndices(int direction, uint level)             = 0;
     virtual uint getNumberOfReceiveIndices(int direction, uint level)          = 0;
-    virtual void getSendIndices(int *sendIndices, int direction, int level)    = 0;
-    virtual void getReceiveIndices(int *sendIndices, int direction, int level) = 0;
+    virtual void getSendIndices(uint *sendIndices, int direction, int level)    = 0;
+    virtual void getReceiveIndices(uint *sendIndices, int direction, int level) = 0;
 
     virtual void findFluidNodes(bool splitDomain) = 0;
 
     virtual void addFluidNodeIndicesMacroVars(const std::vector<uint>& fluidNodeIndicesMacroVars, uint level)           = 0;
     virtual void addFluidNodeIndicesApplyBodyForce(const std::vector<uint>& fluidNodeIndicesApplyBodyForce, uint level) = 0;
     virtual void addFluidNodeIndicesAllFeatures(const std::vector<uint>& fluidNodeIndicesAllFeatures, uint level)       = 0;
+    virtual void addAllFluidNodeIndicesToAllFeatures(uint level)       = 0;
     virtual void sortFluidNodeIndicesMacroVars(uint level) = 0;
     virtual void sortFluidNodeIndicesApplyBodyForce(uint level) = 0;
     virtual void sortFluidNodeIndicesAllFeatures(uint level) = 0;

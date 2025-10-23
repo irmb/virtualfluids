@@ -33,6 +33,7 @@
 #ifndef SAMPLE_UTILITIES_H
 #define SAMPLE_UTILITIES_H
 #include <basics/StringUtilities/StringUtil.h>
+#include <basics/DataTypes.h>
 #include <filesystem>
 #include <fstream>
 #include <ios>
@@ -63,7 +64,7 @@ inline std::string makeTimeseriesFileName(const std::string& probeName, int leve
 }
 
 template <typename T>
-__host__ __device__ inline T computeNewTimeAverage(T oldAverage, T newValue, real inverseNumberOfTimesteps)
+constexpr inline T computeNewTimeAverage(T oldAverage, T newValue, real inverseNumberOfTimesteps)
 {
     return oldAverage + (newValue - oldAverage) * inverseNumberOfTimesteps;
 }

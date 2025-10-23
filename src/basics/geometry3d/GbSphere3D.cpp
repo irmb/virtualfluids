@@ -173,7 +173,7 @@ bool GbSphere3D::isPointInGbObject3D(const double &x1p, const double &x2p, const
     double deltaX2 = x2p - midPoint->getX2Coordinate();
     double deltaX3 = x3p - midPoint->getX3Coordinate();
 
-    return UbMath::lessEqual(deltaX1 * deltaX1 + deltaX2 * deltaX2 + deltaX3 * deltaX3, this->radius * this->radius);
+    return ub_math::lessEqual(deltaX1 * deltaX1 + deltaX2 * deltaX2 + deltaX3 * deltaX3, this->radius * this->radius);
 }
 /*=====================================================*/
 // true, wenn 'in Object' oder 'auf Boundary'!
@@ -186,9 +186,9 @@ bool GbSphere3D::isPointInGbObject3D(const double &x1p, const double &x2p, const
     double distanceSquare = deltaX1 * deltaX1 + deltaX2 * deltaX2 + deltaX3 * deltaX3;
     double radiusSquare   = this->radius * this->radius;
 
-    pointIsOnBoundary = UbMath::equal(distanceSquare, radiusSquare);
+    pointIsOnBoundary = ub_math::equal(distanceSquare, radiusSquare);
 
-    return UbMath::lessEqual(distanceSquare, radiusSquare);
+    return ub_math::lessEqual(distanceSquare, radiusSquare);
 }
 /*=====================================================*/
 // bool GbSphere3D::crossCellCrossSection(double x11,double x21,double x12,double x22, double ra)
@@ -263,18 +263,18 @@ GbLine3D *GbSphere3D::createClippedLine3D(GbPoint3D &point1, GbPoint3D &point2)
 
     vector<GbPoint3D *> schnittpunkte;
 
-    if (fabs(nenner) > 1.E-13 && UbMath::greaterEqual(wurzel, 0.0)) {
+    if (fabs(nenner) > 1.E-13 && ub_math::greaterEqual(wurzel, 0.0)) {
         double t1 = (zaehler + 2.0 * sqrt(wurzel)) / nenner;
         double t2 = (zaehler - 2.0 * sqrt(wurzel)) / nenner;
 
-        if (UbMath::inClosedInterval(t1, -1.0, 1.0)) {
+        if (ub_math::inClosedInterval(t1, -1.0, 1.0)) {
             double x = (xa * (0.5 - 0.5 * t1) + xb * (0.5 + 0.5 * t1)) / factor;
             double y = (ya * (0.5 - 0.5 * t1) + yb * (0.5 + 0.5 * t1)) / factor;
             double z = (za * (0.5 - 0.5 * t1) + zb * (0.5 + 0.5 * t1)) / factor;
 
             schnittpunkte.push_back(new GbPoint3D(x, y, z));
         }
-        if (fabs(t2 - t1) > 1.E-13 && UbMath::inClosedInterval(t2, -1.0, 1.0)) {
+        if (fabs(t2 - t1) > 1.E-13 && ub_math::inClosedInterval(t2, -1.0, 1.0)) {
             double x = (xa * (0.5 - 0.5 * t2) + xb * (0.5 + 0.5 * t2)) / factor;
             double y = (ya * (0.5 - 0.5 * t2) + yb * (0.5 + 0.5 * t2)) / factor;
             double z = (za * (0.5 - 0.5 * t2) + zb * (0.5 + 0.5 * t2)) / factor;
@@ -312,12 +312,12 @@ vector<GbTriangle3D *> GbSphere3D::getSurfaceTriangleSet()
         vector<GbTriangle3D *> triangles;
 
         int segments    = 30;
-        double deltaPhi = UbMath::PI / (double)segments;
+        double deltaPhi = ub_math::PI / (double)segments;
         double phiX1a, phiX1b, phiX3a, phiX3b;
         double x1a, x2a, x3a, x1b, x2b, x3b, x1c, x2c, x3c, x1d, x2d, x3d;
 
-        for (phiX3a = 0.5 * UbMath::PI; phiX3a > -1.5 * UbMath::PI; phiX3a -= deltaPhi) {
-            for (phiX1a = 0.0; phiX1a < UbMath::PI; phiX1a += deltaPhi) {
+        for (phiX3a = 0.5 * ub_math::PI; phiX3a > -1.5 * ub_math::PI; phiX3a -= deltaPhi) {
+            for (phiX1a = 0.0; phiX1a < ub_math::PI; phiX1a += deltaPhi) {
                 phiX1b = phiX1a + deltaPhi;
                 phiX3b = phiX3a + deltaPhi;
 
@@ -334,7 +334,7 @@ vector<GbTriangle3D *> GbSphere3D::getSurfaceTriangleSet()
                 x2d = x2m + radius * cos(phiX3b) * std::sin(phiX1a);
                 x3d = x3m + radius * sin(phiX3b);
 
-                if (UbMath::greater(phiX3b, -0.5 * UbMath::PI) && UbMath::less(phiX3a, 0.5 * UbMath::PI)) {
+                if (ub_math::greater(phiX3b, -0.5 * ub_math::PI) && ub_math::less(phiX3a, 0.5 * ub_math::PI)) {
                     triangles.push_back(new GbTriangle3D(new GbPoint3D(x1a, x2a, x3a), new GbPoint3D(x1b, x2b, x3b),
                                                          new GbPoint3D(x1c, x2c, x3c)));
                     triangles.push_back(new GbTriangle3D(new GbPoint3D(x1a, x2a, x3a), new GbPoint3D(x1c, x2c, x3c),
@@ -457,12 +457,12 @@ void GbSphere3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &nodes, vector<UbTu
         float x3m = (float)midPoint->getX3Coordinate();
 
         int segments   = 30;
-        float deltaPhi = (float)UbMath::PI / (float)segments;
+        float deltaPhi = (float)ub_math::PI / (float)segments;
         float phiX1a, phiX1b, phiX3a, phiX3b;
         float x1a, x2a, x3a, x1b, x2b, x3b, x1c, x2c, x3c, x1d, x2d, x3d;
         int nodeNr = int(nodes.size());
-        for (phiX3a = (float)(0.5 * UbMath::PI); phiX3a > (float)(-1.5 * UbMath::PI); phiX3a -= deltaPhi) {
-            for (phiX1a = 0.0; phiX1a < UbMath::PI; phiX1a += deltaPhi) {
+        for (phiX3a = (float)(0.5 * ub_math::PI); phiX3a > (float)(-1.5 * ub_math::PI); phiX3a -= deltaPhi) {
+            for (phiX1a = 0.0; phiX1a < ub_math::PI; phiX1a += deltaPhi) {
                 phiX1b = phiX1a + deltaPhi;
                 phiX3b = phiX3a + deltaPhi;
 
@@ -479,7 +479,7 @@ void GbSphere3D::addSurfaceTriangleSet(vector<UbTupleFloat3> &nodes, vector<UbTu
                 x2d = x2m + (float)(radius * cos(phiX3b) * std::sin(phiX1a));
                 x3d = x3m + (float)(radius * sin(phiX3b));
 
-                if (UbMath::greater(phiX3b, -0.5 * UbMath::PI) && UbMath::less(phiX3a, 0.5 * UbMath::PI)) {
+                if (ub_math::greater(phiX3b, -0.5 * ub_math::PI) && ub_math::less(phiX3a, 0.5 * ub_math::PI)) {
                     nodes.push_back(makeUbTuple(x1a, x2a, x3a));
                     nodes.push_back(makeUbTuple(x1b, x2b, x3b));
                     nodes.push_back(makeUbTuple(x1c, x2c, x3c));
@@ -650,9 +650,9 @@ bool GbSphere3D::isCellCuttingGbObject3D(const double &x1a, const double &x2a, c
 {
     double midX[] = { this->getX1Centroid(), this->getX2Centroid(), this->getX3Centroid() };
 
-    double Bmin[] = { UbMath::min(x1a, x1b), UbMath::min(x2a, x2b), UbMath::min(x3a, x3b) };
+    double Bmin[] = { ub_math::min(x1a, x1b), ub_math::min(x2a, x2b), ub_math::min(x3a, x3b) };
 
-    double Bmax[] = { UbMath::max(x1a, x1b), UbMath::max(x2a, x2b), UbMath::max(x3a, x3b) };
+    double Bmax[] = { ub_math::max(x1a, x1b), ub_math::max(x2a, x2b), ub_math::max(x3a, x3b) };
 
     /* Solid Box - Hollow Sphere */
     double dmin = 0.0;
@@ -662,13 +662,13 @@ bool GbSphere3D::isCellCuttingGbObject3D(const double &x1a, const double &x2a, c
     for (int i = 0; i < 3; i++) {
         double a = pow(midX[i] - Bmin[i], 2.0);
         double b = pow(midX[i] - Bmax[i], 2.0);
-        dmax += UbMath::max(a, b);
-        if (UbMath::less(midX[i], Bmin[i]))
+        dmax += ub_math::max(a, b);
+        if (ub_math::less(midX[i], Bmin[i]))
             dmin += a;
-        else if (UbMath::greater(midX[i], Bmax[i]))
+        else if (ub_math::greater(midX[i], Bmax[i]))
             dmin += b;
     }
-    if (UbMath::lessEqual(dmin, r2) && UbMath::lessEqual(r2, dmax)) {
+    if (ub_math::lessEqual(dmin, r2) && ub_math::lessEqual(r2, dmax)) {
         return true;
     }
     return false;
@@ -699,22 +699,22 @@ bool GbSphere3D::isCellInsideOrCuttingGbObject3D(const double &x1a, const double
 
     double dmin = 0.0;
 
-    if (UbMath::less(midX1, x1a))
+    if (ub_math::less(midX1, x1a))
         dmin += std::pow(midX1 - x1a, 2.0);
-    else if (UbMath::greater(midX1, x1b))
+    else if (ub_math::greater(midX1, x1b))
         dmin += std::pow(midX1 - x1b, 2.0);
 
-    if (UbMath::less(midX2, x2a))
+    if (ub_math::less(midX2, x2a))
         dmin += std::pow(midX2 - x2a, 2.0);
-    else if (UbMath::greater(midX2, x2b))
+    else if (ub_math::greater(midX2, x2b))
         dmin += std::pow(midX2 - x2b, 2.0);
 
-    if (UbMath::less(midX3, x3a))
+    if (ub_math::less(midX3, x3a))
         dmin += std::pow(midX3 - x3a, 2.0);
-    else if (UbMath::greater(midX3, x3b))
+    else if (ub_math::greater(midX3, x3b))
         dmin += std::pow(midX3 - x3b, 2.0);
 
-    if (UbMath::lessEqual(dmin, radius * radius)) {
+    if (ub_math::lessEqual(dmin, radius * radius)) {
         return true;
     }
 
@@ -781,7 +781,7 @@ double GbSphere3D::getCellVolumeInsideGbObject3DHelperFunction(const double &x1a
                 internX2 = x2a + (x2b - x2a) * x2vers;
                 internX3 = x3a + (x3b - x3a) * x3vers;
 
-                if (UbMath::lessEqual(this->getDistance(internX1, internX2, internX3), alpha))
+                if (ub_math::lessEqual(this->getDistance(internX1, internX2, internX3), alpha))
                     alpha = this->getDistance(internX1, internX2, internX3);
                 // cout<<zelltyp<<" "<<kugel->getDistance(internX1,internX2,internX3)<<" "<<alpha<<endl;
             } // end first for
@@ -809,27 +809,27 @@ double GbSphere3D::getCellVolumeInsideGbObject3DHelperFunction(const double &x1a
     n[1] /= normLength;
     n[2] /= normLength;
 
-    if (UbMath::less(n[0], 0.0))
+    if (ub_math::less(n[0], 0.0))
         n[0] = -n[0];
-    if (UbMath::less(n[1], 0.0))
+    if (ub_math::less(n[1], 0.0))
         n[1] = -n[1];
-    if (UbMath::less(n[2], 0.0))
+    if (ub_math::less(n[2], 0.0))
         n[2] = -n[2];
 
     // cout<<"Normals: "<<n[0]<<" "<<n[1]<<" "<<n[2]<<endl;
 
     double dummy;
-    if (UbMath::greater(n[0], n[1])) {
+    if (ub_math::greater(n[0], n[1])) {
         dummy = n[1];
         n[1]  = n[0];
         n[0]  = dummy;
     }
-    if (UbMath::greater(n[1], n[2])) {
+    if (ub_math::greater(n[1], n[2])) {
         dummy = n[2];
         n[2]  = n[1];
         n[1]  = dummy;
     }
-    if (UbMath::greater(n[0], n[1])) {
+    if (ub_math::greater(n[0], n[1])) {
         dummy = n[1];
         n[1]  = n[0];
         n[0]  = dummy;
@@ -846,25 +846,25 @@ double GbSphere3D::getCellVolumeInsideGbObject3DHelperFunction(const double &x1a
 
     double result = 0.0, preresult = 0.0;
 
-    if (UbMath::lessEqual(maxVol, 0.000001))
+    if (ub_math::lessEqual(maxVol, 0.000001))
         return 0.0;
 
     // 1D Check
-    if (UbMath::lessEqual(n1, 0.001) && UbMath::lessEqual(n2, 0.001)) {
+    if (ub_math::lessEqual(n1, 0.001) && ub_math::lessEqual(n2, 0.001)) {
         result = alpha * deltaX1 * deltaX2;
     }
     // 2D Check
-    else if (UbMath::lessEqual(n1, 0.001)) {
+    else if (ub_math::lessEqual(n1, 0.001)) {
         preresult = (2 * n2 * n3);
         result    = (alpha * alpha) / preresult;
 
-        if (UbMath::greater(alpha, n2 * deltaX2)) {
+        if (ub_math::greater(alpha, n2 * deltaX2)) {
             result += -(alpha - n2 * deltaX2) * (alpha - n2 * deltaX2) / preresult;
         }
-        if (UbMath::greater(alpha, n3 * deltaX3)) {
+        if (ub_math::greater(alpha, n3 * deltaX3)) {
             result += -(alpha - n3 * deltaX3) * (alpha - n3 * deltaX3) / preresult;
         }
-        if (UbMath::greater(alpha, n2 * deltaX2 + n3 * deltaX3)) {
+        if (ub_math::greater(alpha, n2 * deltaX2 + n3 * deltaX3)) {
             result += (alpha - n2 * deltaX2 - n3 * deltaX3) * (alpha - n2 * deltaX2 - n3 * deltaX3) / preresult;
         }
 
@@ -877,30 +877,30 @@ double GbSphere3D::getCellVolumeInsideGbObject3DHelperFunction(const double &x1a
 
         result = alpha * alpha * alpha;
 
-        if (UbMath::greaterEqual(alpha, n1 * deltaX1)) {
+        if (ub_math::greaterEqual(alpha, n1 * deltaX1)) {
             result += -((alpha - n1 * deltaX1) * (alpha - n1 * deltaX1) * (alpha - n1 * deltaX1));
         }
-        if (UbMath::greaterEqual(alpha, n2 * deltaX2)) {
+        if (ub_math::greaterEqual(alpha, n2 * deltaX2)) {
             result += -((alpha - n2 * deltaX2) * (alpha - n2 * deltaX2) * (alpha - n2 * deltaX2));
         }
-        if (UbMath::greaterEqual(alpha, n3 * deltaX3)) {
+        if (ub_math::greaterEqual(alpha, n3 * deltaX3)) {
             result += -((alpha - n3 * deltaX3) * (alpha - n3 * deltaX3) * (alpha - n3 * deltaX3));
         }
-        if (UbMath::greaterEqual(alpha, (n1 * deltaX1 + n2 * deltaX2))) {
+        if (ub_math::greaterEqual(alpha, (n1 * deltaX1 + n2 * deltaX2))) {
             result += ((alpha - (n1 * deltaX1 + n2 * deltaX2)) * (alpha - (n1 * deltaX1 + n2 * deltaX2)) *
                        (alpha - (n1 * deltaX1 + n2 * deltaX2)));
         }
-        if (UbMath::greaterEqual(alpha, (n1 * deltaX1 + n3 * deltaX3))) {
+        if (ub_math::greaterEqual(alpha, (n1 * deltaX1 + n3 * deltaX3))) {
             result += ((alpha - (n1 * deltaX1 + n3 * deltaX3)) * (alpha - (n1 * deltaX1 + n3 * deltaX3)) *
                        (alpha - (n1 * deltaX1 + n3 * deltaX3)));
         }
-        if (UbMath::greaterEqual(alpha, (n2 * deltaX2 + n3 * deltaX3))) {
+        if (ub_math::greaterEqual(alpha, (n2 * deltaX2 + n3 * deltaX3))) {
             result += ((alpha - (n2 * deltaX2 + n3 * deltaX3)) * (alpha - (n2 * deltaX2 + n3 * deltaX3)) *
                        (alpha - (n2 * deltaX2 + n3 * deltaX3)));
         }
 
         // NEW
-        if (UbMath::greaterEqual(alpha, (n1 * deltaX1 + n2 * deltaX2 + n3 * deltaX3))) {
+        if (ub_math::greaterEqual(alpha, (n1 * deltaX1 + n2 * deltaX2 + n3 * deltaX3))) {
             result += -((alpha - (n1 * deltaX1 + n2 * deltaX2 + n3 * deltaX3)) *
                         (alpha - (n1 * deltaX1 + n2 * deltaX2 + n3 * deltaX3)) *
                         (alpha - (n1 * deltaX1 + n2 * deltaX2 + n3 * deltaX3)));

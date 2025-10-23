@@ -86,7 +86,7 @@ void QCriterionSimulationObserver::collectData(real step)
     }
 
     std::string partName = writer->writeOctsWithNodeData(
-        path + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep), nodes, cells, datanames, data);
+        path + ub_system::toString(gridRank) + "_" + ub_system::toString(istep), nodes, cells, datanames, data);
     size_t found      = partName.find_last_of("//");
     std::string piece = partName.substr(found + 1);
 
@@ -96,7 +96,7 @@ void QCriterionSimulationObserver::collectData(real step)
     std::vector<std::string> pieces = comm->gather(piece); // comm: MPI-Wrapper
     if (comm->getProcessID() == comm->getRoot()) {
         std::string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(
-            path + "_" + UbSystem::toString(istep), pieces, datanames, cellDataNames);
+            path + "_" + ub_system::toString(istep), pieces, datanames, cellDataNames);
 
         std::vector<std::string> filenames;
         filenames.push_back(pname);
@@ -270,7 +270,7 @@ void QCriterionSimulationObserver::getNeighborVelocities(int offx, int offy, int
     //////get neighbor nodes, if existent
     if ((ix1 == 0 && offx == 1) || (ix2 == 0 && offy == 1) || (ix3 == 0 && offz == 1)) {
         int RankNeighborW;
-        Vector3D orgNodeRW = grid->getNodeCoordinates(block, ix1, ix2, ix3);
+        GbVector3D orgNodeRW = grid->getNodeCoordinates(block, ix1, ix2, ix3);
         real xp000       = orgNodeRW[0];
         real yp000       = orgNodeRW[1];
         real zp000       = orgNodeRW[2];
@@ -386,13 +386,13 @@ void QCriterionSimulationObserver::computeVelocity(real *f, real *v, bool compre
     // compute x,y,z-velocity components from distribution
     //////////////////////////////////////////////////////////////////////////
     if (compressible) {
-        v[xdir] = D3Q27System::getCompVelocityX1(f);
-        v[ydir] = D3Q27System::getCompVelocityX2(f);
-        v[zdir] = D3Q27System::getCompVelocityX3(f);
+        v[xdir] = d3q27_system::getCompVelocityX1(f);
+        v[ydir] = d3q27_system::getCompVelocityX2(f);
+        v[zdir] = d3q27_system::getCompVelocityX3(f);
     } else {
-        v[xdir] = D3Q27System::getIncompVelocityX1(f);
-        v[ydir] = D3Q27System::getIncompVelocityX2(f);
-        v[zdir] = D3Q27System::getIncompVelocityX3(f);
+        v[xdir] = d3q27_system::getIncompVelocityX1(f);
+        v[ydir] = d3q27_system::getIncompVelocityX2(f);
+        v[zdir] = d3q27_system::getIncompVelocityX3(f);
     }
 }
 

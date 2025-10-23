@@ -32,6 +32,8 @@
 //! \author Martin Schoenherr
 //=======================================================================================
 #include "Parameter.h"
+#include "lbm/MacroscopicQuantities.h"
+#include "lbm/advectionDiffusion/TurbulentDiffusivity.h"
 
 #include <cmath>
 #include <cstdio>
@@ -51,9 +53,12 @@
 #include "StringUtilities/StringUtil.h"
 
 #include <basics/config/ConfigurationFile.h>
+#include <basics/constants/NumericConstants.h>
 
 #include <logger/Logger.h>
 #include "Cuda/CudaStreamManager.h"
+
+using namespace vf::basics::constant;
 
 Parameter::Parameter() : Parameter(1, 0, {}) {}
 
@@ -150,12 +155,6 @@ void Parameter::readConfigData(const vf::basics::ConfigurationFile &configData)
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Diffusivity"))
         this->setDiffusivity(configData.getValue<real>("Diffusivity"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("Concentration"))
-        this->setConcentrationInit(configData.getValue<real>("Concentration"));
-    //////////////////////////////////////////////////////////////////////////
-    if (configData.contains("ConcentrationBC"))
-        this->setConcentrationBC(configData.getValue<real>("ConcentrationBC"));
 
     //////////////////////////////////////////////////////////////////////////
     if (configData.contains("Viscosity_LB"))
@@ -402,8 +401,11 @@ void Parameter::initLBMSimulationParameter()
         parH[i]->gridNY           = getGridY().at(i);
         parH[i]->gridNZ           = getGridZ().at(i);
         parH[i]->viscosity        = this->vis * pow((real)2.0, i);
-        parH[i]->diffusivity      = this->Diffusivity * pow((real)2.0, i);
+        parH[i]->diffusivity      = this->Diffusivity * std::exp2((real)i);
         parH[i]->omega            = (real)1.0 / (real(3.0) * parH[i]->viscosity + real(0.5)); // omega :-) not s9 = -1.0f/(3.0f*parH[i]->vis+0.5f);//
+        parH[i]->omegaDiffusivity = vf::lbm::computeRelaxationFrequency(parH[i]->diffusivity);
+        parH[i]->referenceTemperature = this->referenceTemperature;
+        parH[i]->gravity = getScaledGravity(i);
     }
 
     // device
@@ -416,30 +418,9 @@ void Parameter::initLBMSimulationParameter()
         parD[i]->viscosity        = parH[i]->viscosity;
         parD[i]->diffusivity      = parH[i]->diffusivity;
         parD[i]->omega            = parH[i]->omega;
-    }
-
-    checkParameterValidityCumulantK17();
-}
-
-void Parameter::checkParameterValidityCumulantK17() const
-{
-    if (this->mainKernel != vf::collisionKernel::compressible::K17CompressibleNavierStokes)
-        return;
-
-    const real viscosity = this->parH[maxlevel]->viscosity;
-    const real viscosityLimit = 1.0 / 42.0;
-    if (viscosity > viscosityLimit) {
-        VF_LOG_WARNING("The viscosity (in LB units) at level {} is {:1.3g}. It is recommended to keep it smaller than {:1.3g} "
-                       "for the CumulantK17 collision kernel.",
-                       maxlevel, viscosity, viscosityLimit);
-    }
-
-    const real velocity = this->u0;
-    const real velocityLimit = 0.1;
-    if (velocity > velocityLimit) {
-        VF_LOG_WARNING("The velocity (in LB units) is {:1.4g}. It is recommended to keep it smaller than {:1.4g} for the "
-                       "CumulantK17 collision kernel.",
-                       velocity, velocityLimit);
+        parD[i]->omegaDiffusivity = parH[i]->omegaDiffusivity;
+        parD[i]->referenceTemperature = parH[i]->referenceTemperature;
+        parD[i]->gravity = parH[i]->gravity;
     }
 }
 
@@ -479,6 +460,12 @@ void Parameter::setStepEnsight(unsigned int step)
 void Parameter::setDiffOn(bool isDiff)
 {
     diffOn = isDiff;
+}
+void Parameter::setBuoyancyEnabled(bool buoyancyEnabled)
+{
+    this->buoyancyEnabled = buoyancyEnabled;
+    if(!this->isBodyForce)
+        VF_LOG_WARNING("Need to enable body force for buoyancy!");
 }
 void Parameter::setD3Qxx(int d3qxx)
 {
@@ -566,14 +553,7 @@ void Parameter::setDiffusivity(real Diffusivity)
 {
     this->Diffusivity = Diffusivity;
 }
-void Parameter::setConcentrationInit(real concentrationInit)
-{
-    this->concentrationInit = concentrationInit;
-}
-void Parameter::setConcentrationBC(real concentrationBC)
-{
-    this->concentrationBC = concentrationBC;
-}
+
 void Parameter::setViscosityLB(real Viscosity)
 {
     this->vis = Viscosity;
@@ -598,7 +578,7 @@ void Parameter::setPressRatio(real PressRatio)
 {
     this->delta_press = PressRatio;
 }
-real Parameter::getViscosityRatio()
+real Parameter::getViscosityRatio() const
 {
     return this->vis_ratio;
 }
@@ -606,58 +586,68 @@ real Parameter::getVelocityRatio() const
 {
     return this->u0_ratio;
 }
-real Parameter::getDensityRatio()
+real Parameter::getDensityRatio() const
 {
     return this->delta_rho;
 }
-real Parameter::getPressureRatio()
+real Parameter::getPressureRatio() const
 {
     return this->delta_press;
 }
-real Parameter::getTimeRatio()
+real Parameter::getTimeRatio() const
 {
-    return this->getViscosityRatio() * pow(this->getVelocityRatio(), -2);
+    return this->getScaledTimeRatio(0);
 }
-real Parameter::getLengthRatio()
+real Parameter::getLengthRatio() const
 {
-    return this->getViscosityRatio() / this->getVelocityRatio();
+    return this->getScaledLengthRatio(0);
 }
-real Parameter::getForceRatio()
+real Parameter::getForceRatio() const
 {
-    return (this->getDensityRatio()+1.0) * this->getVelocityRatio()/this->getTimeRatio();
+    return this->getScaledForceRatio(0);
 }
-real Parameter::getScaledViscosityRatio(int level)
+real Parameter::getScaledViscosityRatio(int level) const
 {
-    return this->getViscosityRatio()/(level+1);
+    return this->getViscosityRatio() * std::exp2(-level);
 }
-real Parameter::getScaledVelocityRatio(int level)
+real Parameter::getScaledVelocityRatio(int /*level*/) const
 {
     return this->getVelocityRatio();
 }
-real Parameter::getScaledDensityRatio(int level)
+real Parameter::getScaledDensityRatio(int /*level*/) const
 {
     return this->getDensityRatio();
 }
-real Parameter::getScaledPressureRatio(int level)
+real Parameter::getScaledPressureRatio(int /*level*/) const
 {
     return this->getPressureRatio();
 }
-real Parameter::getScaledTimeRatio(int level)
+real Parameter::getScaledTimeRatio(int level) const
 {
-    return this->getTimeRatio()/(level+1);
+    return this->getScaledViscosityRatio(level) / std::pow(this->getScaledVelocityRatio(level), 2);
 }
-real Parameter::getScaledLengthRatio(int level)
+real Parameter::getScaledLengthRatio(int level) const
 {
-    return this->getLengthRatio()/(level+1);
+    return this->getScaledViscosityRatio(level) / this->getScaledVelocityRatio(level);
 }
-real Parameter::getScaledForceRatio(int level)
+real Parameter::getScaledForceRatio(int level) const
 {
-    return this->getForceRatio()*(level+1);
+    return this->getScaledDensityRatio(level) * this->getScaledVelocityRatio(level) / this->getScaledTimeRatio(level);
 }
-real Parameter::getScaledStressRatio(int level)
+real Parameter::getScaledStressRatio(int level) const
 {
-    return this->getVelocityRatio()*this->getVelocityRatio();
+    return std::pow(this->getScaledVelocityRatio(level), 2);
 }
+real Parameter::getScaledBuoyancyFactor(int level) const
+{
+    return this->getBuoyancyFactor() * std::exp2(-level);
+}
+
+real Parameter::getScaledGravity(int level) const
+{
+    return this->getGravity() * std::exp2(-level);
+}
+
 void Parameter::setRealX(real RealX)
 {
     this->RealX = RealX;
@@ -690,6 +680,20 @@ void Parameter::setRe(real Re)
 {
     this->Re = Re;
 }
+void Parameter::setTurbulentPrandtlNumber(real turbulentPrandtlNumber)
+{
+    this->turbulentPrandtlNumber = turbulentPrandtlNumber;
+}
+void Parameter::setBuoyancyFactor(real buoyancyFactor)
+{
+    this->buoyancyFactor = buoyancyFactor;
+}
+void Parameter::setGravity(real gravity) {
+    this->gravity = gravity;
+}
+void Parameter::setReferenceTemperature(real referenceTemperature) {
+    this->referenceTemperature = referenceTemperature;
+}
 void Parameter::setFactorPressBC(real factorPressBC)
 {
     this->factorPressBC = factorPressBC;
@@ -712,24 +716,32 @@ void Parameter::setUseInitNeq(bool useInitNeq)
 }
 void Parameter::setUseTurbulentViscosity(bool useTurbulentViscosity)
 {
-    this->isTurbulentViscosity = useTurbulentViscosity;
+    this->turbulentViscosityEnabled = useTurbulentViscosity;
 }
 void Parameter::setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel)
 {
     this->turbulenceModel = turbulenceModel;
 }
+void Parameter::setUseTurbulentDiffusivity(bool useTurbulentDiffusivity)
+{
+    this->turbulentDiffusivityEnabled = useTurbulentDiffusivity;
+}
+void Parameter::setAdvectionDiffusionTurbulenceModel(vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel)
+{
+    this->advectionDiffusionTurbulenceModel = turbulenceModel;
+}
 void Parameter::setSGSConstant(real SGSConstant)
 {
     this->SGSConstant = SGSConstant;
-}
-void Parameter::setHasWallModelMonitor(bool hasWallModelMonitor)
-{
-    this->hasWallModelMonitor = hasWallModelMonitor;
 }
 
 void Parameter::setIsBodyForce(bool isBodyForce)
 {
     this->isBodyForce = isBodyForce;
+}
+void Parameter::setAllNodesAllFeatures(bool allNodesAllFeatures)
+{
+    this->allNodesAllFeatures = allNodesAllFeatures;
 }
 
 void Parameter::setGridX(std::vector<int> GridX)
@@ -775,22 +787,6 @@ void Parameter::setMaxCoordY(std::vector<real> MaxCoordY)
 void Parameter::setMaxCoordZ(std::vector<real> MaxCoordZ)
 {
     this->maxCoordZ = MaxCoordZ;
-}
-void Parameter::setConcentrationNoSlipBCHost(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCHost)
-{
-    this->concentrationNoSlipBCHost = concentrationNoSlipBCHost;
-}
-void Parameter::setConcentrationNoSlipBCDevice(AdvectionDiffusionNoSlipBoundaryConditions *concentrationNoSlipBCDevice)
-{
-    this->concentrationNoSlipBCDevice = concentrationNoSlipBCDevice;
-}
-void Parameter::setConcentrationDirichletBCHost(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCHost)
-{
-    this->concentrationDirichletBCHost = concentrationDirichletBCHost;
-}
-void Parameter::setConcentrationDirichletBCDevice(AdvectionDiffusionDirichletBoundaryConditions *concentrationDirichletBCDevice)
-{
-    this->concentrationDirichletBCDevice = concentrationDirichletBCDevice;
 }
 void Parameter::setgeoVec(std::string geoVec)
 {
@@ -1084,66 +1080,36 @@ void Parameter::setPossNeighborFilesZ(std::vector<std::string> possNeighborFiles
 void Parameter::setNumberOfProcessNeighborsX(unsigned int numberOfProcessNeighbors, int level, std::string sor)
 {
     if (sor == "send") {
-        parH[level]->sendProcessNeighborX.resize(numberOfProcessNeighbors);
-        parD[level]->sendProcessNeighborX.resize(numberOfProcessNeighbors);
-        //////////////////////////////////////////////////////////////////////////
-        if (getDiffOn() == true) {
-            parH[level]->sendProcessNeighborADX.resize(numberOfProcessNeighbors);
-            parD[level]->sendProcessNeighborADX.resize(numberOfProcessNeighbors);
-        }
+        parH[level]->sendProcessNeighborsX.resize(numberOfProcessNeighbors);
+        parD[level]->sendProcessNeighborsX.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
     } else if (sor == "recv") {
-        parH[level]->recvProcessNeighborX.resize(numberOfProcessNeighbors);
-        parD[level]->recvProcessNeighborX.resize(numberOfProcessNeighbors);
-        //////////////////////////////////////////////////////////////////////////
-        if (getDiffOn() == true) {
-            parH[level]->recvProcessNeighborADX.resize(numberOfProcessNeighbors);
-            parD[level]->recvProcessNeighborADX.resize(numberOfProcessNeighbors);
-        }
+        parH[level]->recvProcessNeighborsX.resize(numberOfProcessNeighbors);
+        parD[level]->recvProcessNeighborsX.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
     }
 }
 void Parameter::setNumberOfProcessNeighborsY(unsigned int numberOfProcessNeighbors, int level, std::string sor)
 {
     if (sor == "send") {
-        parH[level]->sendProcessNeighborY.resize(numberOfProcessNeighbors);
-        parD[level]->sendProcessNeighborY.resize(numberOfProcessNeighbors);
-        //////////////////////////////////////////////////////////////////////////
-        if (getDiffOn() == true) {
-            parH[level]->sendProcessNeighborADY.resize(numberOfProcessNeighbors);
-            parD[level]->sendProcessNeighborADY.resize(numberOfProcessNeighbors);
-        }
+        parH[level]->sendProcessNeighborsY.resize(numberOfProcessNeighbors);
+        parD[level]->sendProcessNeighborsY.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
     } else if (sor == "recv") {
-        parH[level]->recvProcessNeighborY.resize(numberOfProcessNeighbors);
-        parD[level]->recvProcessNeighborY.resize(numberOfProcessNeighbors);
-        //////////////////////////////////////////////////////////////////////////
-        if (getDiffOn() == true) {
-            parH[level]->recvProcessNeighborADY.resize(numberOfProcessNeighbors);
-            parD[level]->recvProcessNeighborADY.resize(numberOfProcessNeighbors);
-        }
+        parH[level]->recvProcessNeighborsY.resize(numberOfProcessNeighbors);
+        parD[level]->recvProcessNeighborsY.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
     }
 }
 void Parameter::setNumberOfProcessNeighborsZ(unsigned int numberOfProcessNeighbors, int level, std::string sor)
 {
     if (sor == "send") {
-        parH[level]->sendProcessNeighborZ.resize(numberOfProcessNeighbors);
-        parD[level]->sendProcessNeighborZ.resize(numberOfProcessNeighbors);
-        //////////////////////////////////////////////////////////////////////////
-        if (getDiffOn() == true) {
-            parH[level]->sendProcessNeighborADZ.resize(numberOfProcessNeighbors);
-            parD[level]->sendProcessNeighborADZ.resize(numberOfProcessNeighbors);
-        }
+        parH[level]->sendProcessNeighborsZ.resize(numberOfProcessNeighbors);
+        parD[level]->sendProcessNeighborsZ.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
     } else if (sor == "recv") {
-        parH[level]->recvProcessNeighborZ.resize(numberOfProcessNeighbors);
-        parD[level]->recvProcessNeighborZ.resize(numberOfProcessNeighbors);
-        //////////////////////////////////////////////////////////////////////////
-        if (getDiffOn() == true) {
-            parH[level]->recvProcessNeighborADZ.resize(numberOfProcessNeighbors);
-            parD[level]->recvProcessNeighborADZ.resize(numberOfProcessNeighbors);
-        }
+        parH[level]->recvProcessNeighborsZ.resize(numberOfProcessNeighbors);
+        parD[level]->recvProcessNeighborsZ.resize(numberOfProcessNeighbors);
         //////////////////////////////////////////////////////////////////////////
     }
 }
@@ -1216,7 +1182,7 @@ void Parameter::setRecvProcessNeighborsAfterFtoCZ(int numberOfNodes, int level, 
 void Parameter::configureMainKernel(std::string kernel)
 {
     this->mainKernel = kernel;
-    if (kernel == vf::collisionKernel::compressible::K17CompressibleNavierStokes)
+    if (kernel == vf::collision_kernel::compressible::K17CompressibleNavierStokes)
         this->kernelNeedsFluidNodeIndicesToRun = true;
 }
 void Parameter::setMultiKernelOn(bool isOn)
@@ -1323,6 +1289,15 @@ bool Parameter::getDiffOn()
 {
     return diffOn;
 }
+bool Parameter::getBuoyancyEnabled() const
+{
+    return buoyancyEnabled;
+}
+
+bool Parameter::getAllNodesAllFeatures() const
+{
+    return allNodesAllFeatures;
+}
 int Parameter::getFactorNZ()
 {
     return factor_gridNZ;
@@ -1415,14 +1390,6 @@ real Parameter::getDiffusivity()
 {
     return this->Diffusivity;
 }
-real Parameter::getConcentrationInit()
-{
-    return this->concentrationInit;
-}
-real Parameter::getConcentrationBC()
-{
-    return this->concentrationBC;
-}
 real Parameter::getViscosity() const
 {
     return this->vis;
@@ -1462,6 +1429,22 @@ std::vector<uint> Parameter::getDevices() const
 real Parameter::getRe() const
 {
     return this->Re;
+}
+real Parameter::getTurbulentPrandtlNumber() const 
+{
+    return this->turbulentPrandtlNumber;
+}
+real Parameter::getBuoyancyFactor() const
+{
+    return this->buoyancyFactor;
+}
+real Parameter::getGravity() const
+{
+    return this->gravity;
+}
+real Parameter::getReferenceTemperature() const
+{
+    return this->referenceTemperature;
 }
 real Parameter::getFactorPressBC()
 {
@@ -1510,22 +1493,6 @@ std::vector<real> Parameter::getMaxCoordY()
 std::vector<real> Parameter::getMaxCoordZ()
 {
     return this->maxCoordZ;
-}
-AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCHost()
-{
-    return this->concentrationNoSlipBCHost;
-}
-AdvectionDiffusionNoSlipBoundaryConditions *Parameter::getConcentrationNoSlipBCDevice()
-{
-    return this->concentrationNoSlipBCDevice;
-}
-AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCHost()
-{
-    return this->concentrationDirichletBCHost;
-}
-AdvectionDiffusionDirichletBoundaryConditions *Parameter::getConcentrationDirichletBCDevice()
-{
-    return this->concentrationDirichletBCDevice;
 }
 std::string Parameter::getgeoVec()
 {
@@ -1791,17 +1758,21 @@ vf::lbm::TurbulenceModel Parameter::getTurbulenceModel()
 {
     return this->turbulenceModel;
 }
+vf::lbm::advection_diffusion::TurbulenceModel Parameter::getADTurbulenceModel()
+{
+    return this->advectionDiffusionTurbulenceModel;
+}
 bool Parameter::getUseTurbulentViscosity()
 {
-    return this->isTurbulentViscosity;
+    return this->turbulentViscosityEnabled;
+}
+bool Parameter::getUseTurbulentDiffusivity()
+{
+    return this->turbulentDiffusivityEnabled;
 }
 real Parameter::getSGSConstant()
 {
     return this->SGSConstant;
-}
-bool Parameter::getHasWallModelMonitor()
-{
-    return this->hasWallModelMonitor;
 }
 std::vector<SPtr<PreCollisionInteractor>> Parameter::getInteractors()
 {
@@ -1884,27 +1855,27 @@ std::vector<std::string> Parameter::getPossNeighborFilesZ(std::string sor)
 unsigned int Parameter::getNumberOfProcessNeighborsX(int level, std::string sor)
 {
     if (sor == "send") {
-        return (unsigned int)parH[level]->sendProcessNeighborX.size();
+        return (unsigned int)parH[level]->sendProcessNeighborsX.size();
     } else if (sor == "recv") {
-        return (unsigned int)parH[level]->recvProcessNeighborX.size();
+        return (unsigned int)parH[level]->recvProcessNeighborsX.size();
     }
     throw std::runtime_error("getNumberOfProcessNeighborsX: Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsY(int level, std::string sor)
 {
     if (sor == "send") {
-        return (unsigned int)parH[level]->sendProcessNeighborY.size();
+        return (unsigned int)parH[level]->sendProcessNeighborsY.size();
     } else if (sor == "recv") {
-        return (unsigned int)parH[level]->recvProcessNeighborY.size();
+        return (unsigned int)parH[level]->recvProcessNeighborsY.size();
     }
     throw std::runtime_error("getNumberOfProcessNeighborsY: Parameter string invalid.");
 }
 unsigned int Parameter::getNumberOfProcessNeighborsZ(int level, std::string sor)
 {
     if (sor == "send") {
-        return (unsigned int)parH[level]->sendProcessNeighborZ.size();
+        return (unsigned int)parH[level]->sendProcessNeighborsZ.size();
     } else if (sor == "recv") {
-        return (unsigned int)parH[level]->recvProcessNeighborZ.size();
+        return (unsigned int)parH[level]->recvProcessNeighborsZ.size();
     }
     throw std::runtime_error("getNumberOfProcessNeighborsZ: Parameter string invalid.");
 }
@@ -1956,14 +1927,23 @@ std::function<void(real, real, real, real &, real &, real &, real &)> &Parameter
 }
 
 // initial condition concentration
-void Parameter::setInitialConditionAD(std::function<void(real, real, real, real&)> initialConditionAD)
+void Parameter::setInitialConditionAD(std::function<real(real, real, real)> initialConditionAD)
 {
-    this->initialConditionAD = initialConditionAD;
+    this->initialConditionAD = std::move(initialConditionAD);
 }
 
-std::function<void(real, real, real, real&)>& Parameter::getInitialConditionAD()
+std::function<real(real, real, real)>& Parameter::getInitialConditionAD()
 {
     return this->initialConditionAD;
+}
+
+void Parameter::setInitialLocalReferenceTemperature(std::function<real(real, real, real)> initialReferenceTemperature)
+{
+    this->initialLocalReferenceTemperature = std::move(initialReferenceTemperature);
+}
+std::function<real(real, real, real)>& Parameter::getInitialLocalReferenceTemperature()
+{
+    return initialLocalReferenceTemperature;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2001,32 +1981,27 @@ void Parameter::setKernelNeedsFluidNodeIndicesToRun(bool  kernelNeedsFluidNodeIn
 
 void Parameter::initProcessNeighborsAfterFtoCX(int level)
 {
-    this->getParH(level)->sendProcessNeighborsAfterFtoCX.resize(this->getParH(level)->sendProcessNeighborX.size());
-    this->getParH(level)->recvProcessNeighborsAfterFtoCX.resize(this->getParH(level)->recvProcessNeighborX.size());
-    this->getParD(level)->sendProcessNeighborsAfterFtoCX.resize(
-        this->getParH(level)->sendProcessNeighborsAfterFtoCX.size());
-    this->getParD(level)->recvProcessNeighborsAfterFtoCX.resize(
-        this->getParH(level)->recvProcessNeighborsAfterFtoCX.size());
+
+    parH[level]->sendProcessNeighborsAfterFtoCX.resize(parH[level]->sendProcessNeighborsX.size());
+    parH[level]->recvProcessNeighborsAfterFtoCX.resize(parH[level]->recvProcessNeighborsX.size());
+    parD[level]->sendProcessNeighborsAfterFtoCX.resize(parH[level]->sendProcessNeighborsAfterFtoCX.size());
+    parD[level]->recvProcessNeighborsAfterFtoCX.resize(parH[level]->recvProcessNeighborsAfterFtoCX.size());
 }
 
 void Parameter::initProcessNeighborsAfterFtoCY(int level)
 {
-    this->getParH(level)->sendProcessNeighborsAfterFtoCY.resize(this->getParH(level)->sendProcessNeighborY.size());
-    this->getParH(level)->recvProcessNeighborsAfterFtoCY.resize(this->getParH(level)->recvProcessNeighborY.size());
-    this->getParD(level)->sendProcessNeighborsAfterFtoCY.resize(
-        this->getParH(level)->sendProcessNeighborsAfterFtoCY.size());
-    this->getParD(level)->recvProcessNeighborsAfterFtoCY.resize(
-        this->getParH(level)->recvProcessNeighborsAfterFtoCY.size());
+    parH[level]->sendProcessNeighborsAfterFtoCY.resize(parH[level]->sendProcessNeighborsY.size());
+    parH[level]->recvProcessNeighborsAfterFtoCY.resize(parH[level]->recvProcessNeighborsY.size());
+    parD[level]->sendProcessNeighborsAfterFtoCY.resize(parH[level]->sendProcessNeighborsAfterFtoCY.size());
+    parD[level]->recvProcessNeighborsAfterFtoCY.resize(parH[level]->recvProcessNeighborsAfterFtoCY.size());
 }
 
 void Parameter::initProcessNeighborsAfterFtoCZ(int level)
 {
-    this->getParH(level)->sendProcessNeighborsAfterFtoCZ.resize(this->getParH(level)->sendProcessNeighborZ.size());
-    this->getParH(level)->recvProcessNeighborsAfterFtoCZ.resize(this->getParH(level)->recvProcessNeighborZ.size());
-    this->getParD(level)->sendProcessNeighborsAfterFtoCZ.resize(
-        this->getParH(level)->sendProcessNeighborsAfterFtoCZ.size());
-    this->getParD(level)->recvProcessNeighborsAfterFtoCZ.resize(
-        this->getParH(level)->recvProcessNeighborsAfterFtoCZ.size());
+    parH[level]->sendProcessNeighborsAfterFtoCZ.resize(parH[level]->sendProcessNeighborsZ.size());
+    parH[level]->recvProcessNeighborsAfterFtoCZ.resize(parH[level]->recvProcessNeighborsZ.size());
+    parD[level]->sendProcessNeighborsAfterFtoCZ.resize(parH[level]->sendProcessNeighborsAfterFtoCZ.size());
+    parD[level]->recvProcessNeighborsAfterFtoCZ.resize(parH[level]->recvProcessNeighborsAfterFtoCZ.size());
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

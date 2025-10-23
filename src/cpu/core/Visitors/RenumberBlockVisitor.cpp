@@ -39,7 +39,7 @@
 
 int RenumberBlockVisitor::counter = 0;
 
-RenumberBlockVisitor::RenumberBlockVisitor() : Block3DVisitor(0, D3Q27System::MAXLEVEL) {}
+RenumberBlockVisitor::RenumberBlockVisitor() : Block3DVisitor(0, d3q27_system::MAXLEVEL) {}
 //////////////////////////////////////////////////////////////////////////
 void RenumberBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {

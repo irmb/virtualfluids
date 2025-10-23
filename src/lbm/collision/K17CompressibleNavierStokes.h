@@ -45,22 +45,14 @@
 
 #include "CollisionParameter.h"
 
-#ifndef __host__
-#define __host__
-#endif
-#ifndef __device__
-#define __device__
-#endif
 
 #ifdef __CUDACC__
 #define KERNEL_ABS abs
 #else
 #include <cmath>
-#define KERNEL_ABS std::abs
+#define KERNEL_ABS std::abs // constexpr since C++23, so if switching to C++23, std::abs can be used directly also in cuda code
 #endif
 
-using namespace vf::basics::constant;
-using namespace vf::lbm::dir;
 
 namespace vf::lbm
 {
@@ -85,8 +77,11 @@ namespace vf::lbm
 //! DOI:10.1016/j.jcp.2017.07.004 ]</b></a>
 ////////////////////////////////////////////////////////////////////////////////
 template <TurbulenceModel turbulenceModel>
-__host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& parameter, MacroscopicValues& macroscopicValues, TurbulentViscosity& turbulentViscosity)
+constexpr void runK17CompressibleNavierStokes(CollisionParameter& parameter, MacroscopicValues& macroscopicValues, TurbulentViscosity& turbulentViscosity)
 {
+    using namespace vf::basics::constant;
+    using namespace dir;
+
     auto& distribution = parameter.distribution;
 
     real& f000 = distribution[d000];
@@ -148,22 +143,22 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     real& m200 = fPMM;
     real& m000 = fMMM;
 
-    //////////////////////////////////////////////////////(unsigned long)//////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
     //! - Calculate density and velocity using pyramid summation for low round-off errors as in Eq. (J1)-(J3) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
     //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
     //!
-    real drho, oneOverRho, vvx, vvy, vvz;
+    real drho = 0.0, oneOverRho = 0.0, vvx = 0.0, vvy = 0.0, vvz = 0.0;
     getCompressibleMacroscopicValues(distribution, drho, oneOverRho, vvx, vvy, vvz);
-
+    
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Add half of the acceleration (body force) to the velocity as in Eq. (42) \ref
     //! <a href="https://doi.org/10.1016/j.camwa.2015.05.001"><b>[ M. Geier et al. (2015),
     //! DOI:10.1016/j.camwa.2015.05.001 ]</b></a>
     //!
-    vvx += parameter.forceX;
-    vvy += parameter.forceY;
-    vvz += parameter.forceZ;
+    vvx += parameter.forceX * c1o2;
+    vvy += parameter.forceY * c1o2;
+    vvz += parameter.forceZ * c1o2;
 
     ////////////////////////////////////////////////////////////////////////////////////
     // calculate the square of velocities for this lattice node
@@ -187,39 +182,39 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     //!
     ////////////////////////////////////////////////////////////////////////////////////
     // Z - Dir
-    forwardInverseChimeraWithK(fMMM, fMM0, fMMP, vvz, vz2, c36o1, c1o36);
-    forwardInverseChimeraWithK(fM0M, fM00, fM0P, vvz, vz2, c9o1,  c1o9);
-    forwardInverseChimeraWithK(fMPM, fMP0, fMPP, vvz, vz2, c36o1, c1o36);
-    forwardInverseChimeraWithK(f0MM, f0M0, f0MP, vvz, vz2, c9o1,  c1o9);
-    forwardInverseChimeraWithK(f00M, f000, f00P, vvz, vz2, c9o4,  c4o9);
-    forwardInverseChimeraWithK(f0PM, f0P0, f0PP, vvz, vz2, c9o1,  c1o9);
-    forwardInverseChimeraWithK(fPMM, fPM0, fPMP, vvz, vz2, c36o1, c1o36);
-    forwardInverseChimeraWithK(fP0M, fP00, fP0P, vvz, vz2, c9o1,  c1o9);
-    forwardInverseChimeraWithK(fPPM, fPP0, fPPP, vvz, vz2, c36o1, c1o36);
+    forwardChimeraWithInverseK(fMMM, fMM0, fMMP, vvz, vz2, c36o1, c1o36);
+    forwardChimeraWithInverseK(fM0M, fM00, fM0P, vvz, vz2, c9o1,  c1o9);
+    forwardChimeraWithInverseK(fMPM, fMP0, fMPP, vvz, vz2, c36o1, c1o36);
+    forwardChimeraWithInverseK(f0MM, f0M0, f0MP, vvz, vz2, c9o1,  c1o9);
+    forwardChimeraWithInverseK(f00M, f000, f00P, vvz, vz2, c9o4,  c4o9);
+    forwardChimeraWithInverseK(f0PM, f0P0, f0PP, vvz, vz2, c9o1,  c1o9);
+    forwardChimeraWithInverseK(fPMM, fPM0, fPMP, vvz, vz2, c36o1, c1o36);
+    forwardChimeraWithInverseK(fP0M, fP00, fP0P, vvz, vz2, c9o1,  c1o9);
+    forwardChimeraWithInverseK(fPPM, fPP0, fPPP, vvz, vz2, c36o1, c1o36);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // Y - Dir
-    forwardInverseChimeraWithK(fMMM, fM0M, fMPM, vvy, vy2, c6o1,  c1o6);
+    forwardChimeraWithInverseK(fMMM, fM0M, fMPM, vvy, vy2, c6o1,  c1o6);
     forwardChimera(            fMM0, fM00, fMP0, vvy, vy2);
-    forwardInverseChimeraWithK(fMMP, fM0P, fMPP, vvy, vy2, c18o1, c1o18);
-    forwardInverseChimeraWithK(f0MM, f00M, f0PM, vvy, vy2, c3o2,  c2o3);
+    forwardChimeraWithInverseK(fMMP, fM0P, fMPP, vvy, vy2, c18o1, c1o18);
+    forwardChimeraWithInverseK(f0MM, f00M, f0PM, vvy, vy2, c3o2,  c2o3);
     forwardChimera(            f0M0, f000, f0P0, vvy, vy2);
-    forwardInverseChimeraWithK(f0MP, f00P, f0PP, vvy, vy2, c9o2,  c2o9);
-    forwardInverseChimeraWithK(fPMM, fP0M, fPPM, vvy, vy2, c6o1,  c1o6);
+    forwardChimeraWithInverseK(f0MP, f00P, f0PP, vvy, vy2, c9o2,  c2o9);
+    forwardChimeraWithInverseK(fPMM, fP0M, fPPM, vvy, vy2, c6o1,  c1o6);
     forwardChimera(            fPM0, fP00, fPP0, vvy, vy2);
-    forwardInverseChimeraWithK(fPMP, fP0P, fPPP, vvy, vy2, c18o1, c1o18);
+    forwardChimeraWithInverseK(fPMP, fP0P, fPPP, vvy, vy2, c18o1, c1o18);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // X - Dir
-    forwardInverseChimeraWithK(fMMM, f0MM, fPMM, vvx, vx2, c1o1, c1o1);
+    forwardChimeraWithInverseK(fMMM, f0MM, fPMM, vvx, vx2, c1o1, c1o1);
     forwardChimera(            fM0M, f00M, fP0M, vvx, vx2);
-    forwardInverseChimeraWithK(fMPM, f0PM, fPPM, vvx, vx2, c3o1, c1o3);
+    forwardChimeraWithInverseK(fMPM, f0PM, fPPM, vvx, vx2, c3o1, c1o3);
     forwardChimera(            fMM0, f0M0, fPM0, vvx, vx2);
     forwardChimera(            fM00, f000, fP00, vvx, vx2);
     forwardChimera(            fMP0, f0P0, fPP0, vvx, vx2);
-    forwardInverseChimeraWithK(fMMP, f0MP, fPMP, vvx, vx2, c3o1, c1o3);
+    forwardChimeraWithInverseK(fMMP, f0MP, fPMP, vvx, vx2, c3o1, c1o3);
     forwardChimera(            fM0P, f00P, fP0P, vvx, vx2);
-    forwardInverseChimeraWithK(fMPP, f0PP, fPPP, vvx, vx2, c3o1, c1o9);
+    forwardChimeraWithInverseK(fMPP, f0PP, fPPP, vvx, vx2, c3o1, c1o9);
 
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Setting relaxation rates for non-hydrodynamic cumulants (default values). Variable names and equations
@@ -242,7 +237,7 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     ////////////////////////////////////////////////////////////////////////////////////
     //! - Calculate modified omega with turbulent viscosity
     //!
-    const real omega = turbulenceModel == TurbulenceModel::None ? parameter.omega : vf::lbm::calculateOmegaWithturbulentViscosity(parameter.omega, turbulentViscosity.value);
+    const real omega = turbulenceModel == TurbulenceModel::None ? parameter.omega : vf::lbm::calculateOmegaWithTurbulentViscosity(parameter.omega, turbulentViscosity.value);
     ////////////////////////////////////////////////////////////
     // 2.
     real OxxPyyPzz = c1o1;
@@ -522,39 +517,39 @@ __host__ __device__ void runK17CompressibleNavierStokes(CollisionParameter& para
     //!
     ////////////////////////////////////////////////////////////////////////////////////
     // X - Dir
-    backwardInverseChimeraWithK(m000, m100, m200, vvx, vx2, c1o1, c1o1);
+    backwardChimeraWithInverseK(m000, m100, m200, vvx, vx2, c1o1, c1o1);
     backwardChimera(            m010, m110, m210, vvx, vx2);
-    backwardInverseChimeraWithK(m020, m120, m220, vvx, vx2, c3o1, c1o3);
+    backwardChimeraWithInverseK(m020, m120, m220, vvx, vx2, c3o1, c1o3);
     backwardChimera(            m001, m101, m201, vvx, vx2);
     backwardChimera(            m011, m111, m211, vvx, vx2);
     backwardChimera(            m021, m121, m221, vvx, vx2);
-    backwardInverseChimeraWithK(m002, m102, m202, vvx, vx2, c3o1, c1o3);
+    backwardChimeraWithInverseK(m002, m102, m202, vvx, vx2, c3o1, c1o3);
     backwardChimera(            m012, m112, m212, vvx, vx2);
-    backwardInverseChimeraWithK(m022, m122, m222, vvx, vx2, c9o1, c1o9);
+    backwardChimeraWithInverseK(m022, m122, m222, vvx, vx2, c9o1, c1o9);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // Y - Dir
-    backwardInverseChimeraWithK(m000, m010, m020, vvy, vy2, c6o1, c1o6);
+    backwardChimeraWithInverseK(m000, m010, m020, vvy, vy2, c6o1, c1o6);
     backwardChimera(            m001, m011, m021, vvy, vy2);
-    backwardInverseChimeraWithK(m002, m012, m022, vvy, vy2, c18o1, c1o18);
-    backwardInverseChimeraWithK(m100, m110, m120, vvy, vy2, c3o2, c2o3);
+    backwardChimeraWithInverseK(m002, m012, m022, vvy, vy2, c18o1, c1o18);
+    backwardChimeraWithInverseK(m100, m110, m120, vvy, vy2, c3o2, c2o3);
     backwardChimera(            m101, m111, m121, vvy, vy2);
-    backwardInverseChimeraWithK(m102, m112, m122, vvy, vy2, c9o2, c2o9);
-    backwardInverseChimeraWithK(m200, m210, m220, vvy, vy2, c6o1, c1o6);
+    backwardChimeraWithInverseK(m102, m112, m122, vvy, vy2, c9o2, c2o9);
+    backwardChimeraWithInverseK(m200, m210, m220, vvy, vy2, c6o1, c1o6);
     backwardChimera(            m201, m211, m221, vvy, vy2);
-    backwardInverseChimeraWithK(m202, m212, m222, vvy, vy2, c18o1, c1o18);
+    backwardChimeraWithInverseK(m202, m212, m222, vvy, vy2, c18o1, c1o18);
 
     ////////////////////////////////////////////////////////////////////////////////////
     // Z - Dir
-    backwardInverseChimeraWithK(m000, m001, m002, vvz, vz2, c36o1, c1o36);
-    backwardInverseChimeraWithK(m010, m011, m012, vvz, vz2, c9o1, c1o9);
-    backwardInverseChimeraWithK(m020, m021, m022, vvz, vz2, c36o1, c1o36);
-    backwardInverseChimeraWithK(m100, m101, m102, vvz, vz2, c9o1, c1o9);
-    backwardInverseChimeraWithK(m110, m111, m112, vvz, vz2, c9o4, c4o9);
-    backwardInverseChimeraWithK(m120, m121, m122, vvz, vz2, c9o1, c1o9);
-    backwardInverseChimeraWithK(m200, m201, m202, vvz, vz2, c36o1, c1o36);
-    backwardInverseChimeraWithK(m210, m211, m212, vvz, vz2, c9o1, c1o9);
-    backwardInverseChimeraWithK(m220, m221, m222, vvz, vz2, c36o1, c1o36);
+    backwardChimeraWithInverseK(m000, m001, m002, vvz, vz2, c36o1, c1o36);
+    backwardChimeraWithInverseK(m010, m011, m012, vvz, vz2, c9o1, c1o9);
+    backwardChimeraWithInverseK(m020, m021, m022, vvz, vz2, c36o1, c1o36);
+    backwardChimeraWithInverseK(m100, m101, m102, vvz, vz2, c9o1, c1o9);
+    backwardChimeraWithInverseK(m110, m111, m112, vvz, vz2, c9o4, c4o9);
+    backwardChimeraWithInverseK(m120, m121, m122, vvz, vz2, c9o1, c1o9);
+    backwardChimeraWithInverseK(m200, m201, m202, vvz, vz2, c36o1, c1o36);
+    backwardChimeraWithInverseK(m210, m211, m212, vvz, vz2, c9o1, c1o9);
+    backwardChimeraWithInverseK(m220, m221, m222, vvz, vz2, c36o1, c1o36);
 
     distribution[dP00] = fP00;
     distribution[dM00] = fM00;

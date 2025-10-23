@@ -143,9 +143,9 @@ void LineTimeSeriesSimulationObserver::collectData()
                 SPtr<LBMKernel> kernel = block->getKernel();
                 calcMacros              = NULL;
                 if (kernel->getCompressible()) {
-                    calcMacros = &D3Q27System::calcCompMacroscopicValues;
+                    calcMacros = &d3q27_system::calcCompMacroscopicValues;
                 } else {
-                    calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+                    calcMacros = &d3q27_system::calcIncompMacroscopicValues;
                 }
                 SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
@@ -190,9 +190,9 @@ void LineTimeSeriesSimulationObserver::collectData()
         ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
         if (!ostr) {
             ostr.clear();
-            std::string path = UbSystem::getPathFromString(fname);
+            std::string path = ub_system::getPathFromString(fname);
             if (path.size() > 0) {
-                UbSystem::makeDirectory(path);
+                ub_system::makeDirectory(path);
                 ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
             }
             if (!ostr)

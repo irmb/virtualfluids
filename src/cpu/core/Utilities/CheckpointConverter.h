@@ -68,7 +68,7 @@ private:
     MPI_Datatype dataSetParamType, dataSetTypeRead, dataSetTypeWrite;
     MPI_Datatype boundCondType, boundCondType1000;
 
-    MPIIODataStructures::boundCondParam boundCondParamStr;
+    mpi_io_data_structures::boundCondParam boundCondParamStr;
 };
 
 #endif

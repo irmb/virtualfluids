@@ -32,19 +32,38 @@
 #ifndef KERNEL_TYPES_H
 #define KERNEL_TYPES_H
 
-namespace vf::collisionKernel::compressible {
-    static const std::string BGK = "BGKCompSP27";
-    static const std::string BGKPlus = "BGKPlusCompSP27";
-    static const std::string K17CompressibleNavierStokes = "K17CompressibleNavierStokes";
-    static const std::string K15CompressibleNavierStokes = "K15CompressibleNavierStokes";
+#include <string>
+#include <vector>
+
+namespace vf::collision_kernel::compressible
+{
+static const std::string BGK = "BGKCompSP27";
+static const std::string BGKPlus = "BGKPlusCompSP27";
+static const std::string K17CompressibleNavierStokes = "K17CompressibleNavierStokes";
+static const std::string K15CompressibleNavierStokes = "K15CompressibleNavierStokes";
+
+static const std::vector<std::string> listOfKernels = { BGK, BGKPlus, K15CompressibleNavierStokes,
+                                                        K17CompressibleNavierStokes };
+} // namespace vf::collision_kernel::compressible
+
+namespace vf::collision_kernel::incompressible
+{
+static const std::string BGK = "BGKIncompSP27";
+static const std::string BGKPlus = "BGKPlusIncompSP27";
+static const std::string CumulantK15 = "CumulantK15Incomp";
+
+static const std::vector<std::string> listOfKernels = { BGK, BGKPlus, CumulantK15 };
+
+} // namespace vf::collision_kernel::incompressible
+
+namespace vf::advectionDiffusionKernel{
+    namespace compressible{
+        static const std::string F16 = "ADComp27";
     }
-
-namespace vf::collisionKernel::incompressible {
-    static const std::string BGK = "BGKIncompSP27";
-    static const std::string BGKPlus = "BGKPlusIncompSP27";
-    static const std::string CumulantK15 = "CumulantK15Incomp";
+    namespace incompressible {
+        static const std::string F16 = "ADIncomp27";
+    }
 }
-
 #endif
 
 //! \}

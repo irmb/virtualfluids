@@ -33,14 +33,13 @@
 //! \date 05/12/2022
 //=======================================================================================
 
-
 #ifndef PRECURSORPROBE_H_
 #define PRECURSORPROBE_H_
 
 #include <future>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <stdexcept>
 
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
@@ -48,78 +47,31 @@
 
 #include <logger/Logger.h>
 
-#include "Calculation/Calculation.h"
 #include "Sampler.h"
 
 class Parameter;
 class CudaMemoryManager;
 
-enum class OutputVariable {
-   //! - Velocities
-    Velocities,
-    //! - Distributions
-    Distributions
-};
-
-static constexpr uint PrecP00 = 0;
-static constexpr uint PrecPP0 = 1;
-static constexpr uint PrecPM0 = 2;
-static constexpr uint PrecP0P = 3;
-static constexpr uint PrecP0M = 4;
-static constexpr uint PrecPPP = 5;
-static constexpr uint PrecPMP = 6;
-static constexpr uint PrecPPM = 7;
-static constexpr uint PrecPMM = 8;
-
-struct PrecursorStruct
-{
-    uint numberOfPointsInBC, numberOfPointsInData, numberOfTimestepsPerFile, numberOfFilesWritten, numberOfTimestepsBuffered;
-    uint *indicesH, *indicesD;
-    real *dataH, *dataD;
-    real *bufferH, *bufferD;
-    uint numberOfQuantities;
-    UbTupleInt4 extent;
-    UbTupleFloat2 origin;
-    UbTupleFloat3 spacing;
-    int* indicesOnPlane;
-    cudaStream_t stream;
-};
-
 //! \brief Probe writing planes of data to be used as inflow data in successor simulation using PrecursorBC
-//! The probe writes out yz-planes at a specific x position ( \param xPos ) of either velocity or distributions 
+//! The probe writes out yz-planes at a specific x position ( \param xPos ) of either velocity or distributions
 //! that can be read by PrecursorBC as inflow data.
 //!
 class PrecursorWriter : public Sampler
 {
 public:
-    PrecursorWriter(
-        SPtr<Parameter> para,
-        SPtr<CudaMemoryManager> cudaMemoryManager,
-        const std::string outputPath,
-        const std::string probeName,
-        real xPos,
-        real yMin, real yMax,
-        real zMin, real zMax,
-        uint tStartWritingOutput,
-        uint tSave,
-        OutputVariable outputVariable,
-        uint maxTimestepsPerFile=uint(1e4)
-    ): 
-    para(para),
-    cudaMemoryManager(cudaMemoryManager),
-    xPos(xPos),
-    yMin(yMin),
-    yMax(yMax),
-    zMin(zMin),
-    zMax(zMax),
-    tStartWritingOutput(tStartWritingOutput), 
-    tSave(tSave),
-    outputVariable(outputVariable),
-    maxtimestepsPerFile(maxTimestepsPerFile),
-    Sampler(outputPath, probeName)
+    enum class OutputVariable { Velocities, Distributions };
+    enum class OutputVariableTemperature { Temperature, Distributions };
+
+    PrecursorWriter(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string& outputPath,
+                    const std::string& probeName, real xPos, real yMin, real yMax, real zMin, real zMax,
+                    uint tStartWritingOutput, uint tSave, OutputVariable outputVariable,
+                    uint maxTimestepsPerFile = uint(1e4))
+        : para(std::move(para)), cudaMemoryManager(std::move(cudaMemoryManager)), xPos(xPos), yMin(yMin), yMax(yMax),
+          zMin(zMin), zMax(zMax), tStartWritingOutput(tStartWritingOutput), tSave(tSave), outputVariable(outputVariable),
+          maxTimestepsPerFile(maxTimestepsPerFile), Sampler(outputPath, probeName)
     {
-        nodedatanames = determineNodeDataNames();
-        writeFuture = std::async([](){});
+        nodeDataNames = determineNodeDataNames();
+        writeFuture = std::async([]() {});
     };
 
     ~PrecursorWriter();
@@ -128,47 +80,82 @@ public:
     void sample(int level, uint t) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
-    OutputVariable getOutputVariable(){ return this->outputVariable; }
+    OutputVariable getOutputVariable()
+    {
+        return this->outputVariable;
+    }
 
-    SPtr<PrecursorStruct> getPrecursorStruct(int level){return precursorStructs[level];}
-    static std::string makeFileName(std::string fileName, int level, int id, uint numberOfFilesWritten);
+    struct PrecursorStruct
+    {
+        uint numberOfPointsInBC, numberOfPointsInData, numberOfTimeStepsPerFile, numberOfFilesWritten,
+            numberOfTimeStepsBuffered;
+        uint *indicesH, *indicesD;
+        real *dataH, *dataD;
+        real *bufferH, *bufferD;
+        uint numberOfQuantities;
+        UbTupleInt4 extent;
+        UbTupleFloat2 origin;
+        UbTupleFloat3 spacing;
+        std::vector<int> indicesOnPlane;
+        int streamIndex;
+    };
 
-    void setWritePrecision(uint writePrecision){ this->writePrecision=writePrecision;}
-    
+    PrecursorStruct* getPrecursorStruct(int level)
+    {
+        return &precursorStructs[level];
+    }
+    std::string makeFileName(int level, uint numberOfFilesWritten);
+
+    void setWritePrecision(uint writePrecision)
+    {
+        this->writePrecision = writePrecision;
+    }
+
+    static constexpr uint dP00 = 0;
+    static constexpr uint dPP0 = 1;
+    static constexpr uint dPM0 = 2;
+    static constexpr uint dP0P = 3;
+    static constexpr uint dP0M = 4;
+    static constexpr uint dPPP = 5;
+    static constexpr uint dPMP = 6;
+    static constexpr uint dPPM = 7;
+    static constexpr uint dPMM = 8;
+
 private:
-    WbWriterVtkXmlImageBinary* getWriter(){ return WbWriterVtkXmlImageBinary::getInstance(); };
+    WbWriterVtkXmlImageBinary* getWriter()
+    {
+        return WbWriterVtkXmlImageBinary::getInstance();
+    };
     void write(int level, uint numberOfTimestepsBuffered);
 
     std::vector<std::string> determineNodeDataNames()
     {
-        switch (outputVariable)
-        {
-        case OutputVariable::Velocities:
-            return {"vx", "vy", "vz"};
-            break;       
-        case OutputVariable::Distributions:
-            return {"fP00", "fPP0", "fPM0", "fP0P", "fP0M", "fPPP", "fPMP", "fPPM", "fPMM"};
-            break;
-        default:
-            throw std::runtime_error("Invalid OutputVariable for PrecursorWriter");
-            break;
+        switch (outputVariable) {
+            case OutputVariable::Velocities:
+                return { "vx", "vy", "vz" };
+                break;
+            case OutputVariable::Distributions:
+                return { "fP00", "fPP0", "fPM0", "fP0P", "fP0M", "fPPP", "fPMP", "fPPM", "fPMM" };
+                break;
+            default:
+                throw std::runtime_error("Invalid OutputVariable for PrecursorWriter");
+                break;
         }
     }
 
 private:
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
-    std::vector<SPtr<PrecursorStruct>> precursorStructs;
-    std::string fileName, outputPath;
-    std::vector<std::string> nodedatanames;
-    std::vector<std::string> celldatanames;
-    uint tStartWritingOutput, tSave, maxtimestepsPerFile;
+    std::vector<PrecursorStruct> precursorStructs;
+    std::vector<std::string> nodeDataNames;
+    std::vector<std::string> cellDataNames;
+    uint tStartWritingOutput, tSave, maxTimestepsPerFile;
     real xPos, yMin, yMax, zMin, zMax;
     OutputVariable outputVariable;
     std::future<void> writeFuture;
     uint writePrecision = 8;
 };
 
-#endif //PRECURSORPROBE_H_
+#endif // PRECURSORPROBE_H_
 
 //! \}

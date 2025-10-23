@@ -113,9 +113,9 @@ protected:
     BcNodeIndicesMap bcNodeIndicesMap;
 
     void initRayVectors();
-    real rayX1[D3Q27System::FENDDIR + 1];
-    real rayX2[D3Q27System::FENDDIR + 1];
-    real rayX3[D3Q27System::FENDDIR + 1];
+    real rayX1[d3q27_system::FENDDIR + 1];
+    real rayX2[d3q27_system::FENDDIR + 1];
+    real rayX3[d3q27_system::FENDDIR + 1];
 };
 
 #endif

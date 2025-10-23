@@ -102,10 +102,10 @@ void WriteMQFromSelectionSimulationObserver::collectData(real step)
 
     std::string pfilePath, partPath, subfolder, cfilePath;
 
-    subfolder = "mqSelect" + UbSystem::toString(istep);
+    subfolder = "mqSelect" + ub_system::toString(istep);
     pfilePath = path + "/mqSelect/" + subfolder;
     cfilePath = path + "/mqSelect/mq_collection";
-    partPath  = pfilePath + "/mqSelect" + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep);
+    partPath  = pfilePath + "/mqSelect" + ub_system::toString(gridRank) + "_" + ub_system::toString(istep);
 
     std::string partName = writer->writeNodesWithNodeData(partPath, nodes, datanames, data);
     size_t found         = partName.find_last_of("/");
@@ -157,13 +157,13 @@ void WriteMQFromSelectionSimulationObserver::addDataMQ(SPtr<Block3D> block)
     SPtr<LBMKernel> kernel                 = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-    real f[D3Q27System::ENDF + 1];
+    real f[d3q27_system::ENDF + 1];
     real vx1, vx2, vx3, rho;
 
     if (block->getKernel()->getCompressible()) {
-        calcMacros = &D3Q27System::calcCompMacroscopicValues;
+        calcMacros = &d3q27_system::calcCompMacroscopicValues;
     } else {
-        calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+        calcMacros = &d3q27_system::calcIncompMacroscopicValues;
     }
 
     int minX1 = 1;
@@ -186,7 +186,7 @@ void WriteMQFromSelectionSimulationObserver::addDataMQ(SPtr<Block3D> block)
         for (int ix2 = minX2; ix2 <= maxX2; ix2++) {
             for (int ix1 = minX1; ix1 <= maxX1; ix1++) {
                 if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3)) {
-                    Vector3D worldCoordinates = grid->getNodeCoordinates(block, ix1, ix2, ix3);
+                    GbVector3D worldCoordinates = grid->getNodeCoordinates(block, ix1, ix2, ix3);
                     if (gbObject->isPointInGbObject3D(worldCoordinates[0], worldCoordinates[1], worldCoordinates[2])) {
                         int index                  = 0;
                         nodeNumbers(ix1, ix2, ix3) = nr++;
@@ -197,28 +197,28 @@ void WriteMQFromSelectionSimulationObserver::addDataMQ(SPtr<Block3D> block)
                         distributions->getPreCollisionDistribution(f, ix1, ix2, ix3);
                         calcMacros(f, rho, vx1, vx2, vx3);
 
-                        if (UbMath::isNaN(rho) || UbMath::isInfinity(rho))
+                        if (ub_math::isNaN(rho) || ub_math::isInfinity(rho))
                             UB_THROW(UbException(
                                 UB_EXARGS, "rho is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                               block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                               UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
-                        if (UbMath::isNaN(vx1) || UbMath::isInfinity(vx1))
+                                               block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                               ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
+                        if (ub_math::isNaN(vx1) || ub_math::isInfinity(vx1))
                             UB_THROW(UbException(
                                 UB_EXARGS, "vx1 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                               block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                               UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                               block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                               ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                         // vx1=999.0;
-                        if (UbMath::isNaN(vx2) || UbMath::isInfinity(vx2))
+                        if (ub_math::isNaN(vx2) || ub_math::isInfinity(vx2))
                             UB_THROW(UbException(
                                 UB_EXARGS, "vx2 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                               block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                               UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                               block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                               ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
                         // vx2=999.0;
-                        if (UbMath::isNaN(vx3) || UbMath::isInfinity(vx3))
+                        if (ub_math::isNaN(vx3) || ub_math::isInfinity(vx3))
                             UB_THROW(UbException(
                                 UB_EXARGS, "vx3 is not a number (nan or -1.#IND) or infinity number -1.#INF in block=" +
-                                               block->toString() + ", node=" + UbSystem::toString(ix1) + "," +
-                                               UbSystem::toString(ix2) + "," + UbSystem::toString(ix3)));
+                                               block->toString() + ", node=" + ub_system::toString(ix1) + "," +
+                                               ub_system::toString(ix2) + "," + ub_system::toString(ix3)));
 
                         data[index++].push_back(rho);
                         data[index++].push_back(vx1);

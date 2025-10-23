@@ -32,6 +32,8 @@
 //=======================================================================================
 #include "GridProvider.h"
 
+#include <basics/constants/NumericConstants.h>
+
 #include "GridReaderFiles/GridReader.h"
 #include "GridReaderGenerator/GridGenerator.h"
 #include <Parameter/Parameter.h>
@@ -39,6 +41,8 @@
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 
 #include "Cuda/CudaMemoryManager.h"
+
+using namespace vf::basics::constant;
 
 std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator)
 {
@@ -110,8 +114,21 @@ void GridProvider::setInitialNodeValues(uint numberOfNodes, int level) const
             para->getParH(level)->forceZ_SP[pos] = 0.0f;
         }
     }
+}
 
-
+void GridProvider::setInitialNodeValuesAD(uint numberOfNodes, int level) const
+{
+    auto parH = para->getParH(level);
+    for (uint index = 1; index <= numberOfNodes; index++) {
+        const real coordX = parH->coordinateX[index];
+        const real coordY = parH->coordinateY[index];
+        const real coordZ = parH->coordinateZ[index];
+        parH->concentration[index] = para->getInitialConditionAD() ? para->getInitialConditionAD()(coordX, coordY, coordZ) : c0o1;
+        if (para->getUseTurbulentDiffusivity())
+            parH->turbulentDiffusivity[index] = c0o1;
+        if(para->getBuoyancyEnabled())
+            parH->localReferenceTemperature[index] = para->getInitialLocalReferenceTemperature() ? para->getInitialLocalReferenceTemperature()(coordX, coordY, coordZ) : c0o1;
+    }
 }
 
 

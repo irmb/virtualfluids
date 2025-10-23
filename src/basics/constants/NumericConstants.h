@@ -145,6 +145,8 @@ static constexpr double c216o1 = 216.;
 static constexpr double c264o1 = 264.;
 static constexpr double c290o1 = 290.;
 static constexpr double c367o1 = 367.;
+static constexpr double c76o10 = 7.6;
+
 
 static constexpr double c0p0000002 = 0.0000002;
 static constexpr double c10eM30 = 1e-30;
@@ -216,6 +218,7 @@ static constexpr float c4o3 = 4.0f / 3.0f;
 static constexpr float c9o4 = 9.0f / 4.0f;
 static constexpr float c5o2 = 5.0f / 2.0f;
 static constexpr float c9o2 = 9.0f / 2.0f;
+static constexpr float c76o10 = 7.6f;
 
 static constexpr float c0o1 = 0.f;
 static constexpr float c1o1 = 1.f;

@@ -40,7 +40,6 @@
 
 #include "Utilities/GeometryUtils.h"
 
-using namespace vf::basics::constant;
 
 struct TurbineNodeIndex {
     uint turbine;
@@ -48,18 +47,18 @@ struct TurbineNodeIndex {
     uint bladeNode;
 };
 
-__host__ __device__ __inline__ uint calcNodeIndexInBladeArrays(uint bladeNode, uint numberOfNodesPerBlade, uint blade, uint numberOfBlades, uint turbine)
+constexpr uint calcNodeIndexInBladeArrays(uint bladeNode, uint numberOfNodesPerBlade, uint blade, uint numberOfBlades, uint turbine)
 {
     // see https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/merge_requests/248 for visualization
     return bladeNode + numberOfNodesPerBlade * (blade + numberOfBlades * turbine);
 }
 
-__host__ __device__ __inline__ uint calcNodeIndexInBladeArrays(const TurbineNodeIndex &turbineNodeIndex, uint numberOfNodesPerBlade, uint numberOfBlades)
+constexpr uint calcNodeIndexInBladeArrays(const TurbineNodeIndex &turbineNodeIndex, uint numberOfNodesPerBlade, uint numberOfBlades)
 {
     return calcNodeIndexInBladeArrays(turbineNodeIndex.bladeNode, numberOfNodesPerBlade, turbineNodeIndex.blade, numberOfBlades, turbineNodeIndex.turbine);
 }
 
-__host__ __device__ __inline__ void calcTurbineBladeAndBladeNode(uint node, uint &bladeNode, uint numberOfNodesPerBlade, uint &blade, uint numberOfBlades, uint &turbine)
+constexpr void calcTurbineBladeAndBladeNode(uint node, uint &bladeNode, uint numberOfNodesPerBlade, uint &blade, uint numberOfBlades, uint &turbine)
 {
     // see https://git.rz.tu-bs.de/irmb/VirtualFluids_dev/-/merge_requests/248 for visualization
     turbine = node / (numberOfNodesPerBlade * numberOfBlades);
@@ -69,37 +68,37 @@ __host__ __device__ __inline__ void calcTurbineBladeAndBladeNode(uint node, uint
     bladeNode = node - y_off;
 }
 
-__host__ __device__ __inline__ TurbineNodeIndex calcTurbineBladeAndBladeNode(uint node, uint numberOfNodesPerBlade, uint numberOfBlades)
+constexpr TurbineNodeIndex calcTurbineBladeAndBladeNode(uint node, uint numberOfNodesPerBlade, uint numberOfBlades)
 {
-    uint turbine;
-    uint blade;
-    uint bladeNode;
+    uint turbine = 0;
+    uint blade = 0;
+    uint bladeNode = 0;
     calcTurbineBladeAndBladeNode(node, bladeNode, numberOfNodesPerBlade, blade, numberOfBlades, turbine);
     return { /*.turbine = */ turbine, /*.blade = */ blade, /*.bladeNode = */ bladeNode }; // Designated initializers are a C++ 20 feature
 }
 
-__host__ __device__ __inline__ void rotateFromBladeToGlobal(
-                            real bladeCoordX_BF, real bladeCoordY_BF, real bladeCoordZ_BF, 
-                            real& bladeCoordX_GF, real& bladeCoordY_GF, real& bladeCoordZ_GF,
-                            real azimuth)
+__host__ __device__ __inline__ void rotateFromBladeToGlobal(real bladeCoordX_BF, real bladeCoordY_BF, real bladeCoordZ_BF,
+                                                            real& bladeCoordX_GF, real& bladeCoordY_GF, real& bladeCoordZ_GF,
+                                                            real azimuth)
 {
     rotateAboutX3D(azimuth, bladeCoordX_BF, bladeCoordY_BF, bladeCoordZ_BF, bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF);
 }
 
-__host__ __device__ __inline__ void rotateFromGlobalToBlade(
-                            real& bladeCoordX_BF, real& bladeCoordY_BF, real& bladeCoordZ_BF, 
-                            real bladeCoordX_GF, real bladeCoordY_GF, real bladeCoordZ_GF,
-                            real azimuth)
+__host__ __device__ __inline__ void rotateFromGlobalToBlade(real& bladeCoordX_BF, real& bladeCoordY_BF, real& bladeCoordZ_BF,
+                                                            real bladeCoordX_GF, real bladeCoordY_GF, real bladeCoordZ_GF,
+                                                            real azimuth)
 {
-    invRotateAboutX3D(azimuth, bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF, bladeCoordX_BF, bladeCoordY_BF, bladeCoordZ_BF);
+    invRotateAboutX3D(azimuth, bladeCoordX_GF, bladeCoordY_GF, bladeCoordZ_GF, bladeCoordX_BF, bladeCoordY_BF,
+                      bladeCoordZ_BF);
 }
-__host__ __device__ __inline__ real distSqrd(real distX, real distY, real distZ)
+constexpr real distSqrd(real distX, real distY, real distZ)
 {
     return distX * distX + distY * distY + distZ * distZ;
 }
-
-__host__ __device__ __inline__ real getBoundingSphereRadius(real diameter, real smearingWidth)
+constexpr real getBoundingSphereRadius(real diameter, real smearingWidth)
 {
+    using namespace vf::basics::constant;
+
     return c1o2 * diameter + c3o2 * smearingWidth;
 }
 
@@ -109,16 +108,11 @@ __host__ __device__ __inline__ bool inBoundingSphere(real distX, real distY, rea
     return distSqrd(distX, distY, distZ) < boundingSphereRadius * boundingSphereRadius;
 }
 
-__host__ __device__ __inline__ real gaussianSmearing(real distX, real distY, real distZ, real epsilon, real factorGaussian)
+__host__ __device__ __inline__ real gaussianSmearing(real distX, real distY, real distZ, real smearingWidth)
 {
-    return factorGaussian * exp(-distSqrd(distX, distY, distZ) / (epsilon * epsilon));
-}
+    using namespace vf::basics::constant;
 
-__inline__ void swapArrays(real* &arr1, real* &arr2)
-{
-    real* tmp = arr1;
-    arr1 = arr2;
-    arr2 = tmp;
+    return std::pow(smearingWidth * std::sqrt(cPi), -3) * std::exp(-distSqrd(distX, distY, distZ) / (smearingWidth * smearingWidth)) ;
 }
 
 #endif

@@ -54,7 +54,7 @@ class SideTestSpecificSubclass : public Side
 {
 
 public:
-    void setQs(SPtr<Grid> grid, SPtr<gg::BoundaryCondition> boundaryCondition, uint index)
+    void setQs(SPtr<Grid> grid, SPtr<grid_generator::BoundaryCondition> boundaryCondition, uint index)
     {
         Side::setQs(grid, boundaryCondition, index);
     };
@@ -75,7 +75,7 @@ private:
         return sideDirection;
     }
 
-    void addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<gg::BoundaryCondition> boundaryCondition) override
+    void addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<grid_generator::BoundaryCondition> boundaryCondition) override
     {
         (void)grid;
         (void)level;
@@ -136,7 +136,7 @@ public:
     }
 };
 
-class BoundaryConditionSpy : public gg::BoundaryCondition
+class BoundaryConditionSpy : public grid_generator::BoundaryCondition
 {
 public:
     char getType() const override

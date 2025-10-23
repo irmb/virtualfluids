@@ -38,7 +38,7 @@
 #include <D3Q27System.h>
 
 SetInterpolationDirsBlockVisitor::SetInterpolationDirsBlockVisitor(std::vector<int> &dirs)
-    : Block3DVisitor(0, D3Q27System::MAXLEVEL), dirs(dirs)
+    : Block3DVisitor(0, d3q27_system::MAXLEVEL), dirs(dirs)
 {
 }
 //////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ void SetInterpolationDirsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> bl
     ix2   = block->getX2();
     ix3   = block->getX3();
     level = block->getLevel();
-    using namespace D3Q27System;
+    using namespace d3q27_system;
     if (level == 0)
         return;
 
