@@ -36,6 +36,8 @@
 
 #include <cmath>
 #include <vector>
+#include <fstream>
+#include <sstream>
 
 #include <basics/container/CbArray3D.h>
 #include <basics/utilities/UbObserver.h>
@@ -169,6 +171,7 @@ public:
     template <class T>
     void readBufferedMatrixFromRawFile(std::string filename, GbVoxelMatrix3D::Endian endian);
     void readMatrixFromVtiASCIIFile(std::string filename);
+    void readMatrixFromVtiAppendedFile(std::string filename);
 
     void rotate90aroundX();
     void rotate90aroundY();
@@ -341,12 +344,6 @@ void GbVoxelMatrix3D::readBufferedMatrixFromRawFile(std::string filename, GbVoxe
     UBLOG(logINFO, "GbVoxelMatrix3D::readMatrixFromRawFile \"" << filename << "\" nodes(" << nodesX1 << "/" << nodesX2
                                                                << "/" << nodesX3 << ") - end");
 }
-
-//#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-// UB_AUTO_RUN_NAMED(SF::registerType<GbVoxelMatrix3D>("GbVoxelMatrix3D"), SF_GbVoxelMatrix3D);
-// UB_AUTO_RUN_NAMED((SF::registerBaseAndDerived< GbObject3D, GbVoxelMatrix3D >()), SF_GbVoxelMatrix3D_BD1);
-// UB_AUTO_RUN_NAMED((SF::registerBaseAndDerived< UbObserver, GbVoxelMatrix3D>()), SF_GbVoxelMatrix3D_BD2);
-//#endif //RCF_USE_SF_SERIALIZATION
 
 #endif
 
