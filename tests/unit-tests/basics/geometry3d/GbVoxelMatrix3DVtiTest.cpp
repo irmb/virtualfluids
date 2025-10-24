@@ -1,4 +1,3 @@
-
 //=======================================================================================
 // ____          ____    __    ______     __________   __      __       __        __
 // \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
@@ -43,14 +42,32 @@
 #include <cstdio>
 #include <cstdint>
 #include <ctime>
-#include <unistd.h>
+#include <thread>
+#include <chrono>
+#include <filesystem>
+#include <functional>
 
 #include <basics/geometry3d/GbVoxelMatrix3D.h>
 
 static std::string makeTempFilename(const std::string &prefix)
 {
+    // build portable temp filename: <tempdir>/<prefix>_<timestamp>_<threadhash>.vti
     std::ostringstream ss;
-    ss << "/tmp/" << prefix << "_" << getpid() << "_" << std::time(nullptr) << ".vti";
+    std::string tempDir;
+    try {
+        tempDir = std::filesystem::temp_directory_path().string();
+    } catch (...) {
+        tempDir = "."; // fallback to CWD
+    }
+
+    if (!tempDir.empty() && tempDir.back() != '/' && tempDir.back() != '\\') {
+        tempDir.push_back(std::filesystem::path::preferred_separator);
+    }
+
+    auto now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    auto tidHash = std::hash<std::thread::id>{}(std::this_thread::get_id());
+
+    ss << tempDir << prefix << "_" << now << "_" << tidHash << ".vti";
     return ss.str();
 }
 
