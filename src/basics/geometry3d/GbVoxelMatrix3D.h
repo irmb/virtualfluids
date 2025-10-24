@@ -209,8 +209,10 @@ protected:
     std::vector<int> x2NbrTemp;
     std::vector<int> x3NbrTemp;
 
-    using GbObject3D::isPointInGbObject3D; // Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht
-                                           // ausprogrammieren, welche sonst hier "ueberdeckt" waere
+    using GbObject3D::isPointInGbObject3D; //Reason: This eliminates the need to program isPointInGbObject3D(GbPoint3D*)
+                                           // which would otherwise be "covered" here
+    using GbObject3D::setCenterCoordinates; // bring other overload into scope to avoid hiding base virtual
+                                            // method
 
 protected:
     // for transfer

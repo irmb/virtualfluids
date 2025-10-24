@@ -372,6 +372,8 @@ string GbVoxelMatrix3D::toString() { return "GbVoxelMatrix3D"; }
 //     // UBLOG(logINFO,"  - create GbVoxelMatrix3D done");
 // }
 //////////////////////////////////////////////////////////////////////////
+
+//! Reads a VTI file in ASCII format and fills the voxel matrix applying the thresholds. Generated with the assistance of GitHub Copilot ver. 1.387.0 using GPT-5 mini. Reviewed and adapted by Konstantin Kutscher.
 void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)
 {
     using namespace std;
@@ -435,7 +437,6 @@ void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)
 
     // find the first DataArray with format="ascii"
     size_t dataPos = std::string::npos;
-    size_t startTag = std::string::npos;
     {
         size_t searchPos = 0;
         while (true) {
@@ -447,7 +448,6 @@ void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)
             if (header.find("format=\"ascii\"") != std::string::npos) {
                 // found the ascii DataArray header; data begins after tagEnd+1
                 dataPos = tagEnd + 1;
-                startTag = tag;
                 break;
             }
             searchPos = tagEnd + 1;
@@ -503,7 +503,7 @@ void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)
     numberOfFluid = (long)(expected - solidCount);
 }
 //////////////////////////////////////////////////////////////////////////
-
+//! Reads a VTI file in appended binary format and fills the voxel matrix applying the thresholds. Generated with the assistance of GitHub Copilot ver. 1.387.0 using GPT-5 mini. Reviewed and adapted by Konstantin Kutscher.
 void GbVoxelMatrix3D::readMatrixFromVtiAppendedFile(std::string filename)
 {
     using namespace std;
