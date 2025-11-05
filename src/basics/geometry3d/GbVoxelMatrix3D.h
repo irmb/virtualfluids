@@ -163,8 +163,8 @@ public:
     std::string toString() override;
 
     // virtuelle Methoden von UbObserver
-    void objectChanged(UbObservable *changedObject) override {}
-    void objectWillBeDeleted(UbObservable *objectForDeletion) override {}
+    void objectChanged(UbObservable * /*changedObject*/) override {}
+    void objectWillBeDeleted(UbObservable * /*objectForDeletion*/) override {}
 
     template <class T>
     void readMatrixFromRawFile(std::string filename, GbVoxelMatrix3D::Endian endian);
