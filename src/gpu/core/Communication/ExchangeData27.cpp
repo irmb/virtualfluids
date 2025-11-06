@@ -38,10 +38,12 @@
 #include <helper_cuda.h>
 
 #include <parallel/Communicator.h>
+#include <vector>
 
 #include "Calculation/Calculation.h"
 #include "Cuda/CudaStreamManager.h"
 #include "ExchangeData27_Device.cuh"
+#include "Parameter/Parameter.h"
 #include "Utilities/KernelUtilities.h"
 
 using namespace vf::lbm::dir;
@@ -174,7 +176,8 @@ void exchangeCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, Cu
                            CudaStreamIndex streamIndex, std::vector<ProcessNeighbor27>& sendProcessNeighborsDev,
                            std::vector<ProcessNeighbor27>& recvProcessNeighborsDev,
                            std::vector<ProcessNeighbor27>& sendProcessNeighborsHost,
-                           std::vector<ProcessNeighbor27>& recvProcessNeighborsHost)
+                           std::vector<ProcessNeighbor27>& recvProcessNeighborsHost, 
+                           std::vector<std::vector<ProcessNeighbor27>>& edges, std::vector<std::vector<LBMSimulationParameter::EdgeNodePositions>>& edgeNodes)
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
     const size_t numberOfProcessNeighbors = sendProcessNeighborsHost.size();
@@ -197,6 +200,19 @@ void exchangeCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, Cu
     //! 6. reset the request array, which was used for the mpi communication
     if (0 < numberOfProcessNeighbors)
         comm.resetRequests();
+
+    //! copy edge nodes
+    if(para->getUseStreams() && !edges.empty())
+    {
+        for(size_t iEdge=0; iEdge<edges.size(); iEdge++)
+        {
+            auto& edgeNeighbors = edges[iEdge];
+            if(recvProcessNeighborsHost.empty() || edgeNeighbors.empty())
+                continue;
+            copyEdgeNodes(edgeNodes[iEdge], edgeNeighbors, sendProcessNeighborsHost, para->getDiffOn());
+        
+        }
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 7. copy received data from host to device
     for (size_t i = 0; i < numberOfProcessNeighbors; i++)
@@ -224,9 +240,13 @@ void exchangeCollDataXGPU27AllNodes(Parameter* para, vf::parallel::Communicator&
 {
     auto& parD = para->getParDeviceAsReference(level);
     auto& parH = para->getParHostAsReference(level);
+
+    std::vector<std::vector<ProcessNeighbor27>> edges;
+    std::vector<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodes;
+    
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex, 
                           parD.sendProcessNeighborsX, parD.recvProcessNeighborsX,
-                          parH.sendProcessNeighborsX, parH.recvProcessNeighborsX);
+                          parH.sendProcessNeighborsX, parH.recvProcessNeighborsX, edges, edgeNodes);
 }
 
 void exchangeCollDataXGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
@@ -234,9 +254,14 @@ void exchangeCollDataXGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator
 {
     auto& parD = para->getParDeviceAsReference(level);
     auto& parH = para->getParHostAsReference(level);
+
+    std::vector<std::vector<ProcessNeighbor27>> edges;
+    std::vector<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodes;
+
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex,
                           parD.sendProcessNeighborsAfterFtoCX, parD.recvProcessNeighborsAfterFtoCX, 
-                          parH.sendProcessNeighborsAfterFtoCX, parH.recvProcessNeighborsAfterFtoCX);
+                          parH.sendProcessNeighborsAfterFtoCX, parH.recvProcessNeighborsAfterFtoCX, 
+                          edges, edgeNodes);
 }
 
 void scatterNodesFromRecvBufferXGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
@@ -272,9 +297,13 @@ void exchangeCollDataYGPU27AllNodes(Parameter* para, vf::parallel::Communicator&
 {
     auto& parD = para->getParDeviceAsReference(level);
     auto& parH = para->getParHostAsReference(level);
+
+    std::vector<std::vector<ProcessNeighbor27>> edges {parH.recvProcessNeighborsX};
+    std::vector<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodes {parH.edgeNodesXtoY};
+
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex,
                           parD.sendProcessNeighborsY, parD.recvProcessNeighborsY,
-                          parH.sendProcessNeighborsY, parH.recvProcessNeighborsY);
+                          parH.sendProcessNeighborsY, parH.recvProcessNeighborsY, edges, edgeNodes);
 }
 
 void exchangeCollDataYGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
@@ -282,9 +311,13 @@ void exchangeCollDataYGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator
 {
     auto& parD = para->getParDeviceAsReference(level);
     auto& parH = para->getParHostAsReference(level);
+    
+    std::vector<std::vector<ProcessNeighbor27>> edges {parH.recvProcessNeighborsAfterFtoCX};
+    std::vector<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodes {parH.edgeNodesXtoY};
+
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex, 
                           parD.sendProcessNeighborsAfterFtoCY, parD.recvProcessNeighborsAfterFtoCY,
-                          parH.sendProcessNeighborsAfterFtoCY, parH.recvProcessNeighborsAfterFtoCY);
+                          parH.sendProcessNeighborsAfterFtoCY, parH.recvProcessNeighborsAfterFtoCY, edges, edgeNodes);
 }
 
 void scatterNodesFromRecvBufferYGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
@@ -320,18 +353,27 @@ void exchangeCollDataZGPU27AllNodes(Parameter* para, vf::parallel::Communicator&
 {
     auto& parD = para->getParDeviceAsReference(level);
     auto& parH = para->getParHostAsReference(level);
+
+    std::vector<std::vector<ProcessNeighbor27>> edges {parH.recvProcessNeighborsX, parH.recvProcessNeighborsY};
+    std::vector<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodes {parH.edgeNodesXtoZ, parH.edgeNodesYtoZ};
+
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex, 
                           parD.sendProcessNeighborsZ, parD.recvProcessNeighborsZ,
-                          parH.sendProcessNeighborsZ, parH.recvProcessNeighborsZ);
+                          parH.sendProcessNeighborsZ, parH.recvProcessNeighborsZ, edges, edgeNodes);
 }
 void exchangeCollDataZGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
                                      int level, CudaStreamIndex streamIndex)
 {
     auto& parD = para->getParDeviceAsReference(level);
     auto& parH = para->getParHostAsReference(level);
+
+    std::vector<std::vector<ProcessNeighbor27>> edges {parH.recvProcessNeighborsAfterFtoCX, parH.recvProcessNeighborsAfterFtoCY};
+    std::vector<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodes {parH.edgeNodesXtoZ, parH.edgeNodesYtoZ};
+
     exchangeCollDataGPU27(para, comm, cudaMemoryManager, streamIndex,
                           parD.sendProcessNeighborsAfterFtoCZ, parD.recvProcessNeighborsAfterFtoCZ, 
-                          parH.sendProcessNeighborsAfterFtoCZ, parH.recvProcessNeighborsAfterFtoCZ);
+                          parH.sendProcessNeighborsAfterFtoCZ, parH.recvProcessNeighborsAfterFtoCZ, 
+                          edges, edgeNodes);
 }
 
 void scatterNodesFromRecvBufferZGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex)
