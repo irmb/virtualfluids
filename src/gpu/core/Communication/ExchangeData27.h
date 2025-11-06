@@ -83,9 +83,9 @@ void exchangeCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, Cu
                            std::vector<ProcessNeighbor27>& recvProcessNeighborsDevice,
                            std::vector<ProcessNeighbor27>& sendProcessNeighborsHost,
                            std::vector<ProcessNeighbor27>& recvProcessNeighborsHost,
-                           std::optional<std::vector<ProcessNeighbor27>> edgeNeighborsX = std::nullopt,
+                           std::optional<std::vector<ProcessNeighbor27>> recvNeighborsX = std::nullopt,
                            std::optional<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodesX= std::nullopt,
-                           std::optional<std::vector<ProcessNeighbor27>> edgeNeighborsY= std::nullopt,
+                           std::optional<std::vector<ProcessNeighbor27>> recvNeighborsY= std::nullopt,
                            std::optional<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodesY= std::nullopt);
 
 //////////////////////////////////////////////////////////////////////////

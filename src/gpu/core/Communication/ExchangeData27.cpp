@@ -177,8 +177,8 @@ void exchangeCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, Cu
                            CudaStreamIndex streamIndex, 
                            std::vector<ProcessNeighbor27>& sendProcessNeighborsDev, std::vector<ProcessNeighbor27>& recvProcessNeighborsDev,
                            std::vector<ProcessNeighbor27>& sendProcessNeighborsHost, std::vector<ProcessNeighbor27>& recvProcessNeighborsHost, 
-                           std::optional<std::vector<ProcessNeighbor27>> edgeNeighborsX, std::optional<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodesX,
-                           std::optional<std::vector<ProcessNeighbor27>> edgeNeighborsY, std::optional<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodesY
+                           std::optional<std::vector<ProcessNeighbor27>> recvNeighborsX, std::optional<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodesX,
+                           std::optional<std::vector<ProcessNeighbor27>> recvNeighborsY, std::optional<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodesY
                         )
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
@@ -195,13 +195,13 @@ void exchangeCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, Cu
     //! 3. before sending data, wait for memcopy (from device to host) to finish
     if (para->getUseStreams())
         cudaStreamSynchronize(stream);
-    //! copy edge nodes
-    if(para->getUseStreams() && edgeNeighborsX && !sendProcessNeighborsHost.empty() && edgeNodesX)
-        copyEdgeNodes(edgeNodesX.value(), edgeNeighborsX.value(), sendProcessNeighborsHost, para->getDiffOn());
-    if(para->getUseStreams() && edgeNeighborsY && !sendProcessNeighborsHost.empty() && edgeNodesY)
-        copyEdgeNodes(edgeNodesY.value(), edgeNeighborsY.value(), sendProcessNeighborsHost, para->getDiffOn());
+    //! 4. copy edge nodes, if there are any
+    if(para->getUseStreams() && edgeNodesX && !edgeNodesX->empty() && recvNeighborsX && !recvNeighborsX->empty() && !sendProcessNeighborsHost.empty())
+        copyEdgeNodes(edgeNodesX.value(), recvNeighborsX.value(), sendProcessNeighborsHost, para->getDiffOn());
+    if(para->getUseStreams() && edgeNodesY && !edgeNodesY->empty() && recvNeighborsY && !recvNeighborsY->empty() && !sendProcessNeighborsHost.empty())
+        copyEdgeNodes(edgeNodesY.value(), recvNeighborsY.value(), sendProcessNeighborsHost, para->getDiffOn());
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //! 4. send data to neighboring process (MPI)
+    //! 5. send data to neighboring process (MPI)
     startBlockingMpiSend(comm, sendProcessNeighborsHost, para->getDiffOn());
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 6. reset the request array, which was used for the mpi communication
