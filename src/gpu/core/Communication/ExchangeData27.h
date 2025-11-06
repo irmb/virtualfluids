@@ -39,6 +39,7 @@
 #include "Cuda/CudaMemoryManager.h"
 #include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
+#include <optional>
 
 namespace vf::parallel
 {
@@ -74,16 +75,18 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeN
 //! \param CudaMemoryManager is needed for moving the data between host and device
 //! \param sendProcessNeighborDevice, recvProcessNeighborDevice, sendProcessNeighborHost, recvProcessNeighborHost are
 //! send and receive arrays, both on the device and the host
+//! \param edgeNeighborsX, edgeNeighborsY are process neighbors in x and y direction where edge nodes have to be copied from the recv array of that neighbor to the current sender
+//! \param edgeNodesX, edgeNodesY are the nodes that are on the respective edges
 void exchangeCollDataGPU27(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
                            CudaStreamIndex streamIndex, 
                            std::vector<ProcessNeighbor27>& sendProcessNeighborsDevice,
                            std::vector<ProcessNeighbor27>& recvProcessNeighborsDevice,
                            std::vector<ProcessNeighbor27>& sendProcessNeighborsHost,
                            std::vector<ProcessNeighbor27>& recvProcessNeighborsHost,
-                           std::vector<ProcessNeighbor27>& edgesNeighbors1,
-                           std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeNodes1,
-                           std::vector<ProcessNeighbor27>& edgesNeighbors2,
-                           std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeNodes2);
+                           std::optional<std::vector<ProcessNeighbor27>> edgeNeighborsX = std::nullopt,
+                           std::optional<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodesX= std::nullopt,
+                           std::optional<std::vector<ProcessNeighbor27>> edgeNeighborsY= std::nullopt,
+                           std::optional<std::vector<LBMSimulationParameter::EdgeNodePositions>> edgeNodesY= std::nullopt);
 
 //////////////////////////////////////////////////////////////////////////
 // x
