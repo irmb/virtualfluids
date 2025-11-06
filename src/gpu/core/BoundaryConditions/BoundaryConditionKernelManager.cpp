@@ -390,7 +390,7 @@ void BoundaryConditionKernelManager::runPrecursorBCKernelPost(int level, uint t,
         para->getParD(level)->precursorBC.current = para->getParD(level)->precursorBC.next;
         para->getParD(level)->precursorBC.next = tmp;
 
-        real loadTime = nextTime*exp2(-level)*para->getTimeRatio();
+        real loadTime = nextTime * para->getScaledTimeRatio(level);
 
         for(auto reader : para->getParH(level)->transientBCInputFileReader)
         {   

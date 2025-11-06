@@ -126,7 +126,7 @@ para.set_velocity_LB(velocity_LB)
 para.set_viscosity_LB(viscosity_LB)
 para.set_velocity_ratio(dx / dt)
 para.set_viscosity_ratio(dx * dx / dt)
-para.set_density_ratio(1.0)
+para.set_density_ratio(density)
 
 para.configure_main_kernel(gpu.kernel.compressible.K17CompressibleNavierStokes)
 
@@ -207,11 +207,8 @@ alm = gpu.ActuatorFarmStandalone(
     turbine_positions_y,
     turbine_positions_z,
     rotor_speeds,
-    density,
     smearing_width,
-    level,
-    dt,
-    dx,
+    level
 )
 alm.enable_output("ALM", int(t_start_out_probe / dt), int(t_out_probe / dt))
 para.add_interactor(alm)

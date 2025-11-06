@@ -105,37 +105,26 @@ void K17CompressibleNavierStokes<turbulenceModel>::runOnIndices(const unsigned i
                                                                 CudaStreamIndex streamIndex)
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
+    vf::cuda::CudaGrid cudaGrid(para->getParD(level)->numberofthreads, size_indices);
 
     auto collision = [] __device__(vf::lbm::CollisionParameter& parameter, vf::lbm::MacroscopicValues& macroscopicValues, vf::lbm::TurbulentViscosity& turbulentViscosity) {
         return vf::lbm::runK17CompressibleNavierStokes<turbulenceModel>(parameter, macroscopicValues, turbulentViscosity);
     };
-
+    vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
     switch (collisionTemplate) {
-        case CollisionTemplate::Default: {
-            vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
+        case CollisionTemplate::Default:
             vf::gpu::runCollision<decltype(collision), turbulenceModel, false, false><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
-
             break;
-        }
-        case CollisionTemplate::WriteMacroVars: {
-            vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
+        case CollisionTemplate::WriteMacroVars:
             vf::gpu::runCollision<decltype(collision), turbulenceModel, true, false><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
-
             break;
-        }
         case CollisionTemplate::SubDomainBorder:
-        case CollisionTemplate::AllFeatures: {
-            vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
+        case CollisionTemplate::AllFeatures:
             vf::gpu::runCollision<decltype(collision), turbulenceModel, true, true><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
-
             break;
-        }
-        case CollisionTemplate::ApplyBodyForce: {
-            vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
+        case CollisionTemplate::ApplyBodyForce:
             vf::gpu::runCollision<decltype(collision), turbulenceModel, false, true><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
-
             break;
-        }
         default:
             throw std::runtime_error("Invalid CollisionTemplate in CumulantK17::runOnIndices()");
             break;

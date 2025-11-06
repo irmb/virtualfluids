@@ -64,11 +64,8 @@ class ActuatorFarm(PreCollisionInteractor):
         turbine_positions_x: npt.NDArray[np.float32],
         turbine_positions_y: npt.NDArray[np.float32],
         turbine_positions_z: npt.NDArray[np.float32],
-        density: float,
         smearing_width: float,
         level: int,
-        delta_t: float,
-        delta_x: float,
         use_host_arrays: bool,
     ) -> None: ...
     def update_forces_and_coordinates(self) -> None: ...
@@ -157,8 +154,6 @@ class ActuatorFarm(PreCollisionInteractor):
     @property
     def delta_x(self) -> float: ...
     @property
-    def density(self) -> float: ...
-    @property
     def number_of_blades_per_turbine(self) -> int: ...
     @property
     def number_of_indices(self) -> int: ...
@@ -180,11 +175,8 @@ class ActuatorFarmStandalone(ActuatorFarm):
         turbine_positions_y: npt.NDArray[np.float32],
         turbine_positions_z: npt.NDArray[np.float32],
         rotor_speeds: npt.NDArray[np.float32],
-        density: float,
         smearing_width: float,
         level: int,
-        delta_t: float,
-        delta_x: float,
     ) -> None: ...
 
 class CoriolisForce(PreCollisionInteractor):

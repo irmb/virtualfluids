@@ -32,7 +32,9 @@
 #ifndef ActuatorFarm_H
 #define ActuatorFarm_H
 
+#include "Parameter/Parameter.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
+#include "logger/Logger.h"
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
 #include <stdexcept>
@@ -47,15 +49,12 @@ public:
         SPtr<Parameter> para,
         SPtr<CudaMemoryManager> cudaMemoryManager,
         const real diameter,
-        const std::vector<real> bladeRadii,
-        const std::vector<real> turbinePositionsX,
-        const std::vector<real> turbinePositionsY,
-        const std::vector<real> turbinePositionsZ,
-        const real density,
+        const std::vector<real>& bladeRadii,
+        const std::vector<real>& turbinePositionsX,
+        const std::vector<real>& turbinePositionsY,
+        const std::vector<real>& turbinePositionsZ,
         const real smearingWidth,
         const int level,
-        const real deltaT,
-        const real deltaX,
         const bool useHostArrays
     ) :
         diameter(diameter),
@@ -66,28 +65,36 @@ public:
         initialTurbinePositionsX(turbinePositionsX),
         initialTurbinePositionsY(turbinePositionsY),
         initialTurbinePositionsZ(turbinePositionsZ),
-        density(density),
         smearingWidth(smearingWidth),
         level(level),
         useHostArrays(useHostArrays),
-        deltaT(deltaT*exp2(-level)),
-        deltaX(deltaX*exp2(-level)),
-        invDeltaX(vf::basics::constant::c1o1/deltaX),
-        PreCollisionInteractor(para, cudaMemoryManager)
+        PreCollisionInteractor(std::move(para), std::move(cudaMemoryManager))
     {
-        if(this->smearingWidth < this->deltaX)
+        using namespace vf::basics::constant;
+        const real deltaX = this->para->getScaledLengthRatio(level);
+        const real smearingWidthOverDx = this->smearingWidth / deltaX;
+        if(smearingWidthOverDx < c1o1)
             throw std::runtime_error("ActuatorFarm::ActuatorFarm: smearing width needs to be larger than dx!");
         if(numberOfTurbines != turbinePositionsY.size() || numberOfTurbines != turbinePositionsZ.size())
             throw std::runtime_error("ActuatorFarm::ActuatorFarm: turbine positions need to have the same length!");
-        azimuths = std::vector<real>(numberOfTurbines, 0.0);
+        azimuths = std::vector<real>(numberOfTurbines, c0o1);
+        VF_LOG_INFO("ActuatorFarm parameters:");
+        VF_LOG_INFO("--------------");
+        VF_LOG_INFO("level               = {}", this->level);
+        VF_LOG_INFO("number of turbines  = {}", this->numberOfTurbines );
+        VF_LOG_INFO("nodes per blade:    = {}", this->numberOfNodesPerBlade);
+        VF_LOG_INFO("rotor diameter [m]  = {}", this->diameter);
+        VF_LOG_INFO("nodes per diameter  = {}", this->diameter / deltaX);
+        VF_LOG_INFO("smearing width [m]  = {} ", this->smearingWidth);
+        VF_LOG_INFO("smearing width / dx = {} ",this->smearingWidth/deltaX);
     }
 
-    ~ActuatorFarm();
+    ~ActuatorFarm() override;
     void init() override;
     void interact(int level, uint t) override;
     void getTaggedFluidNodes(GridProvider* gridProvider) override;
 
-    void enableOutput(const std::string outputName, uint tStart, uint tOut) {
+    void enableOutput(const std::string& outputName, uint tStart, uint tOut) {
         this->outputName = outputName;
         this->writeOutput = true;
         this->tStartOut = tStart;
@@ -95,10 +102,6 @@ public:
     }
 
     void write(const std::string& filename) const;
-
-    real getDensity() const { return this->density; };
-    real getDeltaT() const { return this->deltaT; };
-    real getDeltaX() const { return this->deltaX; };
 
     uint getNumberOfTurbines() const { return this->numberOfTurbines; };
     uint getNumberOfNodesPerTurbine() const { return this->numberOfNodesPerTurbine; };
@@ -112,9 +115,9 @@ public:
     real* getAllTurbinePosY() const { return turbinePosYH; };
     real* getAllTurbinePosZ() const { return turbinePosZH; };
 
-    real getTurbinePosX(uint turbine) const { return turbinePosXH[turbine]; };
-    real getTurbinePosY(uint turbine) const { return turbinePosYH[turbine]; };
-    real getTurbinePosZ(uint turbine) const { return turbinePosZH[turbine]; };
+    real getTurbinePosX(size_t turbine) const { return turbinePosXH[turbine]; };
+    real getTurbinePosY(size_t turbine) const { return turbinePosYH[turbine]; };
+    real getTurbinePosZ(size_t turbine) const { return turbinePosZH[turbine]; };
 
     real* getAllBladeCoordsX() const { return this->bladeCoordsXH; };
     real* getAllBladeCoordsY() const { return this->bladeCoordsYH; };
@@ -126,15 +129,15 @@ public:
     real* getAllBladeForcesY() const { return this->bladeForcesYH; };
     real* getAllBladeForcesZ() const { return this->bladeForcesZH; };
 
-    real* getTurbineBladeCoordsX(uint turbine) const { return &this->bladeCoordsXH[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeCoordsY(uint turbine) const { return &this->bladeCoordsYH[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeCoordsZ(uint turbine) const { return &this->bladeCoordsZH[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeVelocitiesX(uint turbine) const { return &this->bladeVelocitiesXH[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeVelocitiesY(uint turbine) const { return &this->bladeVelocitiesYH[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeVelocitiesZ(uint turbine) const { return &this->bladeVelocitiesZH[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeForcesX(uint turbine) const { return &this->bladeForcesXH[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeForcesY(uint turbine) const { return &this->bladeForcesYH[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeForcesZ(uint turbine) const { return &this->bladeForcesZH[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeCoordsX(size_t turbine) const { return &this->bladeCoordsXH[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeCoordsY(size_t turbine) const { return &this->bladeCoordsYH[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeCoordsZ(size_t turbine) const { return &this->bladeCoordsZH[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeVelocitiesX(size_t turbine) const { return &this->bladeVelocitiesXH[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeVelocitiesY(size_t turbine) const { return &this->bladeVelocitiesYH[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeVelocitiesZ(size_t turbine) const { return &this->bladeVelocitiesZH[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeForcesX(size_t turbine) const { return &this->bladeForcesXH[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeForcesY(size_t turbine) const { return &this->bladeForcesYH[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeForcesZ(size_t turbine) const { return &this->bladeForcesZH[turbine*numberOfNodesPerTurbine]; };
 
     real* getAllBladeCoordsXDevice() const { return this->bladeCoordsXDCurrentTimestep; };
     real* getAllBladeCoordsYDevice() const { return this->bladeCoordsYDCurrentTimestep; };
@@ -146,27 +149,27 @@ public:
     real* getAllBladeForcesYDevice() const { return this->bladeForcesYDCurrentTimestep; };
     real* getAllBladeForcesZDevice() const { return this->bladeForcesZDCurrentTimestep; };
 
-    real* getTurbineBladeCoordsXDevice(uint turbine) const { return &this->bladeCoordsXDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeCoordsYDevice(uint turbine) const { return &this->bladeCoordsYDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeCoordsZDevice(uint turbine) const { return &this->bladeCoordsZDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeVelocitiesXDevice(uint turbine) const { return &this->bladeVelocitiesXDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeVelocitiesYDevice(uint turbine) const { return &this->bladeVelocitiesYDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeVelocitiesZDevice(uint turbine) const { return &this->bladeVelocitiesZDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeForcesXDevice(uint turbine) const { return &this->bladeForcesXDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeForcesYDevice(uint turbine) const { return &this->bladeForcesYDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
-    real* getTurbineBladeForcesZDevice(uint turbine) const { return &this->bladeForcesZDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeCoordsXDevice(size_t turbine) const { return &this->bladeCoordsXDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeCoordsYDevice(size_t turbine) const { return &this->bladeCoordsYDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeCoordsZDevice(size_t turbine) const { return &this->bladeCoordsZDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeVelocitiesXDevice(size_t turbine) const { return &this->bladeVelocitiesXDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeVelocitiesYDevice(size_t turbine) const { return &this->bladeVelocitiesYDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeVelocitiesZDevice(size_t turbine) const { return &this->bladeVelocitiesZDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeForcesXDevice(size_t turbine) const { return &this->bladeForcesXDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeForcesYDevice(size_t turbine) const { return &this->bladeForcesYDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
+    real* getTurbineBladeForcesZDevice(size_t turbine) const { return &this->bladeForcesZDCurrentTimestep[turbine*numberOfNodesPerTurbine]; };
 
-    void setAllBladeCoords(const real* _bladeCoordsX, const real* _bladeCoordsY, const real* _bladeCoordsZ);
-    void setAllBladeVelocities(const real* _bladeVelocitiesX, const real* _bladeVelocitiesY, const real* _bladeVelocitiesZ);
-    void setAllBladeForces(const real* _bladeForcesX, const real* _bladeForcesY, const real* _bladeForcesZ);
+    void setAllBladeCoords(const real* bladeCoordsX, const real* bladeCoordsY, const real* bladeCoordsZ) const;
+    void setAllBladeVelocities(const real* bladeVelocitiesX, const real* bladeVelocitiesY, const real* bladeVelocitiesZ) const;
+    void setAllBladeForces(const real* bladeForcesX, const real* bladeForcesY, const real* bladeForcesZ) const;
 
-    void setTurbineBladeCoords(uint turbine, const real* _bladeCoordsX, const real* _bladeCoordsY, const real* _bladeCoordsZ);
-    void setTurbineBladeVelocities(uint turbine, const real* _bladeVelocitiesX, const real* _bladeVelocitiesY, const real* _bladeVelocitiesZ);
-    void setTurbineBladeForces(uint turbine, const real* _bladeForcesX, const real* _bladeForcesY, const real* _bladeForcesZ);
+    void setTurbineBladeCoords(size_t turbine, const real* bladeCoordsX, const real* bladeCoordsY, const real* bladeCoordsZ) const;
+    void setTurbineBladeVelocities(size_t turbine, const real* bladeVelocitiesX, const real* bladeVelocitiesY, const real* bladeVelocitiesZ) const;
+    void setTurbineBladeForces(size_t turbine, const real* bladeForcesX, const real* bladeForcesY, const real* bladeForcesZ) const;
 
-    void setTurbineAzimuth(uint turbine, real azimuth){azimuths[turbine] = azimuth;}
+    void setTurbineAzimuth(size_t turbine, real azimuth){azimuths[turbine] = azimuth;}
 
-    virtual void updateForcesAndCoordinates()=0;
+    virtual void updateForcesAndCoordinates(real time, real deltaT)=0;
 
 private:
     void initTurbineGeometries();
@@ -201,15 +204,12 @@ protected:
     std::vector<real> azimuths;
     const real diameter;
     const bool useHostArrays;
-    const real density;
-    const real deltaT, deltaX, invDeltaX;
     const uint numberOfTurbines, numberOfNodesPerBlade, numberOfNodesPerTurbine;
     const real smearingWidth; // in m
     const int level;
     uint numberOfIndices{0};
     uint numberOfGridNodes{0};
 
-    real forceRatio, factorGaussian;
     int streamIndex;
 
     bool writeOutput{false};

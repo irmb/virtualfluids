@@ -49,9 +49,9 @@ class CoriolisForce : public PreCollisionInteractor
 public:
     CoriolisForce(const SPtr<Parameter>& parameter, SPtr<CudaMemoryManager> cudaMemoryManager, real geostrophicWindX,
                   real geostrophicWindY, real coriolisParameter)
-        : geostrophicWindX(geostrophicWindX / parameter->getVelocityRatio()),
-          geostrophicWindY(geostrophicWindY / parameter->getVelocityRatio()),
-          coriolisParameter(coriolisParameter * parameter->getTimeRatio()),
+        : geostrophicWindX(geostrophicWindX),
+          geostrophicWindY(geostrophicWindY),
+          coriolisParameter(coriolisParameter),
           PreCollisionInteractor(parameter, std::move(cudaMemoryManager))
     {
         VF_LOG_INFO("using Coriolis Force with geostrophic wind vector ({},{}) m/s and coriolis parameter {} 1/s", geostrophicWindX,
