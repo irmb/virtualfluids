@@ -1,7 +1,16 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 <!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
 # Changelog
-
+## [0.2.0]() - 2025-mm-dd
+### Added
+- [CPU] Added comprehensive unit tests to verify the VTI reading capabilities.
+- [CPU] Introduced a new NoSlipInterpolatedRelaxed boundary condition, providing more flexibility in simulations.
+- [CPU] Added extensive unit tests for the setQuadricLimiter method to ensure correct behavior with valid and invalid inputs.
+- [CPU] Added new CPU application: Flow Around Cylinder Benchmark.
+### Refactoring
+- [CPU] VTI File support in GbVoxelMatrix3D
+- [CPU] Improved the CalculateForcesSimulationObserver by refactoring it to use a dedicated ForceCalculator and removing redundant swap calls.
+- [CPU] Applied conditioning to interpolation coefficients for improved numerical stability.
 ## [0.2.0]() - 2025-10-23
 ### Added
 - [ALL] More refined CMake presets including build presets
