@@ -26,9 +26,10 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup cpu_Connectors_tests Connectors
+//! \addtogroup cpu_LBM_tests LBM
 //! \ingroup cpu_core_tests core
 //! \{
+//! \author Konstantin Kutscher
 
 #include <gtest/gtest.h>
 #include <array>

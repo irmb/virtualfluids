@@ -29,6 +29,8 @@
 //! \addtogroup cpu_Connectors_tests Connectors
 //! \ingroup cpu_core_tests core
 //! \{
+//! \author Konstantin Kutscher
+
 #include <gmock/gmock.h>
 
 #include <memory>

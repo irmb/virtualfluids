@@ -62,7 +62,7 @@ void run(const vf::basics::ConfigurationFile& config)
     int myid = comm->getProcessID();
 
     real rhoLB1 = 0.00001 / dpFactor;
-    real rhoLB2 = 0;
+    real rhoLB2 = 0.0;
     real nu = 0.0064;
 
     real h = boundingBox[1] / 2.0;
@@ -93,13 +93,6 @@ void run(const vf::basics::ConfigurationFile& config)
     SPtr<NoSlipInterpolatedRelaxed> noSlipRelaxed = SPtr<NoSlipInterpolatedRelaxed>(new NoSlipInterpolatedRelaxed());
     noSlipRelaxed->thirdMomentsOff();
     noSlipBC->setBCStrategy(noSlipRelaxed);
-
-
-    // mu::Parser fct;
-    // fct.SetExpr("u");
-    // fct.DefineConst("u", 0.0);
-    // auto noSlipBC = std::make_shared<VelocityBC>(false, false, false, fct, 0, BCFunction::INFCONST);
-    // noSlipBC->setBCStrategy(SPtr<BCStrategy>(new VelocityBounceBack()));
 
     SPtr<BC> pressureBC1(new PressureBC(rhoLB1));
     pressureBC1->setBCStrategy(SPtr<BCStrategy>(new PressureNonEquilibrium()));

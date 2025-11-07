@@ -39,7 +39,6 @@
 #include <PointerDefinitions.h>
 #include <array>
 #include <limits>
-//#include </home/kutscher/projects/VirtualFluids_dev/3rdParty/MuParser/include/muParser.h>
 #include <muParser.h>
 
 class BCSet;
