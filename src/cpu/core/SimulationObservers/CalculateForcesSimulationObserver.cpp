@@ -45,6 +45,7 @@
 #include "Grid3D.h"
 #include "LBMKernel.h"
 #include "UbScheduler.h"
+#include "ForceCalculator.h"
 
 CalculateForcesSimulationObserver::CalculateForcesSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
                                                        std::shared_ptr<vf::parallel::Communicator> comm, real v, real a)
@@ -64,26 +65,7 @@ CalculateForcesSimulationObserver::CalculateForcesSimulationObserver(SPtr<Grid3D
             if (!ostr)
                 throw UbException(UB_EXARGS, "couldn't open file " + fname);
         }
-        ostr.width(12);
-        ostr << "step"
-             << "\t";
-        ostr.width(12);
-        ostr << "Cx"
-             << "\t";
-        ostr.width(12);
-        ostr << "Cy"
-             << "\t";
-        ostr.width(12);
-        ostr << "Cz"
-             << "\t";
-        ostr.width(12);
-        ostr << "Fx"
-             << "\t";
-        ostr.width(12);
-        ostr << "Fy"
-             << "\t";
-        ostr.width(12);
-        ostr << "Fz" << std::endl;
+        ostr << "step" << ";" << "Cx" << ";" << "Cy" << ";" << "Cz" << ";" << "Fx" << ";" << "Fy" << ";" << "Fz" << std::endl;
         ostr.close();
     }
 }
@@ -119,16 +101,7 @@ void CalculateForcesSimulationObserver::collectData(real step)
         }
 
         calculateCoefficients();
-
-        ostr.width(12);
-        ostr.setf(std::ios::fixed);
-        ostr << istep << "\t";
-        write(&ostr, C1, (char *)"\t");
-        write(&ostr, C2, (char *)"\t");
-        write(&ostr, C3, (char *)"\t");
-        write(&ostr, forceX1global, (char *)"\t");
-        write(&ostr, forceX2global, (char *)"\t");
-        write(&ostr, forceX3global, (char *)"\t");
+        ostr << istep << ";" << C1 << ";" << C2 << ";" << C3 << ";" << forceX1global << ";" << forceX2global << ";" << forceX3global;
         ostr << std::endl;
         ostr.close();
     }
@@ -142,6 +115,8 @@ void CalculateForcesSimulationObserver::calculateForces()
     forceX2global = c0o1;
     forceX3global = c0o1;
 
+    std::shared_ptr<ForceCalculator> forceCalculator = std::make_shared<ForceCalculator>(comm);
+
     for (SPtr<D3Q27Interactor> interactor : interactors) {
         for (BcNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap()) {
             real forceX1 = c0o1;
@@ -154,7 +129,6 @@ void CalculateForcesSimulationObserver::calculateForces()
             SPtr<LBMKernel> kernel                 = block->getKernel();
             SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
             SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-            distributions->swap();
 
             int ghostLayerWidth = kernel->getGhostLayerWidth();
             int minX1           = ghostLayerWidth;
@@ -173,15 +147,13 @@ void CalculateForcesSimulationObserver::calculateForces()
                 if (x1 < minX1 || x1 > maxX1 || x2 < minX2 || x2 > maxX2 || x3 < minX3 || x3 > maxX3)
                     continue;
 
-                if (bcArray->isFluid(
-                        x1, x2,
-                        x3)) // es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
+                if (bcArray->isFluid(x1, x2, x3)) // It is possible that the node was marked as solid by another interactor, for example!!!
                 {
                     SPtr<BoundaryConditions> bc = bcArray->getBC(x1, x2, x3);
-                    UbTupleDouble3 forceVec     = getForces(x1, x2, x3, distributions, bc);
-                    forceX1 += val<1>(forceVec);
-                    forceX2 += val<2>(forceVec);
-                    forceX3 += val<3>(forceVec);
+                    std::array<real, 3> forces = forceCalculator->getForces(x1, x2, x3, distributions, bc);
+                    forceX1 += forces[0];
+                    forceX2 += forces[1];
+                    forceX3 += forces[2];
                 }
             }
             // if we have got discretization with more level
@@ -191,8 +163,6 @@ void CalculateForcesSimulationObserver::calculateForces()
             forceX1 *= deltaXquadrat;
             forceX2 *= deltaXquadrat;
             forceX3 *= deltaXquadrat;
-
-            distributions->swap();
 
             forceX1global += forceX1;
             forceX2global += forceX2;
@@ -219,42 +189,6 @@ void CalculateForcesSimulationObserver::calculateForces()
     }
 }
 //////////////////////////////////////////////////////////////////////////
-UbTupleDouble3 CalculateForcesSimulationObserver::getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions,
-                                                     SPtr<BoundaryConditions> bc)
-{
-    using namespace  vf::basics::constant;
-
-    UbTupleDouble3 force(c0o1, c0o1, c0o1);
-
-    if (bc) {
-        // references to tuple "force"
-        double &forceX1 = val<1>(force);
-        double &forceX2 = val<2>(force);
-        double &forceX3 = val<3>(force);
-        double f, fnbr;
-
-        dynamicPointerCast<EsoTwist3D>(distributions)->swap();
-
-        for (int fdir = d3q27_system::FSTARTDIR; fdir <= d3q27_system::FENDDIR; fdir++) {
-            if (bc->hasNoSlipBoundaryFlag(fdir)) {
-                const int invDir = d3q27_system::INVDIR[fdir];
-                f = dynamicPointerCast<EsoTwist3D>(distributions)->getPostCollisionDistributionForDirection(x1, x2, x3, invDir);
-                fnbr =
-                    dynamicPointerCast<EsoTwist3D>(distributions)
-                        ->getPostCollisionDistributionForDirection(x1 + d3q27_system::DX1[invDir], x2 + d3q27_system::DX2[invDir],
-                                                         x3 + d3q27_system::DX3[invDir], fdir);
-
-                forceX1 += (f + fnbr) * d3q27_system::DX1[invDir];
-                forceX2 += (f + fnbr) * d3q27_system::DX2[invDir];
-                forceX3 += (f + fnbr) * d3q27_system::DX3[invDir];
-            }
-        }
-        dynamicPointerCast<EsoTwist3D>(distributions)->swap();
-    }
-
-    return force;
-}
-//////////////////////////////////////////////////////////////////////////
 void CalculateForcesSimulationObserver::calculateCoefficients()
 {
     using namespace  vf::basics::constant;
@@ -269,15 +203,10 @@ void CalculateForcesSimulationObserver::calculateCoefficients()
     C3 = c2o1 * F3 / (v * v * a);
 }
 //////////////////////////////////////////////////////////////////////////
-void CalculateForcesSimulationObserver::addInteractor(SPtr<D3Q27Interactor> interactor) { interactors.push_back(interactor); }
-//////////////////////////////////////////////////////////////////////////
-void CalculateForcesSimulationObserver::write(std::ofstream *fileObject, real value, char *separator)
-{
-    (*fileObject).width(12);
-    //(*fileObject).precision(2);
-    (*fileObject).setf(std::ios::fixed);
-    (*fileObject) << value;
-    (*fileObject) << separator;
+void CalculateForcesSimulationObserver::addInteractor(SPtr<D3Q27Interactor> interactor) 
+{ 
+    interactors.push_back(interactor); 
 }
+
 
 //! \}

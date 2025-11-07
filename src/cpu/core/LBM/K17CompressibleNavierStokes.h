@@ -36,8 +36,10 @@
 #define CPU_K17COMPRESSIBLENAVIERSTOKES_H
 
 #include <memory>
+#include <optional>
 
 #include <basics/DataTypes.h>
+#include <lbm/collision/CollisionParameter.h>
 
 #include "LBMKernel.h"
 
@@ -58,10 +60,17 @@ public:
     {
         return .0;
     }
-
+    void setQuadricLimiter(std::array<real,3>);
+    std::array<real,3> getQuadricLimiter() const { return quadricLimiter; }
 private:
+    vf::lbm::CollisionParameter parameter;
+    std::array<real,3> quadricLimiter;
     void initDataSet();
+    bool isLimiterValid(std::array<real,3> limiter);
+
 };
+
+
 
 #endif
 

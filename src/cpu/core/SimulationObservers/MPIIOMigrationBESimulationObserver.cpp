@@ -52,6 +52,7 @@
 #include "WbWriter.h"
 #include <MemoryUtil.h>
 #include <UbSystem.h>
+#include <cstdlib>
 
 using namespace mpi_io_data_structures;
 
@@ -926,7 +927,7 @@ void MPIIOMigrationBESimulationObserver::blocksExchange(int tagN, int ind1, int 
         }
     }
 
-    MPI_Request *requests = new MPI_Request[size * 2]; // send + receive
+    MPI_Request *requests = (MPI_Request *)malloc(size * 2 * sizeof(MPI_Request)); // send + receive (use malloc/realloc)
     int requestCount      = 0;
 
     for (int r = 0; r < size; r++) 
@@ -1009,7 +1010,7 @@ void MPIIOMigrationBESimulationObserver::blocksExchange(int tagN, int ind1, int 
     delete[] blocksCounterSend;
     delete[] blocksCounterRec;
     delete[] rawDataSend;
-    delete[] requests;
+    free(requests);
 }
 
 void MPIIOMigrationBESimulationObserver::readDataSet(int step)
@@ -1566,7 +1567,7 @@ void MPIIOMigrationBESimulationObserver::readBoundaryConds(int step)
         }
     }
 
-    MPI_Request *requests = new MPI_Request[size * 2]; // send + receive
+    MPI_Request *requests = (MPI_Request *)malloc(size * 2 * sizeof(MPI_Request)); // send + receive (use malloc/realloc)
     int requestCount      = 0;
     MPI_Status status;
     int quant;
@@ -1711,15 +1712,13 @@ void MPIIOMigrationBESimulationObserver::readBoundaryConds(int step)
         }
     }
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
     MPI_File_close(&file_handler);
 
     delete nullBouCond;
     delete[] bcArray;
     delete[] rawDataReceive;
     delete[] rawDataSend;
-    delete[] requests;
+    free(requests);
 
     if (comm->isRoot()) 
     {

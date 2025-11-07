@@ -36,6 +36,8 @@
 
 #include <cmath>
 #include <vector>
+#include <fstream>
+#include <sstream>
 
 #include <basics/container/CbArray3D.h>
 #include <basics/utilities/UbObserver.h>
@@ -161,14 +163,15 @@ public:
     std::string toString() override;
 
     // virtuelle Methoden von UbObserver
-    void objectChanged(UbObservable *changedObject) override {}
-    void objectWillBeDeleted(UbObservable *objectForDeletion) override {}
+    void objectChanged(UbObservable * /*changedObject*/) override {}
+    void objectWillBeDeleted(UbObservable * /*objectForDeletion*/) override {}
 
     template <class T>
     void readMatrixFromRawFile(std::string filename, GbVoxelMatrix3D::Endian endian);
     template <class T>
     void readBufferedMatrixFromRawFile(std::string filename, GbVoxelMatrix3D::Endian endian);
     void readMatrixFromVtiASCIIFile(std::string filename);
+    void readMatrixFromVtiAppendedFile(std::string filename);
 
     void rotate90aroundX();
     void rotate90aroundY();
@@ -206,8 +209,10 @@ protected:
     std::vector<int> x2NbrTemp;
     std::vector<int> x3NbrTemp;
 
-    using GbObject3D::isPointInGbObject3D; // Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht
-                                           // ausprogrammieren, welche sonst hier "ueberdeckt" waere
+    using GbObject3D::isPointInGbObject3D; //Reason: This eliminates the need to program isPointInGbObject3D(GbPoint3D*)
+                                           // which would otherwise be "covered" here
+    using GbObject3D::setCenterCoordinates; // bring other overload into scope to avoid hiding base virtual
+                                            // method
 
 protected:
     // for transfer
@@ -341,12 +346,6 @@ void GbVoxelMatrix3D::readBufferedMatrixFromRawFile(std::string filename, GbVoxe
     UBLOG(logINFO, "GbVoxelMatrix3D::readMatrixFromRawFile \"" << filename << "\" nodes(" << nodesX1 << "/" << nodesX2
                                                                << "/" << nodesX3 << ") - end");
 }
-
-//#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-// UB_AUTO_RUN_NAMED(SF::registerType<GbVoxelMatrix3D>("GbVoxelMatrix3D"), SF_GbVoxelMatrix3D);
-// UB_AUTO_RUN_NAMED((SF::registerBaseAndDerived< GbObject3D, GbVoxelMatrix3D >()), SF_GbVoxelMatrix3D_BD1);
-// UB_AUTO_RUN_NAMED((SF::registerBaseAndDerived< UbObserver, GbVoxelMatrix3D>()), SF_GbVoxelMatrix3D_BD2);
-//#endif //RCF_USE_SF_SERIALIZATION
 
 #endif
 

@@ -32,27 +32,28 @@
 //! \author Konstantin Kutscher
 //=======================================================================================
 
-#include "NoSlipInterpolated.h"
+#include "NoSlipInterpolatedRelaxed.h"
 #include "BoundaryConditions.h"
 #include "DistributionArray3D.h"
 
-NoSlipInterpolated::NoSlipInterpolated()
+NoSlipInterpolatedRelaxed::NoSlipInterpolatedRelaxed()
 {
     BCStrategy::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<BCStrategy> NoSlipInterpolated::clone()
+SPtr<BCStrategy> NoSlipInterpolatedRelaxed::clone()
 {
-    SPtr<BCStrategy> bc(new NoSlipInterpolated());
+    SPtr<BCStrategy> bc(new NoSlipInterpolatedRelaxed());
+    std::static_pointer_cast<NoSlipInterpolatedRelaxed>(bc)->thirdMomentsFactor = thirdMomentsFactor;
     return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void NoSlipInterpolated::addDistributions(SPtr<DistributionArray3D> distributions)
+void NoSlipInterpolatedRelaxed::addDistributions(SPtr<DistributionArray3D> distributions)
 {
     this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void NoSlipInterpolated::applyBC()
+void NoSlipInterpolatedRelaxed::applyBC()
 {
     using namespace vf::basics::constant;
     using namespace d3q27_system;
@@ -68,10 +69,24 @@ void NoSlipInterpolated::applyBC()
             // quadratic bounce back
             const int invDir = INVDIR[fdir];
             real q = bcPtr->getQ(invDir);
-            real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((feq[invDir]-feq[fdir])+((f[invDir]+f[fdir])-(feq[invDir]+feq[fdir])*collFactor) / (c1o1-collFactor))*c1o2  + ((q / (c1o1 + q)) * (f[invDir] + f[fdir]))+((f[invDir]-f[fdir])-(feq[invDir]-feq[fdir]))*c1o2*0.0;
+            real fReturn = ((c1o1 - q) / (c1o1 + q)) * ((feq[invDir]-feq[fdir])+((f[invDir]+f[fdir])-(feq[invDir]+feq[fdir])*collFactor) / (c1o1-collFactor))*c1o2  + ((q / (c1o1 + q)) * (f[invDir] + f[fdir]))+((f[invDir]-f[fdir])-(feq[invDir]-feq[fdir]))*c1o2*thirdMomentsFactor;
+            real fRetOld=((feq[fdir]-feq[invDir])+((f[invDir]+f[fdir])-(feq[invDir]+feq[fdir])*collFactor) / (c1o1-collFactor))*c1o2;
+            real alpha = c1o2;//Relaxation parameter between 0 and 1
+            fReturn = fReturn * alpha + (c1o1 - alpha) * fRetOld;
             distributions->setPostCollisionDistributionForDirection(fReturn, x1 + DX1[invDir], x2 + DX2[invDir], x3 + DX3[invDir], fdir);
+
         }
     }
+}
+
+void NoSlipInterpolatedRelaxed::thirdMomentsOn()
+{
+    this->thirdMomentsFactor = 1.0;
+}
+
+void NoSlipInterpolatedRelaxed::thirdMomentsOff()
+{
+    this->thirdMomentsFactor = 0.0;
 }
 
 //! \}

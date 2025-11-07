@@ -341,37 +341,428 @@ void GbVoxelMatrix3D::addSurfaceTriangleSet(vector<UbTupleFloat3> & /*nodes*/, v
 /*=======================================================*/
 string GbVoxelMatrix3D::toString() { return "GbVoxelMatrix3D"; }
 /*=======================================================*/
+// void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)
+
+// {
+//     // UBLOG(logINFO,"  - create GbVoxelMatrix3D");
+//     UbFileInputASCII in(filename);
+//     // ifstream in(filename.c_str(), ios::binary);
+//     if (!in)
+//         throw UbException(UB_EXARGS, "could not open file " + filename);
+//     in.readLine();
+//     in.readLine();
+//     in.readLine();
+//     in.readLine();
+//     in.readLine();
+
+//     voxelMatrix = Matrix3D(nodesX1, nodesX2, nodesX3, GbVoxelMatrix3D::FLUID);
+
+//     // UBLOG(logINFO,"  - init values");
+//     int val;
+//     for (int x3 = 0; x3 < nodesX3; x3++)
+//         for (int x2 = 0; x2 < nodesX2; x2++)
+//             for (int x1 = 0; x1 < nodesX1; x1++) {
+//                 val = in.readInteger();
+//                 // if( !ub_math::equal(val, 0.0f) )
+//                 // if( ub_math::greater(val, threshold) )
+//                 if ((double)val >= lowerThreshold && (double)val <= upperThreshold) {
+//                     (voxelMatrix)(x1, x2, x3) = GbVoxelMatrix3D::SOLID;
+//                 }
+//             }
+//     // UBLOG(logINFO,"  - create GbVoxelMatrix3D done");
+// }
+//////////////////////////////////////////////////////////////////////////
+
+//! Reads a VTI file in ASCII format and fills the voxel matrix applying the thresholds. Generated with the assistance of GitHub Copilot ver. 1.387.0 using GPT-5 mini. Reviewed and adapted by Konstantin Kutscher.
 void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)
-
 {
-    // UBLOG(logINFO,"  - create GbVoxelMatrix3D");
-    UbFileInputASCII in(filename);
-    // ifstream in(filename.c_str(), ios::binary);
-    if (!in)
-        throw UbException(UB_EXARGS, "could not open file " + filename);
-    in.readLine();
-    in.readLine();
-    in.readLine();
-    in.readLine();
-    in.readLine();
+    using namespace std;
 
+    ifstream in(filename.c_str());
+    if (!in) {
+        throw UbException(UB_EXARGS, "could not open file " + filename);
+    }
+
+    // read whole file into string
+    std::ostringstream ss;
+    ss << in.rdbuf();
+    std::string content = ss.str();
+
+    // parse WholeExtent="xmin xmax ymin ymax zmin zmax"
+    int xmin = 0, xmax = -1, ymin = 0, ymax = -1, zmin = 0, zmax = -1;
+    {
+        size_t pos = content.find("WholeExtent=\"");
+        if (pos != std::string::npos) {
+            pos += strlen("WholeExtent=\"");
+            std::istringstream is(content.substr(pos));
+            is >> xmin >> xmax >> ymin >> ymax >> zmin >> zmax;
+            nodesX1 = xmax - xmin + 1;
+            nodesX2 = ymax - ymin + 1;
+            nodesX3 = zmax - zmin + 1;
+        }
+    }
+
+    // parse Origin="ox oy oz"
+    {
+        size_t pos = content.find("Origin=\"");
+        if (pos != std::string::npos) {
+            pos += strlen("Origin=\"");
+            std::istringstream is(content.substr(pos));
+            double ox, oy, oz;
+            is >> ox >> oy >> oz;
+            minX1 = ox;
+            minX2 = oy;
+            minX3 = oz;
+        }
+    }
+
+    // parse Spacing="sx sy sz"
+    {
+        size_t pos = content.find("Spacing=\"");
+        if (pos != std::string::npos) {
+            pos += strlen("Spacing=\"");
+            std::istringstream is(content.substr(pos));
+            double sx, sy, sz;
+            is >> sx >> sy >> sz;
+            deltaX1 = sx;
+            deltaX2 = sy;
+            deltaX3 = sz;
+        }
+    }
+
+    // fallback: if extent not found but nodesX* already set, keep them
+    if (nodesX1 <= 0 || nodesX2 <= 0 || nodesX3 <= 0) {
+        throw UbException(UB_EXARGS, "invalid or missing WholeExtent in VTI and nodes not set");
+    }
+
+    // find the first DataArray with format="ascii"
+    size_t dataPos = std::string::npos;
+    {
+        size_t searchPos = 0;
+        while (true) {
+            size_t tag = content.find("<DataArray", searchPos);
+            if (tag == std::string::npos) break;
+            size_t tagEnd = content.find('>', tag);
+            if (tagEnd == std::string::npos) break;
+            std::string header = content.substr(tag, tagEnd - tag + 1);
+            if (header.find("format=\"ascii\"") != std::string::npos) {
+                // found the ascii DataArray header; data begins after tagEnd+1
+                dataPos = tagEnd + 1;
+                break;
+            }
+            searchPos = tagEnd + 1;
+        }
+    }
+
+    if (dataPos == std::string::npos) {
+        throw UbException(UB_EXARGS, "no ASCII DataArray found in VTI file " + filename);
+    }
+
+    // find end of that DataArray
+    size_t endTag = content.find("</DataArray>", dataPos);
+    if (endTag == std::string::npos) {
+        throw UbException(UB_EXARGS, "malformed VTI: missing </DataArray> in " + filename);
+    }
+
+    std::string dataText = content.substr(dataPos, endTag - dataPos);
+
+    // read numeric values
+    std::istringstream dataStream(dataText);
+    std::vector<double> values;
+    values.reserve((size_t)nodesX1 * nodesX2 * nodesX3);
+    double v;
+    while (dataStream >> v) values.push_back(v);
+
+    unsigned long long expected = (unsigned long long)nodesX1 * (unsigned long long)nodesX2 * (unsigned long long)nodesX3;
+    if (values.size() < expected) {
+        throw UbException(UB_EXARGS, "insufficient data values in VTI (got " + ub_system::toString(values.size()) +
+                                         ", expected " + ub_system::toString(expected) + ")");
+    }
+
+    // create voxel matrix and fill applying thresholds
     voxelMatrix = Matrix3D(nodesX1, nodesX2, nodesX3, GbVoxelMatrix3D::FLUID);
 
-    // UBLOG(logINFO,"  - init values");
-    int val;
-    for (int x3 = 0; x3 < nodesX3; x3++)
-        for (int x2 = 0; x2 < nodesX2; x2++)
-            for (int x1 = 0; x1 < nodesX1; x1++) {
-                val = in.readInteger();
-                // if( !ub_math::equal(val, 0.0f) )
-                // if( ub_math::greater(val, threshold) )
-                if ((double)val >= lowerThreshold && (double)val <= upperThreshold) {
-                    (voxelMatrix)(x1, x2, x3) = GbVoxelMatrix3D::SOLID;
+    long solidCount = 0;
+    size_t idx = 0;
+    // VTK imagedata: x fastest, then y, then z
+    for (int z = 0; z < nodesX3; ++z) {
+        for (int y = 0; y < nodesX2; ++y) {
+            for (int x = 0; x < nodesX1; ++x) {
+                double val = values[idx++];
+                if (val >= lowerThreshold && val <= upperThreshold) {
+                    voxelMatrix(x, y, z) = GbVoxelMatrix3D::SOLID;
+                    ++solidCount;
+                } else {
+                    voxelMatrix(x, y, z) = GbVoxelMatrix3D::FLUID;
                 }
             }
-    // UBLOG(logINFO,"  - create GbVoxelMatrix3D done");
-}
+        }
+    }
 
+    numberOfSolid = solidCount;
+    numberOfFluid = (long)(expected - solidCount);
+}
+//////////////////////////////////////////////////////////////////////////
+//! Reads a VTI file in appended binary format and fills the voxel matrix applying the thresholds. Generated with the assistance of GitHub Copilot ver. 1.387.0 using GPT-5 mini. Reviewed and adapted by Konstantin Kutscher.
+void GbVoxelMatrix3D::readMatrixFromVtiAppendedFile(std::string filename)
+{
+    using namespace std;
+
+    ifstream in(filename.c_str(), ios::binary);
+    if (!in) {
+        throw UbException(UB_EXARGS, "could not open file " + filename);
+    }
+
+    // read whole file into string (binary-safe)
+    std::ostringstream ss;
+    ss << in.rdbuf();
+    std::string content = ss.str();
+
+    // parse WholeExtent (same as ASCII reader)
+    int xmin = 0, xmax = -1, ymin = 0, ymax = -1, zmin = 0, zmax = -1;
+    {
+        size_t pos = content.find("WholeExtent=\"");
+        if (pos != std::string::npos) {
+            pos += strlen("WholeExtent=\"");
+            std::istringstream is(content.substr(pos));
+            is >> xmin >> xmax >> ymin >> ymax >> zmin >> zmax;
+            nodesX1 = xmax - xmin + 1;
+            nodesX2 = ymax - ymin + 1;
+            nodesX3 = zmax - zmin + 1;
+        }
+    }
+
+    // parse Origin
+    {
+        size_t pos = content.find("Origin=\"");
+        if (pos != std::string::npos) {
+            pos += strlen("Origin=\"");
+            std::istringstream is(content.substr(pos));
+            double ox, oy, oz;
+            is >> ox >> oy >> oz;
+            minX1 = ox;
+            minX2 = oy;
+            minX3 = oz;
+        }
+    }
+
+    // parse Spacing
+    {
+        size_t pos = content.find("Spacing=\"");
+        if (pos != std::string::npos) {
+            pos += strlen("Spacing=\"");
+            std::istringstream is(content.substr(pos));
+            double sx, sy, sz;
+            is >> sx >> sy >> sz;
+            deltaX1 = sx;
+            deltaX2 = sy;
+            deltaX3 = sz;
+        }
+    }
+
+    if (nodesX1 <= 0 || nodesX2 <= 0 || nodesX3 <= 0) {
+        throw UbException(UB_EXARGS, "invalid or missing WholeExtent in VTI and nodes not set");
+    }
+
+    // find <AppendedData ...> tag
+    size_t appendedTag = content.find("<AppendedData");
+    if (appendedTag == std::string::npos) {
+        throw UbException(UB_EXARGS, "no <AppendedData> found in VTI file " + filename);
+    }
+    size_t appendedTagEnd = content.find('>', appendedTag);
+    if (appendedTagEnd == std::string::npos) {
+        throw UbException(UB_EXARGS, "malformed <AppendedData> tag in " + filename);
+    }
+
+    // find the '_' that precedes binary appended data (per VTK standard)
+    size_t underscorePos = content.find('_', appendedTagEnd);
+    if (underscorePos == std::string::npos) {
+        throw UbException(UB_EXARGS, "could not find '_' start of appended data in " + filename);
+    }
+
+    // scan DataArray headers before AppendedData, collect those with offset attributes
+    struct DataArrayInfo {
+        unsigned long long offset;
+        std::string type;
+        int numComp;
+        size_t headerPos;
+    };
+    std::vector<DataArrayInfo> arrays;
+
+    size_t searchPos = 0;
+    while (true) {
+        size_t tag = content.find("<DataArray", searchPos);
+        if (tag == std::string::npos || tag > appendedTag) break; // only header area
+        size_t tagEnd = content.find('>', tag);
+        if (tagEnd == std::string::npos) break;
+        std::string header = content.substr(tag, tagEnd - tag + 1);
+
+        size_t offPos = header.find("offset=\"");
+        if (offPos != std::string::npos) {
+            offPos += strlen("offset=\"");
+            size_t offEnd = header.find('"', offPos);
+            if (offEnd != std::string::npos) {
+                std::string offStr = header.substr(offPos, offEnd - offPos);
+                unsigned long long offset = stoull(offStr);
+
+                // parse type (e.g. Float32, Float64, Int32)
+                std::string dtype = "Float32";
+                size_t tpos = header.find("type=\"");
+                if (tpos != std::string::npos) {
+                    tpos += strlen("type=\"");
+                    size_t tend = header.find('"', tpos);
+                    if (tend != std::string::npos)
+                        dtype = header.substr(tpos, tend - tpos);
+                }
+
+                int numComp = 1;
+                size_t cpos = header.find("NumberOfComponents=\"");
+                if (cpos != std::string::npos) {
+                    cpos += strlen("NumberOfComponents=\"");
+                    size_t cend = header.find('"', cpos);
+                    if (cend != std::string::npos) {
+                        numComp = stoi(header.substr(cpos, cend - cpos));
+                    }
+                }
+
+                arrays.push_back({offset, dtype, numComp, tag});
+            }
+        }
+
+        searchPos = tagEnd + 1;
+    }
+
+    if (arrays.empty()) {
+        throw UbException(UB_EXARGS, "no DataArray with offset found in VTI header for " + filename);
+    }
+
+    // We'll pick the first DataArray whose block size matches expected size,
+    // or fall back to the first one.
+    unsigned long long expectedTuples = (unsigned long long)nodesX1 * nodesX2 * nodesX3;
+    bool foundBlock = false;
+    std::vector<double> values;
+    values.reserve((size_t)expectedTuples);
+
+    // reopen file as binary stream (we already have content but we'll use file IO for seeking)
+    in.clear();
+    in.seekg(0, ios::beg);
+
+    for (auto &info : arrays) {
+        // offset is relative to the first byte after underscore
+        unsigned long long dataPosInFile = underscorePos + 1 + info.offset;
+        // read 4-byte block size (VTK writes uint32 block size before each block)
+        in.seekg((std::streamoff)dataPosInFile, ios::beg);
+        if (!in.good()) continue;
+
+        uint32_t blockSize = 0;
+        in.read(reinterpret_cast<char *>(&blockSize), sizeof(uint32_t));
+        if (!in) continue;
+
+        // read block
+        std::vector<char> buffer(blockSize);
+        in.read(buffer.data(), blockSize);
+        if ((unsigned)in.gcount() != blockSize) continue;
+
+        // interpret buffer according to info.type
+        size_t comp = (info.numComp > 0 ? info.numComp : 1);
+        try {
+            if (info.type == "Float32" || info.type == "float") {
+                size_t nvals = blockSize / sizeof(float);
+                if (nvals % comp != 0) continue;
+                size_t tuples = nvals / comp;
+                if (tuples != expectedTuples) {
+                    // continue searching; not the data array we want
+                    // but still allow if nothing matches later
+                }
+                values.clear();
+                values.reserve(tuples);
+                for (size_t i = 0; i < tuples; ++i) {
+                    // assume single-component or treat first component
+                    float v = 0.0f;
+                    // if multiple components, pick first component per tuple
+                    std::memcpy(&v, buffer.data() + (i * comp + 0) * sizeof(float), sizeof(float));
+                    values.push_back((double)v);
+                }
+                foundBlock = true;
+            } else if (info.type == "Float64" || info.type == "double") {
+                size_t nvals = blockSize / sizeof(double);
+                if (nvals % comp != 0) continue;
+                size_t tuples = nvals / comp;
+                values.clear();
+                values.reserve(tuples);
+                for (size_t i = 0; i < tuples; ++i) {
+                    double v = 0.0;
+                    std::memcpy(&v, buffer.data() + (i * comp + 0) * sizeof(double), sizeof(double));
+                    values.push_back(v);
+                }
+                foundBlock = true;
+            } else if (info.type == "Int32" || info.type == "int" || info.type == "Int") {
+                size_t nvals = blockSize / sizeof(int32_t);
+                if (nvals % comp != 0) continue;
+                size_t tuples = nvals / comp;
+                values.clear();
+                values.reserve(tuples);
+                for (size_t i = 0; i < tuples; ++i) {
+                    int32_t vi = 0;
+                    std::memcpy(&vi, buffer.data() + (i * comp + 0) * sizeof(int32_t), sizeof(int32_t));
+                    values.push_back((double)vi);
+                }
+                foundBlock = true;
+            } else if (info.type == "UInt8" || info.type == "unsigned_char" || info.type == "unsigned_char") {
+                size_t nvals = blockSize / sizeof(uint8_t);
+                if (nvals % comp != 0) continue;
+                size_t tuples = nvals / comp;
+                values.clear();
+                values.reserve(tuples);
+                for (size_t i = 0; i < tuples; ++i) {
+                    uint8_t vi = 0;
+                    std::memcpy(&vi, buffer.data() + (i * comp + 0) * sizeof(uint8_t), sizeof(uint8_t));
+                    values.push_back((double)vi);
+                }
+                foundBlock = true;
+            } else {
+                // unsupported type - skip
+                continue;
+            }
+        } catch (...) {
+            continue;
+        }
+
+        if (foundBlock) break;
+    }
+
+    if (!foundBlock || values.empty()) {
+        throw UbException(UB_EXARGS, "could not extract appended data from VTI " + filename);
+    }
+
+    unsigned long long expected = expectedTuples;
+    if (values.size() < expected) {
+        throw UbException(UB_EXARGS, "insufficient data values in appended VTI (got " + ub_system::toString(values.size()) +
+                                         ", expected " + ub_system::toString(expected) + ")");
+    }
+
+    // create voxel matrix and fill applying thresholds (VTK ImageData ordering: x fastest, then y, then z)
+    voxelMatrix = Matrix3D(nodesX1, nodesX2, nodesX3, GbVoxelMatrix3D::FLUID);
+
+    long solidCount = 0;
+    size_t idx = 0;
+    for (int z = 0; z < nodesX3; ++z) {
+        for (int y = 0; y < nodesX2; ++y) {
+            for (int x = 0; x < nodesX1; ++x) {
+                double val = values[idx++];
+                if (val >= lowerThreshold && val <= upperThreshold) {
+                    voxelMatrix(x, y, z) = GbVoxelMatrix3D::SOLID;
+                    ++solidCount;
+                } else {
+                    voxelMatrix(x, y, z) = GbVoxelMatrix3D::FLUID;
+                }
+            }
+        }
+    }
+
+    numberOfSolid = solidCount;
+    numberOfFluid = (long)(expected - solidCount);
+}
 //////////////////////////////////////////////////////////////////////////
 void GbVoxelMatrix3D::rotate90aroundX(double /*cX1*/, double cX2, double cX3)
 {

@@ -26,59 +26,45 @@
 //  SPDX-License-Identifier: GPL-3.0-or-later
 //  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 //
-//! \addtogroup cpu_Connectors_tests Connectors
+//! \addtogroup cpu_LBM_tests LBM
 //! \ingroup cpu_core_tests core
 //! \{
 //! \author Konstantin Kutscher
 
-#include <gmock/gmock.h>
-
+#include <gtest/gtest.h>
+#include <array>
 #include <memory>
 
-#include <basics/container/CbVector.h>
+#include "K17CompressibleNavierStokes.h"
 
-#include <parallel/transmitter/TbTransmitter.h>
+class K17CompressibleNavierStokesTest : public ::testing::Test {
+protected:
+    K17CompressibleNavierStokes solver;
 
-#include "Block3D.h"
-#include "CreateTransmittersHelper.h"
-#include "FineToCoarseVectorConnector.h"
-
-class FineToCoarseVectorConnectorTest : public testing::Test
-{
-
-    void SetUp() override
-    {
-        block = std::make_shared<Block3D>();
-    }
-
-public:
-    CreateTransmittersHelper::TransmitterPtr senderFCevenEvenSW, receiverFCevenEvenSW;
-    std::shared_ptr<Block3D> block;
 };
 
-TEST_F(FineToCoarseVectorConnectorTest, getLocalMinMax)
-{
-    using namespace vf::lbm::dir;
-
-    int sendDir = dP00;
-    block->setInterpolationFlagFC(sendDir);
-    // FineToCoarseVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
-    // int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
-    InterpolationProcessorPtr iprocessor;
-    auto sut = FineToCoarseVectorConnector<TbTransmitter<CbVector<real>>>(block, senderFCevenEvenSW, receiverFCevenEvenSW,
-                                                                          sendDir, iprocessor, EvenOddNW);
-
-    //(int &minX1, int &minX2, int &minX3, int &maxX1, int &maxX2, int &maxX3);
-    // SPtr<DistributionArray3D> fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
-    int maxX1 = 5; //(int)fFrom->getNX1();
-    int maxX2 = 5; //(int)fFrom->getNX2();
-    int maxX3 = 5; //(int)fFrom->getNX3();
-    int minX1 = 0;
-    int minX2 = 0;
-    int minX3 = 0;
-    sut.getLocalMinMax(minX1, minX2, minX3, maxX1, maxX2, maxX3);
-
-    int expectedMaxX1 = 2;
-    EXPECT_THAT(maxX1, testing::Eq(expectedMaxX1));
+TEST_F(K17CompressibleNavierStokesTest, ValidLimiterIsSetCorrectly) {
+    std::array<real, 3> input = {0.5, 0.5, 0.5};
+    solver.setQuadricLimiter(input);
+    EXPECT_EQ(solver.getQuadricLimiter(), input);
 }
+
+TEST_F(K17CompressibleNavierStokesTest, InvalidLimiterDefaultsToFallback) {
+    std::array<real, 3> invalidInput = {-10.0, 0.0, 9999.0};
+    solver.setQuadricLimiter(invalidInput);
+
+    std::array<real, 3> expected = {0.01, 0.01, 0.01};
+
+    EXPECT_EQ(solver.getQuadricLimiter(), expected);
+}
+
+TEST_F(K17CompressibleNavierStokesTest, InvalidInitOfLimiterDefaultsToFallback) {
+    std::array<real, 3> invalidInit = {-1.0, -1.0, -1.0};
+    solver.setQuadricLimiter(invalidInit);
+
+    std::array<real, 3> expected = {0.01, 0.01, 0.01};
+
+    EXPECT_EQ(solver.getQuadricLimiter(), expected);
+}
+
 //! \}

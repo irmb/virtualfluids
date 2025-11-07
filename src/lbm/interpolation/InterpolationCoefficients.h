@@ -113,23 +113,23 @@ struct MomentsOnSourceNode
         // example: kxxMzz: moment, second derivative in x direction minus the second derivative in z direction
 
         this->kxyFromfcNEQ = -c3o1 * omega *
-                    ((fMM0 + fMMM + fMMP - fMP0 - fMPM - fMPP - fPM0 - fPMM - fPMP + fPP0 + fPPM + fPPP) *
+            ((((fMM0 + fPP0) - (fMP0 + fPM0)) + (((fMMM + fPPP) - (fMPM + fPMP)) + ((fMMP + fPPM) - (fMPP + fPMM)))) *
                         oneOverRho -
                         ((this->velocityX * this->velocityY)));
         this->kyzFromfcNEQ = -c3o1 * omega *
-                    ((f0MM + fPMM + fMMM - f0MP - fPMP - fMMP - f0PM - fPPM - fMPM + f0PP + fPPP + fMPP) *
+            ((((f0MM + f0PP) - (f0MP + f0PM)) + (((fPMM + fMPP) - (fPMP + fMPM)) + ((fMMM + fPPP) - (fMMP + fPPM)))) *
                         oneOverRho -
                         ((this->velocityY * this->velocityZ)));
         this->kxzFromfcNEQ = -c3o1 * omega *
-                    ((fM0M + fMMM + fMPM - fM0P - fMMP - fMPP - fP0M - fPMM - fPPM + fP0P + fPMP + fPPP) *
+            ((((fM0M + fP0P) - (fM0P + fP0M)) + (((fMMM + fPPP) - (fMMP + fPPM)) + ((fMPM + fPMP) - (fMPP + fPMM)))) *
                         oneOverRho -
                         ((this->velocityX * this->velocityZ)));
         this->kxxMyyFromfcNEQ = -c3o2 * omega *
-                        ((fM0M + fM00 + fM0P - f0MM - f0M0 - f0MP - f0PM - f0P0 - f0PP + fP0M + fP00 + fP0P) *
+            ((((fM00 + fP00) - (f0M0 + f0P0)) + (((fM0M + fP0P) - (f0MM + f0MP)) + ((fM0P + fP0M) - (f0PM + f0PP)))) *
                         oneOverRho -
                         ((this->velocityX * this->velocityX - this->velocityY * this->velocityY)));
         this->kxxMzzFromfcNEQ = -c3o2 * omega *
-                        ((fMM0 + fM00 + fMP0 - f0MM - f0MP - f00M - f00P - f0PM - f0PP + fPM0 + fP00 + fPP0) *
+            ((((fM00 + fP00) - (f00M + f00P)) + (((fMM0 + fPP0) - (f0MM + f0MP)) + ((fMP0 + fPM0) - (f0PM + f0PP)))) *
                         oneOverRho -
                         ((this->velocityX * this->velocityX - this->velocityZ * this->velocityZ)));
     }
