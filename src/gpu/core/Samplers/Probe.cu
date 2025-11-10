@@ -276,7 +276,7 @@ void Probe::init()
 
         if (this->outputTimeSeries) {
             auto levelData = levelDatas[level];
-            const std::string fileName = makeTimeseriesFileName(probeName, level, para->getMyProcessID());
+            const std::string fileName = outputPath + makeTimeseriesFileName(probeName, level, para->getMyProcessID());
             auto variableNames = getVarNames();
             writeTimeseriesFileHeader(fileName, levelData.probeDataH.numberOfPoints, variableNames,
                                       levelData.coordinatesX.data(), levelData.coordinatesY.data(),
