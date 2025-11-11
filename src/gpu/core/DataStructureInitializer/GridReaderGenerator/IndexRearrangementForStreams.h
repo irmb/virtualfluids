@@ -37,6 +37,7 @@
 #include "Calculation/Calculation.h"
 #include <memory>
 #include <vector>
+#include <array>
 
 #include <basics/DataTypes.h>
 
