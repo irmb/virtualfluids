@@ -110,7 +110,9 @@ public:
                                        vf::parallel::Communicator &communicator)
         : IndexRearrangementForStreams(para, builder, communicator){};
 
-    void initCommunicationArraysForCommAfterFinetoCoarse(ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, int/**/, int/**/) const override{};
+    std::array<ProcessNeighbor27, 4> initCommunicationArraysForCommAfterFinetoCoarse(const ProcessNeighbor27& /**/, const ProcessNeighbor27& /**/, const ProcessNeighbor27& /**/, const ProcessNeighbor27& /**/, int/**/, int/**/) const override{
+        return {};
+    };
 };
 
 } // namespace grid_generator_test

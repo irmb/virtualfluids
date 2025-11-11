@@ -141,8 +141,8 @@ struct SendIndicesForCommAfterFtoCX {
     std::vector<uint> sendIndicesForCommAfterFtoCPositions;
 
     // expected data
-    const std::vector<uint> sendIndicesForCommAfterFtoCPositions_expected = { 4, 6, 0, 2 };
-    const std::vector<uint> sendProcessNeighborX_expected = { 14, 16, 10, 12, 11, 13, 15 };
+    const std::vector<uint> sendIndicesForCommAfterFtoCPositions_expected = { 0, 2, 4, 6  };
+    const std::vector<uint> sendProcessNeighborX_expected = { 10, 12, 14, 16, 11, 13, 15 };
     const int numberOfSendNodesAfterFtoC_expected = (int)sendIndicesForCommAfterFtoCPositions_expected.size();
 };
 
@@ -155,9 +155,9 @@ protected:
 
     void act()
     {
-        const uint numberOfNodes = testSubject->reorderSendIndicesForCommAfterFtoC(para->getParH(sendIndices.level)->sendProcessNeighborsX[sendIndices.indexOfProcessNeighbor], sendIndices.direction, sendIndices.level,
-                                                         sendIndices.sendIndicesForCommAfterFtoCPositions);
-        testSubject->setNumberOfNodes(para->getParH(sendIndices.level)->sendProcessNeighborsAfterFtoCX[sendIndices.indexOfProcessNeighbor], para->getParH(sendIndices.level)->sendProcessNeighborsAfterFtoCX[sendIndices.indexOfProcessNeighbor], numberOfNodes);
+        auto& neighbor = para->getParH(sendIndices.level)->sendProcessNeighborsX[sendIndices.indexOfProcessNeighbor];
+        sendIndices.sendIndicesForCommAfterFtoCPositions = testSubject->reorderSendIndicesForCommAfterFtoC(neighbor.index, sendIndices.direction, sendIndices.level);
+        para->getParH(sendIndices.level)->sendProcessNeighborsAfterFtoCX[sendIndices.indexOfProcessNeighbor] = testSubject->makeProcessNeighborToCommAfterFtoC(neighbor, uint(sendIndices.sendIndicesForCommAfterFtoCPositions.size()));
     };
 
 private:
@@ -211,7 +211,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderSendIndices, reorderSendIndicesFo
 class CommunicatorDouble : public vf::parallel::NullCommunicator
 {
 public:
-    void receiveSend(uint *buffer_receive, int, int, uint *, int, int) const override
+    void receiveSend(uint *buffer_receive, int, int, const uint *, int, int) const override
     {
         for (int i = 0; i < (int)receivedIndices.size(); ++i) {
             *(buffer_receive + i) = receivedIndices[i];
@@ -376,10 +376,11 @@ protected:
     std::unique_ptr<IndexRearrangementForStreams> testSubject;
 
     void act()
-    {
-        ri.numberOfRecvNodesAfterFtoC = testSubject->reorderRecvIndicesForCommAfterFtoC(neighbor, 
-                                                        ri.direction, ri.level,
-                                                        ri.sendIndicesForCommAfterFtoCPositions);
+    { 
+        testSubject->reorderRecvIndicesForCommAfterFtoC(neighbor.index, 
+                                                        ri.direction, ri.level, ri.sendIndicesForCommAfterFtoCPositions);
+
+        ri.numberOfRecvNodesAfterFtoC = ri.sendIndicesForCommAfterFtoCPositions.size();
     };
 
 private:
@@ -429,6 +430,7 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndices, allIndicesAreSendInd
     std::vector<uint> recvIndices_expected = { 10, 11, 12, 13, 14, 15, 16 };
 
     act();
+
     EXPECT_THAT(ri.numberOfRecvNodesAfterFtoC, testing::Eq(numberOfRecvNodesAfterFtoC_expected));
     EXPECT_THAT(ri.recvIndices, testing::Eq(recvIndices_expected));
 }

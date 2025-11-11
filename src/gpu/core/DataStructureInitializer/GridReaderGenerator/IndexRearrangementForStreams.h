@@ -68,7 +68,7 @@ public:
     //! which are part of the interpolation as well as the communication, are identified.
     //! See [master thesis of Anna Wellmann (p. 59-62: "Reduzieren der auszutauschenden Knoten")]
     //! \return array of Process Neighbors after FtoC in same order as input parameters
-    std::array<ProcessNeighbor27, 4> initCommunicationArraysForCommAfterFinetoCoarse(
+    virtual std::array<ProcessNeighbor27, 4> initCommunicationArraysForCommAfterFinetoCoarse(
         const ProcessNeighbor27& sendNeighborHost, const ProcessNeighbor27& sendNeighborDevice,
         const ProcessNeighbor27& recvNeighborHost, const ProcessNeighbor27& recvNeighborDevice, int level,
         int direction) const;
