@@ -116,20 +116,20 @@ void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex s
     }
 }
 
-void startBlockingMpiSend(vf::parallel::Communicator& comm, std::vector<ProcessNeighbor27>& sendProcessNeighborHost,
+void startBlockingMpiSend(vf::parallel::Communicator& comm, std::vector<ProcessNeighbor27>& sendProcessNeighborsHost,
                              bool diffOn)
 {
-    for (auto& neighbor : sendProcessNeighborHost) {
+    for (auto& neighbor : sendProcessNeighborsHost) {
         comm.send(neighbor.populations[0], neighbor.numberOfFs, neighbor.rankNeighbor);
         if (diffOn)
             comm.send(neighbor.populationsAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
     }
 }
 
-void startNonBlockingMpiReceive(vf::parallel::Communicator& comm, std::vector<ProcessNeighbor27>& recvProcessNeighborHost,
+void startNonBlockingMpiReceive(vf::parallel::Communicator& comm, std::vector<ProcessNeighbor27>& recvProcessNeighborsHost,
                                 bool diffOn)
 {
-    for (auto& neighbor : recvProcessNeighborHost) {
+    for (auto& neighbor : recvProcessNeighborsHost) {
         comm.receiveNonBlocking(neighbor.populations[0], neighbor.numberOfFs, neighbor.rankNeighbor);
         if (diffOn)
             comm.receiveNonBlocking(neighbor.populationsAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
