@@ -101,7 +101,7 @@ void NullCommunicator::broadcast(std::vector<float> &values){}
 void NullCommunicator::broadcast(std::vector<double> &values){}
 void NullCommunicator::broadcast(std::vector<long int> &values){}
 
-void NullCommunicator::receiveSend(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
+void NullCommunicator::receiveSend(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, const uint *buffer_send,
                                    int size_buffer_send, int neighbor_rank_send) const{}
 
 void NullCommunicator::send(real *sbuf, int count_s, int nb_rank) const {};

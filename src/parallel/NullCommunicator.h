@@ -90,7 +90,7 @@ public:
     void broadcast(std::vector<double> &values) override;
     void broadcast(std::vector<long int> &values) override;
 
-    void receiveSend(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
+    void receiveSend(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, const uint *buffer_send,
                      int size_buffer_send, int neighbor_rank_send) const override;
 
     void send(real *sbuf, int count_s, int nb_rank) const override;
