@@ -37,7 +37,6 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-#include <optional>
 #include <parallel/Communicator.h>
 #include <vector>
 
@@ -221,28 +220,30 @@ void exchangeCollDataYGPU27(Parameter* para, vf::parallel::Communicator& comm, C
     const size_t numberOfProcessNeighbors = sendProcessNeighborsHost.size();
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // copy Device to Host
+    //! \details steps:
+    //! 1. copy data from device to host
     for (size_t i = 0; i < numberOfProcessNeighbors; i++)
         cudaMemoryManager->cudaCopyProcessNeighborFsDtoH(&sendProcessNeighborsHost[i], &sendProcessNeighborsDevice[i]);
-
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //! 2. start non-blocking receive (MPI)
     startNonBlockingMpiReceive(comm, recvProcessNeighborsHost, para->getDiffOn());
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // wait for memcopy device to host to finish before sending data
+    //! 3. before sending data, wait for memcopy (from device to host) to finish
     if (para->getUseStreams())
         cudaStreamSynchronize(stream);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // edge nodes: copy received node values from x
+    //! 4. copy received edge node values from x
     if (para->getUseStreams() && !recvProcessNeighborsHostX.empty() && !sendProcessNeighborsHost.empty())
         copyEdgeNodes(edgeNodesXtoY, recvProcessNeighborsHostX, sendProcessNeighborsHost, para->getDiffOn());
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //! 5. send data to neighboring process (MPI)
     startBlockingMpiSend(comm, sendProcessNeighborsHost, para->getDiffOn());
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // reset the request array
+    //! 6. reset the request array, which was used for the mpi communication
     if (0 < numberOfProcessNeighbors) comm.resetRequests();
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // copy Host to Device
+    //! 7. copy received data from host to device
     for (size_t i = 0; i < numberOfProcessNeighbors; i++)
         cudaMemoryManager->cudaCopyProcessNeighborFsHtoD(&recvProcessNeighborsHost[i], &recvProcessNeighborsDevice[i]);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,33 +263,32 @@ void exchangeCollDataZGPU27(Parameter* para, vf::parallel::Communicator& comm, C
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
     const size_t numberOfProcessNeighbors = sendProcessNeighborsHost.size();
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 1. copy Device to Host
+    //! \details steps:
+    //! 1. copy data from device to host
     for (size_t i = 0; i < numberOfProcessNeighbors; i++)
         cudaMemoryManager->cudaCopyProcessNeighborFsDtoH(&sendProcessNeighborsHost[i], &sendProcessNeighborsDevice[i]);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //! 2. start non-blocking receive (MPI)
     startNonBlockingMpiReceive(comm, recvProcessNeighborsHost, para->getDiffOn());
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 2. wait for memcopy device to host to finish before sending data
+    //! 3. before sending data, wait for memcopy (from device to host) to finish
     if (para->getUseStreams())
         cudaStreamSynchronize(stream);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 3. edge nodes: copy received node values from x
+    //! 4. copy received edge node values from x and y
     if (para->getUseStreams() && !recvProcessNeighborsHostX.empty() && !sendProcessNeighborsHost.empty())
         copyEdgeNodes(edgeNodesXtoZ, recvProcessNeighborsHostX, sendProcessNeighborsHost, para->getDiffOn());
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // edge nodes: copy received node values from y
-    if (para->getUseStreams() && !recvProcessNeighborsHostY.empty() && sendProcessNeighborsHost.size() != 0)
+    if (para->getUseStreams() && !recvProcessNeighborsHostY.empty() && !sendProcessNeighborsHost.empty())
         copyEdgeNodes(edgeNodesYtoZ, recvProcessNeighborsHostY, sendProcessNeighborsHost, para->getDiffOn());
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //! 5. send data to neighboring process (MPI) and wait
+    //! 5. send data to neighboring process (MPI)
     startBlockingMpiSend(comm, sendProcessNeighborsHost, para->getDiffOn());
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 6. reset the request array
+    //! 6. reset the request array, which was used for the mpi communication
     if (0 < numberOfProcessNeighbors)
         comm.resetRequests();
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 7. copy Host to Device
+    //! 7. copy received data from host to device
     for (size_t i = 0; i < numberOfProcessNeighbors; i++)
         cudaMemoryManager->cudaCopyProcessNeighborFsHtoD(&recvProcessNeighborsHost[i], &recvProcessNeighborsDevice[i]);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

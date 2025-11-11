@@ -39,7 +39,6 @@
 #include "Cuda/CudaMemoryManager.h"
 #include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
-#include <optional>
 
 namespace vf::parallel
 {
