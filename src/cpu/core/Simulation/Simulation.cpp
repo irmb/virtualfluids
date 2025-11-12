@@ -43,6 +43,7 @@
 #include "LBMKernel.h"
 #include "UbLogger.h"
 #include "UbScheduler.h"
+#include "CalculateForcesSimulationObserver.h"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -295,6 +296,7 @@ void Simulation::run()
                 // exchange data between blocks
                 exchangeBlockData(straightStartLevel, maxInitLevel);
                 //////////////////////////////////////////////////////////////////////////
+
 #ifdef TIMING
                 time[1] = timer.getCurrentRuntimeInSeconds();
                 UBLOG(logINFO, "exchangeBlockData time = " << time[1]);
