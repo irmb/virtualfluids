@@ -71,8 +71,7 @@ __global__ void getSendFsPost27(real* DD, real* bufferFs, real* populationsAD, r
     {
         const Distributions27 populationReferencesAD = getDistributionReferences27(populationsAD, numberOfLBnodes, isEvenTimestep);
         const Distributions27 bufferReferencesAD = getDistributionReferences27(bufferAD, buffmax, true);
-        // if(index == 0 )
-        //     printf("reading %e %e %e \n", bufferAD[0], bufferAD[27], bufferAD[buffmax*3+1]);
+
         forEachDirection([&](auto dir) { (bufferReferencesAD.f[dir])[index] = readFromInverseDirection<dir>(indices, populationReferencesAD); });
     }
 }
@@ -96,9 +95,6 @@ __global__ void setRecvFsPost27(real* DD, real* bufferFs, real* populationsAD, r
     {
         const Distributions27 populationReferencesAD = getDistributionReferences27(populationsAD, numberOfLBnodes, isEvenTimestep);
         const Distributions27 bufferReferencesAD = getDistributionReferences27(bufferAD, buffmax, true);
-
-        // if(index == 0 )
-        //     printf("writing %e %e %e \n", bufferAD[0], bufferAD[27], bufferAD[buffmax*3+1]);
 
         forEachDirection([&](auto dir) { writeInInverseDirection<dir>((bufferReferencesAD.f[dir])[index], indices, populationReferencesAD); });
     }
