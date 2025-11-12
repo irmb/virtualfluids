@@ -60,17 +60,7 @@ void collectNodesInSendBufferGPU(Parameter* para, int level, CudaStreamIndex str
     for (const auto& neighbor : sendProcessNeighborsDevice) {
         GetSendFsPostDev27(para->getParD(level)->distributions.f[0],
                            neighbor.populations[0],
-                           neighbor.index,
-                           neighbor.numberOfNodes,
-                           para->getParD(level)->neighborX,
-                           para->getParD(level)->neighborY,
-                           para->getParD(level)->neighborZ,
-                           para->getParD(level)->numberOfNodes,
-                           para->getParD(level)->isEvenTimestep,
-                           para->getParD(level)->numberofthreads, 
-                           stream);
-        if(para->getDiffOn())
-            GetSendFsPostDev27(para->getParD(level)->distributionsAD.f[0],
+                           para->getParD(level)->distributionsAD.f[0],
                            neighbor.populationsAD[0],
                            neighbor.index,
                            neighbor.numberOfNodes,
@@ -78,7 +68,8 @@ void collectNodesInSendBufferGPU(Parameter* para, int level, CudaStreamIndex str
                            para->getParD(level)->neighborY,
                            para->getParD(level)->neighborZ,
                            para->getParD(level)->numberOfNodes,
-                           para->getParD(level)->isEvenTimestep,
+                           para->getParD(level)->isEvenTimestep, 
+                           para->getDiffOn(),
                            para->getParD(level)->numberofthreads, 
                            stream);
     }
@@ -91,6 +82,8 @@ void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex s
     for (const auto& neighbor : recvProcessNeighborsDevice) {
         SetRecvFsPostDev27(para->getParD(level)->distributions.f[0], 
                            neighbor.populations[0], 
+                           para->getParD(level)->distributionsAD.f[0], 
+                           neighbor.populationsAD[0], 
                            neighbor.index, 
                            neighbor.numberOfNodes,
                            para->getParD(level)->neighborX, 
@@ -98,20 +91,9 @@ void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex s
                            para->getParD(level)->neighborZ,
                            para->getParD(level)->numberOfNodes, 
                            para->getParD(level)->isEvenTimestep,
-                           para->getParD(level)->numberofthreads, 
+                           para->getDiffOn(), 
+                           para->getParD(level)->numberofthreads,
                            stream);
-        if(para->getDiffOn())
-            SetRecvFsPostDev27(para->getParD(level)->distributionsAD.f[0], 
-                            neighbor.populationsAD[0], 
-                            neighbor.index, 
-                            neighbor.numberOfNodes,
-                            para->getParD(level)->neighborX, 
-                            para->getParD(level)->neighborY, 
-                            para->getParD(level)->neighborZ,
-                            para->getParD(level)->numberOfNodes, 
-                            para->getParD(level)->isEvenTimestep,
-                            para->getParD(level)->numberofthreads, 
-                            stream);
     }
 }
 
@@ -140,33 +122,28 @@ void copyEdgeNodes(const std::vector<LBMSimulationParameter::EdgeNodePositions>&
                    const std::vector<ProcessNeighbor27>& sendProcessNeighborsHost, const bool diffOn)
 {
 #pragma omp parallel for
-    for (int i=0; i< int(edgeNodes.size()); i++) {
-        const uint indexInSubdomainRecv = edgeNodes[i].indexOfProcessNeighborRecv;
-        const uint numNodesInBufferRecv = recvProcessNeighborsHost[indexInSubdomainRecv].numberOfNodes;
-        const uint indexInRecv = edgeNodes[i].indexInRecvBuffer;
-        const uint indexInSubdomainSend = edgeNodes[i].indexOfProcessNeighborSend;
-        const uint numNodesInBufferSend = sendProcessNeighborsHost[indexInSubdomainSend].numberOfNodes;
-        const uint indexInSend = edgeNodes[i].indexInSendBuffer;
-        if (indexInSend >= numNodesInBufferSend)
+    for (int i = 0; i < int(edgeNodes.size()); i++) {
+        const auto& edgeNode = edgeNodes[i];
+        const auto& sendNeighbor = sendProcessNeighborsHost[edgeNode.indexOfProcessNeighborSend];
+        const auto& recvNeighbor = recvProcessNeighborsHost[edgeNode.indexOfProcessNeighborRecv];
+
+        if (edgeNode.indexInSendBuffer >= sendNeighbor.numberOfNodes)
             // for reduced communication after fine to coarse: only copy send nodes which are not part of the reduced comm
             continue;
 
-        Distributions27 populationsSend = vf::gpu::getDistributionReferences27(
-            sendProcessNeighborsHost[indexInSubdomainSend].populations[0], numNodesInBufferSend, true);
-        Distributions27 populationsRecv = vf::gpu::getDistributionReferences27(
-            recvProcessNeighborsHost[indexInSubdomainRecv].populations[0], numNodesInBufferRecv, true);
-        forEachDirection([&](auto direction) {
-            (populationsSend.f[direction])[indexInSend] = (populationsRecv.f[direction])[indexInRecv];
-        });
-        if (diffOn) {
-            Distributions27 populationsADSend = vf::gpu::getDistributionReferences27(
-                sendProcessNeighborsHost[indexInSubdomainSend].populationsAD[0], numNodesInBufferSend, true);
-            Distributions27 populationsADRecv = vf::gpu::getDistributionReferences27(
-                recvProcessNeighborsHost[indexInSubdomainRecv].populationsAD[0], numNodesInBufferRecv, true);
+        const Distributions27 populationsSend =
+            vf::gpu::getDistributionReferences27(sendNeighbor.populations[0], sendNeighbor.numberOfNodes, true);
+        const Distributions27 populationsRecv =
+            vf::gpu::getDistributionReferences27(recvNeighbor.populations[0], recvNeighbor.numberOfNodes, true);
+        forEachDirection([&](auto direction) { (populationsSend.f[direction])[edgeNode.indexInSendBuffer] = (populationsRecv.f[direction])[edgeNode.indexInRecvBuffer]; });
 
-            forEachDirection([&](auto direction) {
-                (populationsADSend.f[direction])[indexInSend] = (populationsADRecv.f[direction])[indexInRecv];
-            });
+        if (diffOn) {
+            const Distributions27 populationsADSend =
+                vf::gpu::getDistributionReferences27(sendNeighbor.populationsAD[0], sendNeighbor.numberOfNodes, true);
+            const Distributions27 populationsADRecv =
+                vf::gpu::getDistributionReferences27(recvNeighbor.populationsAD[0], recvNeighbor.numberOfNodes, true);
+
+            forEachDirection([&](auto direction) { (populationsADSend.f[direction])[edgeNode.indexInSendBuffer] = (populationsADRecv.f[direction])[edgeNode.indexInRecvBuffer]; });
         }
     }
 }

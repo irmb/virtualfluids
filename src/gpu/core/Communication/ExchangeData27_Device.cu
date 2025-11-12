@@ -52,9 +52,9 @@ using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 using namespace vf::gpu;
 
-__global__ void getSendFsPost27(real* DD, real* bufferFs, const uint* sendIndex, const uint buffmax, const uint* neighborX,
+__global__ void getSendFsPost27(real* DD, real* bufferFs, real* populationsAD, real* bufferAD, const uint* sendIndex, const uint buffmax, const uint* neighborX,
                                 const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
-                                const bool isEvenTimestep)
+                                const bool isEvenTimestep, const bool diffOn)
 {
     const uint index = vf::cuda::get1DIndexFrom2DBlock();
     if (index >= buffmax)
@@ -62,16 +62,24 @@ __global__ void getSendFsPost27(real* DD, real* bufferFs, const uint* sendIndex,
 
     const ListIndices indices(sendIndex[index], neighborX, neighborY, neighborZ);
 
-    Distributions27 populationReferences = getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
-    Distributions27 bufferReferences = getDistributionReferences27(bufferFs, buffmax, true);
+    const Distributions27 populationReferences = getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
+    const Distributions27 bufferReferences = getDistributionReferences27(bufferFs, buffmax, true);
 
-    forEachDirection(
-        [&](auto dir) { (bufferReferences.f[dir])[index] = readFromInverseDirection<dir>(indices, populationReferences); });
+    forEachDirection([&](auto dir) { (bufferReferences.f[dir])[index] = readFromInverseDirection<dir>(indices, populationReferences); });
+
+    if(diffOn)
+    {
+        const Distributions27 populationReferencesAD = getDistributionReferences27(populationsAD, numberOfLBnodes, isEvenTimestep);
+        const Distributions27 bufferReferencesAD = getDistributionReferences27(bufferAD, buffmax, true);
+        // if(index == 0 )
+        //     printf("reading %e %e %e \n", bufferAD[0], bufferAD[27], bufferAD[buffmax*3+1]);
+        forEachDirection([&](auto dir) { (bufferReferencesAD.f[dir])[index] = readFromInverseDirection<dir>(indices, populationReferencesAD); });
+    }
 }
 
-__global__ void setRecvFsPost27(real* DD, real* bufferFs, const uint* recvIndex, const uint buffmax, const uint* neighborX,
+__global__ void setRecvFsPost27(real* DD, real* bufferFs, real* populationsAD, real* bufferAD, const uint* recvIndex, const uint buffmax, const uint* neighborX,
                                 const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
-                                const bool isEvenTimestep)
+                                const bool isEvenTimestep, const bool diffOn)
 {
     const uint index = vf::cuda::get1DIndexFrom2DBlock();
     if (index >= buffmax)
@@ -79,16 +87,26 @@ __global__ void setRecvFsPost27(real* DD, real* bufferFs, const uint* recvIndex,
 
     const ListIndices indices(recvIndex[index], neighborX, neighborY, neighborZ);
 
-    Distributions27 populationReferences = getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
-    Distributions27 bufferReferences = getDistributionReferences27(bufferFs, buffmax, true);
+    const Distributions27 populationReferences = getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
+    const Distributions27 bufferReferences = getDistributionReferences27(bufferFs, buffmax, true);
 
-    forEachDirection(
-        [&](auto dir) { writeInInverseDirection<dir>((bufferReferences.f[dir])[index], indices, populationReferences); });
+    forEachDirection([&](auto dir) { writeInInverseDirection<dir>((bufferReferences.f[dir])[index], indices, populationReferences); });
+
+    if(diffOn)
+    {
+        const Distributions27 populationReferencesAD = getDistributionReferences27(populationsAD, numberOfLBnodes, isEvenTimestep);
+        const Distributions27 bufferReferencesAD = getDistributionReferences27(bufferAD, buffmax, true);
+
+        // if(index == 0 )
+        //     printf("writing %e %e %e \n", bufferAD[0], bufferAD[27], bufferAD[buffmax*3+1]);
+
+        forEachDirection([&](auto dir) { writeInInverseDirection<dir>((bufferReferencesAD.f[dir])[index], indices, populationReferencesAD); });
+    }
 }
 
-__global__ void getSendFsPre27(real* DD, real* bufferFs, const uint* sendIndex, const uint buffmax, const uint* neighborX,
+__global__ void getSendFsPre27(real* DD, real* bufferFs, real* populationsAD, real* bufferAD, const uint* sendIndex, const uint buffmax, const uint* neighborX,
                                const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
-                               const bool isEvenTimestep)
+                               const bool isEvenTimestep, const bool diffOn)
 {
     const uint index = vf::cuda::get1DIndexFrom2DBlock();
     if (index >= buffmax)
@@ -96,16 +114,23 @@ __global__ void getSendFsPre27(real* DD, real* bufferFs, const uint* sendIndex, 
 
     const ListIndices indices(sendIndex[index], neighborX, neighborY, neighborZ);
 
-    Distributions27 populationReferences = getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
-    Distributions27 bufferReferences = getDistributionReferences27(bufferFs, buffmax, true);
+    const Distributions27 populationReferences = getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
+    const Distributions27 bufferReferences = getDistributionReferences27(bufferFs, buffmax, true);
 
-    forEachDirection(
-        [&](auto dir) { (bufferReferences.f[dir])[index] = readFromSameDirection<dir>(indices, populationReferences); });
+    forEachDirection([&](auto dir) { (bufferReferences.f[dir])[index] = readFromSameDirection<dir>(indices, populationReferences); });
+    if(diffOn)
+    {
+        const Distributions27 populationReferencesAD = getDistributionReferences27(populationsAD, numberOfLBnodes, isEvenTimestep);
+        const Distributions27 bufferReferencesAD = getDistributionReferences27(bufferAD, buffmax, true);
+
+        forEachDirection([&](auto dir) { (bufferReferencesAD.f[dir])[index] = readFromSameDirection<dir>(indices, populationReferencesAD); });
+    }
+
 }
 
-__global__ void setRecvFsPre27(real* DD, real* bufferFs, const uint* recvIndex, const uint buffmax, const uint* neighborX,
+__global__ void setRecvFsPre27(real* DD, real* bufferFs, real* populationsAD, real* bufferAD, const uint* recvIndex, const uint buffmax, const uint* neighborX,
                                const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
-                               const bool isEvenTimestep)
+                               const bool isEvenTimestep, const bool diffOn)
 {
     const uint index = vf::cuda::get1DIndexFrom2DBlock();
     if (index >= buffmax)
@@ -113,54 +138,61 @@ __global__ void setRecvFsPre27(real* DD, real* bufferFs, const uint* recvIndex, 
 
     const ListIndices indices(recvIndex[index], neighborX, neighborY, neighborZ);
 
-    Distributions27 populationReferences = getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
-    Distributions27 bufferReferences = getDistributionReferences27(bufferFs, buffmax, true);
+    const Distributions27 populationReferences = getDistributionReferences27(DD, numberOfLBnodes, isEvenTimestep);
+    const Distributions27 bufferReferences = getDistributionReferences27(bufferFs, buffmax, true);
 
-    forEachDirection(
-        [&](auto dir) { writeInSameDirection<dir>((bufferReferences.f[dir])[index], indices, populationReferences); });
+    forEachDirection([&](auto dir) { writeInSameDirection<dir>((bufferReferences.f[dir])[index], indices, populationReferences); });
+
+    if(diffOn)
+    {
+        const Distributions27 populationReferencesAD = getDistributionReferences27(populationsAD, numberOfLBnodes, isEvenTimestep);
+        const Distributions27 bufferReferencesAD = getDistributionReferences27(bufferAD, buffmax, true);
+
+        forEachDirection([&](auto dir) { writeInSameDirection<dir>((bufferReferencesAD.f[dir])[index], indices, populationReferencesAD); });
+    }
 }
 
-void GetSendFsPreDev27(real* DD, real* bufferFs, const uint* sendIndex, const uint buffmax, const uint* neighborX,
+void GetSendFsPreDev27(real* DD, real* bufferFs, real* populationsAD, real* bufferAD, const uint* sendIndex, const uint buffmax, const uint* neighborX,
                        const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
-                       const bool isEvenTimestep, const unsigned int numberOfThreads, cudaStream_t stream)
+                       const bool isEvenTimestep, const bool diffOn, const unsigned int numberOfThreads, cudaStream_t stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-    getSendFsPre27<<<grid.grid, grid.threads, 0, stream>>>(DD, bufferFs, sendIndex, buffmax, neighborX, neighborY, neighborZ,
-                                                           numberOfLBnodes, isEvenTimestep);
+    getSendFsPre27<<<grid.grid, grid.threads, 0, stream>>>(DD, bufferFs, populationsAD, bufferAD, sendIndex, buffmax, neighborX, neighborY, neighborZ,
+                                                           numberOfLBnodes, isEvenTimestep, diffOn);
     getLastCudaError("getSendFsPre27 execution failed");
 }
 
-void GetSendFsPostDev27(real* DD, real* bufferFs, const uint* sendIndex, const uint buffmax, const uint* neighborX,
+void GetSendFsPostDev27(real* DD, real* bufferFs, real* populationsAD, real* bufferAD, const uint* sendIndex, const uint buffmax, const uint* neighborX,
                         const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
-                        const bool isEvenTimestep, const unsigned int numberOfThreads, cudaStream_t stream)
+                        const bool isEvenTimestep, const bool diffOn, const unsigned int numberOfThreads, cudaStream_t stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-    getSendFsPost27<<<grid.grid, grid.threads, 0, stream>>>(DD, bufferFs, sendIndex, buffmax, neighborX, neighborY,
-                                                            neighborZ, numberOfLBnodes, isEvenTimestep);
+    getSendFsPost27<<<grid.grid, grid.threads, 0, stream>>>(DD, bufferFs, populationsAD, bufferAD, sendIndex, buffmax, neighborX, neighborY,
+                                                            neighborZ, numberOfLBnodes, isEvenTimestep, diffOn);
     getLastCudaError("getSendFsPost27 execution failed");
 }
 
-void SetRecvFsPreDev27(real* DD, real* bufferFs, const uint* recvIndex, const uint buffmax, const uint* neighborX,
+void SetRecvFsPreDev27(real* DD, real* bufferFs, real* populationsAD, real* bufferAD, const uint* recvIndex, const uint buffmax, const uint* neighborX,
                        const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
-                       const bool isEvenTimestep, const unsigned int numberOfThreads, cudaStream_t stream)
+                       const bool isEvenTimestep, const bool diffOn, const unsigned int numberOfThreads, cudaStream_t stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-    setRecvFsPre27<<<grid.grid, grid.threads, 0, stream>>>(DD, bufferFs, recvIndex, buffmax, neighborX, neighborY, neighborZ,
-                                                           numberOfLBnodes, isEvenTimestep);
+    setRecvFsPre27<<<grid.grid, grid.threads, 0, stream>>>(DD, bufferFs, populationsAD, bufferAD, recvIndex, buffmax, neighborX, neighborY, neighborZ,
+                                                           numberOfLBnodes, isEvenTimestep, diffOn);
     getLastCudaError("setRecvFsPre27 execution failed");
 }
 
-void SetRecvFsPostDev27(real* DD, real* bufferFs, const uint* recvIndex, const uint buffmax, const uint* neighborX,
+void SetRecvFsPostDev27(real* DD, real* bufferFs, real* populationsAD, real* bufferAD, const uint* recvIndex, const uint buffmax, const uint* neighborX,
                         const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
-                        const bool isEvenTimestep, const unsigned int numberOfThreads, cudaStream_t stream)
+                        const bool isEvenTimestep, const bool diffOn, const unsigned int numberOfThreads, cudaStream_t stream)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, buffmax);
 
-    setRecvFsPost27<<<grid.grid, grid.threads, 0, stream>>>(DD, bufferFs, recvIndex, buffmax, neighborX, neighborY,
-                                                            neighborZ, numberOfLBnodes, isEvenTimestep);
+    setRecvFsPost27<<<grid.grid, grid.threads, 0, stream>>>(DD, bufferFs, populationsAD, bufferAD, recvIndex, buffmax, neighborX, neighborY,
+                                                            neighborZ, numberOfLBnodes, isEvenTimestep, diffOn);
     getLastCudaError("setRecvFsPost27 execution failed");
 }
 
