@@ -70,6 +70,11 @@ const std::string simulationName("GaussianHillOfConcentration");
 
 void run(const vf::basics::ConfigurationFile& config)
 {
+    vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
+
+    if(communicator.getNumberOfProcesses() > 1)
+        vf::logging::Logger::changeLogPath("logs/vflog_process" + std::to_string(communicator.getProcessID()) );
+    vf::logging::Logger::initializeLogger();
     const real prandtlNumber = c1o1;
 
     const real deltaT = c1o1;
@@ -103,7 +108,7 @@ void run(const vf::basics::ConfigurationFile& config)
     VF_LOG_INFO("dt   = {}", deltaT);
     VF_LOG_INFO("dx   = {}", deltaX);
     VF_LOG_INFO("viscosity [dx^2/dt] = {}", viscosityLB);
-    VF_LOG_INFO("Peclet number = {}", pecletNumber);
+    VF_LOG_INFO("Peclét number = {}", pecletNumber);
     VF_LOG_INFO("Prandtl number = {}", prandtlNumber);
     VF_LOG_INFO("Mach number = {}", machNumber);
     VF_LOG_INFO("advection velocity = {}", advectionVelocity);
@@ -111,15 +116,24 @@ void run(const vf::basics::ConfigurationFile& config)
     VF_LOG_INFO("tEnd = {}", time);
     VF_LOG_INFO("Number of Timesteps = {}", numberOfTimesteps);
 
-    vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();
-
     auto grid = std::make_shared<GridDimensions>(-c1o2 * domainSize, c1o2 * domainSize, -c1o2 * domainSize,
                                                  c1o2 * domainSize, -c1o2 * domainSize, c1o2 * domainSize, deltaX);
-    auto gridBuilder = std::make_shared<MultipleGridBuilderFacade>(grid, c2o1 * deltaX);
+    auto gridBuilder = std::make_shared<MultipleGridBuilderFacade>(grid, c8o1 * deltaX);
 
     gridBuilder->setPeriodicBoundaryCondition(true, true, true);
-    for (int iProcess = 1; iProcess < communicator.getNumberOfProcesses(); iProcess++)
+    
+    if(communicator.getNumberOfProcesses() == 2){
+        gridBuilder->addDomainSplit(c0o1, Axis::z);
+    } else if(communicator.getNumberOfProcesses() == 4){
+        gridBuilder->addDomainSplit(c0o1, Axis::y);
+        gridBuilder->addDomainSplit(c0o1, Axis::z);
+    } else if(communicator.getNumberOfProcesses() == 8){
         gridBuilder->addDomainSplit(c0o1, Axis::x);
+        gridBuilder->addDomainSplit(c0o1, Axis::y);
+        gridBuilder->addDomainSplit(c0o1, Axis::z);
+    } else if(communicator.getNumberOfProcesses() != 1){
+        VF_LOG_CRITICAL("Uneven number of processes. Cannot partition domain.");
+    }
 
     gridBuilder->createGrids(communicator.getProcessID());
 
@@ -176,7 +190,6 @@ int main(int argc, char* argv[])
         return 0;
 
     try {
-        vf::logging::Logger::initializeLogger();
         auto config = vf::basics::loadConfig(argc, argv, defaultConfigPath);
         run(config);
     } catch (const spdlog::spdlog_ex& ex) {
