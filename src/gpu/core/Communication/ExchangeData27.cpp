@@ -116,13 +116,13 @@ void scatterNodesFromRecvBufferGPU(Parameter* para, int level, CudaStreamIndex s
     }
 }
 
-void startBlockingMpiSend(vf::parallel::Communicator& comm, std::vector<ProcessNeighbor27>& sendProcessNeighborsHost,
+void startNonBlockingMpiSend(vf::parallel::Communicator& comm, std::vector<ProcessNeighbor27>& sendProcessNeighborsHost,
                              bool diffOn)
 {
     for (auto& neighbor : sendProcessNeighborsHost) {
-        comm.send(neighbor.populations[0], neighbor.numberOfFs, neighbor.rankNeighbor);
+        comm.sendNonBlocking(neighbor.populations[0], neighbor.numberOfFs, neighbor.rankNeighbor);
         if (diffOn)
-            comm.send(neighbor.populationsAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
+            comm.sendNonBlocking(neighbor.populationsAD[0], neighbor.numberOfFs, neighbor.rankNeighbor);
     }
 }
 
@@ -173,10 +173,11 @@ void copyEdgeNodes(std::vector<LBMSimulationParameter::EdgeNodePositions>& edgeN
 }
 
 void exchangeCollDataXGPU27(Parameter* para, vf::parallel::Communicator& comm, CudaMemoryManager* cudaMemoryManager,
-                           CudaStreamIndex streamIndex, 
-                           std::vector<ProcessNeighbor27>& sendProcessNeighborsDevice, std::vector<ProcessNeighbor27>& recvProcessNeighborsDevice,
-                           std::vector<ProcessNeighbor27>& sendProcessNeighborsHost, std::vector<ProcessNeighbor27>& recvProcessNeighborsHost
-                        )
+                            CudaStreamIndex streamIndex, 
+                            std::vector<ProcessNeighbor27>& sendProcessNeighborsDevice,
+                            std::vector<ProcessNeighbor27>& recvProcessNeighborsDevice,
+                            std::vector<ProcessNeighbor27>& sendProcessNeighborsHost,
+                            std::vector<ProcessNeighbor27>& recvProcessNeighborsHost)
 {
     cudaStream_t stream = para->getStreamManager()->getStream(streamIndex);
     const size_t numberOfProcessNeighbors = sendProcessNeighborsHost.size();
@@ -194,7 +195,8 @@ void exchangeCollDataXGPU27(Parameter* para, vf::parallel::Communicator& comm, C
         cudaStreamSynchronize(stream);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 5. send data to neighboring process (MPI)
-    startBlockingMpiSend(comm, sendProcessNeighborsHost, para->getDiffOn());
+    startNonBlockingMpiSend(comm, sendProcessNeighborsHost, para->getDiffOn());
+    comm.waitAll();
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 6. reset the request array, which was used for the mpi communication
     if (0 < numberOfProcessNeighbors)
@@ -238,7 +240,9 @@ void exchangeCollDataYGPU27(Parameter* para, vf::parallel::Communicator& comm, C
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 5. send data to neighboring process (MPI)
-    startBlockingMpiSend(comm, sendProcessNeighborsHost, para->getDiffOn());
+    startNonBlockingMpiSend(comm, sendProcessNeighborsHost, para->getDiffOn());
+    comm.waitAll();
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 6. reset the request array, which was used for the mpi communication
     if (0 < numberOfProcessNeighbors) comm.resetRequests();
@@ -282,7 +286,9 @@ void exchangeCollDataZGPU27(Parameter* para, vf::parallel::Communicator& comm, C
         copyEdgeNodes(edgeNodesYtoZ, recvProcessNeighborsHostY, sendProcessNeighborsHost, para->getDiffOn());
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 5. send data to neighboring process (MPI)
-    startBlockingMpiSend(comm, sendProcessNeighborsHost, para->getDiffOn());
+    startNonBlockingMpiSend(comm, sendProcessNeighborsHost, para->getDiffOn());
+    comm.waitAll();
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //! 6. reset the request array, which was used for the mpi communication
     if (0 < numberOfProcessNeighbors)
