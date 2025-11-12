@@ -65,6 +65,10 @@ public:
           computeTemporalAverages(computeTemporalAverages), outputStress(outputStress),
           evaluatePressureGradient(evaluatePressureGradient), sampleSurfaceLayer(sampleSurfaceLayer), Sampler(outputPath, probeName)
     {
+        if(tBetweenSamples == 0)
+            throw std::runtime_error("WallModelProbe: tBetweenSamples is 0! If you want to sample every time step set sampleEveryTimestep to true");
+        if(tBetweenWriting == 0)
+            throw std::runtime_error("WallModelProbe: tBetweenWriting is 0! tBetweenWriting must be larger than 0");
         if (tStartTemporalAveraging < tStartSampling)
             throw std::runtime_error("WallModelProbe: tStartTemporalAveraging must be larger than tStartSampling!");
         if (sampleEveryTimestep)
