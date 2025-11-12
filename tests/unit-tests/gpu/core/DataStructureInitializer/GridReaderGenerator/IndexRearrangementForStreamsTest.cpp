@@ -380,7 +380,7 @@ protected:
         testSubject->reorderRecvIndicesForCommAfterFtoC(neighbor.index, 
                                                         ri.direction, ri.level, ri.sendIndicesForCommAfterFtoCPositions);
 
-        ri.numberOfRecvNodesAfterFtoC = ri.sendIndicesForCommAfterFtoCPositions.size();
+        ri.numberOfRecvNodesAfterFtoC = uint(ri.sendIndicesForCommAfterFtoCPositions.size());
     };
 
 private:
