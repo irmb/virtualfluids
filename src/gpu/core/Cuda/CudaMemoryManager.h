@@ -117,16 +117,10 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
     // 3D domain decomposition
-    virtual void cudaAllocProcessNeighbor(const ProcessNeighbor27& sendNeighborHost,
-                                          const ProcessNeighbor27& sendNeighborDevice,
-                                          const ProcessNeighbor27& recvNeighborHost,
-                                          const ProcessNeighbor27& recvNeighborDevice);
-    virtual void cudaCopyProcessNeighborIndex(const ProcessNeighbor27& sendNeighborHost,
-                                              const ProcessNeighbor27& sendNeighborDevice,
-                                              const ProcessNeighbor27& recvNeighborHost,
-                                              const ProcessNeighbor27& recvNeighborDevice) const;
-    void cudaFreeProcessNeighbor(const ProcessNeighbor27& sendNeighborHost, const ProcessNeighbor27& sendNeighborDevice,
-                                 const ProcessNeighbor27& recvNeighborHost, const ProcessNeighbor27& recvNeighborDevice) const;
+    virtual void cudaAllocProcessNeighbor(const ProcessNeighbor27& neighborHost, const ProcessNeighbor27& neighborDevice);
+    virtual void cudaCopyProcessNeighborIndex(const ProcessNeighbor27& neighborHost,
+                                              const ProcessNeighbor27& neighborDevice) const;
+    void cudaFreeProcessNeighbor(const ProcessNeighbor27& neighborHost, const ProcessNeighbor27& neighborDevice) const;
 
     void cudaCopyProcessNeighborFsDtoH(const ProcessNeighbor27& neighborHost, const ProcessNeighbor27& neighborDevice) const;
     void cudaCopyProcessNeighborFsHtoD(const ProcessNeighbor27& neighborHost, const ProcessNeighbor27& neighborDevice) const;

@@ -825,18 +825,18 @@ Simulation::~Simulation()
             auto& parD = para->getParDeviceAsReference(lev);
             //////////////////////////////////////////////////////////////////////////
             for (uint i = 0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++) {
-                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsX[i], parD.sendProcessNeighborsX[i],
-                                                           parH.recvProcessNeighborsX[i], parD.recvProcessNeighborsX[i]);
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsX[i], parD.sendProcessNeighborsX[i]);
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.recvProcessNeighborsX[i], parD.recvProcessNeighborsX[i]);
             }
             //////////////////////////////////////////////////////////////////////////
             for (uint i = 0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++) {
-                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsY[i], parD.sendProcessNeighborsY[i],
-                                                           parH.recvProcessNeighborsY[i], parD.recvProcessNeighborsY[i]);
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsY[i], parD.sendProcessNeighborsY[i]);
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.recvProcessNeighborsY[i], parD.recvProcessNeighborsY[i]);
             }
             //////////////////////////////////////////////////////////////////////////
             for (uint i = 0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++) {
-                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsZ[i], parD.sendProcessNeighborsZ[i],
-                                                           parH.recvProcessNeighborsZ[i], parD.recvProcessNeighborsZ[i]);
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.sendProcessNeighborsZ[i], parD.sendProcessNeighborsZ[i]);
+                cudaMemoryManager->cudaFreeProcessNeighbor(parH.recvProcessNeighborsZ[i], parD.recvProcessNeighborsZ[i]);
             }
         }
     }
