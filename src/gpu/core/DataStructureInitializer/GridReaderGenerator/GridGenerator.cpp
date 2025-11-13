@@ -650,13 +650,10 @@ void GridGenerator::initalValuesDomainDecompostion()
         // direction has to be changed in case of periodic BCs and multiple sub domains
         std::vector<int> fillOrder = { 0, 1, 2, 3, 4, 5 };
 
-        for (int direction = 0; direction < 6; direction++) {
-            if (direction % 2 > 0 && mpiProcessID % 2 > 0 && (builder->getCommunicationProcess(direction) == builder->getCommunicationProcess(direction - 1)))
-            {
-                int temp = fillOrder[direction];
-                fillOrder[direction] = fillOrder[direction-1];
-                fillOrder[direction-1] = temp;
-            }
+        for (int direction = 1; direction < 6; direction += 2) {
+            const uint rankNeighbor = builder->getCommunicationProcess(direction);
+            if(rankNeighbor == builder->getCommunicationProcess(direction - 1) && rankNeighbor > mpiProcessID)
+                std::swap(fillOrder[direction], fillOrder[direction-1]);
         }
 
         for (int direction : fillOrder) {
