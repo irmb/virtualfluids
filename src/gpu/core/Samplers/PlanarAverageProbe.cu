@@ -234,10 +234,12 @@ PlanarAverageProbe::PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryMana
       tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting), computeTimeAverages(computeTimeAverages),
       planeNormal(planeNormal), sampleScalar(sampleScalar), Sampler(outputPath, probeName)
 {
+    if(tBetweenSamples == 0)
+        throw std::runtime_error("PlanarAverageProbe: tBetweenSamples is 0! tBetweenSamples must be larger than 0");
+    if(tBetweenWriting == 0)
+        throw std::runtime_error("PlanarAverageProbe: tBetweenWriting is 0! tBetweenWriting must be larger than 0");
     if (tStartTemporalAveraging < tStartSampling && computeTimeAverages)
         throw std::runtime_error("PlaneAverageProbe: tStartTemporalAveraging must be larger than tStartSampling!");
-    if (tBetweenWriting == 0)
-        throw std::runtime_error("PlaneAverageProbe: tBetweenWriting must be larger than 0!");
     if (sampleScalar && !para->getDiffOn())
         throw std::runtime_error("PlaneAverageProbe: Scalar can only be sampled if diff is on!");
     VF_LOG_INFO(

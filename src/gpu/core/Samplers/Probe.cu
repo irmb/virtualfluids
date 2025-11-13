@@ -73,6 +73,10 @@ Probe::Probe(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager>
       outputTimeSeries(outputTimeSeries), sampleEveryTimestep(sampleEveryTimestep), sampleScalar(sampleScalar),
       Sampler(outputPath, probeName)
 {
+    if(tBetweenSamples == 0)
+        throw std::runtime_error("Probe: tBetweenSamples is 0! If you want to sample every time step set sampleEveryTimestep to true");
+    if(tBetweenWriting == 0)
+        throw std::runtime_error("Probe: tBetweenWriting is 0! tBetweenWriting must be larger than 0");
     if (tStartWritingOutput < tStartSampling)
         throw std::runtime_error("Probe: tStartWritingOutput must be larger than tStartSampling!");
     if (sampleEveryTimestep)
@@ -276,7 +280,7 @@ void Probe::init()
 
         if (this->outputTimeSeries) {
             auto levelData = levelDatas[level];
-            const std::string fileName = makeTimeseriesFileName(probeName, level, para->getMyProcessID());
+            const std::string fileName = outputPath + makeTimeseriesFileName(probeName, level, para->getMyProcessID());
             auto variableNames = getVarNames();
             writeTimeseriesFileHeader(fileName, levelData.probeDataH.numberOfPoints, variableNames,
                                       levelData.coordinatesX.data(), levelData.coordinatesY.data(),
