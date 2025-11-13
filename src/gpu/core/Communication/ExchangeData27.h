@@ -75,7 +75,7 @@ void copyEdgeNodes(const std::vector<LBMSimulationParameter::EdgeNodePositions>&
 //! \brief Exchange routine for simulations on multiple gpus
 //! \details Send and receive the nodes from the communication buffers on the gpus.
 //! \param Communicator is needed for the communication between the processes with mpi
-//! \param const CudaMemoryManager is needed for moving the data between host and device
+//! \param CudaMemoryManager is needed for moving the data between host and device
 //! \param sendProcessNeighborDevice, recvProcessNeighborDevice, sendProcessNeighborHost, recvProcessNeighborHost are
 //! send and receive arrays, both on the device and the host
 //! \param recvProcessNeighborsHostX are process neighbors in x and y direction where edge nodes have to be copied from
