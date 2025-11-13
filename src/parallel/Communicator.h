@@ -99,7 +99,7 @@ public:
     virtual void broadcast(std::vector<double> &values)   = 0;
     virtual void broadcast(std::vector<long int> &values) = 0;
 
-    virtual void receiveSend(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, uint *buffer_send,
+    virtual void receiveSend(uint *buffer_receive, int size_buffer_recv, int neighbor_rank_recv, const uint *buffer_send,
                              int size_buffer_send, int neighbor_rank_send) const = 0;
     virtual int getNumberOfProcesses() const = 0;
     virtual void send(real *sbuf, int count_s, int nb_rank) const = 0;

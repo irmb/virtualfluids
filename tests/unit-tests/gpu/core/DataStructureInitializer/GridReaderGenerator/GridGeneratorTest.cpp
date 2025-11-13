@@ -99,8 +99,8 @@ class CudaMemoryManagerDouble : public CudaMemoryManager
 public:
     explicit CudaMemoryManagerDouble(std::shared_ptr<Parameter> parameter) : CudaMemoryManager(parameter){};
 
-    void cudaAllocProcessNeighbor(ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&) override{};
-    void cudaCopyProcessNeighborIndex(ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&) override{};
+    void cudaAllocProcessNeighbor(const ProcessNeighbor27& /**/, const ProcessNeighbor27& /**/) override{};
+    void cudaCopyProcessNeighborIndex(const ProcessNeighbor27& /**/, const ProcessNeighbor27& /**/) const override{};
 };
 
 class IndexRearrangementForStreamsDouble : public IndexRearrangementForStreams
@@ -110,7 +110,9 @@ public:
                                        vf::parallel::Communicator &communicator)
         : IndexRearrangementForStreams(para, builder, communicator){};
 
-    void initCommunicationArraysForCommAfterFinetoCoarse(ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, ProcessNeighbor27& /**/, int/**/, int/**/) const override{};
+    std::array<ProcessNeighbor27, 4> initCommunicationArraysForCommAfterFinetoCoarse(const ProcessNeighbor27& /**/, const ProcessNeighbor27& /**/, const ProcessNeighbor27& /**/, const ProcessNeighbor27& /**/, int/**/, int/**/) const override{
+        return {};
+    };
 };
 
 } // namespace grid_generator_test

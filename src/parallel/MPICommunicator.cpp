@@ -219,7 +219,7 @@ void MPICommunicator::broadcast(double &value) { broadcast<double>(value); }
 void MPICommunicator::broadcast(long int &value) { broadcast<long int>(value); }
 
 void MPICommunicator::receiveSend(uint *buffer_receive, int size_buffer_recv,
-                                  int neighbor_rank_recv, uint *buffer_send, int size_buffer_send,
+                                  int neighbor_rank_recv, const uint *buffer_send, int size_buffer_send,
                                   int neighbor_rank_send) const
 {
     MPI_Request recv_request;

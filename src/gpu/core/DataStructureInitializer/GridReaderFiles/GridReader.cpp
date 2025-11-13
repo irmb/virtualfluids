@@ -410,14 +410,14 @@ void GridReader::initalValuesDomainDecompostion(int level)
                 ProcessNeighbor27& recvNeighborHost = parH.recvProcessNeighborsX.emplace_back(tempRecv, neighborRankX[j]);
                 ProcessNeighbor27& recvNeighborDevice = parD.recvProcessNeighborsX.emplace_back(tempRecv, neighborRankX[j]);
 
-                cudaMemoryManager->cudaAllocProcessNeighbor(sendNeighborHost, sendNeighborDevice, recvNeighborHost,
-                                                            recvNeighborDevice);
+                cudaMemoryManager->cudaAllocProcessNeighbor(sendNeighborHost, sendNeighborDevice);
+                cudaMemoryManager->cudaAllocProcessNeighbor( recvNeighborHost, recvNeighborDevice);
 
                 procNeighborsSendX[j]->initIndex(sendNeighborHost.index, i);
                 procNeighborsRecvX[j]->initIndex(recvNeighborHost.index, i);
 
-                cudaMemoryManager->cudaCopyProcessNeighborIndex(sendNeighborHost, sendNeighborDevice, recvNeighborHost,
-                                                                recvNeighborDevice);
+                cudaMemoryManager->cudaCopyProcessNeighborIndex(sendNeighborHost, sendNeighborDevice);
+                cudaMemoryManager->cudaCopyProcessNeighborIndex(recvNeighborHost, recvNeighborDevice);
             }
         }
     }
@@ -442,14 +442,14 @@ void GridReader::initalValuesDomainDecompostion(int level)
                 ProcessNeighbor27& recvNeighborHost = parH.recvProcessNeighborsY.emplace_back(tempRecv, neighborRankY[j]);
                 ProcessNeighbor27& recvNeighborDevice = parD.recvProcessNeighborsY.emplace_back(tempRecv, neighborRankY[j]);
 
-                cudaMemoryManager->cudaAllocProcessNeighbor(sendNeighborHost, sendNeighborDevice, recvNeighborHost,
-                                                            recvNeighborDevice);
+                cudaMemoryManager->cudaAllocProcessNeighbor(sendNeighborHost, sendNeighborDevice);
+                cudaMemoryManager->cudaAllocProcessNeighbor( recvNeighborHost, recvNeighborDevice);
 
                 procNeighborsSendY[j]->initIndex(sendNeighborHost.index, i);
                 procNeighborsRecvY[j]->initIndex(recvNeighborHost.index, i);
 
-                cudaMemoryManager->cudaCopyProcessNeighborIndex(sendNeighborHost, sendNeighborDevice, recvNeighborHost,
-                                                                recvNeighborDevice);
+                cudaMemoryManager->cudaCopyProcessNeighborIndex(sendNeighborHost, sendNeighborDevice);
+                cudaMemoryManager->cudaCopyProcessNeighborIndex(recvNeighborHost, recvNeighborDevice);
                 
             }
         }
@@ -475,14 +475,14 @@ void GridReader::initalValuesDomainDecompostion(int level)
                 ProcessNeighbor27& recvNeighborHost = parH.recvProcessNeighborsZ.emplace_back(tempRecv, neighborRankZ[j]);
                 ProcessNeighbor27& recvNeighborDevice = parD.recvProcessNeighborsZ.emplace_back(tempRecv, neighborRankZ[j]);
 
-                cudaMemoryManager->cudaAllocProcessNeighbor(sendNeighborHost, sendNeighborDevice, recvNeighborHost,
-                                                            recvNeighborDevice);
+                cudaMemoryManager->cudaAllocProcessNeighbor(sendNeighborHost, sendNeighborDevice);
+                cudaMemoryManager->cudaAllocProcessNeighbor(recvNeighborHost, recvNeighborDevice);
 
                 procNeighborsSendZ[j]->initIndex(sendNeighborHost.index, i);
                 procNeighborsRecvZ[j]->initIndex(recvNeighborHost.index, i);
 
-                cudaMemoryManager->cudaCopyProcessNeighborIndex(sendNeighborHost, sendNeighborDevice, recvNeighborHost,
-                                                                recvNeighborDevice);
+                cudaMemoryManager->cudaCopyProcessNeighborIndex(sendNeighborHost, sendNeighborDevice);
+                cudaMemoryManager->cudaCopyProcessNeighborIndex( recvNeighborHost, recvNeighborDevice);
             }
         }
     }

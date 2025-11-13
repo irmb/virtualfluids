@@ -677,20 +677,16 @@ void GridGenerator::initalValuesDomainDecompostion()
                 ProcessNeighbor27 sendNeighborDevice(nSendIndices, rankNeighbor);
                 ProcessNeighbor27 recvNeighborHost(nRecvIndices, rankNeighbor);
                 ProcessNeighbor27 recvNeighborDevice(nRecvIndices, rankNeighbor);
-                cudaMemoryManager->cudaAllocProcessNeighbor(sendNeighborHost, sendNeighborDevice, recvNeighborHost,
-                                                            recvNeighborDevice);
+                cudaMemoryManager->cudaAllocProcessNeighbor(sendNeighborHost, sendNeighborDevice);
+                cudaMemoryManager->cudaAllocProcessNeighbor(recvNeighborHost, recvNeighborDevice);
                 builder->getSendIndices(sendNeighborHost.index, direction, level);
                 builder->getReceiveIndices(recvNeighborHost.index, direction, level);
 
                 if (level != builder->getNumberOfGridLevels() - 1 && para->useReducedCommunicationAfterFtoC) {
-                    ProcessNeighbor27 sendNeighborAfterFtoCHost;
-                    ProcessNeighbor27 recvNeighborAfterFtoCHost;
-                    ProcessNeighbor27 sendNeighborAfterFtoCDevice;
-                    ProcessNeighbor27 recvNeighborAfterFtoCDevice;
-                    indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarse(
-                        sendNeighborHost, sendNeighborDevice, sendNeighborAfterFtoCHost, sendNeighborAfterFtoCDevice,
-                        recvNeighborHost, recvNeighborDevice, recvNeighborAfterFtoCHost, recvNeighborAfterFtoCDevice, level,
-                        direction);
+                    auto [sendNeighborAfterFtoCHost, sendNeighborAfterFtoCDevice, recvNeighborAfterFtoCHost,
+                          recvNeighborAfterFtoCDevice] =
+                        indexRearrangement->initCommunicationArraysForCommAfterFinetoCoarse(
+                            sendNeighborHost, sendNeighborDevice, recvNeighborHost, recvNeighborDevice, level, direction);
                     switch (direction) {
                         case communication_directions::MX:
                         case communication_directions::PX: {
@@ -715,8 +711,8 @@ void GridGenerator::initalValuesDomainDecompostion()
                         } break;
                     }
                 }
-                cudaMemoryManager->cudaCopyProcessNeighborIndex(sendNeighborHost, sendNeighborDevice, recvNeighborHost,
-                                                                recvNeighborDevice);
+                cudaMemoryManager->cudaCopyProcessNeighborIndex(sendNeighborHost, sendNeighborDevice);
+                cudaMemoryManager->cudaCopyProcessNeighborIndex( recvNeighborHost, recvNeighborDevice);
                 switch (direction) {
                     case communication_directions::MX:
                     case communication_directions::PX: {
