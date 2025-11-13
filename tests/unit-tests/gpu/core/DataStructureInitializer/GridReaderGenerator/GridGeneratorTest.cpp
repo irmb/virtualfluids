@@ -99,8 +99,8 @@ class CudaMemoryManagerDouble : public CudaMemoryManager
 public:
     explicit CudaMemoryManagerDouble(std::shared_ptr<Parameter> parameter) : CudaMemoryManager(parameter){};
 
-    void cudaAllocProcessNeighbor(ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&) override{};
-    void cudaCopyProcessNeighborIndex(ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&, ProcessNeighbor27&) override{};
+    void cudaAllocProcessNeighbor(const ProcessNeighbor27& /**/, const ProcessNeighbor27& /**/) override{};
+    void cudaCopyProcessNeighborIndex(const ProcessNeighbor27& /**/, const ProcessNeighbor27& /**/) const override{};
 };
 
 class IndexRearrangementForStreamsDouble : public IndexRearrangementForStreams
