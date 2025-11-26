@@ -91,12 +91,18 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
     para.forceZ = collisionParameter.forces[2] * collisionParameter.forceFactor;
     
     if (applyBodyForce) {
+#ifndef VF_DOUBLE_ACCURACY
+        para.forceX += atomicExch(&collisionParameter.bodyForceX[k_000], basics::constant::c0o1);
+        para.forceY += atomicExch(&collisionParameter.bodyForceY[k_000], basics::constant::c0o1);
+        para.forceZ += atomicExch(&collisionParameter.bodyForceZ[k_000], basics::constant::c0o1);
+#else
         para.forceX += collisionParameter.bodyForceX[k_000];
         para.forceY += collisionParameter.bodyForceY[k_000];
         para.forceZ += collisionParameter.bodyForceZ[k_000];
         collisionParameter.bodyForceX[k_000] = basics::constant::c0o1;
         collisionParameter.bodyForceY[k_000] = basics::constant::c0o1;
         collisionParameter.bodyForceZ[k_000] = basics::constant::c0o1;
+#endif
     }
 
     vf::lbm::TurbulentViscosity turbulentViscosity;
