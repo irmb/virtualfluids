@@ -347,6 +347,8 @@ regression_test_8gpu:
   image: python:latest
   stage: test
   needs: []
+  
+  timeout: 2 days
 
   rules:
     - if: $PHOENIX_REMOTE_USER && $PHOENIX_REMOTE_HOST && $PHOENIX_PRIVATE_KEY && $CI_PIPELINE_SOURCE == "weeklySchedule"
