@@ -92,6 +92,7 @@ __global__ void runCollision(CollisionFunctor collision, GPUCollisionParameter c
     
     if (applyBodyForce) {
 #ifndef VF_DOUBLE_ACCURACY
+        //atomic exchange significantly faster but only implemented for single precision
         para.forceX += atomicExch(&collisionParameter.bodyForceX[k_000], basics::constant::c0o1);
         para.forceY += atomicExch(&collisionParameter.bodyForceY[k_000], basics::constant::c0o1);
         para.forceZ += atomicExch(&collisionParameter.bodyForceZ[k_000], basics::constant::c0o1);
