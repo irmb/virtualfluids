@@ -28,7 +28,7 @@ module list
 cd multigpu_test_8_gpu
 rm -rf build && mkdir -p build
 cd build
-cmake .. -DVF_ENABLE_GPU=ON -DCMAKE_CUDA_ARCHITECTURES=60 -DUSER_APPS=apps/gpu/DrivenCavityMultiGPU\;apps/gpu/SphereMultiGPU
+cmake .. -DVF_ENABLE_GPU=ON -DCMAKE_CUDA_ARCHITECTURES=60 -DUSER_APPS=apps/gpu/DrivenCavityMultiGPU\;apps/gpu/SphereMultiGPU\;apps/gpu/GaussianHillOfConcentration
 make -j 16
 cd ..
 mkdir -p output
