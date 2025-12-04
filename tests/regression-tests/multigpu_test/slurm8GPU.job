@@ -38,3 +38,6 @@ mpirun -np 8 "./build/bin/DrivenCavityMultiGPU" "apps/gpu/DrivenCavityMultiGPU/d
 
 echo $'\n\n\n\n---Second test: SphereMultiGPU on 8 GPUs\n\n'
 mpirun -np 8 "./build/bin/SphereMultiGPU"        "apps/gpu/SphereMultiGPU/sphere_regressiontest_8gpu.cfg"
+
+echo $'\n\n\n\n---Third test: GaussianHillOfConcentration on 8 GPUs\n\n'
+mpirun -np 8 "./build/bin/GaussianHillOfConcentration" "apps/gpu/GaussianHillOfConcentration/gaussian_hill_regressiontest_8gpu.cfg"
