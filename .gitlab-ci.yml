@@ -327,7 +327,7 @@ regression_test_4gpu:
     - cat output/4GPU/slurm4GPU.out
     - git clone --depth 1 --filter=blob:none --sparse https://git.rz.tu-bs.de/irmb/virtualfluids-reference-data
     - cd virtualfluids-reference-data
-    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels regression_tests/gpu/SphereMultiGPU_4GPU_2Levels regressions_tests/gpu/GaussianHillOfConcentration_4GPU
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels regression_tests/gpu/SphereMultiGPU_4GPU_2Levels regression_tests/gpu/GaussianHillOfConcentration_4GPU
     - cd ..
     - fieldcompare dir output/4GPU virtualfluids-reference-data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
     - fieldcompare dir output/4GPU virtualfluids-reference-data/regression_tests/gpu/SphereMultiGPU_4GPU_2Levels --include-files "SphereMultiGPU*.vtu"
