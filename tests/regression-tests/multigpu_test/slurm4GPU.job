@@ -28,7 +28,7 @@ module list
 cd multigpu_test_4_gpu
 rm -rf build && mkdir -p build
 cd build
-cmake .. -DVF_ENABLE_GPU=ON -DCMAKE_CUDA_ARCHITECTURES=60 -DUSER_APPS=apps/gpu/DrivenCavityMultiGPU\;apps/gpu/SphereMultiGPU
+cmake .. -DVF_ENABLE_GPU=ON -DCMAKE_CUDA_ARCHITECTURES=60 -DUSER_APPS=apps/gpu/DrivenCavityMultiGPU\;apps/gpu/SphereMultiGPU\;apps/gpu/GaussianHillOfConcentration
 make -j 16
 cd ..
 mkdir -p output
@@ -37,4 +37,7 @@ echo $'\n\n\n\n---First test: DrivenCavityMultiGPU on 4 GPUs\n\n'
 mpirun -np 4 "./build/bin/DrivenCavityMultiGPU" "apps/gpu/DrivenCavityMultiGPU/drivencavity_regressiontest_4gpu.cfg"
 
 echo $'\n\n\n\n---Second test: SphereMultiGPU on 4 GPUs\n\n'
-mpirun -np 4 "./build/bin/SphereMultiGPU"        "apps/gpu/SphereMultiGPU/sphere_regressiontest_4gpu.cfg"
+mpirun -np 4 "./build/bin/SphereMultiGPU" "apps/gpu/SphereMultiGPU/sphere_regressiontest_4gpu.cfg"
+
+echo $'\n\n\n\n---Third test: GaussianHillOfConcentration on 4 GPUs\n\n'
+mpirun -np 4 "./build/bin/GaussianHillOfConcentration" "apps/gpu/GaussianHillOfConcentration/gaussian_hill_regressiontest_4gpu.cfg"

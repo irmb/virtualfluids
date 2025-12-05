@@ -314,6 +314,9 @@ regression_test_4gpu:
       allow_failure: true
 
   before_script:
+    - if [ -z ${PHOENIX_REMOTE_USER+x} ]; then echo "PHOENIX_REMOTE_USER is not set in Gitlab CI/CD Variables"; fi
+    - if [ -z ${PHOENIX_REMOTE_HOST+x} ]; then echo "PHOENIX_REMOTE_HOST is not set in Gitlab CI/CD Variables"; fi
+    - if [ -z ${PHOENIX_PRIVATE_KEY+x} ]; then echo "PHOENIX_PRIVATE_KEY is not set in Gitlab CI/CD Variables"; fi
     - pip install hpc-rocket==0.6.0
     - pip install "fieldcompare[all]"
     - fieldcompare --version
@@ -324,10 +327,11 @@ regression_test_4gpu:
     - cat output/4GPU/slurm4GPU.out
     - git clone --depth 1 --filter=blob:none --sparse https://git.rz.tu-bs.de/irmb/virtualfluids-reference-data
     - cd virtualfluids-reference-data
-    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels regression_tests/gpu/SphereMultiGPU_4GPU_2Levels
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_4GPU_2Levels regression_tests/gpu/SphereMultiGPU_4GPU_2Levels regressions_tests/gpu/GaussianHillOfConcentration_4GPU
     - cd ..
     - fieldcompare dir output/4GPU virtualfluids-reference-data/regression_tests/gpu/DrivenCavity_4GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
     - fieldcompare dir output/4GPU virtualfluids-reference-data/regression_tests/gpu/SphereMultiGPU_4GPU_2Levels --include-files "SphereMultiGPU*.vtu"
+    - fieldcompare dir output/4GPU virtualfluids-reference-data/regression_tests/gpu/GaussianHillOfConcentration_4GPU --include-files "GaussianHillOfConcentration*.vtu"
 
   after_script:
     - hpc-rocket cancel tests/regression-tests/multigpu_test/rocket4GPU.yml --read-jobid-from hpcrocket4GPU.log
@@ -343,6 +347,8 @@ regression_test_8gpu:
   image: python:latest
   stage: test
   needs: []
+  
+  timeout: 2 days
 
   rules:
     - if: $PHOENIX_REMOTE_USER && $PHOENIX_REMOTE_HOST && $PHOENIX_PRIVATE_KEY && $CI_PIPELINE_SOURCE == "weeklySchedule"
@@ -351,6 +357,9 @@ regression_test_8gpu:
       allow_failure: true
 
   before_script:
+    - if [ -z ${PHOENIX_REMOTE_USER+x} ]; then echo "PHOENIX_REMOTE_USER is not set in Gitlab CI/CD Variables"; fi
+    - if [ -z ${PHOENIX_REMOTE_HOST+x} ]; then echo "PHOENIX_REMOTE_HOST is not set in Gitlab CI/CD Variables"; fi
+    - if [ -z ${PHOENIX_PRIVATE_KEY+x} ]; then echo "PHOENIX_PRIVATE_KEY is not set in Gitlab CI/CD Variables"; fi
     - pip install hpc-rocket==0.6.0
     - pip install "fieldcompare[all]"
     - fieldcompare --version
@@ -361,10 +370,11 @@ regression_test_8gpu:
     - cat output/8GPU/slurm8GPU.out
     - git clone --depth 1 --filter=blob:none --sparse https://git.rz.tu-bs.de/irmb/virtualfluids-reference-data
     - cd virtualfluids-reference-data
-    - git sparse-checkout set regression_tests/gpu/DrivenCavity_8GPU_2Levels regression_tests/gpu/SphereMultiGPU_8GPU_2Levels
+    - git sparse-checkout set regression_tests/gpu/DrivenCavity_8GPU_2Levels regression_tests/gpu/SphereMultiGPU_8GPU_2Levels regression_tests/gpu/GaussianHillOfConcentration_8GPU
     - cd ..
     - fieldcompare dir output/8GPU virtualfluids-reference-data/regression_tests/gpu/DrivenCavity_8GPU_2Levels --include-files "DrivenCavityMultiGPU*.vtu"
     - fieldcompare dir output/8GPU virtualfluids-reference-data/regression_tests/gpu/SphereMultiGPU_8GPU_2Levels --include-files "SphereMultiGPU*.vtu"
+    - fieldcompare dir output/8GPU virtualfluids-reference-data/regression_tests/gpu/GaussianHillOfConcentration_8GPU --include-files "GaussianHillOfConcentration*.vtu"
   
   after_script:
     - hpc-rocket cancel tests/regression-tests/multigpu_test/rocket8GPU.yml --read-jobid-from hpcrocket8GPU.log
