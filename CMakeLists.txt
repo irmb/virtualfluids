@@ -32,7 +32,7 @@ cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 project(
     VirtualFluids
-    VERSION 0.2.0
+    VERSION 0.2.1
     DESCRIPTION "CFD code based on the Lattice Boltzmann Method"
     HOMEPAGE_URL "https://git.rz.tu-bs.de/irmb/VirtualFluids"
     LANGUAGES CXX)
