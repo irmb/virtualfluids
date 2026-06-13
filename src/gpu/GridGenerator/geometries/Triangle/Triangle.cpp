@@ -33,11 +33,13 @@
 //=======================================================================================
 #include "Triangle.h"
 
+#include <cmath>
+
 #include "utilities/math/Math.h"
 
 #include "grid/NodeValues.h"
 
-using namespace vf::gpu;
+namespace vf::gpu {
 
 Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal) : v1(v1), v2(v2), v3(v3), normal(normal), patchIndex(INVALID_INDEX) {}
 Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3) : v1(v1), v2(v2), v3(v3), patchIndex(INVALID_INDEX) { calcNormal(); }
@@ -301,7 +303,51 @@ int Triangle::getTriangleIntersection(const Vertex &P, const Vertex &direction, 
     det = edge1 * pvec;
 
     if (det < EPSILON)
+    {
+        if (std::fabs(det) < EPSILON)
+        {
+            Vertex normal = edge1.crossProduct(edge2);
+            real normalLength = normal.length();
+            if (normalLength > 0.0f)
+            {
+                const real invNormalLength = 1.0f / normalLength;
+                normal = normal * invNormalLength;
+
+                const Vertex pointToV1 = P - v1;
+                const real distanceToPlane = pointToV1 * normal;
+                constexpr real planeTolerance = 1.0e-6f;
+
+                if (vf::Math::lessEqual(std::fabs(distanceToPlane), planeTolerance))
+                {
+                    const Vertex v0 = edge1;
+                    const Vertex v1Edge = edge2;
+                    const real dot00 = v0 * v0;
+                    const real dot01 = v0 * v1Edge;
+                    const real dot11 = v1Edge * v1Edge;
+                    const real dot02 = v0 * pointToV1;
+                    const real dot12 = v1Edge * pointToV1;
+                    const real denom = dot00 * dot11 - dot01 * dot01;
+
+                    if (vf::Math::greaterEqual(std::fabs(denom), EPSILON))
+                    {
+                        const real invDenom = 1.0f / denom;
+                        const real u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+                        const real v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+                        if (vf::Math::greaterEqual(u, -planeTolerance) && vf::Math::greaterEqual(v, -planeTolerance) &&
+                            vf::Math::lessEqual(u + v, 1.0f + planeTolerance))
+                        {
+                            pointOnTri = P;
+                            qVal       = 0.0f;
+                            return 0;
+                        }
+                    }
+                }
+            }
+        }
+
         return 3;
+    }
 
     inv_det = 1.0 / det;
 
@@ -354,5 +400,6 @@ void Triangle::setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &m
     Vertex::setMinMax(minX, maxX, minY, maxY, minZ, maxZ, v1, v2, v3);
 }
 
+}
 
 //! \}

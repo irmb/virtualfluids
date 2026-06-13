@@ -39,7 +39,8 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 __global__ void VelocityBounceBack_Device(
     real* velocityX,
@@ -183,6 +184,8 @@ __global__ void VelocityBounceBack_Device(
       q = (subgridD.q[dPMM])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[dMPP])[ktnw]=f_BSE + c1o36 * (-VeloX + VeloY + VeloZ);
       q = (subgridD.q[dMPP])[nodeIndex];   if (q>=c0o1 && q<=c1o1)    (dist.f[dPMM])[kbse]=f_TNW + c1o36 * ( VeloX - VeloY - VeloZ);
    }
+}
+
 }
 
 //! \}

@@ -42,6 +42,8 @@
 #include "geometries/Vertex/Vertex.h"
 #include "geometries/Triangle/Triangle.h"
 
+namespace vf::gpu {
+
 void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, bool writeBinary)
 {
     const int size = (int)vec.size();
@@ -116,6 +118,8 @@ void STLWriter::writeBinarySTL(std::ofstream &ofstream, std::vector<Triangle> &v
 
         ofstream.write(attribute, 2);
     }
+}
+
 }
 
 //! \}

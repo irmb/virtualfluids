@@ -42,6 +42,8 @@
 #include "Utilities/KernelUtilities.h"
 #include "cuda_helper/CudaIndexCalculation.h"
 
+namespace vf::gpu {
+
 __global__ void CalcTurbulenceIntensity(real* vxx, real* vyy, real* vzz, real* vxy, real* vxz, real* vyz, real* vx_mean,
                                         real* vy_mean, real* vz_mean, real* distributions, uint* typeOfGridNode,
                                         unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
@@ -52,15 +54,15 @@ __global__ void CalcTurbulenceIntensity(real* vxx, real* vyy, real* vzz, real* v
     if (nodeIndex >= numberOfLBnodes)
         return;
 
-    if (!vf::gpu::isValidFluidNode(typeOfGridNode[nodeIndex]))
+    if (!isValidFluidNode(typeOfGridNode[nodeIndex]))
         return;
 
     Distributions27 dist;
-    vf::gpu::getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
-    vf::gpu::ListIndices listIndices(nodeIndex, neighborX, neighborY, neighborZ);
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    ListIndices listIndices(nodeIndex, neighborX, neighborY, neighborZ);
 
     real distribution[27];
-    vf::gpu::getPreCollisionDistribution(distribution, dist, listIndices);
+    getPreCollisionDistribution(distribution, dist, listIndices);
 
     // analogue to LBCalcMacCompSP27
     real rho = vf::lbm::getDensity(distribution);
@@ -94,6 +96,8 @@ void CalcTurbulenceIntensityDevice(real* vxx, real* vyy, real* vzz, real* vxy, r
                                                          typeOfGridNode, neighborX, neighborY, neighborZ, numberOfLBnodes,
                                                          isEvenTimestep);
     getLastCudaError("CalcTurbulenceIntensity execution failed");
+}
+
 }
 
 //! \}

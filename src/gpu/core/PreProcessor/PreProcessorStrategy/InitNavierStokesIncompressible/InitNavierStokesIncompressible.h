@@ -38,6 +38,8 @@
 
 #include <memory>
 
+namespace vf::gpu {
+
 class Parameter;
 
 class InitNavierStokesIncompressible : public PreProcessorStrategy
@@ -52,6 +54,8 @@ private:
     InitNavierStokesIncompressible(std::shared_ptr< Parameter> para);
     std::shared_ptr< Parameter> para;
 };
+
+}
 
 #endif 
 //! \}

@@ -47,6 +47,8 @@
 
 using namespace vf::lbm::dir;
 
+namespace vf::gpu {
+
 void DistributionDebugWriter::writeDistributions(const Parameter& para, uint timestep)
 {
     for (int level = para.getCoarse(); level <= para.getFine(); level++) {
@@ -171,6 +173,8 @@ void DistributionDebugWriter::copyDistributionsToHost(const Parameter& para, con
         throw std::runtime_error("Distributions (distributions.f[0]) at level " + std::to_string(level) +
                                  " are not allocated on the host. Can't copy distributions to host");
     cudaMemoryManager.cudaCopyFsForCheckPoint(level);
+}
+
 }
 
 //! \}

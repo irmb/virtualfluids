@@ -38,6 +38,7 @@
 #include <fstream>
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
 
 class CoordNeighborGeoV 
 {
@@ -73,6 +74,8 @@ protected:
     void readLevel();
 
 };
+
+}
 
 #endif
 

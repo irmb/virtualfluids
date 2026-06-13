@@ -38,10 +38,13 @@
 #include "grid/NodeValues.h"
 
 #include "utilities/math/Math.h"
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
+
+namespace vf::gpu {
 
 using namespace grid_generator;
 
@@ -360,6 +363,8 @@ void PZ::addIndices(const std::vector<SPtr<Grid>> &grid, uint level, SPtr<Bounda
     if( coordinateNormal < grid[0]->getEndZ() - grid[0]->getDelta() ) return;
 
     Side::addIndices(grid[level], boundaryCondition, "z", coordinateNormal, startInner, endInner, startOuter, endOuter);
+}
+
 }
 
 //! \}

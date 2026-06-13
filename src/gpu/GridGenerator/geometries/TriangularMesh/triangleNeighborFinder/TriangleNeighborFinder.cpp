@@ -37,8 +37,7 @@
 #include <GridGenerator/geometries/Triangle/Triangle.h>
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
-
-
+namespace vf::gpu {
 
 int compare2DArrayAccordingToXYZ(const void *pa, const void *pb) {
 
@@ -354,6 +353,8 @@ void TriangleNeighborFinder::printSortedInSpace() const
     for (int row = 0; row < numberOfRows; row++) {
         printf("%d \t %2.2f \t %2.2f \t %2.2f \t %d \t %d \t %d\n", int(sortedInSpace[row][IDS::vertexID]), sortedInSpace[row][IDS::x], sortedInSpace[row][IDS::y], sortedInSpace[row][IDS::z], int(sortedInSpace[row][IDS::firstVertexID]), int(sortedInSpace[row][IDS::coordinateID]), int(sortedInSpace[row][IDS::uniqueCoordID]));
     }
+}
+
 }
 
 //! \}

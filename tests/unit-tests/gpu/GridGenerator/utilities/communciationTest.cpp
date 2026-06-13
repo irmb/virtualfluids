@@ -33,7 +33,8 @@
 
 #include <gpu/GridGenerator/utilities/communication.h>
 
-using namespace communication_directions;
+using namespace vf::gpu;
+using namespace vf::gpu::communication_directions;
 
 TEST(communicationTest, isNegative)
 {

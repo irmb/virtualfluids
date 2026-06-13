@@ -38,6 +38,7 @@
 #include <iostream>
 #include <algorithm>
 
+#include "GbSpatialData3D.h"
 #include "geometries/Arrow/ArrowImp.h"
 #include "geometries/BoundingBox/BoundingBox.h"
 #include "geometries/Triangle/Triangle.h"
@@ -62,7 +63,7 @@
 #define GEOFLUID 19
 #define GEOSOLID 16
 
-using namespace vf::gpu;
+namespace vf::gpu {
 
 LevelGridBuilder::LevelGridBuilder()
 {
@@ -122,21 +123,20 @@ void LevelGridBuilder::setSlipGeometryBoundaryCondition(real normalX, real norma
 }
 
 //=======================================================================================
-//! \brief Set stress boundary concdition using iMEM
+//! \brief Set stress boundary condition using iMEM
 //! \param samplingOffset number of grid points above boundary where velocity for wall model is sampled
 //! \param roughnessLength [m]
 //! \param deltaX grid spacing of level 0 [m]
 //!
 void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
                                                     real normalX, real normalY, real normalZ,
-                                                    uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX)
+                                                    uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX, std::shared_ptr<GbSpatialData3D<real>> roughnessMap)
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++)
     {
-        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength*std::exp2(level)/deltaX);
-        auto side = SideFactory::make(sideType);
+        SPtr<StressBoundaryCondition> stressBoundaryCondition = StressBoundaryCondition::make(normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength*std::exp2(level)/deltaX, std::move(roughnessMap));
 
-        stressBoundaryCondition->side = side;
+        stressBoundaryCondition->side = SideFactory::make(sideType);
         stressBoundaryCondition->side->addIndices(grids, level, stressBoundaryCondition);
 
         stressBoundaryCondition->fillLists();
@@ -147,7 +147,7 @@ void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
     }
 }
 //=======================================================================================
-//! \brief Set surface layer boundary concdition using iMEM
+//! \brief Set surface layer boundary condition using iMEM
 //! \param normalX x-component of normal vector pointing into the fluid domain
 //! \param normalY y-component of normal vector pointing into the fluid domain
 //! \param normalZ z-component of normal vector pointing into the fluid domain
@@ -162,7 +162,7 @@ void LevelGridBuilder::setStressBoundaryCondition(  SideType sideType,
 void LevelGridBuilder::setSurfaceLayerBoundaryCondition(SideType sideType, real normalX,
                                                         real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
                                                         real roughnessLength, real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate,
-                                                        real deltaX, real deltaT)
+                                                        real deltaX, real deltaT, std::shared_ptr<GbSpatialData3D<real>> roughnessMap)
 {
     for (uint level = 0; level < getNumberOfGridLevels(); level++) {
         const real deltaXLevel = deltaX * std::exp2(-static_cast<int>(level));
@@ -174,7 +174,7 @@ void LevelGridBuilder::setSurfaceLayerBoundaryCondition(SideType sideType, real 
 
         SPtr<SurfaceLayerBoundaryCondition> surfaceLayerBoundaryCondition = SurfaceLayerBoundaryCondition::make(
             normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, normalizedRoughnessLength, normalizedRoughnessLengthTemperature,
-            normalizedSurfaceHeatFlux, surfaceTemperature, normalizedHeatingRate);
+            normalizedSurfaceHeatFlux, surfaceTemperature, normalizedHeatingRate, std::move(roughnessMap));
         auto side = SideFactory::make(sideType);
 
         surfaceLayerBoundaryCondition->side = side;
@@ -1081,6 +1081,55 @@ void LevelGridBuilder::getADNeumannQs(real* qs[27], int level) const
     }
 }
 
+void LevelGridBuilder::setADOutflowBoundaryCondition(SideType sideType)
+{
+    for (uint level = 0; level < getNumberOfGridLevels(); level++) {
+        SPtr<ADOutflowBoundaryCondition> boundaryCondition = ADOutflowBoundaryCondition::make();
+
+        auto side = SideFactory::make(sideType);
+        boundaryCondition->side = side;
+        boundaryCondition->side->addIndices(grids, level, boundaryCondition);
+
+        boundaryConditions[level]->adOutflowBoundaryConditions.push_back(boundaryCondition);
+
+        VF_LOG_INFO("Set Outflow Advection-Diffusion BC on level {} with {}", level, boundaryCondition->indices.size());
+    }
+}
+
+size_t LevelGridBuilder::getNumberOfADOutflowBoundaryConditions(uint level) const
+{
+    return boundaryConditions[level]->adOutflowBoundaryConditions.size();
+}
+
+size_t LevelGridBuilder::getSizeOfADOutflowBoundaryCondition(uint level, uint indexInBoundaryConditionVector) const
+{
+    return boundaryConditions[level]->adOutflowBoundaryConditions[indexInBoundaryConditionVector]->indices.size();
+}
+
+void LevelGridBuilder::getADOutflowValues(int* indices, int* neighborIndices, uint level,
+                                           uint indexInBoundaryConditionVector) const
+{
+    const auto& boundaryCondition = boundaryConditions[level]->adOutflowBoundaryConditions[indexInBoundaryConditionVector];
+    for (std::size_t index = 0; index < boundaryCondition->indices.size(); index++) {
+        indices[index]         = grids[level]->getSparseIndex(boundaryCondition->indices[index]) + 1;
+        neighborIndices[index] = grids[level]->getSparseIndex(boundaryCondition->neighborIndices[index]) + 1;
+    }
+}
+
+void LevelGridBuilder::getADOutflowQs(real* qs[27], uint level, uint indexInBoundaryConditionVector) const
+{
+    const auto& boundaryCondition = boundaryConditions[level]->adOutflowBoundaryConditions[indexInBoundaryConditionVector];
+    for (uint index = 0; index < boundaryCondition->indices.size(); index++) {
+        for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
+            qs[dir][index] = boundaryCondition->qs[index][dir];
+    }
+}
+
+size_t LevelGridBuilder::getADOutflowBoundaryConditionDirection(uint level, uint indexInBoundaryConditionVector) const
+{
+    return boundaryConditions[level]->adOutflowBoundaryConditions[indexInBoundaryConditionVector]->side->getD3Q27Direction();
+}
+
 uint LevelGridBuilder::getGeometrySize(int level) const
 {
     if (boundaryConditions[level]->geometryBoundaryCondition)
@@ -1229,6 +1278,8 @@ uint LevelGridBuilder::getNumberOfFluidNodesAllFeatures(unsigned int level) cons
 void LevelGridBuilder::getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, const int level) const
 {
     grids[level]->getFluidNodeIndicesAllFeatures(fluidNodeIndicesAllFeatures);
+}
+
 }
 
 //! \}

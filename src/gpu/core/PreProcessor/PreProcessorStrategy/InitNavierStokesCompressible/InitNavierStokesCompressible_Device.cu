@@ -41,6 +41,8 @@ using namespace vf::lbm::dir;
 
 #include <stdio.h>
 
+namespace vf::gpu {
+
 __global__ void InitNavierStokesCompressible_Device(
     unsigned int* neighborX,
     unsigned int* neighborY,
@@ -498,4 +500,6 @@ __global__ void InitNavierStokesCompressibleNonEquilibrium_Device( unsigned int*
         }
    }
 }
+}
+
 //! \}

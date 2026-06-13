@@ -35,6 +35,8 @@
 #include <DataTypes.h>
 #include <curand.h>
 
+namespace vf::gpu {
+
 __global__ void K15CompressibleNavierStokes_Device(    
     real omega,
     unsigned int* bcMatD,
@@ -46,5 +48,8 @@ __global__ void K15CompressibleNavierStokes_Device(
     int level,
     real* forces,
     bool EvenOrOdd);
+
+}
+
 #endif
 //! \}

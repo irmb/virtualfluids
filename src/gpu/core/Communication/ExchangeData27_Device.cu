@@ -50,7 +50,8 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 __global__ void getSendFsPost27(real* DD, real* bufferFs, real* populationsAD, real* bufferAD, const uint* sendIndex, const uint buffmax, const uint* neighborX,
                                 const uint* neighborY, const uint* neighborZ, const unsigned long long numberOfLBnodes,
@@ -192,4 +193,5 @@ void SetRecvFsPostDev27(real* DD, real* bufferFs, real* populationsAD, real* buf
     getLastCudaError("setRecvFsPost27 execution failed");
 }
 
+}
 //! \}

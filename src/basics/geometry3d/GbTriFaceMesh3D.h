@@ -38,6 +38,7 @@
 #include <map>
 #include <sstream>
 #include <vector>
+#include <atomic>
 
 #include "basics/constants/NumericConstants.h"
 #include <basics/PointerDefinitions.h>
@@ -247,9 +248,14 @@ public:
                 ny *= length;
                 nz *= length;
             } else {
-                std::cerr << "GbTriFaceMesh3D::TriFace - calculateNormal: nx=ny=nz=0 -> kann nich sein "
-                          << "(dreieck hat evtl knoten doppelt oder ist ne Linie)"
-                          << "->removeRedunantNodes" << std::endl;
+                // Log only once to avoid flooding when many degenerate triangles are present.
+                static std::atomic<int> degenerateWarnings{0};
+                const int warnIndex = degenerateWarnings.fetch_add(1, std::memory_order_relaxed);
+                if (warnIndex == 0) {
+                    std::cerr << "GbTriFaceMesh3D::TriFace - calculateNormal: nx=ny=nz=0 -> should not happen "
+                              << "(triangle likely has duplicate nodes or is a line) "
+                              << "-> removeRedundantNodes" << std::endl;
+                }
             }
         }
 
@@ -380,6 +386,7 @@ public:
     void setKdTreeSplitAlgorithm(KDTREE_SPLITAGORITHM mode);
     KDTREE_SPLITAGORITHM getKdTreeSplitAlgorithm() { return this->kdtreeSplitAlg; }
     kd_tree::Tree<double> *getKdTree() { return this->kdTree; }
+    kd_tree::Tree<double> *ensureKdTree();
 
     virtual UbTuple<std::string, std::string> writeMesh(std::string filename, WbWriter *writer,
                                                         bool writeNormals                          = false,

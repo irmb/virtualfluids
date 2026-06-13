@@ -34,6 +34,8 @@
 
 #include "gpu/core/Parameter/Parameter.h"
 
+using namespace vf::gpu;
+
 void InitialConditionImp::setParameter(std::shared_ptr<Parameter> para)
 {
     this->para = para;

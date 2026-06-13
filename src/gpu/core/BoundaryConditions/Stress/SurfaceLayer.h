@@ -35,6 +35,8 @@
 #include "Parameter/Parameter.h"
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 struct TemperatureParameters
 {
     real* temperature;
@@ -66,5 +68,7 @@ void SurfaceLayerBounceBackWithPressureCompressibleSurfaceTemperature(LBMSimulat
                                                                       QforBoundaryConditions* surfaceLayerBoundaryCondition);
 void SurfaceLayerInterpolatedCompressibleSurfaceTemperature(LBMSimulationParameter* parameterDevice,
                                                             QforBoundaryConditions* surfaceLayerBoundaryCondition);
+
+}
 
 #endif

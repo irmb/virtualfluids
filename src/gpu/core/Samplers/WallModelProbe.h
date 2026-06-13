@@ -44,7 +44,7 @@
 
 #include "Sampler.h"
 
-///////////////////////////////////////////////////////////////////////////////////
+namespace vf::gpu {
 
 class Parameter;
 class CudaMemoryManager;
@@ -126,6 +126,8 @@ struct WallModelProbe::LevelData
     {
     }
 };
+
+}
 
 #endif
 //! \}

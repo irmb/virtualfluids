@@ -37,6 +37,8 @@
 #include <DataTypes.h>
 #include <curand.h>
 
+namespace vf::gpu {
+
 __global__ void InitNavierStokesCompressible_Device(unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
@@ -62,6 +64,8 @@ __global__ void InitNavierStokesCompressibleNonEquilibrium_Device(unsigned int* 
     real* DD,
     real omega,
     bool EvenOrOdd);
+
+}
 
 #endif
 //! \}

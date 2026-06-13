@@ -36,6 +36,8 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 struct LBMSimulationParameter;
 
 void SlipBounceBack(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
@@ -43,6 +45,8 @@ void SlipBounceBack(LBMSimulationParameter* parameterDevice, QforBoundaryConditi
 void SlipCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void SlipTurbulentViscosityCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+
+}
 
 #endif
 

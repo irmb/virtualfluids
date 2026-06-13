@@ -39,6 +39,8 @@
 namespace testing::vf
 {
 
+using namespace ::vf::gpu;
+
 inline SPtr<Parameter> createParameterForLevel(uint level)
 {
     SPtr<Parameter> para = std::make_shared<Parameter>();

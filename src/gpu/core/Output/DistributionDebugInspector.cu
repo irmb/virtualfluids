@@ -47,7 +47,8 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 __global__ void printFs(
     real* distributions,
@@ -165,6 +166,8 @@ void DistributionDebugInspector::inspect(Parameter* para, uint level, uint t)
         para->getParD(level)->numberOfNodes, para->getParD(level)->neighborX, para->getParD(level)->neighborY,
         para->getParD(level)->neighborZ, para->getParD(level)->typeOfGridNode, para->getParD(level)->coordinateX,
         para->getParD(level)->coordinateY, para->getParD(level)->coordinateZ, minX, maxX, minY, maxY, minZ, maxZ);
+}
+
 }
 
 //! \}

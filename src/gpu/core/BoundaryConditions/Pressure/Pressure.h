@@ -36,12 +36,15 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 struct LBMSimulationParameter;
 
 void PressureNonEquilibriumIncompressible(LBMSimulationParameter* parameterDevice, QforDirectionalBoundaryCondition* boundaryCondition);
 
 void PressureNonEquilibriumCompressible(LBMSimulationParameter* parameterDevice, QforDirectionalBoundaryCondition* boundaryCondition);
 
+}
 #endif
 
 //! \}

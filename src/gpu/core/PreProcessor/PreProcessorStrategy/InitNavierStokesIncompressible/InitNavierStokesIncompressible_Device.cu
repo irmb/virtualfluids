@@ -39,6 +39,8 @@ using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 #include "math.h"
 
+namespace vf::gpu {
+
 __global__ void InitNavierStokesIncompressible_Device(unsigned int* neighborX,
     unsigned int* neighborY,
     unsigned int* neighborZ,
@@ -208,4 +210,7 @@ __global__ void InitNavierStokesIncompressible_Device(unsigned int* neighborX,
       }
    }
 }
+
+}
+
 //! \}

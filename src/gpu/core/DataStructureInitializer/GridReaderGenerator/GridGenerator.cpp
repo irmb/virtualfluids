@@ -59,6 +59,8 @@
 using namespace vf::lbm::dir;
 using namespace vf::basics::constant;
 
+namespace vf::gpu {
+
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para,
                              std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator)
     : mpiProcessID(communicator.getProcessID()), builder(builder)
@@ -321,6 +323,46 @@ void GridGenerator::initDirectionalPressureBoundaryConditions()
     }
 }
 
+void GridGenerator::initDirectionalConcentrationBoundaryConditions()
+{
+    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
+        const auto numberOfBoundaryConditions = builder->getNumberOfADOutflowBoundaryConditions(level);
+        VF_LOG_INFO("Number of directional AD outflow boundary conditions on level {}: {}", level,
+                    numberOfBoundaryConditions);
+
+        auto& parH = para->getParHostAsReference(level);
+        auto& parD = para->getParDeviceAsReference(level);
+
+        parH.concentrationBCDirectional.resize(numberOfBoundaryConditions);
+        parD.concentrationBCDirectional.resize(numberOfBoundaryConditions);
+
+        for (uint bcIndex = 0; bcIndex < numberOfBoundaryConditions; bcIndex++) {
+            QforDirectionalADBoundaryCondition& bcHost   = parH.concentrationBCDirectional[bcIndex];
+            QforDirectionalADBoundaryCondition& bcDevice = parD.concentrationBCDirectional[bcIndex];
+
+            const auto numberOfNodes = builder->getSizeOfADOutflowBoundaryCondition(level, bcIndex);
+            VF_LOG_INFO("Size of directional AD outflow boundary condition {} on level {}: {}", bcIndex, level,
+                        static_cast<uint>(numberOfNodes));
+            bcHost.numberOfBCnodes   = static_cast<uint>(numberOfNodes);
+            bcDevice.numberOfBCnodes = bcHost.numberOfBCnodes;
+
+            bcHost.direction   = builder->getADOutflowBoundaryConditionDirection(level, bcIndex);
+            bcDevice.direction = bcHost.direction;
+
+            cudaMemoryManager->cudaAllocDirectionalADBoundaryCondition(bcHost, bcDevice);
+
+            builder->getADOutflowValues(bcHost.k, bcHost.kN, level, bcIndex);
+            std::fill(bcHost.concentration, bcHost.concentration + bcHost.numberOfBCnodes,
+                      vf::basics::constant::c0o1);
+
+            initPointersToSubgridDistances(bcHost);
+            builder->getADOutflowQs(bcHost.q27, level, bcIndex);
+
+            cudaMemoryManager->cudaCopyDirectionalADBoundaryCondition(bcHost, bcDevice);
+        }
+    }
+}
+
 void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* bcFactory)
 {
     VF_LOG_TRACE("-----alloc BoundaryValues------");
@@ -510,9 +552,6 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
 
             para->getParD(level)->precursorBC.nPrecursorReads = 2;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // advection - diffusion stuff
-            if (para->getDiffOn())
-                throw std::runtime_error(" Advection Diffusion not implemented for Precursor!");
             
         }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -636,6 +675,9 @@ void GridGenerator::allocArrays_BoundaryValues(const BoundaryConditionFactory* b
                                         para->getParH(level)->AdvectionDiffusionNeumannBC.BCNodeIndices, level);
             cudaMemoryManager->cudaCopyConcentrationNeumannBCHostToDevice(level);
         }
+
+        if (builder->getNumberOfADOutflowBoundaryConditions(0) > 0)
+            initDirectionalConcentrationBoundaryConditions();
     }
 
     initalValuesDomainDecompostion();
@@ -855,9 +897,6 @@ void GridGenerator::allocArrays_BoundaryQs()
 
         builder->getPrecursorQs(Q.q27, i);
 
-        if (para->getDiffOn()) {
-            throw std::runtime_error("Advection diffusion not implemented for Precursor!");
-        }
         cudaMemoryManager->cudaCopyPrecursorBC(i);
     }
 
@@ -1163,4 +1202,13 @@ void GridGenerator::initPointersToSubgridDistances(QforDirectionalBoundaryCondit
     GridGenerator::getPointersToBoundaryConditions(boundaryCondition.q27, boundaryCondition.q27[0],
                                                    boundaryCondition.numberOfBCnodes);
 }
+
+void GridGenerator::initPointersToSubgridDistances(QforDirectionalADBoundaryCondition& boundaryCondition)
+{
+    GridGenerator::getPointersToBoundaryConditions(boundaryCondition.q27, boundaryCondition.q27[0],
+                                                   boundaryCondition.numberOfBCnodes);
+}
+
+}
+
 //! \}

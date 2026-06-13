@@ -58,7 +58,8 @@ class PlanarAverageProbe(gpu.Sampler):
         t_out: int,
         plane_normal: Axis,
         compute_time_averages: bool,
-        compute_statistics_of_concentration: bool,
+        sample_scalar: bool = ...,
+        sample_subgrid_scale_fluxes: bool = ...,
     ) -> None: ...
     def add_statistic(self, variable: Statistic) -> None: ...
     def add_all_available_statistics(self) -> None: ...

@@ -48,6 +48,8 @@
 
 using namespace vf::lbm::dir;
 
+namespace vf::gpu {
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 3D domain decomposition
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,16 +134,16 @@ void copyEdgeNodes(const std::vector<LBMSimulationParameter::EdgeNodePositions>&
             continue;
 
         const Distributions27 populationsSend =
-            vf::gpu::getDistributionReferences27(sendNeighbor.populations[0], sendNeighbor.numberOfNodes, true);
+            getDistributionReferences27(sendNeighbor.populations[0], sendNeighbor.numberOfNodes, true);
         const Distributions27 populationsRecv =
-            vf::gpu::getDistributionReferences27(recvNeighbor.populations[0], recvNeighbor.numberOfNodes, true);
+            getDistributionReferences27(recvNeighbor.populations[0], recvNeighbor.numberOfNodes, true);
         forEachDirection([&](auto direction) { (populationsSend.f[direction])[edgeNode.indexInSendBuffer] = (populationsRecv.f[direction])[edgeNode.indexInRecvBuffer]; });
 
         if (diffOn) {
             const Distributions27 populationsADSend =
-                vf::gpu::getDistributionReferences27(sendNeighbor.populationsAD[0], sendNeighbor.numberOfNodes, true);
+                getDistributionReferences27(sendNeighbor.populationsAD[0], sendNeighbor.numberOfNodes, true);
             const Distributions27 populationsADRecv =
-                vf::gpu::getDistributionReferences27(recvNeighbor.populationsAD[0], recvNeighbor.numberOfNodes, true);
+                getDistributionReferences27(recvNeighbor.populationsAD[0], recvNeighbor.numberOfNodes, true);
 
             forEachDirection([&](auto direction) { (populationsADSend.f[direction])[edgeNode.indexInSendBuffer] = (populationsADRecv.f[direction])[edgeNode.indexInRecvBuffer]; });
         }
@@ -345,6 +347,8 @@ void scatterNodesFromRecvBufferZGPU27AfterFtoC(Parameter* para, int level, CudaS
 {
     auto& parD = para->getParDeviceAsReference(level);
     scatterNodesFromRecvBufferGPU(para, level, streamIndex, parD.recvProcessNeighborsAfterFtoCZ);
+}
+
 }
 
 //! \}

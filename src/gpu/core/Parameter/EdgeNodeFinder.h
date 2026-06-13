@@ -36,14 +36,16 @@
 
 #include "basics/PointerDefinitions.h"
 
-class Parameter;
 
 namespace vf::gpu
 {
+
+class Parameter;
 //! \brief Function for finding edge nodes in the multi-gpu implementation
 //! \details Edge nodes are nodes, which are part of the communication in multiple directions
 //! \ref master thesis of Anna Wellmann (p. 54-57)
 void findEdgeNodesCommMultiGPU(Parameter& parameter);
+
 } // namespace vf::gpu
 
 #endif

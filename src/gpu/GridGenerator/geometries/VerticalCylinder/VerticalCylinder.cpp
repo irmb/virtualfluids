@@ -33,6 +33,8 @@
 //=======================================================================================
 #include "VerticalCylinder.h"
 
+namespace vf::gpu {
+
 VerticalCylinder::VerticalCylinder(const double& centerX, const double& centerY, const double& centerZ, const double& radius, const double& height)
     : centerX(centerX), centerY(centerY), centerZ(centerZ), radius(radius), height(height)
 {
@@ -127,4 +129,7 @@ double VerticalCylinder::getHeight() const
 {
     return height;
 }
+
+}
+
 //! \}

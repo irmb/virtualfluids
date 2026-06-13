@@ -46,6 +46,9 @@
 #include <basics/utilities/UbLogger.h>
 #include <basics/utilities/UbRandom.h>
 #include <basics/writer/WbWriter.h>
+#include <cstdint>
+#include <limits>
+#include <unordered_map>
 
 #define MAX_ITER 10
 
@@ -149,129 +152,89 @@ GbTriFaceMesh3D *GbTriFaceMesh3D::clone()
 // checks for doppelt nodes und fixed Dreicke die zweimal denselben Knoten haben
 void GbTriFaceMesh3D::deleteRedundantNodes()
 {
-    UBLOG(logDEBUG1,
-          "GbTriFaceMesh3D::deleteRedundantNodes - Nodes before deleting redundant: " << this->nodes->size());
-
-    map<Vertex, size_t /*new vecIndex*/> vertexMap;
-    map<Vertex, size_t /*new vecIndex*/>::iterator pos;
-    map<Vertex, size_t /*new vecIndex*/>::iterator it;
+    // Fast approximate deduplication: quantize vertices to a small grid and merge identical keys.
+    const double eps               = 1.0e-7; // quantization step
+    auto quantize                  = [eps](double v) { return static_cast<int64_t>(std::llround(v / eps)); };
+    struct Key {
+        int64_t x, y, z;
+        bool operator==(const Key &rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z; }
+    };
+    struct KeyHash {
+        size_t operator()(const Key &k) const
+        {
+            // Simple mix of three 64-bit ints
+            size_t h = static_cast<size_t>(k.x);
+            h ^= static_cast<size_t>(k.y + 0x9e3779b97f4a7c15ULL + (h << 6) + (h >> 2));
+            h ^= static_cast<size_t>(k.z + 0x9e3779b97f4a7c15ULL + (h << 6) + (h >> 2));
+            return h;
+        }
+    };
 
     vector<TriFace> &tris    = *this->triangles;
     vector<Vertex> &oldNodes = *this->nodes;
     vector<Vertex> newNodes;
+    newNodes.reserve(oldNodes.size());
 
-    for (size_t t = 0; t < tris.size(); t++) {
-        if (t % 100 == 0) {
-            UBLOG(logDEBUG5, "GbTriFaceMesh3D::deleteRedundantNodes - tri: " << (t) << " von " << tris.size());
-        }
+    std::unordered_map<Key, int, KeyHash> lut;
+    lut.reserve(oldNodes.size());
+
+    for (size_t t = 0; t < tris.size(); ++t) {
         TriFace &tri = tris[t];
-        // Knoten bereits in neuem node vector?
-        for (int v = 0; v <= 2; v++) {
-            Vertex &vert = tri.getNode(v, oldNodes);
-            // pos=vertexMap.find( vert );
-            // if( pos==vertexMap.end() )
-            {
-                for (pos = vertexMap.begin(); pos != vertexMap.end(); pos++) {
-                    Vertex rhs = pos->first;
-                    // if(ub_math::inClosedInterval(vert.z,0.01999, 0.02001))
-                    if (fabs(vert.x - rhs.x) < 1.E-5 && fabs(vert.y - rhs.y) < 1.E-5 && fabs(vert.z - rhs.z) < 1.E-5) {
-                        break;
-                    }
-                }
-            }
-            if (pos != vertexMap.end())
-                tri.setNode(v, (int)pos->second);
-            else {
+        for (int v = 0; v < 3; ++v) {
+            Vertex vert = tri.getNode(v, oldNodes);
+            Key key{quantize(vert.x), quantize(vert.y), quantize(vert.z)};
+            auto it = lut.find(key);
+            if (it == lut.end()) {
                 newNodes.push_back(vert);
-                int index       = (int)newNodes.size() - 1;
-                vertexMap[vert] = index;
-                tri.setNode(v, index);
+                int idx = static_cast<int>(newNodes.size() - 1);
+                lut.emplace(key, idx);
+                tri.setNode(v, idx);
+            } else {
+                tri.setNode(v, it->second);
             }
         }
     }
 
     std::swap(*nodes, newNodes);
 
-    UBLOG(logDEBUG1, "GbTriFaceMesh3D::deleteRedundantNodes - Nodes after deleting redundant:" << this->nodes->size());
-    //
-    // Das geht irgendwie nicht ...
-    //
-    // UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - checking for double triangles !!!");
-    // UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - Triangles before deleting redundant:
-    // "<<this->triangles->size()); vector<TriFace> newSingleTris; newSingleTris.reserve( this->triangles->size() );
-    // for(size_t t=0; t<tris.size(); t++)
-    //{
-    //   Vertex& v1 = tris[t].getNode(0,*nodes);
-    //   Vertex& v2 = tris[t].getNode(1,*nodes);
-    //   Vertex& v3 = tris[t].getNode(2,*nodes);
+    // Filter degenerate triangles (duplicate indices or near-zero area) and log a compact summary
+    size_t dupIdx = 0, tinyArea = 0;
+    double minArea2 = std::numeric_limits<double>::max();
+    std::vector<TriFace> cleaned;
+    cleaned.reserve(tris.size());
+    const double minArea2Threshold = 1.0e-18; // squared area threshold to drop lines/points
 
-    //   if(ub_math::greater(std::fabs(v1.x), 0.0634) && ub_math::inClosedInterval(v1.z, 0.01999, 0.02001))
-    //   {
-    //      UBLOG2(logINFO,std::cout, "V1:"<<v1.x<<" "<<v1.y<<" "<<v1.z);
-    //   }
-    //   if(ub_math::greater(std::fabs(v2.x), 0.0634) && ub_math::inClosedInterval(v2.z, 0.01999, 0.02001))
-    //   {
-    //      UBLOG2(logINFO,std::cout, "V2:"<<v2.x<<" "<<v2.y<<" "<<v2.z);
-    //   }
-    //   if(ub_math::greater(std::fabs(v3.x), 0.0634) && ub_math::inClosedInterval(v3.z, 0.01999, 0.02001))
-    //   {
-    //      UBLOG2(logINFO,std::cout, "V3:"<<v3.x<<" "<<v3.y<<" "<<v3.z);
-    //   }
-
-    //   bool inList = false;
-    //   for(size_t u=0; u<newSingleTris.size(); u++)
-    //   {
-    //      Vertex& vn1 = newSingleTris[t].getNode(0,*nodes);
-    //      Vertex& vn2 = newSingleTris[t].getNode(1,*nodes);
-    //      Vertex& vn3 = newSingleTris[t].getNode(2,*nodes);
-
-    //      if(v1==vn1 && v2==vn2 && v3==vn3)      inList = true;
-    //      else if(v1==vn1 && v2==vn3 && v3==vn2) inList = true;
-    //      else if(v1==vn2 && v2==vn3 && v3==vn1) inList = true;
-    //      else if(v1==vn2 && v2==vn1 && v3==vn3) inList = true;
-    //      else if(v1==vn3 && v2==vn1 && v3==vn2) inList = true;
-    //      else if(v1==vn3 && v2==vn2 && v3==vn1) inList = true;
-    //   }
-    //   if(!inList) newSingleTris.push_back(tris[t]);
-    //   else
-    //      UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - inList !!!!");
-
-    //}
-    // swap(tris,newSingleTris);
-
-    // UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - Triangles after deleting
-    // redundant:"<<this->triangles->size());
-    UBLOG(logDEBUG1, "GbTriFaceMesh3D::deleteRedundantNodes - checking for triangles that have same node several times "
-                     "or are lines!!!");
-    int counter1 = 0;
-    int counter2 = 0;
-    vector<TriFace> newTris;
-    newTris.reserve(this->triangles->size());
-    for (size_t t = 0; t < tris.size(); t++) {
-        Vertex &v1 = tris[t].getNode(0, *nodes);
-        Vertex &v2 = tris[t].getNode(1, *nodes);
-        Vertex &v3 = tris[t].getNode(2, *nodes);
-        if (v1 == v2 || v1 == v3 || v2 == v3) {
-            counter1++;
-        } else if (tris[t].getArea(*nodes) < 1.0E-8) {
-            counter2++;
-        } else
-            newTris.push_back(tris[t]);
+    for (const auto &tri : tris) {
+        int i0 = tri.getIndexVertex1();
+        int i1 = tri.getIndexVertex2();
+        int i2 = tri.getIndexVertex3();
+        if (i0 == i1 || i0 == i2 || i1 == i2) {
+            ++dupIdx;
+            continue;
+        }
+        const Vertex &a = (*nodes)[i0];
+        const Vertex &b = (*nodes)[i1];
+        const Vertex &c = (*nodes)[i2];
+        double ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z;
+        double vx = c.x - a.x, vy = c.y - a.y, vz = c.z - a.z;
+        double nx = uy * vz - uz * vy;
+        double ny = uz * vx - ux * vz;
+        double nz = ux * vy - uy * vx;
+        double area2 = nx * nx + ny * ny + nz * nz;
+        minArea2     = std::min(minArea2, area2);
+        if (area2 < minArea2Threshold) {
+            ++tinyArea;
+            continue;
+        }
+        cleaned.push_back(tri);
     }
-    if (counter1) {
-        UBLOG(logDEBUG1, "GbTriFaceMesh3D::deleteRedundantNodes - ### Warning ###: found and removed  "
-                             << counter1 << " triangle with double nodes!");
-    }
-    if (counter2) {
-        UBLOG(logDEBUG1, "GbTriFaceMesh3D::deleteRedundantNodes - ### Warning ###: found and removed  "
-                             << counter2 << " triangle that are lines!");
-    }
-    if (!counter1 && !counter2) {
-        UBLOG(logDEBUG1, "GbTriFaceMesh3D::deleteRedundantNodes - alles gut... nix doppelt");
-    } else
-        swap(tris, newTris);
+    tris.swap(cleaned);
+    UBLOG(logINFO, "deleteRedundantNodes summary: dropped dupIdx=" << dupIdx << " tinyArea=" << tinyArea
+                                                                   << " kept=" << tris.size() << " minArea2="
+                                                                   << (minArea2 == std::numeric_limits<double>::max()
+                                                                           ? 0.0
+                                                                           : minArea2));
 
-    UBLOG(logDEBUG1, "GbTriFaceMesh3D::deleteRedundantNodes - done");
     this->calculateValues();
 }
 /*======================================================================*/
@@ -282,6 +245,31 @@ void GbTriFaceMesh3D::setKdTreeSplitAlgorithm(KDTREE_SPLITAGORITHM mode)
         kdTree = NULL;
     }
     this->kdtreeSplitAlg = mode;
+}
+
+kd_tree::Tree<double> *GbTriFaceMesh3D::ensureKdTree()
+{
+    if (this->kdTree)
+        return this->kdTree;
+
+    vf::basics::Timer timer;
+    timer.start();
+
+    try {
+        if (this->kdtreeSplitAlg == KDTREE_SAHPLIT)
+            this->kdTree = new kd_tree::Tree<double>(*this, kd_tree::SAHSplit<double>());
+        else
+            this->kdTree = new kd_tree::Tree<double>(*this, kd_tree::SpatialMedianSplit<double>());
+
+        UBLOG(logDEBUG3, "GbTriFaceMesh3D::ensureKdTree - built kdTree in "
+                             << timer.getCurrentRuntimeInSeconds() << " seconds");
+    } catch (const std::exception &ex) {
+        UBLOG(logWARNING, "GbTriFaceMesh3D::ensureKdTree - failed to build kdTree: " << ex.what());
+        delete this->kdTree;
+        this->kdTree = nullptr;
+    }
+
+    return this->kdTree;
 }
 /*======================================================================*/
 /**

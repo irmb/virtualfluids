@@ -46,6 +46,8 @@
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/PreCollisionInteractor/PreCollisionInteractor.h"
 
+namespace vf::gpu {
+
 class GridProvider;
 class CudaMemoryManager;
 
@@ -121,5 +123,7 @@ private:
     std::vector<ProfileParameters> profileParameters;
     std::vector<ReductionParameters> reductionParameters;
 };
+
+}
 
 #endif

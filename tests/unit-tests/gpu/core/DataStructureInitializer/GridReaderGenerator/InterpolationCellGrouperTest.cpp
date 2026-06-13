@@ -40,6 +40,9 @@
 #include "gpu/GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "gpu/GridGenerator/grid/GridImp.h"
 
+
+using namespace vf::gpu;
+
 template <typename T>
 bool vectorsAreEqual(const T * vector1, const std::vector<T>& vectorExpected)
 {

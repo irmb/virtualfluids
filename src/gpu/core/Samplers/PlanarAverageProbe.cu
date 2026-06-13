@@ -29,18 +29,20 @@
 //! \addtogroup gpu_Samplers Samplers
 //! \ingroup gpu_core core
 //! \{
+#include "Calculation/Calculation.h"
 #include "PlanarAverageProbe.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <iterator>
+#include <numeric>
 #include <stdexcept>
 #include <string>
 
-#include <helper_cuda.h>
-
 #include <thrust/device_ptr.h>
 #include <thrust/device_vector.h>
+#include <thrust/execution_policy.h>
 #include <thrust/inner_product.h>
 #include <thrust/iterator/permutation_iterator.h>
 #include <thrust/reduce.h>
@@ -53,38 +55,26 @@
 
 #include "gpu/core/Cuda/CudaMemoryManager.h"
 #include "gpu/core/DataStructureInitializer/GridProvider.h"
-#include "gpu/core/Output/FilePartCalculator.h"
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/PostProcessor/MacroscopicQuantities.cuh"
 #include "gpu/core/Samplers/Utilities.h"
-#include "gpu/core/Utilities/KernelUtilities.h"
-#include "gpu/cuda_helper/CudaGrid.h"
-#include "gpu/cuda_helper/CudaIndexCalculation.h"
 
 using namespace vf::basics::constant;
+namespace vf::gpu {
 
 using valIterator = thrust::device_vector<real>::iterator;
-using indIterator = thrust::device_vector<unsigned long long>::iterator;
+using indexPointer = thrust::device_ptr<uint>;
+using indIterator = thrust::device_vector<uint>::iterator;
 using permIterator = thrust::permutation_iterator<valIterator, indIterator>;
 using iterPair = std::pair<permIterator, permIterator>;
 
-iterPair getPermutationIterators(real* values, unsigned long long* indices, uint numberOfIndices)
+iterPair getIteratorPair(real* values, indexPointer indices, uint nNodes)
 {
     auto val_pointer = thrust::device_pointer_cast(values);
-    auto indices_pointer = thrust::device_pointer_cast(indices);
-    permIterator iter_begin(val_pointer, indices_pointer);
-    permIterator iter_end(val_pointer, indices_pointer + numberOfIndices);
+    permIterator iter_begin(val_pointer, indices);
+    permIterator iter_end(val_pointer, indices + nNodes);
     return std::make_pair(iter_begin, iter_end);
 }
-
-struct shiftIndex
-{
-    const uint* neighborNormal;
-    constexpr unsigned long long operator()(unsigned long long& pointIndices) const
-    {
-        return neighborNormal[pointIndices];
-    }
-};
 
 struct covariance
 {
@@ -145,19 +135,7 @@ struct Flatnesses
     real Fx, Fy, Fz, Fphi;
 };
 
-///////////////////////////////////////////////////////////////////////////////////
-
-__global__ void moveIndicesInPosNormalDir(unsigned long long* pointIndices, uint nPoints, const uint* neighborNormal)
-{
-    const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
-
-    if (nodeIndex >= nPoints)
-        return;
-
-    pointIndices[nodeIndex] = neighborNormal[pointIndices[nodeIndex]];
-}
-
-std::string getName(std::string quantity, bool timeAverage)
+std::string getName(const std::string& quantity, bool timeAverage)
 {
     if (timeAverage) {
         return quantity + "_spatioTemporalMean";
@@ -177,10 +155,23 @@ std::vector<std::string> PlanarAverageProbe::getVariableNames(Statistic statisti
             variableNames.emplace_back(getName("vz", namesForTimeAverages));
             if (para->getUseTurbulentViscosity())
                 variableNames.emplace_back(getName("EddyViscosity", namesForTimeAverages));
+            if (sampleSubgridScaleFluxes) {
+                variableNames.emplace_back(getName("SGSFluxXX", namesForTimeAverages));
+                variableNames.emplace_back(getName("SGSFluxXY", namesForTimeAverages));
+                variableNames.emplace_back(getName("SGSFluxXZ", namesForTimeAverages));
+                variableNames.emplace_back(getName("SGSFluxYY", namesForTimeAverages));
+                variableNames.emplace_back(getName("SGSFluxYZ", namesForTimeAverages));
+                variableNames.emplace_back(getName("SGSFluxZZ", namesForTimeAverages));
+            }
             if (sampleScalar)
                 variableNames.emplace_back(getName("phi", namesForTimeAverages));
             if (sampleScalar && para->getUseTurbulentViscosity())
                 variableNames.emplace_back(getName("EddyDiffusivity", namesForTimeAverages));
+            if (sampleScalar && sampleSubgridScaleFluxes){
+                variableNames.emplace_back(getName("SGSFluxPhiX", namesForTimeAverages));
+                variableNames.emplace_back(getName("SGSFluxPhiY", namesForTimeAverages));
+                variableNames.emplace_back(getName("SGSFluxPhiZ", namesForTimeAverages));
+            }
             break;
         case Statistic::Covariances:
             variableNames.emplace_back(getName("vxvx", namesForTimeAverages));
@@ -225,46 +216,32 @@ void PlanarAverageProbe::addStatistic(Statistic statistic)
         statistics.push_back(statistic);
 }
 
-PlanarAverageProbe::PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager,
-                                       const std::string& outputPath, const std::string& probeName, uint tStartSampling,
-                                       uint tStartTemporalAveraging, uint tBetweenSamples, uint tStartWritingOutput,
-                                       uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages, bool sampleScalar)
-    : para(para), cudaMemoryManager(cudaMemoryManager), tStartSampling(tStartSampling),
-      tStartTemporalAveraging(tStartTemporalAveraging), tBetweenSamples(tBetweenSamples),
-      tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting), computeTimeAverages(computeTimeAverages),
-      planeNormal(planeNormal), sampleScalar(sampleScalar), Sampler(outputPath, probeName)
-{
-    if(tBetweenSamples == 0)
-        throw std::runtime_error("PlanarAverageProbe: tBetweenSamples is 0! tBetweenSamples must be larger than 0");
-    if(tBetweenWriting == 0)
-        throw std::runtime_error("PlanarAverageProbe: tBetweenWriting is 0! tBetweenWriting must be larger than 0");
-    if (tStartTemporalAveraging < tStartSampling && computeTimeAverages)
-        throw std::runtime_error("PlaneAverageProbe: tStartTemporalAveraging must be larger than tStartSampling!");
-    if (sampleScalar && !para->getDiffOn())
-        throw std::runtime_error("PlaneAverageProbe: Scalar can only be sampled if diff is on!");
-    VF_LOG_INFO(
-        "Created planar averaging probe, output path: " + outputPath + ", probe name: " + probeName +
-            " start sampling: {}, time steps between sampling: {}, start writing: {}, time steps between writing: {}",
-        tStartSampling, tBetweenSamples, tStartWritingOutput, tBetweenWriting);
-}
-
 ///////////////////////////////////////////////////////////////////////////////////
 void PlanarAverageProbe::init()
 {
+    if (sampleScalar && !this->para->getDiffOn())
+        throw std::runtime_error("PlaneAverageProbe: Scalar can only be sampled if diff is on!");
+    if (sampleSubgridScaleFluxes && !this->para->getUseTurbulentViscosity())
+        throw std::runtime_error("PlanarAverageProbe: sampleSubgridScaleFluxes is true but useTurbulentViscosity of "
+                                 "parameter is false.");
+
     size_t numberOfVariables = 0;
     for (auto statistic : statistics) {
         numberOfVariables += getVariableNames(statistic, false).size();
     }
 
     for (int level = 0; level <= para->getMaxLevel(); level++) {
-        auto data = &levelData.emplace_back();
-        std::vector<unsigned long long> indices = findIndicesInPlane(level);
-        findCoordinatesForPlanes(level, data->coordinateX, data->coordinateY, data->coordinateZ);
+        auto* data = &levelData.emplace_back();
+
+        findCoordinatesForPlanes(level, data->coordinateX, data->coordinateY, data->coordinateZ,
+                                 data->numberOfNodesPerPlane);
         data->numberOfPlanes = static_cast<uint>(data->coordinateX.size());
-        data->numberOfPointsPerPlane = static_cast<uint>(indices.size());
+        data->maxNumberOfPointsPerPlane =
+            std::accumulate(data->numberOfNodesPerPlane.begin(), data->numberOfNodesPerPlane.end(), uint {},
+                            [](uint acc, uint nNodesPerPlane) { return std::max(acc, nNodesPerPlane); });
         cudaMemoryManager->cudaAllocPlanarAverageProbeIndices(this, level);
-        std::copy(indices.begin(), indices.end(), data->indicesOfFirstPlaneH);
-        cudaMemoryManager->cudaCopyPlanarAverageProbeIndicesHtoD(this, level);
+        if (sampleSubgridScaleFluxes)
+            cudaMemoryManager->cudaAllocPlanarAverageProbeSubgridScaleFluxes(this, level);
         data->instantaneous.resize(data->numberOfPlanes, std::vector<real>(numberOfVariables, c0o1));
         if (computeTimeAverages) {
             data->timeAverages.resize(data->numberOfPlanes, std::vector<real>(numberOfVariables, c0o1));
@@ -278,7 +255,7 @@ void PlanarAverageProbe::sample(int level, uint t)
         return;
 
     const uint tLevel = para->getTimeStep(level, t, true);
-    const uint levelFactor = exp2(level);
+    const uint levelFactor = std::exp2(level);
     const uint tAfterStartAveraging = tLevel - tStartSampling * levelFactor;
     const uint tAfterStartWriting = tLevel - tStartWritingOutput * levelFactor;
     const bool doTimeAverages = computeTimeAverages && tLevel > (tStartTemporalAveraging * levelFactor);
@@ -303,170 +280,169 @@ PlanarAverageProbe::~PlanarAverageProbe()
     }
 }
 
-std::vector<unsigned long long> PlanarAverageProbe::findIndicesInPlane(int level)
+struct isCoordAndFluid
 {
-    std::vector<unsigned long long> indices;
-    auto param = para->getParH(level);
-
-    const real* coordinatesPlaneNormal = [&] {
-        switch (planeNormal) {
-            case Axis::x:
-                return param->coordinateX;
-            case Axis::y:
-                return param->coordinateY;
-            case Axis::z:
-                return param->coordinateZ;
-            default:
-                throw std::runtime_error("PlaneNormal not defined!");
-        }
-    }();
-
-    const auto firstIndex = param->neighborZ[param->neighborY[param->neighborX[1]]];
-
-    const real coordFirstPlane = coordinatesPlaneNormal[firstIndex];
-
-    for (unsigned long long node = 1; node < param->numberOfNodes; node++) {
-        if (coordinatesPlaneNormal[node] == coordFirstPlane && param->typeOfGridNode[node] == GEO_FLUID)
-            indices.push_back(node);
+    const real* coords;
+    const uint* typeOfGridNode;
+    const real coord;
+    __host__ __device__ bool operator()(const unsigned long long index) const
+    {
+        return coords[index] == coord && typeOfGridNode[index] == GEO_FLUID;
     }
-
-    return indices;
-}
+};
 
 void PlanarAverageProbe::findCoordinatesForPlanes(int level, std::vector<real>& coordinateX, std::vector<real>& coordinateY,
-                                                  std::vector<real>& coordinateZ)
+                                                  std::vector<real>& coordinateZ, std::vector<uint>& numberOfNodesPerPlane)
 {
-    const unsigned long long startIndex =
-        para->getParH(level)->neighborZ[para->getParH(level)->neighborY[para->getParH(level)->neighborX[1]]];
-    unsigned long long nextIndex = startIndex;
-    do {
-        switch (planeNormal) {
-            case Axis::x:
-                coordinateX.push_back(para->getParH(level)->coordinateX[nextIndex]);
-                coordinateY.push_back(999999);
-                coordinateZ.push_back(999999);
-                nextIndex = para->getParH(level)->neighborX[nextIndex];
-                break;
-            case Axis::y:
-                coordinateX.push_back(999999);
-                coordinateY.push_back(para->getParH(level)->coordinateY[nextIndex]);
-                coordinateZ.push_back(999999);
-                nextIndex = para->getParH(level)->neighborY[nextIndex];
-                break;
-            case Axis::z:
-                coordinateX.push_back(999999);
-                coordinateY.push_back(999999);
-                coordinateZ.push_back(para->getParH(level)->coordinateZ[nextIndex]);
-                nextIndex = para->getParH(level)->neighborZ[nextIndex];
-                break;
-            default:
-                throw std::runtime_error("PlaneNormal not defined!");
+    const real* coords = getPlaneNormalCoordinatesH(level);
+    const uint* typeOfGridNode = para->getParH(level)->typeOfGridNode;
+
+    std::vector<real> planeCoords;
+    real coordOfCurrentPlane = coords[1];
+    uint count = 1;
+    for (unsigned long long index = 1; index < para->getParH(level)->numberOfNodes; index++) {
+        if (isCoordAndFluid { coords, typeOfGridNode, coordOfCurrentPlane }(index)) {
+            count++;
+            continue;
         }
-    } while (GEO_FLUID == para->getParH(level)->typeOfGridNode[nextIndex] && startIndex != nextIndex);
+        if (typeOfGridNode[index] != GEO_FLUID)
+            continue;
+
+        const real coordOfLastPlane = coordOfCurrentPlane;
+        coordOfCurrentPlane = coords[index];
+
+        if (count == 1) // skip empty planes
+            continue;
+
+        numberOfNodesPerPlane.emplace_back(count);
+        planeCoords.emplace_back(coordOfLastPlane);
+        count = 1;
+    }
+
+    switch (planeNormal) {
+        case x:
+            std::copy(planeCoords.begin(), planeCoords.end(), std::back_inserter(coordinateX));
+            std::fill_n(std::back_inserter(coordinateY), planeCoords.size(), 999999);
+            std::fill_n(std::back_inserter(coordinateZ), planeCoords.size(), 999999);
+            break;
+        case y:
+            std::fill_n(std::back_inserter(coordinateX), planeCoords.size(), 999999);
+            std::copy(planeCoords.begin(), planeCoords.end(), std::back_inserter(coordinateY));
+            std::fill_n(std::back_inserter(coordinateZ), planeCoords.size(), 999999);
+            break;
+        case z:
+            std::fill_n(std::back_inserter(coordinateX), planeCoords.size(), 999999);
+            std::fill_n(std::back_inserter(coordinateY), planeCoords.size(), 999999);
+            std::copy(planeCoords.begin(), planeCoords.end(), std::back_inserter(coordinateZ));
+            break;
+    }
 }
 
-real computeMean(iterPair x, real invNPointsPerPlane)
+real computeMean(iterPair x, uint nNodes)
 {
-    const real sum = thrust::reduce(std::get<0>(x), std::get<1>(x));
-    return sum * invNPointsPerPlane;
+    return thrust::reduce(std::get<0>(x), std::get<1>(x)) / nNodes;
 }
 
-Means computeMeans(iterPair vx, iterPair vy, iterPair vz, iterPair phi, real invNPointsPerPlane, bool sampleScalar)
+real computeMean(real* x, indexPointer indices, uint nNodes)
+{
+    return computeMean(getIteratorPair(x, indices, nNodes), nNodes);
+}
+
+real computeMean(real* x, uint nNodes)
+{
+    return thrust::reduce(thrust::device, x, x + nNodes) / nNodes;
+}
+
+Means computeMeans(iterPair vx, iterPair vy, iterPair vz, iterPair phi, uint nNodes, bool sampleScalar)
 {
     Means means;
-    means.vx = computeMean(vx, invNPointsPerPlane);
-    means.vy = computeMean(vy, invNPointsPerPlane);
-    means.vz = computeMean(vz, invNPointsPerPlane);
+    means.vx = computeMean(vx, nNodes);
+    means.vy = computeMean(vy, nNodes);
+    means.vz = computeMean(vz, nNodes);
     if (sampleScalar)
-        means.phi = computeMean(phi, invNPointsPerPlane);
+        means.phi = computeMean(phi, nNodes);
     return means;
 }
 
-real computeCovariance(iterPair x, iterPair y, real mean_x, real mean_y, real invNPointsPerPlane)
+real computeCovariance(iterPair x, iterPair y, real mean_x, real mean_y, uint nNodes)
 {
     auto begin = thrust::make_zip_iterator(thrust::make_tuple(x.first, y.first));
     auto end = thrust::make_zip_iterator(thrust::make_tuple(x.second, y.second));
-    return thrust::transform_reduce(begin, end, covariance(mean_x, mean_y), c0o1, thrust::plus<real>()) * invNPointsPerPlane;
+    return thrust::transform_reduce(begin, end, covariance(mean_x, mean_y), c0o1, thrust::plus<real>()) / nNodes;
 }
 
-Covariances computeCovariances(iterPair vx, iterPair vy, iterPair vz, iterPair phi, Means means, real invNPointsPerPlane,
+Covariances computeCovariances(iterPair vx, iterPair vy, iterPair vz, iterPair phi, Means means, uint nNodes,
                                bool sampleScalar)
 {
     Covariances covariances;
 
-    covariances.vxvx = computeCovariance(vx, vx, means.vx, means.vx, invNPointsPerPlane);
-    covariances.vyvy = computeCovariance(vy, vy, means.vy, means.vy, invNPointsPerPlane);
-    covariances.vzvz = computeCovariance(vz, vz, means.vz, means.vz, invNPointsPerPlane);
-    covariances.vxvy = computeCovariance(vx, vy, means.vx, means.vy, invNPointsPerPlane);
-    covariances.vxvz = computeCovariance(vx, vz, means.vx, means.vz, invNPointsPerPlane);
-    covariances.vyvz = computeCovariance(vy, vz, means.vy, means.vz, invNPointsPerPlane);
+    covariances.vxvx = computeCovariance(vx, vx, means.vx, means.vx, nNodes);
+    covariances.vyvy = computeCovariance(vy, vy, means.vy, means.vy, nNodes);
+    covariances.vzvz = computeCovariance(vz, vz, means.vz, means.vz, nNodes);
+    covariances.vxvy = computeCovariance(vx, vy, means.vx, means.vy, nNodes);
+    covariances.vxvz = computeCovariance(vx, vz, means.vx, means.vz, nNodes);
+    covariances.vyvz = computeCovariance(vy, vz, means.vy, means.vz, nNodes);
     if (sampleScalar) {
-        covariances.phiphi = computeCovariance(phi, phi, means.phi, means.phi, invNPointsPerPlane);
-        covariances.vxphi = computeCovariance(vx, phi, means.vx, means.phi, invNPointsPerPlane);
-        covariances.vyphi = computeCovariance(vy, phi, means.vy, means.phi, invNPointsPerPlane);
-        covariances.vzphi = computeCovariance(vz, phi, means.vz, means.phi, invNPointsPerPlane);
+        covariances.phiphi = computeCovariance(phi, phi, means.phi, means.phi, nNodes);
+        covariances.vxphi = computeCovariance(vx, phi, means.vx, means.phi, nNodes);
+        covariances.vyphi = computeCovariance(vy, phi, means.vy, means.phi, nNodes);
+        covariances.vzphi = computeCovariance(vz, phi, means.vz, means.phi, nNodes);
     }
 
     return covariances;
 }
 
-real computeSkewness(iterPair x, real mean, real covariance, real invNPointsPerPlane)
+real computeSkewness(iterPair x, real mean, real covariance, uint nNodes)
 {
-    return thrust::transform_reduce(x.first, x.second, skewness(mean), c0o1, thrust::plus<real>()) * invNPointsPerPlane *
-           std::pow(covariance, -c3o2);
+    return thrust::transform_reduce(x.first, x.second, skewness(mean), c0o1, thrust::plus<real>()) /
+           (nNodes * std::pow(covariance, c3o2));
 }
 
 Skewnesses computeSkewnesses(Means means, Covariances covariances, iterPair vx, iterPair vy, iterPair vz, iterPair phi,
-                             real invNPointsPerPlane, bool sampleScalar)
+                             uint nNodes, bool sampleScalar)
 {
     Skewnesses skewnesses;
 
-    skewnesses.Sx = computeSkewness(vx, means.vx, covariances.vxvx, invNPointsPerPlane);
-    skewnesses.Sy = computeSkewness(vy, means.vy, covariances.vyvy, invNPointsPerPlane);
-    skewnesses.Sz = computeSkewness(vz, means.vz, covariances.vzvz, invNPointsPerPlane);
+    skewnesses.Sx = computeSkewness(vx, means.vx, covariances.vxvx, nNodes);
+    skewnesses.Sy = computeSkewness(vy, means.vy, covariances.vyvy, nNodes);
+    skewnesses.Sz = computeSkewness(vz, means.vz, covariances.vzvz, nNodes);
     if (sampleScalar)
-        skewnesses.Sphi = computeSkewness(phi, means.phi, covariances.phiphi, invNPointsPerPlane);
+        skewnesses.Sphi = computeSkewness(phi, means.phi, covariances.phiphi, nNodes);
 
     return skewnesses;
 }
 
-real computeFlatness(iterPair x, real mean, real covariance, real invNPointsPerPlane)
+real computeFlatness(iterPair x, real mean, real covariance, uint nNodes)
 {
-    return thrust::transform_reduce(x.first, x.second, flatness(mean), c0o1, thrust::plus<real>()) * invNPointsPerPlane *
-           pow(covariance, -c2o1);
+    return thrust::transform_reduce(x.first, x.second, flatness(mean), c0o1, thrust::plus<real>()) /
+           (nNodes * std::pow(covariance, 2));
 }
 
 Flatnesses computeFlatnesses(iterPair vx, iterPair vy, iterPair vz, iterPair phi, Means means, Covariances covariances,
-                             real invNPointsPerPlane, bool sampleScalar)
+                             uint nNodes, bool sampleScalar)
 {
     Flatnesses flatnesses;
 
-    flatnesses.Fx = computeFlatness(vx, means.vx, covariances.vxvx, invNPointsPerPlane);
-    flatnesses.Fy = computeFlatness(vy, means.vy, covariances.vyvy, invNPointsPerPlane);
-    flatnesses.Fz = computeFlatness(vz, means.vz, covariances.vzvz, invNPointsPerPlane);
+    flatnesses.Fx = computeFlatness(vx, means.vx, covariances.vxvx, nNodes);
+    flatnesses.Fy = computeFlatness(vy, means.vy, covariances.vyvy, nNodes);
+    flatnesses.Fz = computeFlatness(vz, means.vz, covariances.vzvz, nNodes);
     if (sampleScalar)
-        flatnesses.Fphi = computeFlatness(phi, means.phi, covariances.phiphi, invNPointsPerPlane);
+        flatnesses.Fphi = computeFlatness(phi, means.phi, covariances.phiphi, nNodes);
     return flatnesses;
 }
 
-std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
+std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level, uint nNodes)
 {
-    auto data = &levelData[level];
+    auto* data = &levelData[level];
     auto parameter = para->getParD(level);
-    const real invNPointsPerPlane = c1o1 / static_cast<real>(data->numberOfPointsPerPlane);
+    indexPointer indices = thrust::device_pointer_cast<uint>(data->indicesD);
 
-    const auto velocityX =
-        getPermutationIterators(parameter->velocityX, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
-    const auto velocityY =
-        getPermutationIterators(parameter->velocityY, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
-    const auto velocityZ =
-        getPermutationIterators(parameter->velocityZ, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
-    const auto turbulentViscosity =
-        getPermutationIterators(parameter->turbulentViscosity, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
-    const auto phi =
-        getPermutationIterators(parameter->concentration, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
-    const auto turbulentDiffusivity =
-        getPermutationIterators(parameter->turbulentDiffusivity, data->indicesOfFirstPlaneD, data->numberOfPointsPerPlane);
+    const auto velocityX = getIteratorPair(parameter->velocityX, indices, nNodes);
+    const auto velocityY = getIteratorPair(parameter->velocityY, indices, nNodes);
+    const auto velocityZ = getIteratorPair(parameter->velocityZ, indices, nNodes);
+
+    const auto phi = getIteratorPair(parameter->concentration, indices, nNodes);
+
     std::vector<real> averages;
 
     if (!isStatisticIn(Statistic::Means, statistics))
@@ -476,22 +452,34 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
     const real viscosityRatio = para->getScaledViscosityRatio(level);
     const real stressRatio = para->getScaledStressRatio(level);
 
-    const auto means = computeMeans(velocityX, velocityY, velocityZ, phi, invNPointsPerPlane, sampleScalar);
+    const auto means = computeMeans(velocityX, velocityY, velocityZ, phi, nNodes, sampleScalar);
     averages.push_back(means.vx * velocityRatio);
     averages.push_back(means.vy * velocityRatio);
     averages.push_back(means.vz * velocityRatio);
     if (para->getUseTurbulentViscosity())
-        averages.push_back(computeMean(turbulentViscosity, invNPointsPerPlane) * viscosityRatio);
+        averages.push_back(computeMean(parameter->turbulentViscosity, indices, nNodes) * viscosityRatio);
+    if (sampleSubgridScaleFluxes) {
+        averages.push_back(computeMean(data->subgridScaleFluxXX, nNodes) * stressRatio);
+        averages.push_back(computeMean(data->subgridScaleFluxXY, nNodes) * stressRatio);
+        averages.push_back(computeMean(data->subgridScaleFluxXZ, nNodes) * stressRatio);
+        averages.push_back(computeMean(data->subgridScaleFluxYY, nNodes) * stressRatio);
+        averages.push_back(computeMean(data->subgridScaleFluxYZ, nNodes) * stressRatio);
+        averages.push_back(computeMean(data->subgridScaleFluxZZ, nNodes) * stressRatio);
+    }
     if (sampleScalar)
         averages.push_back(means.phi);
     if (sampleScalar && para->getUseTurbulentViscosity())
-        averages.push_back(computeMean(turbulentDiffusivity, invNPointsPerPlane) * viscosityRatio);
+        averages.push_back(computeMean(parameter->turbulentDiffusivity, indices, nNodes) * viscosityRatio);
+    if (sampleScalar && sampleSubgridScaleFluxes) {
+        averages.push_back(computeMean(data->subgridScaleFluxPhiX, nNodes) * velocityRatio);
+        averages.push_back(computeMean(data->subgridScaleFluxPhiY, nNodes) * velocityRatio);
+        averages.push_back(computeMean(data->subgridScaleFluxPhiZ, nNodes) * velocityRatio);
+    }
 
     if (!isStatisticIn(Statistic::Covariances, statistics))
         return averages;
 
-    const auto covariances =
-        computeCovariances(velocityX, velocityY, velocityZ, phi, means, invNPointsPerPlane, sampleScalar);
+    const auto covariances = computeCovariances(velocityX, velocityY, velocityZ, phi, means, nNodes, sampleScalar);
     averages.push_back(covariances.vxvx * stressRatio);
     averages.push_back(covariances.vyvy * stressRatio);
     averages.push_back(covariances.vzvz * stressRatio);
@@ -510,10 +498,10 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
         return averages;
 
     const auto skewnesses =
-        computeSkewnesses(means, covariances, velocityX, velocityY, velocityZ, phi, invNPointsPerPlane, sampleScalar);
-    averages.push_back(skewnesses.Sx * std::pow(velocityRatio, 3));
-    averages.push_back(skewnesses.Sy * std::pow(velocityRatio, 3));
-    averages.push_back(skewnesses.Sz * std::pow(velocityRatio, 3));
+        computeSkewnesses(means, covariances, velocityX, velocityY, velocityZ, phi, nNodes, sampleScalar);
+    averages.push_back(skewnesses.Sx);
+    averages.push_back(skewnesses.Sy);
+    averages.push_back(skewnesses.Sz);
     if (sampleScalar)
         averages.push_back(skewnesses.Sphi);
 
@@ -521,10 +509,10 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
         return averages;
 
     const auto flatnesses =
-        computeFlatnesses(velocityX, velocityY, velocityZ, phi, means, covariances, invNPointsPerPlane, sampleScalar);
-    averages.push_back(flatnesses.Fx * std::pow(velocityRatio, 4));
-    averages.push_back(flatnesses.Fy * std::pow(velocityRatio, 4));
-    averages.push_back(flatnesses.Fz * std::pow(velocityRatio, 4));
+        computeFlatnesses(velocityX, velocityY, velocityZ, phi, means, covariances, nNodes, sampleScalar);
+    averages.push_back(flatnesses.Fx);
+    averages.push_back(flatnesses.Fy);
+    averages.push_back(flatnesses.Fz);
     if (sampleScalar)
         averages.push_back(flatnesses.Fphi);
 
@@ -532,57 +520,74 @@ std::vector<real> PlanarAverageProbe::computePlaneStatistics(int level)
 }
 
 std::vector<real> computeNewTimeAverages(std::vector<real>& oldAverages, std::vector<real>& instantaneous,
-                                         real invNumberOfTimesteps)
+                                         uint numberOfTimesteps)
 {
     std::vector<real> newAverages;
     newAverages.reserve(oldAverages.size());
     for (uint i = 0; i < oldAverages.size(); i++) {
-        newAverages.push_back(computeNewTimeAverage(oldAverages[i], instantaneous[i], invNumberOfTimesteps));
+        newAverages.push_back(computeNewTimeAverage(oldAverages[i], instantaneous[i], numberOfTimesteps));
     }
     return newAverages;
 }
 
 void PlanarAverageProbe::calculateQuantities(int level, bool doTimeAverages)
 {
-    auto data = &levelData[level];
+    auto* data = &levelData[level];
     auto parameter = para->getParD(level);
     calculateMacroscopicQuantitiesCompressible(
         parameter->velocityX, parameter->velocityY, parameter->velocityZ, parameter->rho, parameter->pressure,
         parameter->typeOfGridNode, parameter->neighborX, parameter->neighborY, parameter->neighborZ,
         parameter->numberOfNodes, parameter->numberofthreads, parameter->distributions.f[0], parameter->isEvenTimestep);
-    cudaDeviceSynchronize();
 
-    const real invNumberOfTimesteps = c1o1 / static_cast<real>(data->numberOfTimestepsInTimeAverage + 1);
-
-    const auto indices = thrust::device_pointer_cast(data->indicesOfFirstPlaneD);
-    const auto shiftOp = shiftIndex { getNeighborIndicesInPlaneNormal(level) };
+    auto counting = thrust::make_counting_iterator<unsigned long long>(1);
 
     for (uint plane = 0; plane < data->numberOfPlanes; plane++) {
-        data->instantaneous[plane] = computePlaneStatistics(level);
+        thrust::copy_if(
+            thrust::device, counting, counting + parameter->numberOfNodes - counting[0], data->indicesD,
+            isCoordAndFluid { getPlaneNormalCoordinatesD(level), parameter->typeOfGridNode, data->coordinateZ[plane] });
+        const uint numberOfNodesInPlane = data->numberOfNodesPerPlane[plane];
+        if (sampleSubgridScaleFluxes)
+            calculateSubGridScaleFluxesCompressible(
+                data->indicesD, numberOfNodesInPlane, data->subgridScaleFluxXX, data->subgridScaleFluxXY,
+                data->subgridScaleFluxXZ, data->subgridScaleFluxYY, data->subgridScaleFluxYZ, data->subgridScaleFluxZZ,
+                data->subgridScaleFluxPhiX, data->subgridScaleFluxPhiY, data->subgridScaleFluxPhiZ,
+                parameter->typeOfGridNode, parameter->velocityX, parameter->velocityY, parameter->velocityZ,
+                parameter->concentration, parameter->turbulentViscosity, parameter->turbulentDiffusivity,
+                parameter->neighborX, parameter->neighborY, parameter->neighborZ, parameter->numberOfNodes,
+                parameter->distributions.f[0], parameter->distributionsAD.f[0], parameter->omega, parameter->omegaDiffusivity, parameter->numberofthreads,
+                parameter->isEvenTimestep, sampleScalar);
+        data->instantaneous[plane] = computePlaneStatistics(level, numberOfNodesInPlane);
         if (doTimeAverages)
-            data->timeAverages[plane] =
-                computeNewTimeAverages(data->timeAverages[plane], data->instantaneous[plane], invNumberOfTimesteps);
-
-        thrust::transform(indices, indices + data->numberOfPointsPerPlane, indices, shiftOp);
+            data->timeAverages[plane] = computeNewTimeAverages(data->timeAverages[plane], data->instantaneous[plane],
+                                                               data->numberOfTimestepsInTimeAverage + 1U);
     }
     if (doTimeAverages)
         data->numberOfTimestepsInTimeAverage++;
-    cudaMemoryManager->cudaCopyPlanarAverageProbeIndicesHtoD(this, level);
-    getLastCudaError("PlanarAverageProbe::calculateQuantities execution failed");
 }
 
-const uint* PlanarAverageProbe::getNeighborIndicesInPlaneNormal(int level)
+const real* PlanarAverageProbe::getPlaneNormalCoordinatesH(int level)
 {
     switch (planeNormal) {
         case Axis::x:
-            return para->getParD(level)->neighborX;
+            return para->getParH(level)->coordinateX;
         case Axis::y:
-            return para->getParD(level)->neighborY;
+            return para->getParH(level)->coordinateY;
         case Axis::z:
-            return para->getParD(level)->neighborZ;
+            return para->getParH(level)->coordinateZ;
     };
-
-    throw std::runtime_error("PlaneNormal not defined!");
+    throw std::runtime_error("PlaneNormal not defined");
+}
+const real* PlanarAverageProbe::getPlaneNormalCoordinatesD(int level)
+{
+    switch (planeNormal) {
+        case Axis::x:
+            return para->getParD(level)->coordinateX;
+        case Axis::y:
+            return para->getParD(level)->coordinateY;
+        case Axis::z:
+            return para->getParD(level)->coordinateZ;
+    };
+    throw std::runtime_error("PlaneNormal not defined");
 }
 
 void PlanarAverageProbe::writeParallelFile(uint tWrite)
@@ -616,7 +621,7 @@ void PlanarAverageProbe::copyDataToNodedata(std::vector<std::vector<real>>& data
 
 void PlanarAverageProbe::writeGridFile(int level, uint tWrite)
 {
-    auto data = &levelData[level];
+    auto* data = &levelData[level];
     const std::string fname = outputPath + makeGridFileName(probeName, level, para->getMyProcessID(), tWrite, 1);
 
     std::vector<UbTupleFloat3> nodes;
@@ -642,13 +647,13 @@ std::vector<std::string> PlanarAverageProbe::getAllVariableNames()
 {
     std::vector<std::string> varNames;
     for (auto statistic : statistics) {
-        for (auto variable : getVariableNames(statistic, false)) {
+        for (const auto& variable : getVariableNames(statistic, false)) {
             varNames.push_back(variable);
         }
     }
     if (this->computeTimeAverages) {
         for (auto statistic : statistics) {
-            for (auto variable : getVariableNames(statistic, true))
+            for (const auto& variable : getVariableNames(statistic, true))
                 varNames.push_back(variable);
         }
     }
@@ -660,4 +665,5 @@ bool isStatisticIn(PlanarAverageProbe::Statistic statistic, std::vector<PlanarAv
     return std::find(statistics.begin(), statistics.end(), statistic) != statistics.end();
 }
 
+}
 //! \}

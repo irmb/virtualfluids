@@ -39,6 +39,8 @@
 #include <gpu/core/Parameter/EdgeNodeFinder.h>
 #include <gpu/core/Parameter/Parameter.h>
 
+using namespace vf::gpu;
+
 bool compareEdgeNodesRecv(const std::vector<LBMSimulationParameter::EdgeNodePositions> &actual,
                           const std::vector<std::pair<uint, uint>> &expected)
 {

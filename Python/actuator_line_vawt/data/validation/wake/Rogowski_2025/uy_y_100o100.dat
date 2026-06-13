@@ -1,0 +1,14 @@
+% SPDX-License-Identifier: CC-BY-4.0
+% SPDX-FileCopyrightText: Copyright © 2025 The Authors. Published by Elsevier Ltd.
+% SPDX-FileComment: Data extracted/digitized from Rogowski K., Michna J., Mikkelsen R.F., Ferreira C.S., "Impact of zigzag tape on blade loads and aerodynamic wake in a vertical axis wind turbine: A Delft VAWT case study", Energy 321 (2025) 135344, DOI: 10.1016/j.energy.2025.135344
+% SPDX-FileComment: Reformatted into .dat format; values digitized with WebPlotDigitizer where applicable
+-1.044200000000000017e+00 -3.101999999999999896e-02
+-8.082700000000000440e-01 -4.259999999999999898e-02
+-5.750499999999999501e-01 -4.723999999999999727e-02
+-3.582699999999999774e-01 -2.408000000000000071e-02
+-1.226899999999999935e-01 -9.100000000000000016e-04
+1.002699999999999980e-01 1.762000000000000025e-02
+3.384199999999999986e-01 3.382999999999999896e-02
+5.684599999999999653e-01 5.004000000000000115e-02
+7.835400000000000142e-01 7.784000000000000641e-02
+1.010999999999999899e+00 5.467000000000000332e-02

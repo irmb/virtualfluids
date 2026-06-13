@@ -45,11 +45,14 @@
 #include "Utilities/KernelUtilities.h"
 #include "cuda_helper/CudaIndexCalculation.h"
 #include "Calculation/Calculation.h"
+#include "lbm/ChimeraTransformation.h"
+#include "lbm/collision/TurbulentViscosity.h"
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
 using namespace vf::cuda;
+
+namespace vf::gpu {
 
 __global__ void calculateMacroscopicQuantities_device(
     real* vxD,
@@ -197,10 +200,10 @@ __global__ void calculateMacroscopicQuantitiesCompressible_device(
     real *vzD,
     real *rhoD,
     real *pressD,
-    unsigned int *geoD,
-    unsigned int *neighborX,
-    unsigned int *neighborY,
-    unsigned int *neighborZ,
+    const uint *geoD,
+    const uint *neighborX,
+    const uint *neighborY,
+    const uint *neighborZ,
     unsigned long long numberOfLBnodes,
     real *distributions,
     bool isEvenTimestep)
@@ -213,27 +216,171 @@ __global__ void calculateMacroscopicQuantitiesCompressible_device(
     if(nodeIndex >= numberOfLBnodes)
         return;
 
-    pressD[nodeIndex] = c0o1;
-    rhoD[nodeIndex]   = c0o1;
-    vxD[nodeIndex]    = c0o1;
-    vyD[nodeIndex]    = c0o1;
-    vzD[nodeIndex]    = c0o1;
-
     if (!isValidFluidNode(geoD[nodeIndex]))
+    {
+        pressD[nodeIndex] = c0o1;
+        rhoD[nodeIndex]   = c0o1;
+        vxD[nodeIndex]    = c0o1;
+        vyD[nodeIndex]    = c0o1;
+        vzD[nodeIndex]    = c0o1;
         return;
+    }
 
     Distributions27 dist;
-    vf::gpu::getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
-    vf::gpu::ListIndices listIndices(nodeIndex, neighborX, neighborY, neighborZ);
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    ListIndices listIndices(nodeIndex, neighborX, neighborY, neighborZ);
 
     real distribution[27];
-    vf::gpu::getPreCollisionDistribution(distribution, dist, listIndices);
+    getPreCollisionDistribution(distribution, dist, listIndices);
 
     rhoD[nodeIndex] = vf::lbm::getDensity(distribution);
     vxD[nodeIndex] = vf::lbm::getCompressibleVelocityX1(distribution, rhoD[nodeIndex]);
     vyD[nodeIndex] = vf::lbm::getCompressibleVelocityX2(distribution, rhoD[nodeIndex]);
     vzD[nodeIndex] = vf::lbm::getCompressibleVelocityX3(distribution, rhoD[nodeIndex]);
     pressD[nodeIndex] = vf::lbm::getPressure(distribution, rhoD[nodeIndex], vxD[nodeIndex], vyD[nodeIndex], vzD[nodeIndex]);
+}
+
+
+__global__ void calculateSubGridScaleFluxesCompressible_device(
+    const uint* indices,
+    const uint numberOfIndices,
+    real *vxvx,
+    real *vxvy,
+    real *vxvz,
+    real *vyvy,
+    real *vyvz,
+    real *vzvz,
+    real *phix,
+    real *phiy,
+    real *phiz,
+    const uint *geoD,
+    const real* vx, const real* vy, const real* vz, 
+    const real* scalars,
+    const real* turbulenceViscosities,
+    const real* turbulenceDiffusivities,
+    const uint *neighborX,
+    const uint *neighborY,
+    const uint *neighborZ,
+    const unsigned long long numberOfLBnodes,
+    real *distributions,
+    real* distributionsScalar,
+    const real omega,
+    const real omegaDiffusivity,
+    const bool isEvenTimestep, 
+    const bool computeSubGridScaleFluxesScalar)
+{
+    using namespace vf::lbm;
+
+    const uint nodeIndex = get1DIndexFrom2DBlock();
+
+    if(nodeIndex >= numberOfIndices)
+        return;
+
+    const uint k000 = indices[nodeIndex];
+
+    if (!isValidFluidNode(geoD[k000])) {
+        vxvx[k000] = c0o1;
+        vxvy[k000] = c0o1;
+        vxvz[k000] = c0o1;
+        vyvy[k000] = c0o1;
+        vyvz[k000] = c0o1;
+        vzvz[k000] = c0o1;
+        return;
+    }
+
+    Distributions27 dist;
+    getPointersToDistributions(dist, distributions, numberOfLBnodes, isEvenTimestep);
+    const ListIndices listIndices(k000, neighborX, neighborY, neighborZ);
+
+    real population[27];
+    getPreCollisionDistribution(population, dist, listIndices);
+
+    real& m011 = population[dM00];
+    real& m101 = population[d0M0];
+    real& m110 = population[d00M];
+    real& m002 = population[dMMP];
+    real& m020 = population[dMPM];
+    real& m200 = population[dPMM];
+    real& m000 = population[dMMM];
+
+    const real velocityX = vx[k000];
+    const real velocityY = vy[k000];
+    const real velocityZ = vz[k000];
+
+    const real vx2 = velocityX * velocityX;
+    const real vy2 = velocityY * velocityY;
+    const real vz2 = velocityZ * velocityZ;
+
+    forwardChimeraWithInverseK(population[dMMM], population[dMM0], population[dMMP], velocityZ, vz2, c36o1, c1o36);
+    forwardChimeraWithInverseK(population[dM0M], population[dM00], population[dM0P], velocityZ, vz2, c9o1,  c1o9);
+    forwardChimeraWithInverseK(population[dMPM], population[dMP0], population[dMPP], velocityZ, vz2, c36o1, c1o36);
+    forwardChimeraWithInverseK(population[d0MM], population[d0M0], population[d0MP], velocityZ, vz2, c9o1,  c1o9);
+    forwardChimeraWithInverseK(population[d00M], population[d000], population[d00P], velocityZ, vz2, c9o4,  c4o9);
+    forwardChimeraWithInverseK(population[d0PM], population[d0P0], population[d0PP], velocityZ, vz2, c9o1,  c1o9);
+    forwardChimeraWithInverseK(population[dPMM], population[dPM0], population[dPMP], velocityZ, vz2, c36o1, c1o36);
+    forwardChimeraWithInverseK(population[dP0M], population[dP00], population[dP0P], velocityZ, vz2, c9o1,  c1o9);
+    forwardChimeraWithInverseK(population[dPPM], population[dPP0], population[dPPP], velocityZ, vz2, c36o1, c1o36);
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Y - Dir
+    forwardChimeraWithInverseK(population[dMMM], population[dM0M], population[dMPM], velocityY, vy2, c6o1,  c1o6); 
+    forwardChimera(            population[dMM0], population[dM00], population[dMP0], velocityY, vy2);
+    forwardChimeraWithInverseK(population[dMMP], population[dM0P], population[dMPP], velocityY, vy2, c18o1, c1o18);
+    forwardChimeraWithInverseK(population[d0MM], population[d00M], population[d0PM], velocityY, vy2, c3o2,  c2o3);
+    forwardChimera(            population[d0M0], population[d000], population[d0P0], velocityY, vy2);
+    forwardChimeraWithInverseK(population[d0MP], population[d00P], population[d0PP], velocityY, vy2, c9o2,  c2o9);
+    forwardChimeraWithInverseK(population[dPMM], population[dP0M], population[dPPM], velocityY, vy2, c6o1,  c1o6);
+    forwardChimera(            population[dPM0], population[dP00], population[dPP0], velocityY, vy2);
+    forwardChimeraWithInverseK(population[dPMP], population[dP0P], population[dPPP], velocityY, vy2, c18o1, c1o18);
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    // X - Dir
+    forwardChimeraWithInverseK(population[dMMM], population[d0MM], population[dPMM], velocityX, vx2, c1o1, c1o1); 
+    forwardChimera(            population[dM0M], population[d00M], population[dP0M], velocityX, vx2);
+    forwardChimeraWithInverseK(population[dMPM], population[d0PM], population[dPPM], velocityX, vx2, c3o1, c1o3);
+    forwardChimera(            population[dMM0], population[d0M0], population[dPM0], velocityX, vx2);
+    forwardChimera(            population[dM00], population[d000], population[dP00], velocityX, vx2);
+    // forwardChimera(            population[dMP0], population[d0P0], population[dPP0], vvx, vx2);
+    forwardChimeraWithInverseK(population[dMMP], population[d0MP], population[dPMP], velocityX, vx2, c3o1, c1o3);
+    // forwardChimera(            population[dM0P], population[d00P], population[dP0P], vvx, vx2);
+    // forwardChimeraWithInverseK(population[dMPP], population[d0PP], population[dPPP], vvx, vx2, c3o1, c1o3);
+    
+    const real OxxPyyPzz = c1o1;
+
+    const real mxxPyyPzz = m200 + m020 + m002;
+    const real mxxMyy    = m200 - m020;
+    const real mxxMzz    = m200 - m002;
+
+    const real turbulenceViscosity = turbulenceViscosities[k000];
+    const real omegaTurbulent = vf::lbm::calculateOmegaWithTurbulentViscosity(omega, turbulenceViscosity);
+    const real turbulenceViscosityOverDensity = turbulenceViscosity / (c1o1 + m000);
+
+    const real Dxy = -c3o1 * omegaTurbulent * m110;
+    const real Dxz = -c3o1 * omegaTurbulent * m101;
+    const real Dyz = -c3o1 * omegaTurbulent * m011;
+    const real dxux = c1o2 * (-omegaTurbulent) * (mxxMyy + mxxMzz) + c1o2 * OxxPyyPzz * (m000 - mxxPyyPzz);
+    const real dyuy = dxux + omegaTurbulent * c3o2 * mxxMyy;
+    const real dzuz = dxux + omegaTurbulent * c3o2 * mxxMzz;
+
+    vxvx[nodeIndex] = -turbulenceViscosityOverDensity * dxux;
+    vxvy[nodeIndex] = -turbulenceViscosityOverDensity * Dxy;
+    vxvz[nodeIndex] = -turbulenceViscosityOverDensity * Dxz;
+    vyvy[nodeIndex] = -turbulenceViscosityOverDensity * dyuy;
+    vyvz[nodeIndex] = -turbulenceViscosityOverDensity * Dyz;
+    vzvz[nodeIndex] = -turbulenceViscosityOverDensity * dzuz;
+
+    if (!computeSubGridScaleFluxesScalar)
+        return;
+
+    getPointersToDistributions(dist, distributionsScalar, numberOfLBnodes, isEvenTimestep);
+    getPreCollisionDistribution(population, dist, listIndices);
+
+    const real scalar = scalars[k000];
+    const real turbulenceDiffusivity = turbulenceDiffusivities[k000];
+    const real omegaDiffusiveTurbulent = vf::lbm::calculateOmegaWithTurbulentViscosity(omegaDiffusivity, turbulenceDiffusivity);
+    phix[nodeIndex] = -turbulenceDiffusivity * c3o1 * omegaDiffusiveTurbulent * (vf::lbm::getIncompressibleVelocityX1(population) - scalar * velocityX);
+    phiy[nodeIndex] = -turbulenceDiffusivity * c3o1 * omegaDiffusiveTurbulent * (vf::lbm::getIncompressibleVelocityX2(population) - scalar * velocityY);
+    phiz[nodeIndex] = -turbulenceDiffusivity * c3o1 * omegaDiffusiveTurbulent * (vf::lbm::getIncompressibleVelocityX3(population) - scalar * velocityZ);
 }
 
 __global__ void calculateMean_device(
@@ -950,8 +1097,8 @@ void calculateMacroscopicQuantities(real* vxD, real* vyD, real* vzD, real* rhoD,
     getLastCudaError("calculateMacroscopicQuantities_device execution failed");
 }
 
-void calculateMacroscopicQuantitiesCompressible(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
-                     unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
+void calculateMacroscopicQuantitiesCompressible(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, const uint* geoD, const uint* neighborX,
+                     const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
                      unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
@@ -959,6 +1106,23 @@ void calculateMacroscopicQuantitiesCompressible(real* vxD, real* vyD, real* vzD,
     calculateMacroscopicQuantitiesCompressible_device<<<grid.grid, grid.threads>>>(vxD, vyD, vzD, rhoD, pressD, geoD, neighborX, neighborY, neighborZ,
                                                    numberOfLBnodes, DD, isEvenTimestep);
     getLastCudaError("calculateMacroscopicQuantitiesCompressible_device execution failed");
+}
+
+void calculateSubGridScaleFluxesCompressible(const uint* indices, const uint numberOfIndices, real* vxvx, real* vxvy, real* vxvz, real* vyvy, real* vyvz, real* vzvz,
+                                             real* phix, real* phiy, real* phiz, const uint* geoD, const real* vx,
+                                             const real* vy, const real* vz, const real* scalars,
+                                             const real* turbulenceViscosities, const real* turbulenceDiffusivities,
+                                             const uint* neighborX, const uint* neighborY, const uint* neighborZ,
+                                             const unsigned long long numberOfLBnodes, real* distributions,
+                                             real* distributionsScalar, const real omega, const real omegaDiffusivity, const uint numberOfThreads,
+                                             const bool isEvenTimestep, const bool computeSubGridScaleFluxesScalar)
+{
+    vf::cuda::CudaGrid grid(numberOfThreads, numberOfIndices);
+    calculateSubGridScaleFluxesCompressible_device<<<grid.grid, grid.threads>>>(indices, numberOfIndices,
+        vxvx, vxvy, vxvz, vyvy, vyvz, vzvz, phix, phiy, phiz, geoD, vx, vy, vz, scalars, turbulenceViscosities,
+        turbulenceDiffusivities, neighborX, neighborY, neighborZ, numberOfLBnodes, distributions, distributionsScalar, omega, omegaDiffusivity,
+        isEvenTimestep, computeSubGridScaleFluxesScalar);
+    getLastCudaError("calculateSubgridScaleFluxesCompressible_device execution failed");
 }
 
 void calculateMean(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
@@ -972,8 +1136,8 @@ void calculateMean(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, un
     getLastCudaError("calculateMean_device execution failed");
 }
 
-void calculateMeanCompressible(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
-                     unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
+void calculateMeanCompressible(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, uint* geoD, uint* neighborX,
+                     uint* neighborY, uint* neighborZ, unsigned long long numberOfLBnodes,
                      unsigned int numberOfThreads, real* DD, bool isEvenTimestep)
 {
     vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(numberOfThreads, numberOfLBnodes);
@@ -1034,6 +1198,8 @@ void calculateMeasurePoints(real* vxMP, real* vyMP, real* vzMP, real* rhoMP, uns
     LBCalcMeasurePoints<<<grid.grid, grid.threads>>>(vxMP, vyMP, vzMP, rhoMP, kMP, numberOfPointskMP, MPClockCycle, t, geoD,
                                                      neighborX, neighborY, neighborZ, numberOfLBnodes, DD, isEvenTimestep);
     getLastCudaError("LBCalcMeasurePoints execution failed");
+}
+
 }
 
 //! \}

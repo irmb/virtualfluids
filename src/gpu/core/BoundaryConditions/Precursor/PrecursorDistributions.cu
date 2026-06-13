@@ -41,7 +41,8 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 __global__ void PrecursorDistributions_Device(
     int *subgridDistanceIndices,
@@ -206,4 +207,252 @@ __global__ void PrecursorDistributions_Device(
     dist.f[dPMM][kPMM] = f8LastInterp*(1.f-timeRatio) + f8NextInterp*timeRatio;
 }
 
+__global__ void PrecursorTemperatureDistributions_Device(
+    int *subgridDistanceIndices,
+    int numberOfBCnodes,
+    int numberOfPrecursorNodes,
+    real* Distributions,
+    real* temperatureDistributions,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    uint* neighbors0PP,
+    uint* neighbors0PM,
+    uint* neighbors0MP,
+    uint* neighbors0MM,
+    real* weights0PP,
+    real* weights0PM,
+    real* weights0MP,
+    real* weights0MM,
+    real* Last,
+    real* Next,
+    real timeRatio,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep)
+{
+    const unsigned nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
+
+    if(nodeIndex >= numberOfBCnodes) return;
+
+    uint kNeighbor0PP = neighbors0PP[nodeIndex];
+    real d0PP = weights0PP[nodeIndex];
+
+    real g0LastInterp, g1LastInterp, g2LastInterp, g3LastInterp, g4LastInterp;
+    real g5LastInterp, g6LastInterp, g7LastInterp, g8LastInterp;
+    real g0NextInterp, g1NextInterp, g2NextInterp, g3NextInterp, g4NextInterp;
+    real g5NextInterp, g6NextInterp, g7NextInterp, g8NextInterp;
+
+    real f0LastInterp, f1LastInterp, f2LastInterp, f3LastInterp, f4LastInterp, f5LastInterp, f6LastInterp, f7LastInterp, f8LastInterp;
+    real f0NextInterp, f1NextInterp, f2NextInterp, f3NextInterp, f4NextInterp, f5NextInterp, f6NextInterp, f7NextInterp, f8NextInterp;
+
+    real* f0Last = Last;
+    real* f1Last = &Last[  numberOfPrecursorNodes];
+    real* f2Last = &Last[2*numberOfPrecursorNodes];
+    real* f3Last = &Last[3*numberOfPrecursorNodes];
+    real* f4Last = &Last[4*numberOfPrecursorNodes];
+    real* f5Last = &Last[5*numberOfPrecursorNodes];
+    real* f6Last = &Last[6*numberOfPrecursorNodes];
+    real* f7Last = &Last[7*numberOfPrecursorNodes];
+    real* f8Last = &Last[8*numberOfPrecursorNodes];
+    real* g0Last = &Last[9*numberOfPrecursorNodes];
+    real* g1Last = &Last[10*numberOfPrecursorNodes];
+    real* g2Last = &Last[11*numberOfPrecursorNodes];
+    real* g3Last = &Last[12*numberOfPrecursorNodes];
+    real* g4Last = &Last[13*numberOfPrecursorNodes];
+    real* g5Last = &Last[14*numberOfPrecursorNodes];
+    real* g6Last = &Last[15*numberOfPrecursorNodes];
+    real* g7Last = &Last[16*numberOfPrecursorNodes];
+    real* g8Last = &Last[17*numberOfPrecursorNodes];
+
+    real* f0Next = Next;
+    real* f1Next = &Next[  numberOfPrecursorNodes];
+    real* f2Next = &Next[2*numberOfPrecursorNodes];
+    real* f3Next = &Next[3*numberOfPrecursorNodes];
+    real* f4Next = &Next[4*numberOfPrecursorNodes];
+    real* f5Next = &Next[5*numberOfPrecursorNodes];
+    real* f6Next = &Next[6*numberOfPrecursorNodes];
+    real* f7Next = &Next[7*numberOfPrecursorNodes];
+    real* f8Next = &Next[8*numberOfPrecursorNodes];
+    real* g0Next = &Next[9*numberOfPrecursorNodes];
+    real* g1Next = &Next[10*numberOfPrecursorNodes];
+    real* g2Next = &Next[11*numberOfPrecursorNodes];
+    real* g3Next = &Next[12*numberOfPrecursorNodes];
+    real* g4Next = &Next[13*numberOfPrecursorNodes];
+    real* g5Next = &Next[14*numberOfPrecursorNodes];
+    real* g6Next = &Next[15*numberOfPrecursorNodes];
+    real* g7Next = &Next[16*numberOfPrecursorNodes];
+    real* g8Next = &Next[17*numberOfPrecursorNodes];
+
+    if(d0PP < 1e6)
+    {
+        uint kNeighbor0PM = neighbors0PM[nodeIndex];
+        uint kNeighbor0MP = neighbors0MP[nodeIndex];
+        uint kNeighbor0MM = neighbors0MM[nodeIndex];
+
+        real d0PM = weights0PM[nodeIndex];
+        real d0MP = weights0MP[nodeIndex];
+        real d0MM = weights0MM[nodeIndex];
+
+        real invWeightSum = 1.f/(d0PP + d0PM + d0MP + d0MM);
+
+        f0LastInterp = (f0Last[kNeighbor0PP]*d0PP + f0Last[kNeighbor0PM]*d0PM + f0Last[kNeighbor0MP]*d0MP + f0Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        f0NextInterp = (f0Next[kNeighbor0PP]*d0PP + f0Next[kNeighbor0PM]*d0PM + f0Next[kNeighbor0MP]*d0MP + f0Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        f1LastInterp = (f1Last[kNeighbor0PP]*d0PP + f1Last[kNeighbor0PM]*d0PM + f1Last[kNeighbor0MP]*d0MP + f1Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        f1NextInterp = (f1Next[kNeighbor0PP]*d0PP + f1Next[kNeighbor0PM]*d0PM + f1Next[kNeighbor0MP]*d0MP + f1Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        f2LastInterp = (f2Last[kNeighbor0PP]*d0PP + f2Last[kNeighbor0PM]*d0PM + f2Last[kNeighbor0MP]*d0MP + f2Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        f2NextInterp = (f2Next[kNeighbor0PP]*d0PP + f2Next[kNeighbor0PM]*d0PM + f2Next[kNeighbor0MP]*d0MP + f2Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        f3LastInterp = (f3Last[kNeighbor0PP]*d0PP + f3Last[kNeighbor0PM]*d0PM + f3Last[kNeighbor0MP]*d0MP + f3Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        f3NextInterp = (f3Next[kNeighbor0PP]*d0PP + f3Next[kNeighbor0PM]*d0PM + f3Next[kNeighbor0MP]*d0MP + f3Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        f4LastInterp = (f4Last[kNeighbor0PP]*d0PP + f4Last[kNeighbor0PM]*d0PM + f4Last[kNeighbor0MP]*d0MP + f4Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        f4NextInterp = (f4Next[kNeighbor0PP]*d0PP + f4Next[kNeighbor0PM]*d0PM + f4Next[kNeighbor0MP]*d0MP + f4Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        f5LastInterp = (f5Last[kNeighbor0PP]*d0PP + f5Last[kNeighbor0PM]*d0PM + f5Last[kNeighbor0MP]*d0MP + f5Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        f5NextInterp = (f5Next[kNeighbor0PP]*d0PP + f5Next[kNeighbor0PM]*d0PM + f5Next[kNeighbor0MP]*d0MP + f5Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        f6LastInterp = (f6Last[kNeighbor0PP]*d0PP + f6Last[kNeighbor0PM]*d0PM + f6Last[kNeighbor0MP]*d0MP + f6Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        f6NextInterp = (f6Next[kNeighbor0PP]*d0PP + f6Next[kNeighbor0PM]*d0PM + f6Next[kNeighbor0MP]*d0MP + f6Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        f7LastInterp = (f7Last[kNeighbor0PP]*d0PP + f7Last[kNeighbor0PM]*d0PM + f7Last[kNeighbor0MP]*d0MP + f7Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        f7NextInterp = (f7Next[kNeighbor0PP]*d0PP + f7Next[kNeighbor0PM]*d0PM + f7Next[kNeighbor0MP]*d0MP + f7Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        f8LastInterp = (f8Last[kNeighbor0PP]*d0PP + f8Last[kNeighbor0PM]*d0PM + f8Last[kNeighbor0MP]*d0MP + f8Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        f8NextInterp = (f8Next[kNeighbor0PP]*d0PP + f8Next[kNeighbor0PM]*d0PM + f8Next[kNeighbor0MP]*d0MP + f8Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+
+        g0LastInterp = (g0Last[kNeighbor0PP]*d0PP + g0Last[kNeighbor0PM]*d0PM + 
+                        g0Last[kNeighbor0MP]*d0MP + g0Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        g0NextInterp = (g0Next[kNeighbor0PP]*d0PP + g0Next[kNeighbor0PM]*d0PM + 
+                        g0Next[kNeighbor0MP]*d0MP + g0Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        g1LastInterp = (g1Last[kNeighbor0PP]*d0PP + g1Last[kNeighbor0PM]*d0PM + 
+                        g1Last[kNeighbor0MP]*d0MP + g1Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        g1NextInterp = (g1Next[kNeighbor0PP]*d0PP + g1Next[kNeighbor0PM]*d0PM + 
+                        g1Next[kNeighbor0MP]*d0MP + g1Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        g2LastInterp = (g2Last[kNeighbor0PP]*d0PP + g2Last[kNeighbor0PM]*d0PM + 
+                        g2Last[kNeighbor0MP]*d0MP + g2Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        g2NextInterp = (g2Next[kNeighbor0PP]*d0PP + g2Next[kNeighbor0PM]*d0PM + 
+                        g2Next[kNeighbor0MP]*d0MP + g2Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        g3LastInterp = (g3Last[kNeighbor0PP]*d0PP + g3Last[kNeighbor0PM]*d0PM + 
+                        g3Last[kNeighbor0MP]*d0MP + g3Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        g3NextInterp = (g3Next[kNeighbor0PP]*d0PP + g3Next[kNeighbor0PM]*d0PM + 
+                        g3Next[kNeighbor0MP]*d0MP + g3Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        g4LastInterp = (g4Last[kNeighbor0PP]*d0PP + g4Last[kNeighbor0PM]*d0PM + 
+                        g4Last[kNeighbor0MP]*d0MP + g4Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        g4NextInterp = (g4Next[kNeighbor0PP]*d0PP + g4Next[kNeighbor0PM]*d0PM + 
+                        g4Next[kNeighbor0MP]*d0MP + g4Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        g5LastInterp = (g5Last[kNeighbor0PP]*d0PP + g5Last[kNeighbor0PM]*d0PM + 
+                        g5Last[kNeighbor0MP]*d0MP + g5Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        g5NextInterp = (g5Next[kNeighbor0PP]*d0PP + g5Next[kNeighbor0PM]*d0PM + 
+                        g5Next[kNeighbor0MP]*d0MP + g5Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        g6LastInterp = (g6Last[kNeighbor0PP]*d0PP + g6Last[kNeighbor0PM]*d0PM + 
+                        g6Last[kNeighbor0MP]*d0MP + g6Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        g6NextInterp = (g6Next[kNeighbor0PP]*d0PP + g6Next[kNeighbor0PM]*d0PM + 
+                        g6Next[kNeighbor0MP]*d0MP + g6Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        g7LastInterp = (g7Last[kNeighbor0PP]*d0PP + g7Last[kNeighbor0PM]*d0PM + 
+                        g7Last[kNeighbor0MP]*d0MP + g7Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        g7NextInterp = (g7Next[kNeighbor0PP]*d0PP + g7Next[kNeighbor0PM]*d0PM + 
+                        g7Next[kNeighbor0MP]*d0MP + g7Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+        g8LastInterp = (g8Last[kNeighbor0PP]*d0PP + g8Last[kNeighbor0PM]*d0PM + 
+                        g8Last[kNeighbor0MP]*d0MP + g8Last[kNeighbor0MM]*d0MM)*invWeightSum;
+        g8NextInterp = (g8Next[kNeighbor0PP]*d0PP + g8Next[kNeighbor0PM]*d0PM + 
+                        g8Next[kNeighbor0MP]*d0MP + g8Next[kNeighbor0MM]*d0MM)*invWeightSum;
+
+    } else {
+        f0LastInterp = f0Last[kNeighbor0PP];
+        f1LastInterp = f1Last[kNeighbor0PP];
+        f2LastInterp = f2Last[kNeighbor0PP];
+        f3LastInterp = f3Last[kNeighbor0PP];
+        f4LastInterp = f4Last[kNeighbor0PP];
+        f5LastInterp = f5Last[kNeighbor0PP];
+        f6LastInterp = f6Last[kNeighbor0PP];
+        f7LastInterp = f7Last[kNeighbor0PP];
+        f8LastInterp = f8Last[kNeighbor0PP];
+
+        f0NextInterp = f0Next[kNeighbor0PP];
+        f1NextInterp = f1Next[kNeighbor0PP];
+        f2NextInterp = f2Next[kNeighbor0PP];
+        f3NextInterp = f3Next[kNeighbor0PP];
+        f4NextInterp = f4Next[kNeighbor0PP];
+        f5NextInterp = f5Next[kNeighbor0PP];
+        f6NextInterp = f6Next[kNeighbor0PP];
+        f7NextInterp = f7Next[kNeighbor0PP];
+        f8NextInterp = f8Next[kNeighbor0PP];
+
+        g0LastInterp = g0Last[kNeighbor0PP];
+        g1LastInterp = g1Last[kNeighbor0PP];
+        g2LastInterp = g2Last[kNeighbor0PP];
+        g3LastInterp = g3Last[kNeighbor0PP];
+        g4LastInterp = g4Last[kNeighbor0PP];
+        g5LastInterp = g5Last[kNeighbor0PP];
+        g6LastInterp = g6Last[kNeighbor0PP];
+        g7LastInterp = g7Last[kNeighbor0PP];
+        g8LastInterp = g8Last[kNeighbor0PP];
+
+        g0NextInterp = g0Next[kNeighbor0PP];
+        g1NextInterp = g1Next[kNeighbor0PP];
+        g2NextInterp = g2Next[kNeighbor0PP];
+        g3NextInterp = g3Next[kNeighbor0PP];
+        g4NextInterp = g4Next[kNeighbor0PP];
+        g5NextInterp = g5Next[kNeighbor0PP];
+        g6NextInterp = g6Next[kNeighbor0PP];
+        g7NextInterp = g7Next[kNeighbor0PP];
+        g8NextInterp = g8Next[kNeighbor0PP];
+    }
+
+    Distributions27 dist;
+    getPointersToDistributions(dist, Distributions, numberOfLBnodes, !isEvenTimestep);
+
+    Distributions27 tempDist;
+    getPointersToDistributions(tempDist, temperatureDistributions, numberOfLBnodes, !isEvenTimestep);
+
+    unsigned int KQK    = subgridDistanceIndices[nodeIndex];
+    unsigned int kP00   = KQK;
+    unsigned int k0M0   = neighborY[KQK];
+    unsigned int k00M   = neighborZ[KQK];
+    unsigned int kPP0   = KQK;
+    unsigned int kPM0   = k0M0;
+    unsigned int kP0P   = KQK;
+    unsigned int kP0M   = k00M;
+    unsigned int k0MM   = neighborZ[k0M0];
+    unsigned int kPMP   = k0M0;
+    unsigned int kPMM   = k0MM;
+    unsigned int kPPM   = k00M;
+    unsigned int kPPP   = KQK;
+
+
+    
+    dist.f[dP00][kP00] = f0LastInterp*(1.f-timeRatio) + f0NextInterp*timeRatio;
+    dist.f[dPP0][kPP0] = f1LastInterp*(1.f-timeRatio) + f1NextInterp*timeRatio;
+    dist.f[dPM0][kPM0] = f2LastInterp*(1.f-timeRatio) + f2NextInterp*timeRatio;
+    dist.f[dP0P][kP0P] = f3LastInterp*(1.f-timeRatio) + f3NextInterp*timeRatio;
+    dist.f[dP0M][kP0M] = f4LastInterp*(1.f-timeRatio) + f4NextInterp*timeRatio;
+    dist.f[dPPP][kPPP] = f5LastInterp*(1.f-timeRatio) + f5NextInterp*timeRatio;
+    dist.f[dPMP][kPMP] = f6LastInterp*(1.f-timeRatio) + f6NextInterp*timeRatio;
+    dist.f[dPPM][kPPM] = f7LastInterp*(1.f-timeRatio) + f7NextInterp*timeRatio;
+    dist.f[dPMM][kPMM] = f8LastInterp*(1.f-timeRatio) + f8NextInterp*timeRatio;
+
+
+    tempDist.f[dP00][kP00] = g0LastInterp*(1.f - timeRatio) + g0NextInterp*timeRatio;
+    tempDist.f[dPP0][kPP0] = g1LastInterp*(1.f - timeRatio) + g1NextInterp*timeRatio;
+    tempDist.f[dPM0][kPM0] = g2LastInterp*(1.f - timeRatio) + g2NextInterp*timeRatio;
+    tempDist.f[dP0P][kP0P] = g3LastInterp*(1.f - timeRatio) + g3NextInterp*timeRatio;
+    tempDist.f[dP0M][kP0M] = g4LastInterp*(1.f - timeRatio) + g4NextInterp*timeRatio;
+    tempDist.f[dPPP][kPPP] = g5LastInterp*(1.f - timeRatio) + g5NextInterp*timeRatio;
+    tempDist.f[dPMP][kPMP] = g6LastInterp*(1.f - timeRatio) + g6NextInterp*timeRatio;
+    tempDist.f[dPPM][kPPM] = g7LastInterp*(1.f - timeRatio) + g7NextInterp*timeRatio;
+    tempDist.f[dPMM][kPMM] = g8LastInterp*(1.f - timeRatio) + g8NextInterp*timeRatio;
+}
+
+}
 //! \}

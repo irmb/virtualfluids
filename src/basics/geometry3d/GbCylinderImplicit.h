@@ -1,0 +1,195 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  for more details.
+//
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+//
+//! \addtogroup geometry3d
+//! \ingroup basics
+//! \{
+//! \author Hussein Alihussein
+//=======================================================================================
+#ifndef GbCylinderImplicit_H
+#define GbCylinderImplicit_H
+
+#include <functional>
+#include <tuple>
+#ifdef VF_BOOST
+
+#include <vector>
+
+#include <GbPoint3D.h>
+#include <basics/utilities/UbObserver.h>
+#include <basics/utilities/UbMath.h>
+
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <math.h> 
+
+class GbLine3D;
+class GbObject3DCreator;
+
+#include <PointerDefinitions.h>
+class GbCylinderImplicit;
+using GbCylinderImplicitPtr = SPtr<GbCylinderImplicit>;
+
+
+class GbCylinderImplicit : public GbObject3D, public UbObserver
+{
+public:
+    GbCylinderImplicit();
+    GbCylinderImplicit(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b, const double& dx, const double& OuterRadius, const double& InnerRadius=0);
+    GbCylinderImplicit(GbCylinderImplicit *imp);
+    ~GbCylinderImplicit();
+
+    GbCylinderImplicit* clone() override { return new GbCylinderImplicit(this); }
+    void finalize() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+
+    double getX1Centroid() override;
+    double getX1Minimum() override;
+    double getX1Maximum() override;
+    double getX2Centroid()override;
+    double getX2Minimum() override;
+    double getX2Maximum() override;
+    double getX3Centroid()override;
+    double getX3Minimum() override;
+    double getX3Maximum() override;
+    void setCenterCoordinates(const double &x1, const double &x2, const double &x3) override {throw UbException(UB_EXARGS, "finalize() - not implemented");
+    }
+
+    void translate(const double& x1, const double& x2, const double& x3) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    void rotate(const double& rx1, const double& rx2, const double& rx3) override{ throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    void scale(const double& sx1, const double& sx2, const double& sx3) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+
+    double getLengthX1();
+    double getLengthX2();
+    double getLengthX3();
+    
+    bool isPointInGbObject3D(const double &x1p, const double &x2p, const double &x3p, bool &pointinboundary) override;
+    bool isPointInGbObject3D(const double &x1p, const double &x2p, const double &x3p) override;
+    bool isCellInsideGbObject3D(const double &x1a, const double &x2a, const double &x3a, const double &x1b,
+                                const double &x2b, const double &x3b) override;
+    bool isCellCuttingGbObject3D(const double &x1a, const double &x2a, const double &x3a, const double &x1b,
+                                 const double &x2b, const double &x3b) override;
+    bool isCellInsideOrCuttingGbObject3D(const double &x1a, const double &x2a, const double &x3a, const double &x1b,
+                                         const double &x2b, const double &x3b) override;
+    double getCellVolumeInsideGbObject3D(const double &x1a, const double &x2a, const double &x3a, const double &x1b,
+                                         const double &x2b, const double &x3b) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    GbPoint3D *calculateInterSectionPoint3D(GbPoint3D &point1, GbPoint3D &point2);
+    GbLine3D *createClippedLine3D (GbPoint3D &point1, GbPoint3D &point2) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    std::vector<GbTriangle3D *> getSurfaceTriangleSet() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    void addSurfaceTriangleSet(std::vector<UbTupleFloat3> &nodes, std::vector<UbTupleInt3> &triangles) override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    bool hasRaytracing() override { return true;  }
+    double getIntersectionRaytraceFactor (const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3) override;
+   //double evaluateImplicitFunction(const double & x1, const double & x2, const double & x3);
+    double getDistance(const double& x1p, const double& x2p, const double& x3p) { throw UbException(UB_EXARGS, "finalize() - not implemented"); }    
+    std::string toString() override { throw UbException(UB_EXARGS, "finalize() - not implemented"); }
+    void objectChanged(UbObservable *changedObject) override;
+    void objectWillBeDeleted(UbObservable *objectForDeletion) override;
+    using GbObject3D::isPointInGbObject3D; 
+
+protected:
+    GbPoint3D* p1;
+    GbPoint3D* p2;
+    GbPoint3D* p3;
+    GbPoint3D* p4;
+    double dx, InnerRadius, OuterRadius;
+    double e1x,e1y,e1z;
+    double e2x,e2y,e2z;
+    double cylinderLengthSquared;
+
+
+
+private:
+/*=======================================================*/
+struct TerminationCondition {
+    bool operator() (double min, double max) {
+        return abs(min - max) <= 10e-10;
+    }
+};
+/*=======================================================*/
+struct FunctionOfImplicitCylinder {
+    double x, y, z;
+    double x0, y0, z0;
+    double x1, y1, z1;  
+    double nx, ny, nz;    
+    double r,q,dir1,dir2,dir3, l,delx,dely,delz,R;
+
+   void init(){ 
+    dir1=dir2=dir3=0;
+    delx=x1-x0;
+    dely=y1-y0;
+    delz=z1-z0;
+     l = sqrt(pow(delx,2) + pow(dely,2) + pow(delz,2));
+     nx = delx/l;
+     ny = dely/l;
+     nz = delz/l;
+   }
+
+    std::function<double(double)> heaviside = [](double value) {return value >= 0 ? 1.0 : 0.0; };
+
+    std::function<double(double)> f1 = [=](double q) {
+    return  
+    1.-(1-heaviside(-sqrt(pow(dir1*q + x - x0,2) + pow(dir2*q + y - y0,2) + pow(dir3*q + z - z0,2)) + 
+        sqrt(pow(r,2) + pow((dir1*q + x - x0)*(-delx) + (dir2*q + y - y0)*(-dely) + (dir3*q + z - z0)*(-delz),2)/(l*l))))
+    *(1-heaviside(sqrt(pow(dir1*q + x - x0,2) + pow(dir2*q + y - y0,2) + pow(dir3*q + z - z0,2)) - 
+         sqrt(pow(R,2) + pow((dir1*q + x - x0)*(-delx) + (dir2*q + y - y0)*(-dely) + (dir3*q + z - z0)*(-delz),2)/(l*l))))
+    *(heaviside((dir1*q + x - x0)*nx + (dir2*q + y - y0)*ny + (dir3*q + z - z0)*nz))
+    *(1-heaviside((dir1*q + x - x1)*nx + (dir2*q + y - y1)*ny + (dir3*q + z - z1)*nz))
+    -0.5
+    ;
+    };
+
+//    std::function<double(double)> f1 = [=](double q) {return 0.5 - (-1 + heaviside(-sqrt(pow(dir1*q + x - x0,2) + pow(dir2*q + y - y0,2) + pow(dir3*q + z - z0,2)) + 
+//         sqrt(pow(r,2) + pow((dir1*q + x - x0)*(x0 - x1) + (dir2*q + y - y0)*(y0 - y1) + (dir3*q + z - z0)*(z0 - z1),2)/
+//            (l*l))))*(-1 + 
+//       heaviside(sqrt(pow(dir1*q + x - x0,2) + pow(dir2*q + y - y0,2) + pow(dir3*q + z - z0,2)) - 
+//         sqrt(pow(R,2) + pow((dir1*q + x - x0)*(x0 - x1) + (dir2*q + y - y0)*(y0 - y1) + (dir3*q + z - z0)*(z0 - z1),2)/
+//            (l*l))));};
+
+    //std::function<double(double)> f1 = [=](double q) {return pow((x+q*dir1) - x0,2) + pow((y+q*dir2) - y0,2) + pow((z+q*dir3) - z0,2) - 
+    //(pow(r,2) + pow(((x+q*dir1) - x0)*(x0 - x1) + ((y+q*dir2) - y0)*(y0 - y1) + ((z+q*dir3) - z0)*(z0 - z1),2)/(l*l));
+   //};
+
+   // std::function<double(double)>  f2 = [=](double q){return ( -((x+q*dir1 - x0)*nx + (y+q*dir2 - y0)*ny + (z+q*dir3 - z0)*nz)) ;};
+
+    //std::function<double(double)>  f3 = [=](double q){return ( ((x+q*dir1 - x1)*nx + (y+q*dir2 - y1)*ny + (z+q*dir3 - z1)*nz));};
+    
+    // std::function<double(double)>  f2 = [=](double q){return  ((x + q *dir1)*(-nx) + (y + q *dir2)*(-ny)  + (z + q *dir3)*(-nz))- 
+  //  abs(x0*(-nx)  + y0*(-ny) + z0*(-nz) );}; 
+
+
+ 
+};
+
+FunctionOfImplicitCylinder f;
+};
+
+
+
+#endif   
+#endif
+
+//! \}

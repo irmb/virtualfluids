@@ -39,7 +39,8 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 __global__ void SlipTurbulentViscosityCompressible_Device(
     real* distributions, 
@@ -549,6 +550,8 @@ __global__ void SlipTurbulentViscosityCompressible_Device(
          (dist.f[dPMM])[kbse] = getInterpolatedDistributionForVeloBC(q, f_TNW, f_BSE, feq, om_turb, velocityBC, c1o216);
       }
    }
+}
+
 }
 
 //! \}

@@ -33,6 +33,8 @@
 //=======================================================================================
 #include "TriangularMesh.h"
 
+#include <stdexcept>
+
 #include "Timer/Timer.h"
 
 #include "basics/geometry3d/GbTriFaceMesh3D.h"
@@ -48,8 +50,7 @@
 
 #include "utilities/transformator/TransformatorImp.h"
 
-using namespace vf::gpu;
-
+namespace vf::gpu {
 
 TriangularMesh* TriangularMesh::make(const std::string& fileName, const std::vector<uint> ignorePatches)
 {
@@ -68,7 +69,12 @@ TriangularMesh::TriangularMesh(const std::string& inputPath, const std::vector<u
 {
     this->minmax = BoundingBox::makeInvalidMinMaxBox();
 
-    this->triangleVec = STLReader::readSTL(inputPath, STLReader::ascii, ignorePatches);
+    try {
+        this->triangleVec = STLReader::readSTL(inputPath, STLReader::ascii, ignorePatches);
+    } catch (const std::exception& e) {
+        VF_LOG_WARNING("Falling back to binary STL reader for {}: {}", inputPath, e.what());
+        this->triangleVec = STLReader::readSTL(inputPath);
+    }
     //this->triangleVec = STLReader::readSTL(inputPath);
     initalizeDataFromTriangles();
     this->findNeighbors();
@@ -283,6 +289,8 @@ void TriangularMesh::eliminateTriangleswithIdenticialNormal(std::vector<Triangle
 void TriangularMesh::findInnerNodes(SPtr<GridImp> grid)
 {
     grid->getTriangularMeshDiscretizationStrategy()->discretize(this, grid.get(), FLUID, INVALID_OUT_OF_GRID);
+}
+
 }
 
 //! \}

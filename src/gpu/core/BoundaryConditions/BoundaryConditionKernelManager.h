@@ -43,6 +43,8 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 class CudaMemoryManager;
 class BoundaryConditionFactory;
 class Parameter;
@@ -57,6 +59,7 @@ using ADNoFluxBoundaryConditionKernel = std::function<void(LBMSimulationParamete
 using ADFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionFluxBoundaryConditions bcParams)>;
 using ADDirichletBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionDirichletBoundaryConditions bcParams)>;
 using ADNeumannBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, AdvectionDiffusionNeumannBoundaryConditions bcParams)>;
+using DirectionalADBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, QforDirectionalADBoundaryCondition*)>;
 //! \class BCKernelManager
 //! \brief manage the cuda kernel calls to boundary conditions
 //! \details This class stores the boundary conditions and manages the calls to the boundary condition kernels.
@@ -99,6 +102,8 @@ public:
     void runADFluxBCKernel(int level) const ;
     void runADDirichletBCKernel(int level) const ;
     void runADNeumannBCKernel(int level) const ;
+    //! \brief calls the device function of the directional advection-diffusion (temperature) outflow BC (post-collision)
+    void runADDirectionalBCKernel(int level) const ;
         //! \brief calls the device function of the surface layer boundary condition (post-collision)
     void runSurfaceLayerBCKernelPost(int level) const;
 private:
@@ -110,6 +115,19 @@ private:
     template <typename bcFunction>
     void checkBoundaryCondition(const bcFunction& boundaryCondition,
                                 const std::vector<QforDirectionalBoundaryCondition>& bcVector, const std::string& bcName)
+    {
+        if (!boundaryCondition && !bcVector.empty())
+            throw std::runtime_error("The boundary condition " + bcName + " was not set!");
+    }
+
+    //! \brief check if a directional AD boundary condition was set
+    //! \throws std::runtime_error if boundary nodes were assigned, but no boundary condition was set in the boundary condition factory
+    //! \param boundaryCondition: a kernel function for the boundary condition
+    //! \param bcVector: a vector containing the directional AD boundary condition structs
+    //! \param bcName: the name of the checked boundary condition
+    template <typename bcFunction>
+    void checkBoundaryCondition(const bcFunction& boundaryCondition,
+                                const std::vector<QforDirectionalADBoundaryCondition>& bcVector, const std::string& bcName)
     {
         if (!boundaryCondition && !bcVector.empty())
             throw std::runtime_error("The boundary condition " + bcName + " was not set!");
@@ -144,9 +162,13 @@ private:
     ADFluxBoundaryConditionKernel ADFluxBoundaryConditionPost = nullptr;
     ADDirichletBoundaryConditionKernel ADDirichletBoundaryConditionPost = nullptr;
     ADNeumannBoundaryConditionKernel ADNeumannBoundaryConditionPost = nullptr;
+    DirectionalADBoundaryConditionKernel ADDirectionalBoundaryConditionPost = nullptr;
     BoundaryConditionKernel surfaceLayerBoundaryConditionPost = nullptr;
 
 };
+
+}
+
 #endif
 
 //! \}

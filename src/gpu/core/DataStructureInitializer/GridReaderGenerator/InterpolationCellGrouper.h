@@ -40,6 +40,9 @@
 #include <memory>
 #include <vector>
 
+
+namespace vf::gpu {
+    
 struct LBMSimulationParameter;
 class GridBuilder;
 
@@ -101,6 +104,8 @@ private:
     const LBMSimulationParameters &parHs;
     const LBMSimulationParameters &parDs;
 };
+
+}
 
 #endif
 

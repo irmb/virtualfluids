@@ -40,6 +40,7 @@
 #include "PreProcessor/PreProcessorStrategy/InitAdvectionDiffusionIncompressible/InitAdvectionDiffusionIncompressible.h"
 #include "PreProcessor/PreProcessorStrategy/InitNavierStokesIncompressible/InitNavierStokesIncompressible.h"
 
+namespace vf::gpu {
 
 std::shared_ptr<PreProcessor> PreProcessorFactoryImp::makePreProcessor(std::vector<PreProcessorType> preProcessorTypes, std::shared_ptr<Parameter> para)
 {
@@ -71,6 +72,8 @@ std::shared_ptr<PreProcessorStrategy> PreProcessorFactoryImp::makePreProcessorSt
         break;
     }
     throw  std::runtime_error("PreProcessorFactory does not know the PreProcessorType.");
+}
+
 }
 
 //! \}

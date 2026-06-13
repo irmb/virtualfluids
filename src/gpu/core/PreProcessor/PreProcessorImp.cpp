@@ -37,6 +37,8 @@
 
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 std::shared_ptr<PreProcessorImp> PreProcessorImp::getNewInstance()
 {
     return std::shared_ptr<PreProcessorImp>(new PreProcessorImp());
@@ -70,6 +72,8 @@ bool PreProcessorImp::checkParameter()
 PreProcessorImp::PreProcessorImp()
 {
     strategies.resize(0);
+}
+
 }
 
 //! \}

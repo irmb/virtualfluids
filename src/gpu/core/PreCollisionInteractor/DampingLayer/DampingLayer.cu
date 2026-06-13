@@ -46,6 +46,8 @@
 #include "gpu/core/Utilities/KernelUtilities.h"
 #include "gpu/cuda_helper/CudaGrid.h"
 
+namespace vf::gpu {
+
 __global__ void rayleighDampingLayerKernel(const real* coefficients, const real* velocity, real* force, const uint* indices,
                                            uint numberOfNodes)
 {
@@ -137,4 +139,6 @@ void DampingLayer::getTaggedFluidNodes(GridProvider* gridProvider)
         std::vector<uint> dampingIndices(data.indicesH, data.indicesH + data.numberOfNodes);
         gridProvider->tagFluidNodeIndices(dampingIndices, CollisionTemplate::WriteMacroVars, level);
     }
+}
+
 }

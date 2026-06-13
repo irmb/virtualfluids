@@ -36,6 +36,8 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 struct LBMSimulationParameter;
 class Parameter;
 
@@ -43,6 +45,9 @@ void PrecursorNonReflectiveCompressible(LBMSimulationParameter* parameterDevice,
 
 void PrecursorDistributions(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
 
+void PrecursorTemperatureDistributions(LBMSimulationParameter* parameterDevice, QforPrecursorBoundaryConditions* boundaryCondition, real tRatio, real velocityRatio);
+
+}
 #endif
 
 //! \}

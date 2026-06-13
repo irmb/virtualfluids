@@ -39,12 +39,13 @@
 
 #include <limits>
 
+namespace vf::gpu {
 
 
- BoundingBox::BoundingBox(real minX, real maxX, real minY, real maxY, real minZ, real maxZ) : minX(minX), maxX(maxX), minY(minY), maxY(maxY), minZ(minZ), maxZ(maxZ) {}
+BoundingBox::BoundingBox(real minX, real maxX, real minY, real maxY, real minZ, real maxZ) : minX(minX), maxX(maxX), minY(minY), maxY(maxY), minZ(minZ), maxZ(maxZ) {}
 
- BoundingBox BoundingBox::makeInvalidMinMaxBox()
- {
+BoundingBox BoundingBox::makeInvalidMinMaxBox()
+{
      BoundingBox box = BoundingBox(std::numeric_limits<real>::max(),
          std::numeric_limits<real>::lowest(),
          std::numeric_limits<real>::max(),
@@ -198,6 +199,6 @@
      this->maxZ += delta;
  }
 
-
+}
 
 //! \}

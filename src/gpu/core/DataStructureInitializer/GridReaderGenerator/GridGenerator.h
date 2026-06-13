@@ -41,16 +41,19 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::parallel
+{
+class Communicator;
+}
+
+
+namespace vf::gpu {
+    
 class Parameter;
 class GridBuilder;
 class IndexRearrangementForStreams;
 class InterpolationCellGrouper;
 class BoundaryConditionFactory;
-
-namespace vf::parallel
-{
-class Communicator;
-}
 
 //! \class GridGenerator derived class of GridProvider
 //! \brief mapping the grid of grid generator to data structure for simulation
@@ -124,6 +127,10 @@ private:
     //! conditions that need a direction to work
     void initDirectionalPressureBoundaryConditions();
 
+    //! \brief initialize direction, node indices, indices of neighbor nodes and concentration values for directional
+    //! advection-diffusion boundary conditions
+    void initDirectionalConcentrationBoundaryConditions();
+
     //! \brief intialize the subgrid distances (Q's) for the pressure boundary condition
     void initSubgridDistancesOfPressureBoundaryCondition(uint level);
     //! \brief initialize the subgrid distances (Q's) for the pressure boundary conditions that need a direction to work
@@ -154,10 +161,14 @@ private:
     static void initPointersToSubgridDistances(QforBoundaryConditions& boundaryCondition);
     //! \brief init the pointers to the subgrid distances in all 27 directions from the pointer to the first one
     static void initPointersToSubgridDistances(QforDirectionalBoundaryCondition& boundaryCondition);
+    //! \brief init the pointers to the subgrid distances in all 27 directions from the pointer to the first one
+    static void initPointersToSubgridDistances(QforDirectionalADBoundaryCondition& boundaryCondition);
 
 private:
     friend class GridGeneratorTests_initalValuesDomainDecompostion;
 };
+
+}
 
 #endif
 

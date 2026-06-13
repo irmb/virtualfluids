@@ -36,6 +36,8 @@
 
 #include "gpu/GridGenerator/global.h"
 
+namespace vf::gpu {
+
 struct Vertex;
 
 class Field : public enableSharedFromThis<Field>
@@ -76,6 +78,8 @@ protected:
     char *field = nullptr;
     uint size;
 };
+
+}
 
 #endif
 

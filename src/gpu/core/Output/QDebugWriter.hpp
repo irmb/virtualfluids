@@ -48,7 +48,7 @@
 #include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 
-namespace q_debug_writer
+namespace vf::gpu::q_debug_writer
 {
 
 void writeQValues(QforBoundaryConditions& Q, int* k, int kq, const std::string& name)

@@ -344,7 +344,7 @@ regression_test_4gpu:
     expire_in: 1 week
 ###############################################################################
 regression_test_8gpu:
-  image: python:latest
+  image: python:3.10
   stage: test
   needs: []
   

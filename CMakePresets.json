@@ -174,6 +174,20 @@
             "displayName": "make cpu configuration"
         },
         {
+            "name": "make_cpu_apple",
+            "inherits": [
+                "make_cpu"
+            ],
+            "displayName": "make cpu configuration (apple clang + homebrew libomp)",
+            "cacheVariables": {
+                "OpenMP_ROOT": "/opt/homebrew/opt/libomp",
+                "OpenMP_C_FLAGS": "-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include",
+                "OpenMP_CXX_FLAGS": "-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include",
+                "OpenMP_omp_LIBRARY": "/opt/homebrew/opt/libomp/lib/libomp.dylib",
+                "CMAKE_EXE_LINKER_FLAGS": "-L/opt/homebrew/opt/libomp/lib -lomp -Wl,-rpath,/opt/homebrew/opt/libomp/lib"
+            }
+        },
+        {
             "name": "make_cpu_debug",
             "inherits": [
                 "make",

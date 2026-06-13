@@ -38,11 +38,15 @@
 
 #include "Sampler.h"
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 #include <basics/DataTypes.h>
 #include <basics/geometry3d/Axis.h>
+#include <logger/Logger.h>
+
+namespace vf::gpu {
 
 class Parameter;
 class CudaMemoryManager;
@@ -63,18 +67,41 @@ public:
     struct LevelData;
 
 public:
-//! \param tStartSampling The first timestep at which the probe samples planar averages.
-//! \param tStartTemporalAveraging The first timestep at which temporal averaging starts.
-//! \param tBetweenSamples The number of timesteps between samples.
-//! \param tStartWritingOutput The first timestep at which the probe writes output.
-//! \param tBetweenWriting The number of timesteps between writing output.
-//! \param planeNormal The normal direction of the planes along which the probe samples.
-//! \param computeTimeAverages If true, the probe computes time averages.
-//! \param sampleScalar If true, the probe samples statistics related to the scalar.
+    //! \param tStartSampling The first timestep at which the probe samples planar averages.
+    //! \param tStartTemporalAveraging The first timestep at which temporal averaging starts.
+    //! \param tBetweenSamples The number of timesteps between samples.
+    //! \param tStartWritingOutput The first timestep at which the probe writes output.
+    //! \param tBetweenWriting The number of timesteps between writing output.
+    //! \param planeNormal The normal direction of the planes along which the probe samples.
+    //! \param computeTimeAverages If true, the probe computes time averages.
+    //! \param sampleScalar If true, the probe samples statistics related to the scalar.
+    //! \param sampleSubgridScaleFluxes If true, the probe samples sub-gridscale fluxes.
     PlanarAverageProbe(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string& outputPath,
                        const std::string& probeName, uint tStartSampling, uint tStartTemporalAveraging, uint tBetweenSamples,
                        uint tStartWritingOutput, uint tBetweenWriting, Axis planeNormal, bool computeTimeAverages,
-                       bool sampleScalar);
+                       bool sampleScalar = false, bool sampleSubgridScaleFluxes = false)
+        : para(std::move(para)), cudaMemoryManager(std::move(cudaMemoryManager)), tStartSampling(tStartSampling),
+          tStartTemporalAveraging(tStartTemporalAveraging), tBetweenSamples(tBetweenSamples),
+          tStartWritingOutput(tStartWritingOutput), tBetweenWriting(tBetweenWriting),
+          computeTimeAverages(computeTimeAverages), planeNormal(planeNormal), sampleScalar(sampleScalar),
+          sampleSubgridScaleFluxes(sampleSubgridScaleFluxes), Sampler(outputPath, probeName)
+    {
+        if (tBetweenSamples == 0)
+            throw std::runtime_error("PlanarAverageProbe: tBetweenSamples is 0! tBetweenSamples must be larger than 0");
+        if (tBetweenWriting == 0)
+            throw std::runtime_error("PlanarAverageProbe: tBetweenWriting is 0! tBetweenWriting must be larger than 0");
+        if (tStartTemporalAveraging < tStartSampling && computeTimeAverages)
+            throw std::runtime_error("PlaneAverageProbe: tStartTemporalAveraging must be larger than tStartSampling!");
+
+        VF_LOG_INFO(
+            "Created planar averaging probe, output path: " + outputPath + ", probe name: " + probeName +
+                " start sampling: {}, time steps between sampling: {}, start writing: {}, time steps between writing: {}",
+            tStartSampling, tBetweenSamples, tStartWritingOutput, tBetweenWriting);
+        if(sampleScalar)
+            VF_LOG_INFO("sampling scalar.");
+        if(sampleSubgridScaleFluxes)
+            VF_LOG_INFO("sampling sub-gridscale fluxes.");
+    }
     ~PlanarAverageProbe() override;
 
     void init() override;
@@ -96,18 +123,23 @@ public:
     {
         nameFilesWithFileCount = true;
     }
+    bool getSampleScalar() const
+    {
+        return sampleScalar;
+    }
 
 private:
     std::vector<std::string> getVariableNames(Statistic statistic, bool namesForTimeAverages) const;
     void copyDataToNodedata(std::vector<std::vector<real>>& data, std::vector<std::vector<double>>& nodeData);
     void calculateQuantities(int level, bool doTimeAverages);
-    std::vector<unsigned long long> findIndicesInPlane(int level);
     void findCoordinatesForPlanes(int level, std::vector<real>& coordinateX, std::vector<real>& coordinateY,
-                                  std::vector<real>& coordinateZ);
-    std::vector<real> computePlaneStatistics(int level);
+                                  std::vector<real>& coordinateZ, std::vector<uint>& numberOfNodesPerPlane);
+    std::vector<real> computePlaneStatistics(int level, uint nNodes);
 
     std::vector<std::string> getAllVariableNames();
     const uint* getNeighborIndicesInPlaneNormal(int level);
+    const real* getPlaneNormalCoordinatesH(int level);
+    const real* getPlaneNormalCoordinatesD(int level);
     void writeGridFile(int level, uint tWrite);
     void writeParallelFile(uint tWrite);
 
@@ -115,7 +147,7 @@ private:
     SPtr<Parameter> para;
     SPtr<CudaMemoryManager> cudaMemoryManager;
     const uint tStartSampling, tStartTemporalAveraging, tBetweenSamples, tStartWritingOutput, tBetweenWriting;
-    const bool computeTimeAverages, sampleScalar;
+    const bool computeTimeAverages, sampleScalar, sampleSubgridScaleFluxes;
     bool nameFilesWithFileCount = false;
     const Axis planeNormal;
     std::vector<Statistic> statistics;
@@ -127,12 +159,17 @@ bool isStatisticIn(PlanarAverageProbe::Statistic statistic, std::vector<PlanarAv
 
 struct PlanarAverageProbe::LevelData
 {
-    unsigned long long *indicesOfFirstPlaneH, *indicesOfFirstPlaneD;
-    uint numberOfPlanes {}, numberOfPointsPerPlane {}, numberOfTimestepsInTimeAverage {};
+    uint* indicesD;
+    real *subgridScaleFluxXX, *subgridScaleFluxXY, *subgridScaleFluxXZ, *subgridScaleFluxYY, *subgridScaleFluxYZ,
+        *subgridScaleFluxZZ, *subgridScaleFluxPhiX, *subgridScaleFluxPhiY, *subgridScaleFluxPhiZ;
+    std::vector<uint> numberOfNodesPerPlane;
+    uint numberOfPlanes {}, maxNumberOfPointsPerPlane {}, numberOfTimestepsInTimeAverage {};
     std::vector<real> coordinateX, coordinateY, coordinateZ;
     std::vector<std::vector<real>> instantaneous;
     std::vector<std::vector<real>> timeAverages;
 };
+
+}
 
 #endif
 //! \}

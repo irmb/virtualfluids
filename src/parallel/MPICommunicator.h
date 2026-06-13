@@ -158,7 +158,7 @@ template<> inline MPI_Datatype getDataType<float>(){return MPI_FLOAT; }
 template<> inline MPI_Datatype getDataType<int>(){return MPI_INT; }
 template<> inline MPI_Datatype getDataType<unsigned long long>(){return MPI_UNSIGNED_LONG_LONG; }
 template<> inline MPI_Datatype getDataType<char>(){return MPI_CHAR; }
-template<> inline MPI_Datatype getDataType<unsigned int>(){return MPI_UNSIGNED_LONG; }
+template<> inline MPI_Datatype getDataType<unsigned int>(){return MPI_UNSIGNED; }
 
 //////////////////////////////////////////////////////////////////////////
 template <class T>

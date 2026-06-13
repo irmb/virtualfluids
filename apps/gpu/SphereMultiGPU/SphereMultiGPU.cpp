@@ -62,6 +62,8 @@
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 
+using namespace vf::gpu;
+
 void run(const vf::basics::ConfigurationFile& config)
 {
     vf::parallel::Communicator& communicator = *vf::parallel::MPICommunicator::getInstance();

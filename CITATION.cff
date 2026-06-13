@@ -22,8 +22,24 @@ authors:
   - family-names: Korb
     given-names: Henry
     orcid: https://orcid.org/0000-0003-3177-5960
+  - family-names: Sukhman
+    given-names: Daniel
+    orcid: https://orcid.org/0009-0009-5219-8403
+  - family-names: Horneff
+    given-names: Nils
+    orcid: https://orcid.org/0009-0001-2539-8516
+  - family-names: Yescas Frangos
+    given-names: Patricio
+  - family-names: Bastin
+    given-names: Jean
+  - family-names: Lopez Hermida
+    given-names: Damian
+  - family-names: Mohammadi
+    given-names: Mohammad Mehdi
+  - family-names: Qin
+    given-names: Zhaojie
 title: "VirtualFluids"
-version: 0.2.1
+version: 0.3.0
 license: GPL-3.0-or-later
 repository-code: "https://git.rz.tu-bs.de/irmb/virtualfluids"
-date-released: "2025-12-11"
+date-released: "2026-06-08"

@@ -45,6 +45,8 @@
 #include "Axis.h"
 #include "PreCollisionInteractor/PreCollisionInteractor.h"
 
+namespace vf::gpu {
+
 class DampingLayer : public PreCollisionInteractor
 {
 
@@ -105,5 +107,7 @@ struct DampingLayer::DampingLayerData
     real *dampingCoefficientsH, *dampingCoefficientsD;
     real *minimumValueH, *minimumValueD;
 };
+
+}
 
 #endif

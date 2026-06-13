@@ -55,14 +55,15 @@
 #include "gpu/core/Cuda/CudaMemoryManager.h"
 
 using namespace vf::basics::constant;
+using namespace vf::gpu;
 
 void run(const vf::basics::ConfigurationFile& config)
 {
     //////////////////////////////////////////////////////////////////////////
     // Simulation parameters
     //////////////////////////////////////////////////////////////////////////
-    std::string path("output/Sphere");
     std::string simulationName("SphereInChannel");
+    std::string path("./output/Sphere");
 
     const real reynoldsNumber = 300.0;
     const real velocity = 1.0;

@@ -1,6 +1,34 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 <!-- SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder -->
 # Changelog
+## [0.3.0](https://git.rz.tu-bs.de/irmb/VirtualFluids/-/milestones/5) - 2026-06-08
+### Added
+- [ALL] Added fast winding algorithm for discretization of STLs for the numerical grids.  
+- [GPU] Added Hub and Tower drag to ActuatorFarm class.
+- [ALL] Update devcontainer to ubuntu 24.04.
+- [ALL] Added grid refinement for advection diffusion.
+- [GPU] Add option for spatially heterogeneous roughness wall model.
+- [GPU] Add precursor and outflow BCs for advection diffusion.
+- [GPU] Add vertical axis wind turbine app.
+- [GPU] Add actuator disc app.
+- [GPU] Add homogeneous forest in atmospheric boundary layer.
+
+### Fixes
+- [GPU] Bug Fix non reflected pressure correction outflow.
+- [GPU] Fix periodic stopper neighbors for GPU.
+- [GPU] Fix planar average probe, when refinement covers whole domain.
+- [GPU] Fix device memory allocator (AdvectionDiffusionFluxBC).
+- [GPU] Fix rounding errors in precursor.
+- [GPU] Fix rescaling of buoyancy factor in refined areas.
+- [GPU] Several fixes in python bindings.
+- [GPU] Fix rounding bug in communication indices.
+- [GPU] Fix coefficient in moeng turbulent diffusivity model.
+- [ALL] Fix bug in combination with newer CMake Versions.
+
+### Refactoring
+- [ALL] Compile all VirtualFluids libraries into one python binding.
+- [GPU] Move gpu library into namespace vf::gpu.  
+
 ## [0.2.1]() - 2025-12-11
 ### Added
 - [CPU] Added comprehensive unit tests to verify the VTI reading capabilities.

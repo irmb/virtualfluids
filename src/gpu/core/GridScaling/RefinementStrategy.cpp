@@ -39,6 +39,8 @@
 #include "Cuda/CudaStreamManager.h"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 std::function<void(UpdateGrid27 *updateGrid, Parameter *para, int level)>
     getFunctionForRefinementAndExchange(const bool useStreams, const int numberOfMpiProcesses, const int maxLevel,
                                         const bool useReducedCommunicationAfterFtoC) noexcept
@@ -175,6 +177,8 @@ void Refinement_noExchange::operator()(UpdateGrid27 *updateGrid, Parameter *para
     updateGrid->fineToCoarse(level, &para->getParD(level)->fineToCoarse, para->getParD(level)->neighborFineToCoarse, CudaStreamIndex::Legacy);
     //! 2. interpolation coarse to fine
     updateGrid->coarseToFine(level, &para->getParD(level)->coarseToFine, para->getParD(level)->neighborCoarseToFine, CudaStreamIndex::Legacy);
+}
+
 }
 
 //! \}

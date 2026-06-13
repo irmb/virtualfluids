@@ -51,6 +51,8 @@
 #include "TurbulenceModels/TurbulenceModelFactory.h"
 #include "TurbulenceModels/TurbulenceModelManager.h"
 
+namespace vf::gpu {
+
 void UpdateGrid27::updateGrid(int level, unsigned int t)
 {
     //////////////////////////////////////////////////////////////////////////
@@ -221,6 +223,7 @@ void UpdateGrid27::postCollisionBC(int level, uint t)
         this->bcKernelManager->runADFluxBCKernel(level);
         this->bcKernelManager->runADDirichletBCKernel(level);
         this->bcKernelManager->runADNeumannBCKernel(level);
+        this->bcKernelManager->runADDirectionalBCKernel(level);
         this->bcKernelManager->runSurfaceLayerBCKernelPost(level);
 
     }
@@ -321,6 +324,8 @@ UpdateGrid27::UpdateGrid27(SPtr<Parameter> para, vf::parallel::Communicator &com
     this->bcKernelManager = std::make_shared<BoundaryConditionKernelManager>(para, bcFactory);
     this->gridScalingKernelManager = std::make_shared<GridScalingKernelManager>(para, scalingFactory);
     this->tmManager = std::make_shared<TurbulenceModelManager>(para, tmFactory);
+}
+
 }
 
 //! \}

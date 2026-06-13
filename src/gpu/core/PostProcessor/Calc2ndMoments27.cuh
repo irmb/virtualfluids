@@ -37,6 +37,8 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ, real* kyzFromfcNEQ, real* kxzFromfcNEQ, real* kxxMyyFromfcNEQ,
                               real* kxxMzzFromfcNEQ, unsigned int* geoD, unsigned int* neighborX, unsigned int* neighborY,
                               unsigned int* neighborZ, unsigned long long numberOfLBnodes, unsigned int numberOfThreads,
@@ -67,6 +69,8 @@ void CalcHigherMomentsCompSP27(real* CUMcbb, real* CUMbcb, real* CUMbbc, real* C
                                unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
                                unsigned long long numberOfLBnodes, unsigned int numberOfThreads, real* DD,
                                bool isEvenTimestep);
+
+}
 
 #endif
 

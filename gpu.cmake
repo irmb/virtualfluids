@@ -49,6 +49,7 @@ add_subdirectory(src/gpu/core)
 if(VF_ENABLE_ALL_APPS)
     list(APPEND USER_APPS
     "apps/gpu/ActuatorLine"
+    "apps/gpu/ActuatorLineDisk"
     "apps/gpu/AtmosphericBoundaryLayer"
     "apps/gpu/DrivenCavityMultiGPU"
     "apps/gpu/GaussianHillOfConcentration"
@@ -62,6 +63,7 @@ endif()
 add_subdirectory(apps/gpu/DrivenCavity)
 add_subdirectory(apps/gpu/SphereInChannel)
 add_subdirectory(apps/gpu/LaminarPipeFlowGPU)
+add_subdirectory(apps/gpu/ResearchCrossingNeighbourhoodGpu)
 
 #############################################################
 ###                   Numeric Tests                       ###

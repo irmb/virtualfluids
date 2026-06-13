@@ -45,6 +45,8 @@
 
 #include <parallel/MPICommunicator.h>
 
+using namespace vf::gpu;
+
 std::shared_ptr<Parameter> vf::gpu::tests::makeParameter(std::shared_ptr<SimulationParameter> simPara)
 {
     auto para = std::make_shared<Parameter>(1, 0);

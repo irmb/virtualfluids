@@ -42,7 +42,7 @@
 #include "Parameter/Parameter.h"
 #include "Stress.h"
 
-using namespace vf::gpu;
+namespace vf::gpu {
 
 using StressBC = BoundaryConditionFactory::StressBC;
 using HeatFluxBC = BoundaryConditionFactory::SurfaceLayerBC;
@@ -111,4 +111,6 @@ void SurfaceLayerInterpolatedCompressibleSurfaceTemperature(LBMSimulationParamet
 {
     SurfaceLayer<StressBC::StressInterpolatedCompressible, HeatFluxBC::SurfaceTemperature, false>(
         parameterDevice, surfaceLayerBoundaryCondition);
+}
+
 }

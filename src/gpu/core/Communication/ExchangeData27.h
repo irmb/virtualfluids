@@ -46,6 +46,8 @@ namespace vf::parallel
 class Communicator;
 }
 
+namespace vf::gpu {
+
 //! \author Martin Schoenherr, Anna Wellmann
 //! \brief Routines for data exchange when running simulations on multiple GPUs
 //////////////////////////////////////////////////////////////////////////
@@ -147,6 +149,8 @@ void exchangeCollDataZGPU27AfterFtoC(Parameter* para, vf::parallel::Communicator
 
 void scatterNodesFromRecvBufferZGPU27AllNodes(Parameter* para, int level, CudaStreamIndex streamIndex);
 void scatterNodesFromRecvBufferZGPU27AfterFtoC(Parameter* para, int level, CudaStreamIndex streamIndex);
+
+}
 
 #endif
 

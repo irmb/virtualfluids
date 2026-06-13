@@ -36,6 +36,8 @@
 #include "cuda_helper/CudaGrid.h"
 #include <cuda_helper/CudaIndexCalculation.h>
 
+namespace vf::gpu {
+
 __global__ void computeCoriolis(unsigned long long numberOfNodes, const real* velocityX, const real* velocityY, real* forceX,
                                 real* forceY, const real geostrophicWindX, const real geostrophicWindY,
                                 const real coriolisParameter)
@@ -56,4 +58,6 @@ void CoriolisForce::interact(int level, uint /**/)
     computeCoriolis<<<grid.grid, grid.threads>>>(parD->numberOfNodes, parD->velocityX, parD->velocityY, parD->forceX_SP,
                                                  parD->forceY_SP, geostrophicWindX / velocityRatio,
                                                  geostrophicWindY / velocityRatio, coriolisParameter * timeRatio);
+}
+
 }

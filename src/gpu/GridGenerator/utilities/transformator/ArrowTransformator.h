@@ -38,6 +38,8 @@
 
 #include "global.h"
 
+namespace vf::gpu {
+
 class Arrow;
 
 class ArrowTransformator
@@ -53,6 +55,7 @@ public:
     virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const = 0;
 };
 
+}
 
 #endif
 

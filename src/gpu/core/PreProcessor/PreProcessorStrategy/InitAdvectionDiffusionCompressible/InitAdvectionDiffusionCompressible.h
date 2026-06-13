@@ -38,6 +38,8 @@
 
 #include <memory>
 
+namespace vf::gpu {
+
 class Parameter;
 
 class InitAdvectionDiffusionCompressible : public PreProcessorStrategy
@@ -52,6 +54,8 @@ private:
     InitAdvectionDiffusionCompressible(std::shared_ptr< Parameter> para);
     std::shared_ptr< Parameter> para;
 };
+
+}
 
 #endif 
 //! \}

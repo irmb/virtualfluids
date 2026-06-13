@@ -38,6 +38,8 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 class Parameter;
 
 //! \brief Basic debugging class to print out f's in a certain area of the domain
@@ -65,6 +67,8 @@ private:
     real maxZ;
     std::string tag;
 };
+
+}
 
 #endif
 

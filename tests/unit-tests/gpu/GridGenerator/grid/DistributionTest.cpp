@@ -39,6 +39,7 @@
 #include "grid/distributions/D3Q27.h"
 #include "lbm/constants/D3Q27.h"
 using namespace vf::lbm::dir;
+using namespace vf::gpu;
 
 TEST(DistributionTest, DistributionReturnsCorrectDirections)
 {

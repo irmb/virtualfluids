@@ -40,6 +40,7 @@
 #include <lbm/constants/D3Q27.h>
 
 using namespace vf::lbm::dir;
+using namespace vf::gpu;
 
 TEST(DistributionHelperTests, getPointerToDistribution_WhenEvenTimeStep_ShouldBeEqualToInput)
 {

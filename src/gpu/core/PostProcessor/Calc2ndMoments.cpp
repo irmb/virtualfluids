@@ -41,6 +41,8 @@
 #include "Cuda/CudaMemoryManager.h"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 void alloc2ndMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
     for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
@@ -302,6 +304,8 @@ void calcHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaMemoryManage
         cudaMemoryManager->cudaCopyHigherMoments(lev, para->getParH(lev)->numberOfNodes);
         //////////////////////////////////////////////////////////////////////////
     }
+}
+
 }
 
 //! \}

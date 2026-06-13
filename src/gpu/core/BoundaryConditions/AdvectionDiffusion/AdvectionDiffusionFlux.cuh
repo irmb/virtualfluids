@@ -44,6 +44,8 @@
 #include "gpu/core/Utilities/KernelUtilities.h"
 #include "gpu/cuda_helper/CudaIndexCalculation.h"
 
+namespace vf::gpu {
+
 using FluxBC = BoundaryConditionFactory::AdvectionDiffusionFluxBC;
 
 template <FluxBC fluxBCType>
@@ -58,7 +60,6 @@ __global__ void AdvectionDiffusionFlux_Device(real* populationsArray,
     using namespace vf::basics::constant;
     using namespace vf::lbm::dir;
     using namespace vf::lbm::advection_diffusion;
-    using namespace vf::gpu;
 
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
     if (nodeIndex >= bcParameters.numberOfBCnodes)
@@ -122,6 +123,8 @@ __global__ void AdvectionDiffusionFlux_Device(real* populationsArray,
             writeInInverseDirection<direction>(population, listIndices, populationReferences);
         });
     }
+}
+
 }
 
 //! \}

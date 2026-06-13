@@ -48,6 +48,8 @@
 #include <gpu/core/BoundaryConditions/Velocity/Velocity.h>
 #include <gpu/core/BoundaryConditions/AdvectionDiffusion/AdvectionDiffusion.h>
 
+using namespace vf::gpu;
+
 using bcFunction = void (*)(LBMSimulationParameter *, QforBoundaryConditions *);
 using bcFunctionDirectional = void (*)(LBMSimulationParameter *, QforDirectionalBoundaryCondition *);
 using bcFunctionParameter = void (*)(Parameter *, QforBoundaryConditions *, const int level);

@@ -38,6 +38,8 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 class Parameter;
 class CudaMemoryManager;
 
@@ -54,6 +56,8 @@ void writeAllTiDatafToFile(Parameter* para, uint timestep);
 
 void writeTiStuffToFile(Parameter* para, uint timestep, unsigned long long sizeOfTiArray, std::vector<real*>& data,
                         std::vector<std::string>& datanames);
+
+}
 
 #endif
 

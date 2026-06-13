@@ -48,6 +48,8 @@
 
 using namespace vf::basics::constant;
 
+namespace vf::gpu {
+
 constexpr real derivative(const real* quantity, uint node, uint neighborP, uint neighborM, bool neighborPisFluid, bool neighborMisFluid)
 {
     if (neighborPisFluid && neighborMisFluid)
@@ -65,9 +67,6 @@ __global__ void calculateTurbulentViscosityAMDKernel(const real* vx, const real*
                                                 const uint* neighborMMM, const uint* typeOfGridNode,
                                                 unsigned long long numberOfLBnodes, real SGSConstant)
 {
-    ////////////////////////////////////////////////////////////////////////////////
-    //! - Get node index coordinates from threadIdx, blockIdx, blockDim and gridDim.
-    //!
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
 
     if (nodeIndex >= numberOfLBnodes)
@@ -213,5 +212,7 @@ void calculateTurbulentDiffusivityMoeng(Parameter* para, int level)
         para->getParD(level)->neighborInverse, para->getParD(level)->typeOfGridNode, para->getParD(level)->numberOfNodes,
         para->getScaledBuoyancyFactor(level));
     getLastCudaError("calcTurbulentDiffusivityMoeng execution failed");
+}
+
 }
 //! \}

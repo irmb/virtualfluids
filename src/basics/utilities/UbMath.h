@@ -408,7 +408,24 @@ inline const T &min(const T &a1, const T &a2, const T &a3, const T &a4)
     //       if(tmp>a4) tmp=a4;
     //       return tmp;
 }
+template <typename T, typename U>
+constexpr T lerp(const T& a, const T& b, const U& t)
+{
+    return a + t * (b - a);
+}
 
+template <typename T, typename U>
+constexpr T lerp2(const T& a, const T& b, const T& c, const T& d, const U& t, const U& u)
+{
+    return lerp(lerp(a, b, t), lerp(c, d, t), u);
+}
+
+template <typename T, typename U>
+constexpr T lerp3(const T& a, const T& b, const T& c, const T& d, const T& e, const T& f, const T& g, const T& h, const U& t,
+                  const U& u, const U& v)
+{
+    return lerp(lerp2(a, b, c, d, t, u), lerp2(e, f, g, h, t, u), v);
+}
 } // namespace ub_math
 
 #endif

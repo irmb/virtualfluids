@@ -44,6 +44,8 @@
 
 using namespace vf::basics::constant;
 
+namespace vf::gpu {
+
 std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager, vf::parallel::Communicator& communicator)
 {
     return std::shared_ptr<GridProvider>(new GridGenerator(builder, para, cudaMemoryManager, communicator));
@@ -118,6 +120,7 @@ void GridProvider::setInitialNodeValues(uint numberOfNodes, int level) const
 
 void GridProvider::setInitialNodeValuesAD(uint numberOfNodes, int level) const
 {
+    using namespace ::vf::basics::constant;
     auto parH = para->getParH(level);
     for (uint index = 1; index <= numberOfNodes; index++) {
         const real coordX = parH->coordinateX[index];
@@ -181,6 +184,8 @@ void GridProvider::freeMemoryOnHost()
 void GridProvider::cudaCopyDataToHost(int level)
 {
     cudaMemoryManager->cudaCopyDataToHost(level);
+}
+
 }
 
 //! \}

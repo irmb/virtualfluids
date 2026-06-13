@@ -39,6 +39,8 @@
 #include "gpu/core/Utilities/KernelUtilities.h"
 #include "gpu/cuda_helper/CudaIndexCalculation.h"
 
+namespace vf::gpu {
+
 __global__ void AdvectionDiffusionNoFluxBounceBack_Device(real* distributions,
                                                     AdvectionDiffusionNoFluxBoundaryConditions bcParameters,
                                                     const uint* neighborX, const uint* neighborY, const uint* neighborZ,
@@ -46,7 +48,6 @@ __global__ void AdvectionDiffusionNoFluxBounceBack_Device(real* distributions,
 {
     using namespace vf::basics::constant;
     using namespace vf::lbm::dir;
-    using namespace vf::gpu;
 
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
     if (nodeIndex >= bcParameters.numberOfBCnodes)
@@ -70,6 +71,8 @@ __global__ void AdvectionDiffusionNoFluxBounceBack_Device(real* distributions,
             return;
         writeInInverseDirection<direction>(populations[direction], listIndices, populationReferences);
     });
+}
+
 }
 
 //! \}

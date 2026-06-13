@@ -34,54 +34,56 @@
 #include <cuda_runtime.h>
 #include <helper_functions.h>
 #include <helper_cuda.h>
+#include <basics/constants/NumericConstants.h>
 
 #include "Calculation/Calculation.h"
 #include <cuda_helper/CudaGrid.h>
 
-#include "BoundaryConditions/Outflow/Outflow_Device.cuh"
+#include "BoundaryConditions/Outflow/OutflowNonReflecting.cuh"
 #include "Parameter/Parameter.h"
+
+namespace vf::gpu {
 
 void OutflowNonReflecting(LBMSimulationParameter* parameterDevice, QforDirectionalBoundaryCondition* boundaryCondition)
 {
-    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
-    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+    const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
 
-    OutflowNonReflecting_Device<<< grid, threads >>> (
+    OutflowNonReflecting_Device<false><<<grid.grid, grid.threads>>> (
         boundaryCondition->RhoBC,
         parameterDevice->distributions.f[0],
         boundaryCondition->k,
         boundaryCondition->kN,
         boundaryCondition->numberOfBCnodes,
-        parameterDevice->omega,
         parameterDevice->neighborX,
         parameterDevice->neighborY,
         parameterDevice->neighborZ,
         parameterDevice->numberOfNodes,
         parameterDevice->isEvenTimestep,
-        static_cast<int>(boundaryCondition->direction));
-    getLastCudaError("OutflowNonReflecting_Device execution failed");
+        boundaryCondition->direction, 
+        vf::basics::constant::c0o1);
+    getLastCudaError("OutflowNonReflecting<false>_Device execution failed");
 }
 
 void OutflowNonReflectingPressureCorrection(LBMSimulationParameter* parameterDevice, QforDirectionalBoundaryCondition* boundaryCondition)
 {
-    dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
-    dim3 threads(parameterDevice->numberofthreads, 1, 1 );
+    const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
 
-    OutflowNonReflectingPressureCorrection_Device<<< grid, threads >>> (
+    OutflowNonReflecting_Device<true><<<grid.grid, grid.threads>>> (
         boundaryCondition->RhoBC,
         parameterDevice->distributions.f[0],
         boundaryCondition->k,
         boundaryCondition->kN,
         boundaryCondition->numberOfBCnodes,
-        parameterDevice->omega,
         parameterDevice->neighborX,
         parameterDevice->neighborY,
         parameterDevice->neighborZ,
         parameterDevice->numberOfNodes,
         parameterDevice->isEvenTimestep,
-        static_cast<int>(boundaryCondition->direction),
+        boundaryCondition->direction, 
         parameterDevice->outflowPressureCorrectionFactor);
-    getLastCudaError("OutflowNonReflectingPressureCorrection_Device execution failed");
+    getLastCudaError("OutflowNonReflecting<true>_Device execution failed");
+}
+
 }
 
 //! \}

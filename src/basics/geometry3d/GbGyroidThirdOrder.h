@@ -34,7 +34,7 @@
 #ifndef GbGyroidThirdOrder_H
 #define GbGyroidThirdOrder_H
 
-#ifdef BUILD_USE_BOOST
+#ifdef VF_BOOST
 
 #include <vector>
 

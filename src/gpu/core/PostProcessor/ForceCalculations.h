@@ -38,6 +38,8 @@
 #include <iostream>
 #include <stdio.h>
 
+namespace vf::gpu {
+
 class CudaMemoryManager;
 
 class ForceCalculations
@@ -63,6 +65,8 @@ private:
     double eold;
     bool isPID;
 };
+
+}
 
 #endif /* FORCE_CALCULATIONS_H */
 

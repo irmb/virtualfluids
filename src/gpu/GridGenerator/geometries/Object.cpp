@@ -34,6 +34,8 @@
 #include "Object.h"
 #include "grid/GridImp.h"
 
+namespace vf::gpu {
+
 void Object::findInnerNodes(SPtr<GridImp> grid)
 {
     grid->findInnerNodes();
@@ -42,6 +44,8 @@ void Object::findInnerNodes(SPtr<GridImp> grid)
 int Object::getIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnObject, real &qVal)
 {
     return 1;
+}
+
 }
 
 //! \}

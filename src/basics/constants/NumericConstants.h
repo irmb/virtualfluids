@@ -108,6 +108,7 @@ static constexpr double c15o1 = 15.;
 static constexpr double c16o1 = 16.;
 static constexpr double c17o1 = 17.;
 static constexpr double c18o1 = 18.;
+static constexpr double c20o1 = 20.;
 static constexpr double c21o1 = 21.;
 static constexpr double c24o1 = 24.;
 static constexpr double c25o1 = 25.;
@@ -146,10 +147,12 @@ static constexpr double c264o1 = 264.;
 static constexpr double c290o1 = 290.;
 static constexpr double c367o1 = 367.;
 static constexpr double c76o10 = 7.6;
+static constexpr double c76o100 = 0.76;
 
 
 static constexpr double c0p0000002 = 0.0000002;
 static constexpr double c10eM30 = 1e-30;
+static constexpr double c10eM12 = 1e-12;
 static constexpr double c10eM10 = 1e-10;
 static constexpr double cSmallSingle = 0.0000000002;
 
@@ -219,6 +222,7 @@ static constexpr float c9o4 = 9.0f / 4.0f;
 static constexpr float c5o2 = 5.0f / 2.0f;
 static constexpr float c9o2 = 9.0f / 2.0f;
 static constexpr float c76o10 = 7.6f;
+static constexpr float c76o100 = 0.76f;
 
 static constexpr float c0o1 = 0.f;
 static constexpr float c1o1 = 1.f;
@@ -239,6 +243,7 @@ static constexpr float c15o1 = 15.f;
 static constexpr float c16o1 = 16.f;
 static constexpr float c17o1 = 17.f;
 static constexpr float c18o1 = 18.f;
+static constexpr float c20o1 = 20.f;
 static constexpr float c21o1 = 21.f;
 static constexpr float c24o1 = 24.f;
 static constexpr float c25o1 = 25.f;
@@ -279,6 +284,7 @@ static constexpr float c367o1 = 367.0f;
 
 static constexpr float c0p0000002 = 0.0000002f;
 static constexpr float c10eM30 = 1e-30f;
+static constexpr float c10eM12 = 1e-12f;
 static constexpr float c10eM10 = 1e-10f;
 static constexpr float cSmallSingle = 0.0000000002f;
 

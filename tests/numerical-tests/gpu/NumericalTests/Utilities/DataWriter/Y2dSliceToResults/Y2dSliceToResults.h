@@ -38,7 +38,10 @@
 #include <vector>
 #include <memory>
 
+namespace vf::gpu{
 class Parameter;
+}
+
 class SimulationResults;
 struct VectorWriterInformationStruct;
 
@@ -52,7 +55,7 @@ private:
     Y2dSliceToResults();
     Y2dSliceToResults(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength, std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation);
     
-    void writeTimestep(std::shared_ptr<Parameter> para, unsigned int t, int level);
+    void writeTimestep(std::shared_ptr<vf::gpu::Parameter> para, unsigned int t, int level);
     int CoordPara3DTo1D(int x, int y, int z);
     int CoordResults2DTo1D(int x, int z);
 

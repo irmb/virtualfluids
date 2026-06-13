@@ -38,6 +38,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+namespace vf::gpu {
+
 BoundaryValues::BoundaryValues(std::string path)
 {
     file.open(path.c_str(), std::ios::in);
@@ -291,5 +293,6 @@ void BoundaryValues::setOutflowValues(real *RhoBC, int* kN, int level) const
     }
 }
 
+}
 
 //! \}

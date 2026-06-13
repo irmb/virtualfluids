@@ -39,6 +39,8 @@
 #include "global.h"
 #include "geometries/Vertex/Vertex.h"
 
+namespace vf::gpu {
+
 class TriangleMemento;
 
 struct Triangle
@@ -91,6 +93,8 @@ struct Triangle
 
     void setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &minZ, real &maxZ) const;
 };
+
+}
 
 #endif
 

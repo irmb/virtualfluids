@@ -40,6 +40,8 @@
 
 #define QCOLUMNS 27
 
+namespace vf::gpu {
+
 BoundaryQs::BoundaryQs(std::string path, bool isBinary)
 {
     if (isBinary) 
@@ -247,5 +249,6 @@ void BoundaryQs::getIndices(std::vector<std::vector<uint> > &indices) {
             indices[level].push_back(this->indices[level][index]);
 }
 
+}
 
 //! \}

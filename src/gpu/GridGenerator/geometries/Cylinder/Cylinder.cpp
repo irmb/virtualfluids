@@ -36,6 +36,8 @@
 
 using namespace axis;
 
+namespace vf::gpu {
+
 Cylinder::Cylinder(double centerX, double centerY, double centerZ, double radius, double height, Axis rotationalAxis)
     : center({ centerX, centerY, centerZ }), radius(radius), height(height), rotationalAxis(rotationalAxis)
 {
@@ -195,5 +197,7 @@ void Cylinder::changeSizeByDelta(double delta)
 {
     this->radius += delta;
     this->height += 2 * delta;
+}
+
 }
 //! \}

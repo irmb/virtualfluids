@@ -35,6 +35,8 @@
 
 #include <memory>
 
+namespace vf::gpu {
+
 SPtr<Conglomerate> Conglomerate::makeShared()
 {
     return std::make_shared<Conglomerate>();
@@ -179,6 +181,8 @@ void Conglomerate::findInnerNodes(SPtr<GridImp> grid)
 
     if( numberOfSubtractObjects > 0 )
         VF_LOG_WARNING("Warning: Conglomerate::subtract() is currently not fully implemented!");
+}
+
 }
 
 //! \}

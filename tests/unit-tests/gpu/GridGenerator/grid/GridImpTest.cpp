@@ -41,14 +41,18 @@
 
 #include <gpu/GridGenerator/grid/GridImp.h>
 
+#include "DataTypes.h"
 #include "PointerDefinitions.h"
 #include "grid/Field.h"
+#include "grid/Grid.h"
 #include "grid/GridBuilder/MultipleGridBuilder.h"
 #include "grid/distributions/Distribution.h"
 #include "geometries/BoundingBox/BoundingBox.h"
+#include "logger/Logger.h"
 #include "utilities/communication.h"
 
 using namespace testing;
+using namespace vf::gpu;
 
 // This test is commented out because it causes a compiler error in Clang 10 --> The bug is fixed in Clang 14 (https://github.com/google/googletest/issues/2271)
 
@@ -289,6 +293,212 @@ TEST_F(findNeighborsIntegrationTest, validFluidNeighbors2)
     EXPECT_THAT(numberInvalidFluidNeighbors[2], testing::Eq(0));
 }
 
+
+int chaseM00overY(const SPtr<Grid>& grid, int kM00){
+    const int kMMM = grid->getNeighborsNegative()[grid->getNeighborsX()[kM00]];
+    return grid->getNeighborsZ()[grid->getNeighborsY()[kMMM]];
+}
+
+int chaseM00overZ(const SPtr<Grid>& grid, int kM00){
+    const int kMMM = grid->getNeighborsNegative()[grid->getNeighborsX()[kM00]];
+    return grid->getNeighborsY()[grid->getNeighborsZ()[kMMM]];
+}
+
+int chase0M0overX(const SPtr<Grid>& grid, int k0M0){
+    const int kMMM = grid->getNeighborsNegative()[grid->getNeighborsY()[k0M0]];
+    return grid->getNeighborsZ()[grid->getNeighborsX()[kMMM]];
+}
+
+int chase0M0overZ(const SPtr<Grid>& grid, int k0M0){
+    const int kMMM = grid->getNeighborsNegative()[grid->getNeighborsY()[k0M0]];
+    return grid->getNeighborsX()[grid->getNeighborsZ()[kMMM]];
+}
+
+int chase00MoverX(const SPtr<Grid>& grid, int k00M){
+    const int kMMM = grid->getNeighborsNegative()[grid->getNeighborsZ()[k00M]];
+    return grid->getNeighborsY()[grid->getNeighborsX()[kMMM]];
+}
+
+int chase00MoverY(const SPtr<Grid>& grid, int k00M){
+    const int kMMM = grid->getNeighborsNegative()[grid->getNeighborsZ()[k00M]];
+    return grid->getNeighborsX()[grid->getNeighborsY()[kMMM]];
+}
+
+
+TEST_F(findNeighborsIntegrationTest, validStopperNeighborsNoPeriodic)
+{
+    const real delta = 0.18;
+    const real startX = 0.0, startY = 0.0, startZ = 0.0;
+    const real endX = 1.0, endY = 1.0, endZ = 1.0;
+    gridBuilder->addCoarseGrid(startX, startY, startZ, endX, endY, endZ, delta);
+    gridBuilder->buildGrids(false);
+
+    auto grid = gridBuilder->getGrid(0);
+    const int startIndex = grid->transCoordToIndex(startX, startY, startZ);
+
+    EXPECT_THAT(chaseM00overY(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chaseM00overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverY(grid, startIndex), testing::Eq(startIndex));
+}
+
+TEST_F(findNeighborsIntegrationTest, validStopperNeighborsXPeriodic)
+{
+    const real delta = 0.18;
+    const real startX = 0.0, startY = 0.0, startZ = 0.0;
+    const real endX = 1.0, endY = 1.0, endZ = 1.0;
+    gridBuilder->addCoarseGrid(startX, startY, startZ, endX, endY, endZ, delta);
+    gridBuilder->setPeriodicBoundaryCondition(true, false, false);
+    gridBuilder->buildGrids(false);
+    auto grid = gridBuilder->getGrid(0);
+    const int startIndex = grid->transCoordToIndex(startX, startY, startZ);
+
+    EXPECT_THAT(chaseM00overY(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chaseM00overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverY(grid, startIndex), testing::Eq(startIndex));    
+}
+
+TEST_F(findNeighborsIntegrationTest, validStopperNeighborsYPeriodic)
+{
+    const real delta = 0.18;
+    const real startX = 0.0, startY = 0.0, startZ = 0.0;
+    const real endX = 1.0, endY = 1.0, endZ = 1.0;
+    gridBuilder->addCoarseGrid(startX, startY, startZ, endX, endY, endZ, delta);
+    gridBuilder->setPeriodicBoundaryCondition(false, true, false);
+    gridBuilder->buildGrids(false);
+    auto grid = gridBuilder->getGrid(0);
+    const int startIndex = grid->transCoordToIndex(startX, startY, startZ);
+
+    EXPECT_THAT(chaseM00overY(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chaseM00overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverY(grid, startIndex), testing::Eq(startIndex));    
+}
+
+TEST_F(findNeighborsIntegrationTest, validStopperNeighborsZPeriodic)
+{
+    const real delta = 0.18;
+    const real startX = 0.0, startY = 0.0, startZ = 0.0;
+    const real endX = 1.0, endY = 1.0, endZ = 1.0;
+    gridBuilder->addCoarseGrid(startX, startY, startZ, endX, endY, endZ, delta);
+    gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+    gridBuilder->buildGrids(false);
+    auto grid = gridBuilder->getGrid(0);
+    const int startIndex = grid->transCoordToIndex(startX, startY, startZ);
+    EXPECT_THAT(chaseM00overY(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chaseM00overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverY(grid, startIndex), testing::Eq(startIndex));
+}
+
+TEST_F(findNeighborsIntegrationTest, validStopperNeighborXShiftInYPeriodic)
+{
+    const real delta = 0.18;
+    const real startX = 0.0, startY = 0.0, startZ = 0.0;
+    const real endX = 1.0, endY = 1.0, endZ = 1.0;
+    gridBuilder->addCoarseGrid(startX, startY, startZ, endX, endY, endZ, delta);
+    gridBuilder->setPeriodicBoundaryCondition(true, false, true);
+    gridBuilder->setPeriodicShiftOnXBoundaryInZDirection(delta);
+    gridBuilder->buildGrids(false);
+    auto grid = gridBuilder->getGrid(0);
+    const int startIndex = grid->transCoordToIndex(startX, startY, startZ);
+    EXPECT_THAT(chaseM00overY(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chaseM00overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverY(grid, startIndex), testing::Eq(startIndex));
+}
+
+
+TEST_F(findNeighborsIntegrationTest, validStopperNeighborYShiftInXPeriodic)
+{
+    const real delta = 0.18;
+    const real startX = 0.0, startY = 0.0, startZ = 0.0;
+    const real endX = 1.0, endY = 1.0, endZ = 1.0;
+    gridBuilder->addCoarseGrid(startX, startY, startZ, endX, endY, endZ, delta);
+    gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+    gridBuilder->setPeriodicShiftOnYBoundaryInXDirection(delta);
+    gridBuilder->buildGrids(false);
+    auto grid = gridBuilder->getGrid(0);
+    const int startIndex = grid->transCoordToIndex(startX, startY, startZ);
+
+    EXPECT_THAT(chaseM00overY(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chaseM00overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverY(grid, startIndex), testing::Eq(startIndex));    
+}
+
+TEST_F(findNeighborsIntegrationTest, validStopperNeighborYShiftInZPeriodic)
+{
+    const real delta = 0.18;
+    const real startX = 0.0, startY = 0.0, startZ = 0.0;
+    const real endX = 1.0, endY = 1.0, endZ = 1.0;
+    gridBuilder->addCoarseGrid(startX, startY, startZ, endX, endY, endZ, delta);
+    gridBuilder->setPeriodicBoundaryCondition(false, true, true);
+    gridBuilder->setPeriodicShiftOnYBoundaryInZDirection(delta);
+    gridBuilder->buildGrids(false);
+    auto grid = gridBuilder->getGrid(0);
+    const int startIndex = grid->transCoordToIndex(startX, startY, startZ);
+
+    EXPECT_THAT(chaseM00overY(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chaseM00overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverY(grid, startIndex), testing::Eq(startIndex));    
+}
+
+TEST_F(findNeighborsIntegrationTest, validStopperNeighborZShiftInXPeriodic)
+{
+    const real delta = 0.18;
+    const real startX = 0.0, startY = 0.0, startZ = 0.0;
+    const real endX = 1.0, endY = 1.0, endZ = 1.0;
+    gridBuilder->addCoarseGrid(startX, startY, startZ, endX, endY, endZ, delta);
+    gridBuilder->setPeriodicBoundaryCondition(true,  false, true);
+    gridBuilder->setPeriodicShiftOnZBoundaryInXDirection(delta);
+    gridBuilder->buildGrids(false);
+    auto grid = gridBuilder->getGrid(0);
+    const int startIndex = grid->transCoordToIndex(startX, startY, startZ);
+
+    EXPECT_THAT(chaseM00overY(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chaseM00overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverY(grid, startIndex), testing::Eq(startIndex));    
+}
+
+TEST_F(findNeighborsIntegrationTest, validStopperNeighborZShiftInYPeriodic)
+{
+    const real delta = 0.18;
+    const real startX = 0.0, startY = 0.0, startZ = 0.0;
+    const real endX = 1.0, endY = 1.0, endZ = 1.0;
+    gridBuilder->addCoarseGrid(startX, startY, startZ, endX, endY, endZ, delta);
+    gridBuilder->setPeriodicBoundaryCondition(false, true, true);
+    gridBuilder->setPeriodicShiftOnZBoundaryInYDirection(delta);
+    gridBuilder->buildGrids(false);
+    auto grid = gridBuilder->getGrid(0);
+    const int startIndex = grid->transCoordToIndex(startX, startY, startZ);
+
+    EXPECT_THAT(chaseM00overY(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chaseM00overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase0M0overZ(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverX(grid, startIndex), testing::Eq(startIndex));
+    EXPECT_THAT(chase00MoverY(grid, startIndex), testing::Eq(startIndex));    
+}
 
 class PeriodicBoundaryShiftIntegrationTest : public testing::TestWithParam<std::tuple<int, int>>
 {
@@ -1068,16 +1278,17 @@ void logForFindCommunicationIndexData(real coordinate, real coordinateLimit,
 
 TEST(GridImpTest, findCommunicationIndex_MX)
 {
-    real minCoordinate = 10;
-    real maxCoordinate = 20;
-    real delta = 1.5;
+    const real minimumDelta = 5e-7;
+    const real minCoordinate = 10;
+    const real maxCoordinate = 20;
+    const real delta = 1.5;
     auto sut = GridImp::makeShared(nullptr, minCoordinate, minCoordinate, minCoordinate, maxCoordinate, maxCoordinate,
                                    maxCoordinate, delta, "D3Q27", 0);
-    auto direction = communication_directions::MX;
-    auto index = 42;
+    const auto direction = communication_directions::MX;
+    const auto index = 42;
 
     // send
-    real coordinate = minCoordinate + 0.39 * delta;
+    real coordinate = minCoordinate + delta;
     logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
     sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
     auto result = sut->communicationIndices[direction];
@@ -1096,23 +1307,24 @@ TEST(GridImpTest, findCommunicationIndex_MX)
     sut->communicationIndices[direction].receiveIndices.clear();
     sut->communicationIndices[direction].sendIndices.clear();
 
-    coordinate = minCoordinate + 0.61 * delta;
+    coordinate = minCoordinate;
     logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
     sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
     result = sut->communicationIndices[direction];
-    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.sendIndices.size(), Eq(1)) << "Send index should be added";
+    EXPECT_THAT(result.sendIndices.at(0), Eq(index));
     EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
     sut->communicationIndices[direction].receiveIndices.clear();
     sut->communicationIndices[direction].sendIndices.clear();
 
     // receive
-
-    coordinate = minCoordinate - 0.39 * delta;
+    coordinate = minCoordinate - minimumDelta * delta;
     logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
     sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
     result = sut->communicationIndices[direction];
     EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
-    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(1)) << "Receive communication index should be added";
+    EXPECT_THAT(result.receiveIndices.at(0), Eq(index));
     sut->communicationIndices[direction].receiveIndices.clear();
     sut->communicationIndices[direction].sendIndices.clear();
 
@@ -1126,33 +1338,62 @@ TEST(GridImpTest, findCommunicationIndex_MX)
     sut->communicationIndices[direction].receiveIndices.clear();
     sut->communicationIndices[direction].sendIndices.clear();
 
-    coordinate = minCoordinate - 0.61 * delta;
+    coordinate = minCoordinate - delta;
     logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
     sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
     result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.receiveIndices.size(), Eq(1)) << "Receive index should be added";
+    EXPECT_THAT(result.receiveIndices.at(0), Eq(index));
     EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate - (1. + minimumDelta) * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
     EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
     sut->communicationIndices[direction].receiveIndices.clear();
     sut->communicationIndices[direction].sendIndices.clear();
 }
 
 TEST(GridImpTest, findCommunicationIndex_PX)
 {
-    real minCoordinate = -10;
-    real maxCoordinate = -20;
-    real delta = 1.5;
+    const real minimumDelta = 5e-7;
+    const real minCoordinate = -10;
+    const real maxCoordinate = -20;
+    const real delta = 1.5;
     auto sut = GridImp::makeShared(nullptr, minCoordinate, minCoordinate, minCoordinate, maxCoordinate, maxCoordinate,
                                    maxCoordinate, delta, "D3Q27", 0);
-    auto direction = communication_directions::PX;
-    auto index = 42;
+    const auto direction = communication_directions::PX;
+    const auto index = 42;
 
-    // send
-    real coordinate = minCoordinate + 0.39 * delta;
+    real coordinate = minCoordinate + 2.0 * delta;
     logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
     sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
     auto result = sut->communicationIndices[direction];
     EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
     EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate + (1. + minimumDelta) * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate + delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.receiveIndices.size(), Eq(1)) << "Receive index should be added";
+    EXPECT_THAT(result.receiveIndices.at(0), Eq(index));
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No send index should be added";
     sut->communicationIndices[direction].receiveIndices.clear();
     sut->communicationIndices[direction].sendIndices.clear();
 
@@ -1166,22 +1407,22 @@ TEST(GridImpTest, findCommunicationIndex_PX)
     sut->communicationIndices[direction].receiveIndices.clear();
     sut->communicationIndices[direction].sendIndices.clear();
 
-    coordinate = minCoordinate + 0.61 * delta;
+    coordinate = minCoordinate + minimumDelta * delta;
     logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
     sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
     result = sut->communicationIndices[direction];
-    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
-    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(1)) << "Receive index should be added";
+    EXPECT_THAT(result.receiveIndices.at(0), Eq(index));
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No send index should be added";
     sut->communicationIndices[direction].receiveIndices.clear();
     sut->communicationIndices[direction].sendIndices.clear();
 
-    // receive
-
-    coordinate = minCoordinate - 0.39 * delta;
+    coordinate = minCoordinate;
     logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
     sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
     result = sut->communicationIndices[direction];
-    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.sendIndices.size(), Eq(1)) << "Send index should be added";
+    EXPECT_THAT(result.sendIndices.at(0), Eq(index));
     EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
     sut->communicationIndices[direction].receiveIndices.clear();
     sut->communicationIndices[direction].sendIndices.clear();
@@ -1196,7 +1437,26 @@ TEST(GridImpTest, findCommunicationIndex_PX)
     sut->communicationIndices[direction].receiveIndices.clear();
     sut->communicationIndices[direction].sendIndices.clear();
 
-    coordinate = minCoordinate - 0.61 * delta;
+    coordinate = minCoordinate - (1. - minimumDelta) * delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(1)) << "Send index should be added";
+    EXPECT_THAT(result.sendIndices.at(0), Eq(index));
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No receive index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate - delta;
+    logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
+    sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
+    result = sut->communicationIndices[direction];
+    EXPECT_THAT(result.sendIndices.size(), Eq(0)) << "No communication index should be added";
+    EXPECT_THAT(result.receiveIndices.size(), Eq(0)) << "No communication index should be added";
+    sut->communicationIndices[direction].receiveIndices.clear();
+    sut->communicationIndices[direction].sendIndices.clear();
+
+    coordinate = minCoordinate - 2.0 * delta;
     logForFindCommunicationIndexData(coordinate, minCoordinate, direction, delta);
     sut->findCommunicationIndex(index, coordinate, minCoordinate, direction);
     result = sut->communicationIndices[direction];

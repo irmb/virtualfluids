@@ -37,6 +37,8 @@
 #include <DataTypes.h>
 #include <curand.h>
 
+namespace vf::gpu {
+
 __global__ void InitNavierStokesIncompressible_Device(
     unsigned int* neighborX,
     unsigned int* neighborY,
@@ -49,6 +51,8 @@ __global__ void InitNavierStokesIncompressible_Device(
     unsigned int size_Mat,
     real* DD,
     bool EvenOrOdd);
+
+}
 
 #endif
 //! \}

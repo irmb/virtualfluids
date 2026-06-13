@@ -45,6 +45,8 @@
 
 using namespace std;
 
+namespace vf::gpu {
+
 void calcCp(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev)
 {
     //////////////////////////////////////////////////////////////////////////
@@ -661,6 +663,8 @@ void writeStringToFile(const std::string &s, std::ofstream &ofile)
     strncpy(cbuffer, s.c_str(), 80);
     // Write a constant 80 bytes to the file.
     ofile.write(cbuffer, 80);
+}
+
 }
 
 //! \}

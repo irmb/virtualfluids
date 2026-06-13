@@ -35,6 +35,8 @@
 
 #include "utilities/math/Math.h"
 
+namespace vf::gpu {
+
 Vertex::Vertex(real x, real y, real z) : x(x), y(y), z(z){}
 Vertex::Vertex() { x = 0.0f; y = 0.0f; z = 0.0f; }
 
@@ -193,6 +195,6 @@ void Vertex::calculateMinMax(const real &value1, const real &value2, const real 
     max = newMaximum;
 }
 
-
+}
 
 //! \}

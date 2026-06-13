@@ -53,7 +53,7 @@ using namespace vf::basics::constant;
 using valueIterator = thrust::device_vector<real>::iterator;
 using indexIterator = thrust::device_vector<uint>::iterator;
 
-///////////////////////////////////////////////////////////////////////////////////
+namespace vf::gpu {
 
 std::vector<std::string> WallModelProbe::getVariableNames()
 {
@@ -288,6 +288,8 @@ void WallModelProbe::write(int level)
         data->averagedData.clear();
         data->averagedData.push_back(lastTimestep);
     }
+}
+
 }
 
 //! \}

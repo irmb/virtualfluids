@@ -43,6 +43,8 @@
 #include "Calculation/Calculation.h"
 #include "Utilities/KernelUtilities.h"
 
+namespace vf::gpu {
+
 constexpr void findCutLinks(bool* linkIsCut, const SubgridDistances27& subgridDistances, const uint nodeIndex)
 {
     using namespace vf::basics::constant;
@@ -105,9 +107,9 @@ constexpr void computeBouncedBackDistributionsInterpolated(const SubgridDistance
         const size_t inverseDirection = inverseDir<dir>();
         const real cu = getVelocity<dir>(velocity.x, velocity.y, velocity.z);
         const real cu_sq = c3o2 * square(velocity) * (c1o1 + drho);
-        const real feq = vf::gpu::getEquilibriumForBC(drho, cu, cu_sq, weight);
+        const real feq = getEquilibriumForBC(drho, cu, cu_sq, weight);
 
-        const real populationBouncedBack = vf::gpu::getInterpolatedDistributionForNoSlipWithPressureBC(
+        const real populationBouncedBack = getInterpolatedDistributionForNoSlipWithPressureBC(
             subgridDistance, populations[dir], populations[inverseDirection], feq, relaxationFrequency, drho, weight);
 
         populationsBouncedBack[inverseDirection] = populationBouncedBack;
@@ -159,7 +161,7 @@ inline __device__ real3 computeFakeWallVelocity(const real3 wallNormal, const re
 
 constexpr real3 writeDistributionsBB(const Distributions27& populationReferences, const bool* linkIsCut,
                                      const real* populationsBouncedBack, const real3 velocity, const real density,
-                                     const vf::gpu::ListIndices& listIndices)
+                                     const ListIndices& listIndices)
 {
     using namespace vf::basics::constant;
     using namespace vf::lbm::dir;
@@ -172,7 +174,7 @@ constexpr real3 writeDistributionsBB(const Distributions27& populationReferences
         const size_t inverseDirection = inverseDir<dir>();
         const real addedMomentum = -c6o1 * density * getWeight<dir>() * getVelocity<dir>(velocity.x, velocity.y, velocity.z);
         const real population = populationsBouncedBack[inverseDirection] + addedMomentum;
-        vf::gpu::writeInInverseDirection<dir>(population, listIndices, populationReferences);
+        writeInInverseDirection<dir>(population, listIndices, populationReferences);
         wallMomentumAdded.x += addedMomentum * getComponentX<dir>();
         wallMomentumAdded.y += addedMomentum * getComponentY<dir>();
         wallMomentumAdded.z += addedMomentum * getComponentZ<dir>();
@@ -183,7 +185,7 @@ constexpr real3 writeDistributionsBB(const Distributions27& populationReferences
 constexpr real3 writeDistributionsInterpolatedBB(const Distributions27& populationReferences, const bool* linkIsCut,
                                                  const real* populationsBouncedBack, const real3 velocity,
                                                  const real density, const SubgridDistances27& subgridDistances,
-                                                 const vf::gpu::ListIndices& listIndices, const uint nodeIndex)
+                                                 const ListIndices& listIndices, const uint nodeIndex)
 {
     using namespace vf::basics::constant;
     using namespace vf::lbm::dir;
@@ -196,7 +198,7 @@ constexpr real3 writeDistributionsInterpolatedBB(const Distributions27& populati
         const size_t inverseDirection = inverseDir<dir>();
         const real microVelocity = getVelocity<dir>(velocity.x, velocity.y, velocity.z);
         const real addedMomentum = -c6o1 * density * getWeight<dir>() * microVelocity / subgridDistances.q[dir][nodeIndex];
-        vf::gpu::writeInInverseDirection<dir>(populationsBouncedBack[inverseDirection] + addedMomentum, listIndices,
+        writeInInverseDirection<dir>(populationsBouncedBack[inverseDirection] + addedMomentum, listIndices,
                                               populationReferences);
 
         wallMomentumAdded.x += addedMomentum * getComponentX<dir>();
@@ -204,6 +206,8 @@ constexpr real3 writeDistributionsInterpolatedBB(const Distributions27& populati
         wallMomentumAdded.z += addedMomentum * getComponentZ<dir>();
     });
     return wallMomentumAdded;
+}
+
 }
 
 #endif

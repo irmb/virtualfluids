@@ -36,6 +36,8 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 __global__ void VelocityBounceBack_Device(
     real* velocityX,
     real* velocityY,
@@ -94,6 +96,8 @@ __global__ void VelocityWithPressureInterpolatedCompressible_Device(
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
     bool isEvenTimestep);
+
+}
 
 #endif
 

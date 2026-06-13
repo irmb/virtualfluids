@@ -35,7 +35,7 @@
 #include "Utilities/LogFileData/LogFileData.h"
 #include "Utilities/LogFileData/LogFileDataGroup/LogFileDataGroup.h"
 #include "Utilities/LogFileDataAssistant/LogFileDataAssistantImp.h"
-#include "Utilities/LogFileDataAssistant/LogFileDataAssistantStrategy/LogFileDataAssistantStrategyFactory/LogFileDataAssistantStrategyFactoryImp.h"
+#include "Utilities/LogFileDataAssistant/LogFileDataAssistantStrategy/LogFileDataAssistantStrategyFactory/LogFileDataAssiStrategyFactoryImp.h"
 #include "Utilities/LogFileReader/LogFileReader.h"
 #include "Utilities/MathematicaAssistant/MathematicaAssistant.h"
 #include "Utilities/MathematicaAssistant/MathematicaAssistantFactory/MathematicaAssistantFactoryImp.h"

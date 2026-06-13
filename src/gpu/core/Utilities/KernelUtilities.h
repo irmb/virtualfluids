@@ -318,7 +318,7 @@ template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dPMM>() const { r
 template <> constexpr uint ListIndices::getIndex<vf::lbm::dir::dMMM>() const { return kMMM(); }
 
 template <size_t direction>
-constexpr void writeInInverseDirection(const real population, const vf::gpu::ListIndices& listIndices,
+constexpr void writeInInverseDirection(const real population, const ListIndices& listIndices,
                                        const Distributions27& populationReferences)
 {
     const size_t inverseDir = vf::lbm::dir::inverseDir<direction>();
@@ -327,7 +327,7 @@ constexpr void writeInInverseDirection(const real population, const vf::gpu::Lis
 }
 
 template <size_t direction>
-constexpr real readFromInverseDirection(const vf::gpu::ListIndices& listIndices,
+constexpr real readFromInverseDirection(const ListIndices& listIndices,
                                        const Distributions27& populationReferences)
 {
     const size_t inverseDir = vf::lbm::dir::inverseDir<direction>();
@@ -336,7 +336,7 @@ constexpr real readFromInverseDirection(const vf::gpu::ListIndices& listIndices,
 }
 
 template <size_t direction>
-constexpr void writeInSameDirection(const real population, const vf::gpu::ListIndices& listIndices,
+constexpr void writeInSameDirection(const real population, const ListIndices& listIndices,
                                        const Distributions27& populationReferences)
 {
     const uint writeIndex = listIndices.getIndex<direction>();
@@ -344,7 +344,7 @@ constexpr void writeInSameDirection(const real population, const vf::gpu::ListIn
 }
 
 template <size_t direction>
-constexpr real readFromSameDirection(const vf::gpu::ListIndices& listIndices,
+constexpr real readFromSameDirection(const ListIndices& listIndices,
                                        const Distributions27& populationReferences)
 {
     const uint readIndex = listIndices.getIndex<direction>();

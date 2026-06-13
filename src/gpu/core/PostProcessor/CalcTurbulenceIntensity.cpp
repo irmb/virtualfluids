@@ -40,6 +40,8 @@
 #include "Cuda/CudaMemoryManager.h"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 void allocTurbulenceIntensity(Parameter *para, CudaMemoryManager *cudaMemoryManager)
 {
     for (int lev=para->getCoarse(); lev <= para->getFine(); lev++) {
@@ -209,6 +211,8 @@ void writeTiStuffToFile(Parameter *para, uint timestep, unsigned long long sizeO
     // close file
     ostr.close();
     ////////////////////////////////////////////////////////////////////////
+}
+
 }
 
 //! \}

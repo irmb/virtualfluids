@@ -39,11 +39,15 @@
 #include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 
-struct LBMSimulationParameter;
-class Parameter;
 struct CUstream_st;
 
+namespace vf::gpu {
+
+struct LBMSimulationParameter;
+class Parameter;
+
 using gridScaling = std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICells *, ICellNeigh&, CUstream_st *stream)>;
+using gridScalingAdvectionDiffusion = std::function<void(LBMSimulationParameter*, LBMSimulationParameter*, ICells*, ICellNeigh&, CUstream_st* stream)>;
 
 class GridScalingFactory
 {
@@ -56,14 +60,28 @@ public:
         NotSpecified
     };
 
-    void setScalingFactory(const GridScalingFactory::GridScaling gridScalingType);
+    //! \brief An enumeration for selecting a scaling function
+    enum class GridScalingAdvectionDiffusion {
+        //! - ScaleAdvectionDiffusionCompressible = basic scaling for compressible advection diffusion
+        ScaleAdvectionDiffusionCompressible,
+        //! - not specified scaling
+        NotSpecified
+    };
+
+    void setScalingFactory(const GridScalingFactory::GridScaling gridScalingType, const GridScalingFactory::GridScalingAdvectionDiffusion gridScalingTypeAdvectionDiffusion = GridScalingAdvectionDiffusion::NotSpecified);
 
     [[nodiscard]] gridScaling getGridScalingFC(bool hasTurbulentViscosity) const;
     [[nodiscard]] gridScaling getGridScalingCF(bool hasTurbulentViscosity) const;
 
+    [[nodiscard]] gridScalingAdvectionDiffusion getGridScalingAdvectionDiffusionFC(bool hasTurbulentDiffusivity) const;
+    [[nodiscard]] gridScalingAdvectionDiffusion getGridScalingAdvectionDiffusionCF(bool hasTurbulentDiffusivity) const;
+
 private:
     GridScaling gridScalingType = GridScaling::NotSpecified;
+    GridScalingAdvectionDiffusion gridScalingTypeAdvectionDiffusion = GridScalingAdvectionDiffusion::NotSpecified;
 };
+
+}
 
 #endif
 

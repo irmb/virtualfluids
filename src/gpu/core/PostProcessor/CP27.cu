@@ -46,6 +46,8 @@
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
+namespace vf::gpu {
+
 __global__ void CalcCP27(real* DD, 
                                     int* cpIndex, 
                                     int nonCp, 
@@ -203,6 +205,8 @@ void CalcCPbottom27(real* DD, int* cpIndex, int nonCp, double* cpPress, unsigned
     CalcCP27<<<grid.grid, grid.threads>>>(DD, cpIndex, nonCp, cpPress, neighborX, neighborY, neighborZ, numberOfLBnodes,
                                           isEvenTimestep);
     getLastCudaError("CalcCP27 execution failed");
+}
+
 }
 
 //! \}

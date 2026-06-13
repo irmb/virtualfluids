@@ -36,6 +36,8 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 struct LBMSimulationParameter;
 struct QforBoundaryConditions;
 
@@ -56,6 +58,8 @@ void StressBounceBackCompressible(LBMSimulationParameter* parameterDevice, QforB
 void StressBounceBackWithPressureCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void StressInterpolatedCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+
+}
 
 #endif
 

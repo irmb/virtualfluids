@@ -35,13 +35,11 @@ import numpy as np
 from pathlib import Path
 from mpi4py import MPI
 from pyfluids import basics, gpu, logger, parallel
-
 # %%
 sim_name = "ABL"
 config_file = Path(__file__).parent / "configBoundaryLayer.cfg"
 output_path = Path(__file__).parent / Path("output")
 output_path.mkdir(exist_ok=True)
-
 
 # %%
 logger.Logger.initialize_logger()

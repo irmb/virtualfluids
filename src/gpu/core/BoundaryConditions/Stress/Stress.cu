@@ -41,6 +41,8 @@
 #include "BoundaryConditions/Stress/Stress_Device.cuh"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 using StressBC = BoundaryConditionFactory::StressBC;
 
 GridParameter getStressBCGridParameter(LBMSimulationParameter* parameterDevice)
@@ -74,6 +76,8 @@ void StressBounceBackWithPressureCompressible(LBMSimulationParameter* parameterD
 void StressInterpolatedCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
     Stress<StressBC::StressInterpolatedCompressible, false>(parameterDevice, boundaryCondition);
+}
+
 }
 
 //! \}

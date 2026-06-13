@@ -41,6 +41,8 @@
 #include "BoundaryConditions/NoSlip/NoSlip_Device.cuh"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 void NoSlipBounceBack(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
     dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
@@ -97,5 +99,6 @@ void NoSlipInterpolatedCompressible(LBMSimulationParameter* parameterDevice, Qfo
     getLastCudaError("NoSlipInterpolatedCompressible_Device execution failed");
 }
 
+}
 
 //! \}

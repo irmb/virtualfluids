@@ -38,6 +38,8 @@
 
 #include "global.h"
 
+namespace vf::gpu {
+
 enum class WRITING_FORMAT { BINARY, ASCII };
 
 class Grid;
@@ -77,6 +79,7 @@ private:
     static void write_float(float val);
 };
 
+}
 
 #endif
 

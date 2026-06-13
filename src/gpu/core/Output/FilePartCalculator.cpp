@@ -34,6 +34,8 @@
 #include "FilePartCalculator.h"
 #include <stdexcept>
 
+namespace vf::gpu {
+
 uint FilePartCalculator::calculateNumberOfNodesInPart(uint numberOfNodes, uint indexOfFilePart)
 {
     uint indexOfLastFilePart = FilePartCalculator::calculateNumberOfParts(numberOfNodes) - 1;
@@ -56,5 +58,7 @@ uint FilePartCalculator::calculateStartingPostionOfPart(uint indexOfPart)
 }
 
 const uint FilePartCalculator::limitOfNodesForVTK;
+
+}
 
 //! \}

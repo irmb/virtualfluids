@@ -48,6 +48,8 @@
 #include "BoundaryConditions/Stress/SurfaceLayer.h"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 void BoundaryConditionFactory::setVelocityBoundaryCondition(VelocityBC boundaryConditionType)
 {
     this->velocityBoundaryCondition = boundaryConditionType;
@@ -102,6 +104,10 @@ void BoundaryConditionFactory::setAdvectionDiffusionDirichletBoundaryCondition(A
 void BoundaryConditionFactory::setAdvectionDiffusionNeumannBoundaryCondition(AdvectionDiffusionNeumannBC boundaryConditionType)
 {
     this->advectionDiffusionNeumannBoundaryCondition = boundaryConditionType;
+}
+void BoundaryConditionFactory::setAdvectionDiffusionDirectionalBoundaryCondition(AdvectionDiffusionDirectionalBC boundaryConditionType)
+{
+    this->advectionDiffusionDirectionalBoundaryCondition = boundaryConditionType;
 }
 BoundaryConditionKernel BoundaryConditionFactory::getVelocityBoundaryConditionPost(bool isGeometryBC) const
 {
@@ -207,6 +213,9 @@ PrecursorBoundaryConditionKernel BoundaryConditionFactory::getPrecursorBoundaryC
         case PrecursorBC::PrecursorDistributions:
             return PrecursorDistributions;
             break;
+        case PrecursorBC::PrecursorVelTemperatureDistributions:
+            return PrecursorTemperatureDistributions;
+            break;
         default:
             return nullptr;
     }
@@ -294,6 +303,16 @@ AdvectionDiffusionNeumannBoundaryConditionKernel BoundaryConditionFactory::getAd
     };
 }
 
+DirectionalADBoundaryConditionKernel BoundaryConditionFactory::getAdvectionDiffusionDirectionalBoundaryConditionPost() const
+{
+    switch (this->advectionDiffusionDirectionalBoundaryCondition) {
+        case AdvectionDiffusionDirectionalBC::DirectionalOutflowNonReflecting:
+            return (DirectionalADBoundaryConditionKernel)AdvectionDiffusionDirectionalOutflowNonReflecting;
+        default:
+            return nullptr;
+    }
+}
+
 BoundaryConditionKernel BoundaryConditionFactory::getSurfaceLayerBoundaryConditionPost() const
 {
     if (this->surfaceLayerBoundaryCondition == std::pair(StressBC::StressBounceBackCompressible, SurfaceLayerBC::SurfaceHeatFlux))
@@ -311,6 +330,6 @@ BoundaryConditionKernel BoundaryConditionFactory::getSurfaceLayerBoundaryConditi
     return nullptr;
 }
 
-
+}
 
 //! \}

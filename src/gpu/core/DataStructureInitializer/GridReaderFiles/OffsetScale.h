@@ -38,6 +38,8 @@
 
 #include "CoordNeighborGeoV.h"
 
+namespace vf::gpu {
+
 class OffsetScale :
     public CoordNeighborGeoV
 {
@@ -54,6 +56,8 @@ public:
     void initOffset();
     void initArrayOffset(real *x_ptr,real *y_ptr,real *z_ptr, unsigned int level);
 };
+
+}
 
 #endif
 

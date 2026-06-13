@@ -46,6 +46,8 @@
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
+namespace vf::gpu {
+
 ////////////////////////////////////////////////////////////////////////////////
 __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
                                                         real* kyzFromfcNEQ,
@@ -2291,6 +2293,8 @@ void CalcHigherMomentsCompSP27(real* CUMcbb, real* CUMbcb, real* CUMbbc, real* C
                                                              CUMccb, CUMccc, geoD, neighborX, neighborY, neighborZ, DD,
                                                              numberOfLBnodes, isEvenTimestep);
     getLastCudaError("LBCalcHigherMomentsCompSP27 execution failed");
+}
+
 }
 
 //! \}

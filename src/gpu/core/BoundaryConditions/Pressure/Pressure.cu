@@ -42,6 +42,8 @@
 
 #include <lbm/MacroscopicQuantities.h>
 
+namespace vf::gpu {
+
 void PressureNonEquilibriumIncompressible(LBMSimulationParameter* parameterDevice, QforDirectionalBoundaryCondition* boundaryCondition)
 {
     dim3 grid = vf::cuda::getCudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
@@ -90,6 +92,8 @@ void PressureNonEquilibriumCompressible(LBMSimulationParameter* parameterDevice,
         static_cast<int>(boundaryCondition->direction),
         macroscopicQuantityFunctor);
     getLastCudaError("PressureNonEquilibriumCompressible_Device execution failed");
+}
+
 }
 
 //! \}

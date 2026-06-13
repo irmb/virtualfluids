@@ -36,6 +36,9 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include <array>
+#include <memory>
+#include <algorithm>
 
 #include "utilities/math/Math.h"
 
@@ -49,11 +52,24 @@
 #include "io/GridVTKWriter/GridVTKWriter.h"
 #include "io/STLReaderWriter/STLWriter.h"
 
+namespace vf::gpu {
 
 MultipleGridBuilder::MultipleGridBuilder() : LevelGridBuilder(), numberOfLayersFine(12), numberOfLayersBetweenLevels(8), subDomainBox(nullptr)
 {
     gridFactory = GridFactory::make();
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
+}
+
+void MultipleGridBuilder::setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod method)
+{
+    if (gridFactory)
+        gridFactory->setTriangularMeshDiscretizationMethod(method);
+}
+
+void MultipleGridBuilder::setTriangularMeshDiscretizationStrategy(SPtr<TriangularMeshDiscretizationStrategy> strategy)
+{
+    if (gridFactory)
+        gridFactory->setTriangularMeshDiscretizationStrategy(strategy);
 }
 
 void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
@@ -79,18 +95,24 @@ void MultipleGridBuilder::addCoarseGrid(const GridDimensions &gridDimensions)
 
 void MultipleGridBuilder::addGeometry(SPtr<Object> solidObject)
 {
-    this->solidObject = solidObject;
+    if (!solidObject)
+        return;
 
-    for(auto bcs : boundaryConditions)
-    {
-        bcs->geometryBoundaryCondition = GeometryBoundaryCondition::make();
+    solidObjects.push_back(solidObject);
+
+    for (auto& bcs : boundaryConditions) {
+        if (!bcs->geometryBoundaryCondition)
+            bcs->geometryBoundaryCondition = GeometryBoundaryCondition::make();
         bcs->geometryBoundaryCondition->side = SideFactory::make(SideType::GEOMETRY);
     }
 }
 
 void MultipleGridBuilder::addGeometry(SPtr<Object> solidObject, uint level)
 {
-    this->solidObject = solidObject;
+    if (!solidObject)
+        return;
+
+    solidObjects.push_back(solidObject);
     auto gridShape = solidObject->clone();
     gridShape->changeSizeByDelta(4.0);
 
@@ -518,7 +540,7 @@ void MultipleGridBuilder::buildGrids(bool enableThinWalls )
     // and figure 5.3 in the Dissertation of Stephan Lenz:
     // https://publikationsserver.tu-braunschweig.de/receive/dbbs_mods_00068716
     //
-    if (solidObject)
+    if (!solidObjects.empty())
     {
         VF_LOG_TRACE("Start with Q Computation");
 
@@ -531,7 +553,19 @@ void MultipleGridBuilder::buildGrids(bool enableThinWalls )
 
         //for( uint level = 0; level < grids.size(); level++ )
         uint level = (uint)grids.size() - 1;
-        {
+        // start the Q phase for this grid level
+        // reset temporary Q data before the loop over solid objects starts
+        // for example some methods store triangle surfaces during mesh(...)
+        // and use them later when Q values are computed after the loop
+        grids[level]->beginQComputation();
+        // use only one reference object for the direct Grid::findQs(...) call
+        bool hasQSourceObject = false;
+
+        for (std::size_t objIdx = 0; objIdx < solidObjects.size(); ++objIdx) {
+            const auto& solidObject = solidObjects[objIdx];
+            if (!solidObject)
+                continue;
+
             // the Grid::mesh(...) method distinguishes inside and outside regions
             // of the solid domain.:
             //      => set inner nodes to INVALID_SOLID
@@ -545,17 +579,24 @@ void MultipleGridBuilder::buildGrids(bool enableThinWalls )
             // Grid::enableFindSolidBoundaryNodes() and Grid::enableComputeQs()
             // set a flag that changes the behavior of Grid::findOs(...);
             // additionally some needle cells are closed in this process.
-            if (enableThinWalls) {
+            if (!hasQSourceObject && enableThinWalls) {
                 grids[level]->enableFindSolidBoundaryNodes();
                 grids[level]->findQs(solidObject.get());
                 grids[level]->closeNeedleCellsThinWall();
                 grids[level]->enableComputeQs();
             }
 
-            // compute the sub grid distances 
+            // compute the sub grid distances
             // this works for STL and Sphere objects, but not yet for other primitives!
-            grids[level]->findQs(solidObject.get());
+            if (!hasQSourceObject) {
+                grids[level]->findQs(solidObject.get());
+                hasQSourceObject = true;
+            }
         }
+
+        // finish the Q computation after all solid objects on this level are handled
+        // some methods compute Q values here instead of inside Grid::findQs(...)
+        grids[level]->finalizeQComputation();
 
         VF_LOG_TRACE("Done with Q Computation");
     }
@@ -643,5 +684,6 @@ void MultipleGridBuilder::setSubDomainBox(SPtr<BoundingBox> subDomainBox)
     this->subDomainBox = subDomainBox;
 }
 
+}
 
 //! \}

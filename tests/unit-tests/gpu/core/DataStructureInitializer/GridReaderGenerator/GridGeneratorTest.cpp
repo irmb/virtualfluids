@@ -48,6 +48,8 @@
 
 #include <parallel/NullCommunicator.h>
 
+namespace vf::gpu {
+
 namespace grid_generator_test
 {
 
@@ -172,6 +174,8 @@ TEST_F(GridGeneratorTests_initalValuesDomainDecompostion, whenCommunicationInX_s
                 testing::Eq(1)); // one entry for communication_directions::MX
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborsY.size(), testing::Eq(0));
     EXPECT_THAT(para->getParH(level)->sendProcessNeighborsZ.size(), testing::Eq(0));
+}
+
 }
 
 //! \}

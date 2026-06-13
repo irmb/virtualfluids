@@ -36,6 +36,8 @@
 
 #include "UpdateGrid27.h"
 
+namespace vf::gpu {
+
 //! \brief get a function which performs the collision operator and performs the communication between gpus/ processes
 //! \return a function to perform the collision and for multi-gpu simulations also the communication
 std::function<void(UpdateGrid27 *updateGrid, Parameter *para, int level, unsigned int t)>
@@ -64,6 +66,8 @@ class CollisionAndExchange_streams
 public:
     void operator()(UpdateGrid27 *updateGrid, Parameter *para, int level, unsigned int t);
 };
+
+}
 
 #endif
 

@@ -33,8 +33,72 @@ r"""
 
 from __future__ import annotations
 from enum import Enum
+from numpy.typing import NDArray
+import numpy as np
 
 class Axis(Enum):
     x = ...
     y = ...
     z = ...
+
+class GbSpatialData3DReal: ...
+
+class GbStructuredMesh3DReal(GbSpatialData3DReal):
+    class InterpolationStrategy(Enum):
+        Trilinear = ...
+    def __init__(
+        self,
+        spacing: NDArray[np.float32],
+        origin: NDArray[np.float32],
+        n_points: NDArray[np.uint32],
+        values: NDArray[np.float32],
+        interpolation_strategy: GbStructuredMesh3DReal.InterpolationStrategy,
+    ): ...
+
+class GbPointCloud3DReal(GbSpatialData3DReal):
+    class InterpolationStrategy: ...
+    class InverseDistanceWeighingReal(GbPointCloud3DReal.InterpolationStrategy):
+        @staticmethod
+        def make(n_points: int) -> GbPointCloud3DReal.InterpolationStrategy: ...
+    class NearestNeighborReal(GbPointCloud3DReal.InterpolationStrategy):
+        @staticmethod
+        def make() -> GbPointCloud3DReal.InterpolationStrategy: ...
+
+    def __init__(
+        self,
+        coords: NDArray[np.float32],
+        data: NDArray[np.float32],
+        interpolation_strategy: GbPointCloud3DReal.InterpolationStrategy,
+        print_tree: bool = ...,
+    ): ...
+
+class GbSpatialData3DReal3: ...
+
+class GbStructuredMesh3DReal3(GbSpatialData3DReal3):
+    class InterpolationStrategy(Enum):
+        Trilinear = ...
+    def __init__(
+        self,
+        spacing: NDArray[np.float32],
+        origin: NDArray[np.float32],
+        n_points: NDArray[np.uint32],
+        values: NDArray[np.float32],
+        interpolation_strategy: GbStructuredMesh3DReal3.InterpolationStrategy,
+    ): ...
+
+class GbPointCloud3DReal3(GbSpatialData3DReal3):
+    class InterpolationStrategy: ...
+    class InverseDistanceWeighingReal(GbPointCloud3DReal3.InterpolationStrategy):
+        @staticmethod
+        def make(n_points: int) -> GbPointCloud3DReal3.InterpolationStrategy: ...
+    class NearestNeighborReal(GbPointCloud3DReal3.InterpolationStrategy):
+        @staticmethod
+        def make() -> GbPointCloud3DReal3.InterpolationStrategy: ...
+
+    def __init__(
+        self,
+        coords: NDArray[np.float32],
+        data: NDArray[np.float32],
+        interpolation_strategy: GbPointCloud3DReal3.InterpolationStrategy,
+        print_tree: bool = ...,
+    ): ...

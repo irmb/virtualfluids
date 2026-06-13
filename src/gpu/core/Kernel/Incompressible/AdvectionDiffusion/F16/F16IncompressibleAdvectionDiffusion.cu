@@ -38,7 +38,8 @@
 #include <lbm/advectionDiffusion/collision/F16AdvectionDiffusion.h>
 
 using namespace vf::lbm::advection_diffusion;
-using namespace vf::gpu::advection_diffusion;
+
+namespace vf::gpu {
 
 template <TurbulenceModel turbulenceModel>
 std::shared_ptr<F16IncompressibleAdvectionDiffusion<turbulenceModel>> F16IncompressibleAdvectionDiffusion<turbulenceModel>::getNewInstance(std::shared_ptr<Parameter> para, int level)
@@ -55,14 +56,14 @@ void F16IncompressibleAdvectionDiffusion<turbulenceModel>::run()
 template <TurbulenceModel turbulenceModel>
 void F16IncompressibleAdvectionDiffusion<turbulenceModel>::runOnIndices(const uint* indices, uint size_indices, CollisionTemplate /**/, CudaStreamIndex streamIdx)
 {
-    const auto parameter = getCollisionParameter(para->getParD(level).get(), para->getTurbulentPrandtlNumber(), indices, size_indices);
+    const auto parameter = ad::getCollisionParameter(para->getParD(level).get(), para->getTurbulentPrandtlNumber(), indices, size_indices);
 
     auto collision = [] __device__(ADCollisionParameter & parameters) { return runF16AdvectionDiffusion(parameters); };
 
     cudaStream_t stream = para->getStreamManager()->getStream(streamIdx);
     const vf::cuda::CudaGrid grid(para->getParD(level)->numberofthreads, parameter.numberOfFluidNodes);
 
-    runCollisionAdvectionDiffusion<decltype(collision), turbulenceModel><<<grid.grid, grid.threads, 0, stream>>>(collision, parameter);
+    ad::runCollisionAdvectionDiffusion<decltype(collision), turbulenceModel><<<grid.grid, grid.threads, 0, stream>>>(collision, parameter);
     getLastCudaError("F16IncompressibleAdvectionDiffusion execution failed");
 }
 
@@ -80,5 +81,7 @@ template class F16IncompressibleAdvectionDiffusion<TurbulenceModel::None>;
 template class F16IncompressibleAdvectionDiffusion<TurbulenceModel::Default>;
 template class F16IncompressibleAdvectionDiffusion<TurbulenceModel::Moeng>;
 template class F16IncompressibleAdvectionDiffusion<TurbulenceModel::AMDStratified>;
+
+}
 
 //! \}

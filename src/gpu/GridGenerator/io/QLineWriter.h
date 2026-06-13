@@ -40,6 +40,8 @@
 
 #include "global.h"
 
+namespace vf::gpu {
+
 class GeometryBoundaryCondition;
 class Grid;
 struct Vertex;
@@ -54,6 +56,7 @@ private:
     static Vertex getVertex(int matrixIndex, SPtr<Grid> grid);
 };
 
+}
 
 #endif
 

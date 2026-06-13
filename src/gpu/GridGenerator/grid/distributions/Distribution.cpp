@@ -39,6 +39,8 @@
 #include "lbm/constants/D3Q27.h"
 using namespace vf::lbm::dir;
 
+namespace vf::gpu {
+
 Distribution DistributionHelper::getDistribution27() 
 {
     Distribution d27;
@@ -264,6 +266,8 @@ void DistributionHelper::printQs(std::vector<std::vector<real> > qs, int decimal
         }
         printf("\n");
     }
+}
+
 }
 
 //! \}

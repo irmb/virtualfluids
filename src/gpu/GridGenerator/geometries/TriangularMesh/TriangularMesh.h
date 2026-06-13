@@ -44,8 +44,11 @@
 
 #include "geometries/Object.h"
 
-class GeometryMemento;
 class GbTriFaceMesh3D;
+
+namespace vf::gpu {
+
+class GeometryMemento;
 
 enum class DiscretizationMethod { RAYCASTING, POINT_IN_OBJECT, POINT_UNDER_TRIANGLE };
 
@@ -113,7 +116,7 @@ public:
     void findInnerNodes(SPtr<GridImp> grid) override;
 };
 
-
+}
 
 #endif
 

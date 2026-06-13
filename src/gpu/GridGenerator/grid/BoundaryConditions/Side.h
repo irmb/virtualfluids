@@ -50,14 +50,14 @@
 #define POSITIVE_DIR 1
 #define NEGATIVE_DIR -1
 
+namespace vf::gpu {
+
 class Grid;
 
 namespace grid_generator
 {
 class BoundaryCondition;
 }
-
-class Side;
 
 enum class SideType
 {
@@ -287,6 +287,8 @@ public:
         }
     }
 };
+
+}
 
 #endif
 

@@ -41,7 +41,8 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 __global__ void PrecursorNonReflectiveCompressible_Device(
     int* subgridDistanceIndices,
@@ -463,6 +464,8 @@ __global__ void PrecursorNonReflectiveCompressible_Device(
         velocityBC = -VeloX + VeloY + VeloZ;
         (dist.f[dPMM])[kPMM] = getInterpolatedDistributionForVeloWithPressureBC(q, f_MPP, f_PMM, feq, omega, drho, velocityBC, c1o216);
     }
+}
+
 }
 
 //! \}

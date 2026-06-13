@@ -50,7 +50,7 @@
 #include "grid/NodeValues.h"
 #include "grid/Cell.h"
 
-using namespace vf::gpu;
+namespace vf::gpu {
 
 FILE* GridVTKWriter::file = nullptr;
 WRITING_FORMAT GridVTKWriter::format = WRITING_FORMAT::ASCII;
@@ -439,6 +439,8 @@ void GridVTKWriter::force_big_endian(unsigned char *bytes)
         bytes[1] = bytes[2];
         bytes[2] = tmp;
     }
+}
+
 }
 
 //! \}

@@ -34,7 +34,7 @@
 
 #include "grid/NodeValues.h"
 
-using namespace vf::gpu;
+namespace vf::gpu {
 
 Field::Field(uint size) : size(size)
 {
@@ -173,6 +173,8 @@ void Field::setFieldEntryToInvalidCoarseUnderFine(uint index)
 void Field::setFieldEntryToInvalidOutOfGrid(uint index)
 {
     this->field[index] = INVALID_OUT_OF_GRID;
+}
+
 }
 
 //! \}

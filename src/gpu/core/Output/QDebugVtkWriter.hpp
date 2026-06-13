@@ -48,7 +48,8 @@
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/Utilities/FindNeighbors.h"
 
-namespace q_debug_vtk_writer
+
+namespace vf::gpu::q_debug_vtk_writer
 {
 
 using namespace vf::lbm::dir;

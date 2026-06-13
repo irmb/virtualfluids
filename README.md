@@ -21,6 +21,7 @@ VirtualFluids is licensed under the terms and conditions of the GNU General Publ
 
 See the file [COPYING.txt](COPYING.txt) for copying permissions. 
 For a full list of contributors see <!-- DOXYGEN_MAKE_REF -->[AUTHORS](AUTHORS.md). If you notice that a contributor is missing on the list, please contact us or open a merge request to add the name.
+Third-party components and their licenses are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ### How to cite
 VirtualFluids is research software developed at research institutions.

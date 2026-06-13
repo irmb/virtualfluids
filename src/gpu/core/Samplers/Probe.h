@@ -45,6 +45,8 @@
 #include <basics/geometry3d/GbObject3D.h>
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
+namespace vf::gpu {
+
 struct LBMSimulationParameter;
 class Parameter;
 class CudaMemoryManager;
@@ -194,6 +196,8 @@ struct Probe::GridParams
 };
 
 void removeInterpolationCells(std::vector<uint>& indices, Parameter* para, int level);
+
+}
 
 #endif
 //! \}

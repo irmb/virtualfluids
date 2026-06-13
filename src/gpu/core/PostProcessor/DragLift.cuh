@@ -36,6 +36,8 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 void DragLiftPostD27(real* DD, int* k_Q, real* QQ, int numberOfBCnodes, double* DragX, double* DragY, double* DragZ,
                      unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
                      unsigned long long numberOfLBnodes, bool isEvenTimestep, unsigned int numberOfThreads);
@@ -43,6 +45,8 @@ void DragLiftPostD27(real* DD, int* k_Q, real* QQ, int numberOfBCnodes, double* 
 void DragLiftPreD27(real* DD, int* k_Q, real* QQ, int numberOfBCnodes, double* DragX, double* DragY, double* DragZ,
                     unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
                     unsigned long long numberOfLBnodes, bool isEvenTimestep, unsigned int numberOfThreads);
+
+}
 
 #endif
 

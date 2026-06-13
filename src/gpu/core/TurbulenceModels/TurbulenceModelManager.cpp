@@ -36,6 +36,7 @@
 #include "Parameter/Parameter.h"
 #include <memory>
 
+namespace vf::gpu {
 
 void TurbulenceModelManager::runTurbulenceModelKernel(int level) const
 {
@@ -48,4 +49,7 @@ void TurbulenceModelManager::runTurbulenceModelADKernel(int level) const
     if (this->turbulenceModelADKernel.has_value())
         this->turbulenceModelADKernel.value()(para.get(), level);
 }
+
+}
+
 //! \}

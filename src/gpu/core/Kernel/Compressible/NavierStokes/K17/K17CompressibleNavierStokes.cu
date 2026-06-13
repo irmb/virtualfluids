@@ -47,6 +47,8 @@
 #include "Utilities/KernelUtilities.h"
 #include "Utilities/RunCollision.cuh"
 
+namespace vf::gpu {
+
 template <vf::lbm::TurbulenceModel turbulenceModel>
 std::shared_ptr<K17CompressibleNavierStokes<turbulenceModel>>
 K17CompressibleNavierStokes<turbulenceModel>::getNewInstance(std::shared_ptr<Parameter> para, int level)
@@ -54,10 +56,10 @@ K17CompressibleNavierStokes<turbulenceModel>::getNewInstance(std::shared_ptr<Par
     return std::shared_ptr<K17CompressibleNavierStokes<turbulenceModel>>(new K17CompressibleNavierStokes(para, level));
 }
 
-vf::gpu::GPUCollisionParameter getCollisionParameter(const std::shared_ptr<Parameter>& para, int level, const uint* indices,
+GPUCollisionParameter getCollisionParameter(const std::shared_ptr<Parameter>& para, int level, const uint* indices,
                                                uint sizeIndices)
 {
-    vf::gpu::GPUCollisionParameter collisionParameter { para->getParD(level)->omega,
+    GPUCollisionParameter collisionParameter { para->getParD(level)->omega,
                                                         para->getParD(level)->neighborX,
                                                         para->getParD(level)->neighborY,
                                                         para->getParD(level)->neighborZ,
@@ -69,7 +71,7 @@ vf::gpu::GPUCollisionParameter getCollisionParameter(const std::shared_ptr<Param
                                                         para->getParD(level)->turbulentViscosity,
                                                         para->getSGSConstant(),
                                                         (int)para->getParD(level)->numberOfNodes,
-                                                        vf::gpu::getForceFactor(level),
+                                                        getForceFactor(level),
                                                         para->getForcesDev(),
                                                         para->getParD(level)->forceX_SP,
                                                         para->getParD(level)->forceY_SP,
@@ -85,7 +87,7 @@ vf::gpu::GPUCollisionParameter getCollisionParameter(const std::shared_ptr<Param
 template <vf::lbm::TurbulenceModel turbulenceModel>
 void K17CompressibleNavierStokes<turbulenceModel>::run()
 {
-    vf::gpu::GPUCollisionParameter kernelParameter =
+    GPUCollisionParameter kernelParameter =
         getCollisionParameter(para, level, para->getParD(level)->taggedFluidNodeIndices[CollisionTemplate::Default],
                            para->getParD(level)->numberOfTaggedFluidNodes[CollisionTemplate::Default]);
 
@@ -94,7 +96,7 @@ void K17CompressibleNavierStokes<turbulenceModel>::run()
         return vf::lbm::runK17CompressibleNavierStokes<turbulenceModel>(parameter, macroscopicValues, turbulentViscosity);
     };
 
-    vf::gpu::runCollision<decltype(collision), turbulenceModel, false, false><<<cudaGrid.grid, cudaGrid.threads>>>(collision, kernelParameter);
+    runCollision<decltype(collision), turbulenceModel, false, false><<<cudaGrid.grid, cudaGrid.threads>>>(collision, kernelParameter);
 
     getLastCudaError("K17CompressibleNavierStokesUnified execution failed");
 }
@@ -110,20 +112,20 @@ void K17CompressibleNavierStokes<turbulenceModel>::runOnIndices(const unsigned i
     auto collision = [] __device__(vf::lbm::CollisionParameter& parameter, vf::lbm::MacroscopicValues& macroscopicValues, vf::lbm::TurbulentViscosity& turbulentViscosity) {
         return vf::lbm::runK17CompressibleNavierStokes<turbulenceModel>(parameter, macroscopicValues, turbulentViscosity);
     };
-    vf::gpu::GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
+    GPUCollisionParameter kernelParameter = getCollisionParameter(para, level, indices, size_indices);
     switch (collisionTemplate) {
         case CollisionTemplate::Default:
-            vf::gpu::runCollision<decltype(collision), turbulenceModel, false, false><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
+            runCollision<decltype(collision), turbulenceModel, false, false><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
             break;
         case CollisionTemplate::WriteMacroVars:
-            vf::gpu::runCollision<decltype(collision), turbulenceModel, true, false><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
+            runCollision<decltype(collision), turbulenceModel, true, false><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
             break;
         case CollisionTemplate::SubDomainBorder:
         case CollisionTemplate::AllFeatures:
-            vf::gpu::runCollision<decltype(collision), turbulenceModel, true, true><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
+            runCollision<decltype(collision), turbulenceModel, true, true><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
             break;
         case CollisionTemplate::ApplyBodyForce:
-            vf::gpu::runCollision<decltype(collision), turbulenceModel, false, true><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
+            runCollision<decltype(collision), turbulenceModel, false, true><<<cudaGrid.grid, cudaGrid.threads, 0, stream>>>(collision, kernelParameter);
             break;
         default:
             throw std::runtime_error("Invalid CollisionTemplate in CumulantK17::runOnIndices()");
@@ -152,5 +154,7 @@ template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::AMDStratifi
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::Smagorinsky>;
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::QR>;
 template class K17CompressibleNavierStokes<vf::lbm::TurbulenceModel::None>;
+
+}
 
 //! \}

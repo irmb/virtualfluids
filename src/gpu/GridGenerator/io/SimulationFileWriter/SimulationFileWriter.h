@@ -43,6 +43,8 @@
 
 #include "gpu/GridGenerator/global.h"
 
+namespace vf::gpu {
+
 class UnstructuredGridBuilder;
 class GridBuilder;
 class Grid;
@@ -124,6 +126,7 @@ private:
     static std::string folder;
 };
 
+}
 
 #endif
 

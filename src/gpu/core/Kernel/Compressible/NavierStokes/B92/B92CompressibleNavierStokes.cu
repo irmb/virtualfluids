@@ -35,6 +35,8 @@
 #include "Parameter/Parameter.h"
 #include <cuda_helper/CudaGrid.h>
 
+namespace vf::gpu {
+
 std::shared_ptr<B92CompressibleNavierStokes> B92CompressibleNavierStokes::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
     return std::shared_ptr<B92CompressibleNavierStokes>(new B92CompressibleNavierStokes(para, level));
@@ -67,6 +69,8 @@ B92CompressibleNavierStokes::B92CompressibleNavierStokes(std::shared_ptr<Paramet
 
 B92CompressibleNavierStokes::B92CompressibleNavierStokes()
 {
+}
+
 }
 
 //! \}

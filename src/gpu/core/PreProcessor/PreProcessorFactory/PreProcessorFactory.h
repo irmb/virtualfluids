@@ -40,6 +40,7 @@
 #include <vector>
 
 
+namespace vf::gpu {
 
 class PreProcessor;
 class Parameter;
@@ -51,5 +52,8 @@ public:
     virtual std::shared_ptr<PreProcessor> makePreProcessor(std::vector<PreProcessorType> preProcessorTypes, std::shared_ptr<Parameter> para) = 0;
 
 };
+
+}
+
 #endif
 //! \}

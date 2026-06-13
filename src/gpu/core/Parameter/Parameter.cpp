@@ -59,6 +59,7 @@
 #include "Cuda/CudaStreamManager.h"
 
 using namespace vf::basics::constant;
+namespace vf::gpu {
 
 Parameter::Parameter() : Parameter(1, 0, {}) {}
 
@@ -2004,5 +2005,6 @@ void Parameter::initProcessNeighborsAfterFtoCZ(int level)
     parD[level]->recvProcessNeighborsAfterFtoCZ.resize(parH[level]->recvProcessNeighborsAfterFtoCZ.size());
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
 
 //! \}

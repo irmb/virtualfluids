@@ -37,6 +37,8 @@ using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 #include "math.h"
 
+namespace vf::gpu {
+
 __global__ void B15IncompressibleNavierStokesBGKplus_Device(real omega,
     unsigned int* bcMatD,
     unsigned int* neighborX,
@@ -785,5 +787,7 @@ __global__ void B15IncompressibleNavierStokesBGKplus_Device(real omega,
                                         ////////////////////////////////////////////////////////////////////////////////////
         }
     }
+}
+
 }
 //! \}

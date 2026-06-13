@@ -39,6 +39,8 @@
 
 #include <gpu/core/Output/QDebugVtkWriter.hpp>
 
+using namespace vf::gpu;
+
 MATCHER(DoubleNear5, "") {
     return abs(std::get<0>(arg) - std::get<1>(arg)) < 0.00001;
 }

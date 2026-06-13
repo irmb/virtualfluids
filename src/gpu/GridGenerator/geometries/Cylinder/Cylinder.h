@@ -43,6 +43,8 @@
 
 #include "geometries/Object.h"
 
+namespace vf::gpu {
+
 class Cylinder : public Object
 {
 public:
@@ -86,6 +88,8 @@ private:
     double radius;
     double height;
 };
+
+}
 
 #endif
 //! \}

@@ -31,6 +31,8 @@
 //! \{
 #include "communication.h"
 
+namespace vf::gpu {
+
 using namespace communication_directions;
 
 bool communication_directions::isNegative(CommunicationDirection direction)
@@ -78,4 +80,6 @@ CommunicationDirection communication_directions::getPositiveDirectionAlongAxis(A
             throw std::runtime_error("Unknown coordinate direction" + axis::to_string(axis));
     }
 }
+}
+
 //! \}

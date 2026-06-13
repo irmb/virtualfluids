@@ -37,9 +37,13 @@
 
 #include <string>
 
+
+class WbWriter;
+
+namespace vf::gpu {
+
 class Parameter;
 struct LBMSimulationParameter;
-class WbWriter;
 struct QforDirectionalBoundaryCondition;
 struct QforBoundaryConditions;
 
@@ -60,6 +64,8 @@ void writeBoundaryConditionNeighbors(QforBoundaryConditions* boundaryCondition, 
                                      std::string& filePathBase);
 
 } // namespace neighbor_debug_writer
+
+}
 
 #endif
 

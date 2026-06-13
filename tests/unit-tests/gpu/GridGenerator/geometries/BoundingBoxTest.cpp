@@ -38,6 +38,7 @@
 #include <gpu/GridGenerator/geometries/Vertex/Vertex.h>
 
 using namespace testing;
+using namespace vf::gpu;
 
 TEST(BoundingBoxExactTest, findMinMaxFromTriangle)
 {

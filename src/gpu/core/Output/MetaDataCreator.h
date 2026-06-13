@@ -36,10 +36,10 @@
 
 #include <basics/MetaData/MetaData.h>
 
-class Parameter;
 
-namespace vf::gpu
-{
+namespace vf::gpu {
+
+class Parameter;
 
 vf::basics::MetaData createMetaData(const Parameter& parameter);
 

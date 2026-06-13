@@ -43,6 +43,7 @@
 #include <basics/PointerDefinitions.h>
 #include <StringUtilities/StringUtil.h>
 
+namespace vf::gpu {
 
 class Grid;
 namespace grid_generator
@@ -229,6 +230,8 @@ private:
 SPtr<FileCollection> createFileCollection(const std::string& path, const std::string& prefix, TransientBCFileType type);
 SPtr<TransientBCInputFileReader> createReaderForCollection(SPtr<FileCollection> fileCollection, uint readLevel,
                                                            bool cycleFiles);
+
+}
 
 #endif //TRANSIENTBCSETTER_H_
 

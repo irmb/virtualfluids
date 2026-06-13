@@ -40,6 +40,8 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 void GetSendFsPreDev27(real* DD, real* bufferFs, real* populationsAD, real* bufferAD, const uint* sendIndex, uint buffmax, const uint* neighborX,
                        const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
                        bool isEvenTimestep, bool diffOn, uint numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
@@ -55,6 +57,9 @@ void SetRecvFsPreDev27(real* DD, real* bufferFs, real* populationsAD, real* buff
 void SetRecvFsPostDev27(real* DD, real* bufferFs, real* populationsAD, real* bufferAD, const uint* recvIndex, uint buffmax, const uint* neighborX,
                         const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
                         bool isEvenTimestep, bool diffOn, uint numberOfThreads, cudaStream_t stream = CU_STREAM_LEGACY);
+
+}
+
 #endif
 
 //! \}

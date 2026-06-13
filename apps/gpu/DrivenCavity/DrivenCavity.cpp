@@ -49,6 +49,8 @@
 #include <gpu/core/Kernel/KernelTypes.h>
 #include <gpu/core/Parameter/Parameter.h>
 
+using namespace vf::gpu;
+
 void run(const vf::basics::ConfigurationFile& config)
 {
     //////////////////////////////////////////////////////////////////////////

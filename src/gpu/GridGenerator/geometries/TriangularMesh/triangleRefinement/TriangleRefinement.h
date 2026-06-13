@@ -40,6 +40,8 @@
 
 #include "geometries/TriangularMesh/triangleNeighborFinder/TriangleNeighborFinder.h"
 
+namespace vf::gpu {
+
 struct Triangle;
 struct Vertex;
 struct IntegerPtr2D;
@@ -76,6 +78,7 @@ public:
     static real getLongestEdgeDistance(Triangle &t);
 };
 
+}
 
 #endif
 

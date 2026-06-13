@@ -39,6 +39,7 @@
 #include <lbm/refinement/InterpolationFC.h>
 #include <lbm/interpolation/InterpolationCoefficients.h>
 
+namespace vf::gpu {
 
 template <bool hasTurbulentViscosity> __device__ void interpolate(
     vf::lbm::InterpolationCoefficients& coefficients,
@@ -56,16 +57,16 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
 {
     // Position Coarse 0., 0., 0.
     Distributions27 distCoarse;
-    vf::gpu::getPointersToDistributions(distCoarse, distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
+    getPointersToDistributions(distCoarse, distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
 
-    vf::gpu::ListIndices indices(indicesCoarse000[nodeIndex], neighborXcoarse, neighborYcoarse, neighborZcoarse);
+    ListIndices indices(indicesCoarse000[nodeIndex], neighborXcoarse, neighborYcoarse, neighborZcoarse);
 
     const real epsilonNew = vf::basics::constant::c2o1; // ratio of grid resolutions
     const real omegaCoarseNew = hasTurbulentViscosity ? vf::lbm::calculateOmegaWithTurbulentViscosity(omegaCoarse, turbulentViscosityCoarse[indices.k_000]) : omegaCoarse;
     real fCoarse[27];
     vf::lbm::interpolateFC(fCoarse, epsilonNew, omegaCoarseNew, coefficients);
 
-    vf::gpu::setPreCollisionDistribution(distCoarse, indices, fCoarse);
+    setPreCollisionDistribution(distCoarse, indices, fCoarse);
 }
 
 
@@ -101,7 +102,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleFineToCoarseCompressib
 
     // 1.calculate moments
     vf::lbm::MomentsOnSourceNodeSet momentsSet;
-    vf::gpu::calculateMomentSet<hasTurbulentViscosity>(
+    calculateMomentSet<hasTurbulentViscosity>(
         momentsSet, nodeIndex, distributionsFine, neighborXfine, neighborYfine, neighborZfine, indicesFineMMM, turbulentViscosityFine, numberOfLBnodesFine, omegaFine, true);
 
     // 2.calculate coefficients
@@ -126,4 +127,5 @@ template<bool hasTurbulentViscosity> __global__ void scaleFineToCoarseCompressib
 template __global__ void scaleFineToCoarseCompressible_Device<true>(real *distributionsCoarse, real *distributionsFine, unsigned int *neighborXcoarse, unsigned int *neighborYcoarse, unsigned int *neighborZcoarse, unsigned int *neighborXfine, unsigned int *neighborYfine, unsigned int *neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int *indicesCoarse000, unsigned int *indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, ICellNeigh neighborFineToCoarse);
 
 template __global__ void scaleFineToCoarseCompressible_Device<false>(real *distributionsCoarse, real *distributionsFine, unsigned int *neighborXcoarse, unsigned int *neighborYcoarse, unsigned int *neighborZcoarse, unsigned int *neighborXfine, unsigned int *neighborYfine, unsigned int *neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int *indicesCoarse000, unsigned int *indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, ICellNeigh neighborFineToCoarse);
+}
 //! \}

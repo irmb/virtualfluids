@@ -37,6 +37,8 @@
 #include "global.h"
 #include "geometries/Object.h"
 
+namespace vf::gpu {
+
 class VerticalCylinder : public Object
 {
 public:
@@ -74,7 +76,7 @@ protected:
     double height;
 };
 
-
+}
 
 #endif   
 

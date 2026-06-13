@@ -45,7 +45,7 @@
 #include "basics/utilities/UbSystem.h"
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 
-namespace interface_debug_writer
+namespace vf::gpu::interface_debug_writer
 {
 
 void writeGridInterfaceLines(Parameter *para, int level, const uint *coarse, const uint *fine, uint numberOfNodes,

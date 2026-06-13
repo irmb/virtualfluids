@@ -49,6 +49,8 @@
 
 #include "Sampler.h"
 
+namespace vf::gpu {
+
 class Parameter;
 class CudaMemoryManager;
 
@@ -74,6 +76,19 @@ public:
         writeFuture = std::async([]() {});
     };
 
+    PrecursorWriter(SPtr<Parameter> para, SPtr<CudaMemoryManager> cudaMemoryManager, const std::string& outputPath,
+                    const std::string& probeName, real xPos, real yMin, real yMax, real zMin, real zMax,
+                    uint tStartWritingOutput, uint tSave, OutputVariable outputVariable,
+                    OutputVariableTemperature tempOutputVariable, 
+                    uint maxTimestepsPerFile = uint(1e4))
+        : para(std::move(para)), cudaMemoryManager(std::move(cudaMemoryManager)), xPos(xPos), yMin(yMin), yMax(yMax),
+        zMin(zMin), zMax(zMax), tStartWritingOutput(tStartWritingOutput), tSave(tSave), outputVariable(outputVariable),
+        tempOutputVariable(tempOutputVariable), maxTimestepsPerFile(maxTimestepsPerFile), Sampler(outputPath, probeName)
+    {
+        nodeDataNames = determineNodeDataNames();
+        writeFuture = std::async([]() {});
+    };
+
     ~PrecursorWriter();
 
     void init() override;
@@ -84,7 +99,10 @@ public:
     {
         return this->outputVariable;
     }
-
+    OutputVariableTemperature getTempOutputVariable()
+    {
+        return this->tempOutputVariable;
+    }
     struct PrecursorStruct
     {
         uint numberOfPointsInBC, numberOfPointsInData, numberOfTimeStepsPerFile, numberOfFilesWritten,
@@ -130,17 +148,31 @@ private:
 
     std::vector<std::string> determineNodeDataNames()
     {
+        std::vector<std::string> res;
+        
         switch (outputVariable) {
             case OutputVariable::Velocities:
-                return { "vx", "vy", "vz" };
+                res = { "vx", "vy", "vz" };  
                 break;
             case OutputVariable::Distributions:
-                return { "fP00", "fPP0", "fPM0", "fP0P", "fP0M", "fPPP", "fPMP", "fPPM", "fPMM" };
+                res = { "fP00", "fPP0", "fPM0", "fP0P", "fP0M", "fPPP", "fPMP", "fPPM", "fPMM" };
                 break;
             default:
                 throw std::runtime_error("Invalid OutputVariable for PrecursorWriter");
+        }
+
+        switch (tempOutputVariable) {
+            case OutputVariableTemperature::Temperature:
+                res.push_back("T");
+                break;
+            case OutputVariableTemperature::Distributions:
+                res.insert(res.end(), {"gP00", "gPP0", "gPM0", "gP0P", "gP0M",
+                                    "gPPP", "gPMP", "gPPM", "gPMM"});
+                break;
+            default:
                 break;
         }
+        return res;
     }
 
 private:
@@ -152,9 +184,12 @@ private:
     uint tStartWritingOutput, tSave, maxTimestepsPerFile;
     real xPos, yMin, yMax, zMin, zMax;
     OutputVariable outputVariable;
+    OutputVariableTemperature tempOutputVariable;
     std::future<void> writeFuture;
     uint writePrecision = 8;
 };
+
+}
 
 #endif // PRECURSORPROBE_H_
 

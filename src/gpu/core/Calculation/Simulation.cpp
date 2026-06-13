@@ -90,6 +90,8 @@
 #include "Restart/RestartObject.h"
 #include "TurbulenceModels/TurbulenceModelFactory.h"
 
+namespace vf::gpu {
+
 std::string getFileName(const std::string& fname, int step, int myID)
 {
     return std::string(fname + "_Restart_" + std::to_string(myID) + "_" + std::to_string(step));
@@ -286,7 +288,7 @@ void Simulation::init(GridProvider &gridProvider, const BoundaryConditionFactory
     //////////////////////////////////////////////////////////////////////////
     if (para->getDevices().size() > 2) {
         VF_LOG_INFO("Find indices of edge nodes for multiGPU communication");
-        vf::gpu::findEdgeNodesCommMultiGPU(*para);
+        findEdgeNodesCommMultiGPU(*para);
     }
     //////////////////////////////////////////////////////////////////////////
     // Memory alloc for CheckPoint / Restart
@@ -345,7 +347,7 @@ void Simulation::init(GridProvider &gridProvider, const BoundaryConditionFactory
     VF_LOG_INFO("used Device Memory: {} MB", cudaMemoryManager->getMemsizeGPU() / 1000000.0);
 
     performanceOutput = std::make_unique<PerformanceMeasurement>(*para);
-    metaData = vf::gpu::createMetaData(*para);
+    metaData = createMetaData(*para);
     vf::basics::logPreSimulation(metaData);
 }
 
@@ -773,6 +775,7 @@ Simulation::~Simulation()
         cudaMemoryManager->cudaFreeStressBC(lev);
         cudaMemoryManager->cudaFreePrecursorBC(lev);
         cudaMemoryManager->cudaFreeOutflowBC(lev);
+        cudaMemoryManager->cudaFreeDirectionalBoundaryCondition(lev);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -785,6 +788,7 @@ Simulation::~Simulation()
             cudaMemoryManager->cudaFreeConcentrationDirichletBC(lev);
             cudaMemoryManager->cudaFreeConcentrationNeumannBC(lev);
             cudaMemoryManager->cudaFreeSurfaceLayerBC(lev);
+            cudaMemoryManager->cudaFreeDirectionalADBoundaryCondition(lev);
 
             if(para->getUseTurbulentDiffusivity())
                 cudaMemoryManager->cudaFreeTurbulentDiffusivity(lev);
@@ -845,6 +849,8 @@ Simulation::~Simulation()
     if (para->getCalcTurbulenceIntensity()) {
         cudaFreeTurbulenceIntensityArrays(para.get(), cudaMemoryManager.get());
     }
+}
+
 }
 
 //! \}

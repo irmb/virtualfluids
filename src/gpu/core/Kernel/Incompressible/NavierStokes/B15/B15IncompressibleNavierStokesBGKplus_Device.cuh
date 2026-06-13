@@ -35,6 +35,8 @@
 #include <DataTypes.h>
 #include <curand.h>
 
+namespace vf::gpu {
+
 __global__ void B15IncompressibleNavierStokesBGKplus_Device(
     real omega,
     unsigned int* bcMatD,
@@ -44,6 +46,8 @@ __global__ void B15IncompressibleNavierStokesBGKplus_Device(
     real* DDStart,
     int size_Mat,
     bool EvenOrOdd);
+
+}
 
 #endif
 //! \}

@@ -40,6 +40,8 @@
 #include <lbm/collision/TurbulentViscosity.h>
 #include <lbm/constants/D3Q27.h>
 
+namespace vf::gpu {
+
 static constexpr real stabilityFactorMomentum = 4.8F;
 static constexpr real stabilityFactorTemperature = 7.8F;
 
@@ -114,6 +116,8 @@ inline __device__ real computeStabilityCorrectionMomentum(const real stabilityPa
     const real tmp = std::sqrt(std::sqrt(c1o1 - c15o1 * stabilityParameter));
     return std::log(c1o2 * (c1o1 + tmp * tmp) * c1o2 * (c1o1 + tmp) * c1o2 * (c1o1 + tmp)) - c2o1 * std::atan(tmp) +
            cPi * c1o2;
+}
+
 }
 
 #endif // WallModel_MoninObukhov_H_

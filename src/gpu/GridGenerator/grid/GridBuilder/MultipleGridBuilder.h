@@ -44,6 +44,8 @@
 #include "grid/distributions/Distribution.h"
 #include "grid/GridDimensions.h" 
 
+namespace vf::gpu {
+
 class Object;
 class BoundingBox;
 
@@ -60,6 +62,9 @@ public:
 
     virtual void addGeometry(SPtr<Object> gridShape);
     void addGeometry(SPtr<Object> solidObject, uint level);
+
+    void setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod method);
+    void setTriangularMeshDiscretizationStrategy(SPtr<TriangularMeshDiscretizationStrategy> strategy);
 
     uint getNumberOfLevels() const;
     real getDelta(uint level) const;
@@ -104,7 +109,7 @@ private:
     static void emitGridIsNotInCoarseGridWarning();
 
     SPtr<GridFactory> gridFactory;
-    SPtr<Object> solidObject = nullptr;
+    std::vector<SPtr<Object>> solidObjects;
 
     uint numberOfLayersFine;
     uint numberOfLayersBetweenLevels;
@@ -114,6 +119,8 @@ private:
 public:
     virtual void findCommunicationIndices(int direction, bool doShift=false);
 };
+
+}
 
 #endif
 

@@ -39,6 +39,8 @@
 
 #include "../testUtilitiesGPU.h"
 
+using namespace vf::gpu;
+
 class WriterUtilitiesPeriodicCellTest : public testing::Test
 {
 protected:

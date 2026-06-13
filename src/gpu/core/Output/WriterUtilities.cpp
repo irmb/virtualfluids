@@ -35,6 +35,9 @@
 #include "Parameter/Parameter.h"
 #include <basics/StringUtilities/StringUtil.h>
 
+namespace vf::gpu {
+
+
 std::string WriterUtilities::makePartFileNameEnding(uint level, int ID, int part, int timestep)
 {
     return "_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(ID) + "_Part_" +
@@ -83,6 +86,8 @@ bool WriterUtilities::areAllNodesInOctValidForWriting(const std::array<uint, 8>&
         (std::any_of(indicesOfOct.begin(), indicesOfOct.end(), [&](uint index) { return index > endPositionOfPart; }));
 
     return neighborsAreFluid && !neighborIsOutOfPart;
+}
+
 }
 
 //! \}

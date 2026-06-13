@@ -34,6 +34,8 @@
 #ifndef Calc2ndMoments_H
 #define Calc2ndMoments_H
 
+namespace vf::gpu {
+
 class Parameter;
 class CudaMemoryManager;
 
@@ -51,6 +53,8 @@ void calc3rdMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 void allocHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 void initHigherOrderMoments(Parameter* para);
 void calcHigherOrderMoments(Parameter* para, CudaMemoryManager* cudaMemoryManager);
+
+}
 
 #endif
 

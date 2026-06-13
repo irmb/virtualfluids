@@ -38,6 +38,7 @@
 #include <basics/config/ConfigurationFile.h>
 #include <basics/constants/NumericConstants.h>
 #include <basics/geometry3d/Axis.h>
+#include <basics/geometry3d/GbSpatialData3D.h>
 
 #include <logger/Logger.h>
 
@@ -69,10 +70,12 @@
 #include "gpu/core/Samplers/Probe.h"
 #include "gpu/core/Samplers/WallModelProbe.h"
 #include "gpu/core/TurbulenceModels/TurbulenceModelFactory.h"
+#include "gpu/core/PreCollisionInteractor/Forest.h"
 #include "grid/Grid.h"
 #include "grid/GridDimensions.h"
 
 using namespace vf::basics::constant;
+using namespace vf::gpu;
 
 const std::string defaultConfigFile = "abl.cfg";
 
@@ -83,20 +86,21 @@ void run(const vf::basics::ConfigurationFile& config)
     const uint samplingOffsetWallModel = 2;
     const uint averagingTimestepsPlaneProbes = 10;
     const uint maximumNumberOfTimestepsPerPrecursorFile = 1000;
-    const real viscosity = 1.56e-5;
-    const real machNumber = 0.1;
+    const real viscosity = config.getValue("Viscosity", 1.56e-5);
+    const real machNumber = config.getValue("Ma", 0.1);
+    const real density = config.getValue("Density", c1o1);
 
     const real boundaryLayerHeight = config.getValue("BoundaryLayerHeight", 1000.0);
 
-    const real lengthX = 6 * boundaryLayerHeight;
-    const real lengthY = 4 * boundaryLayerHeight;
+    const real lengthX = 6*boundaryLayerHeight;
+    const real lengthY = 4*boundaryLayerHeight;
     const real lengthZ = boundaryLayerHeight;
 
     const real roughnessLength = config.getValue("RoughnessLength", c1o10);
     real frictionVelocity = config.getValue("FrictionVelocity", c4o10);
     const real vonKarmanConstant = config.getValue("vonKarmanConstant", c4o10);
 
-    const uint nodesPerBoundaryLyerHeight = config.getValue<uint>("NodesPerBoundaryLayerHeight", 64);
+    const uint nodesPerBoundaryLayerHeight = config.getValue<uint>("NodesPerBoundaryLayerHeight", 64);
 
     const float periodicShift = config.getValue<float>("PeriodicShift", c0o1);
 
@@ -105,6 +109,25 @@ void run(const vf::basics::ConfigurationFile& config)
     const real geostrophicWindSpeed = config.getValue("GeostrophicWindSpeed", c8o1);
     const real geostrophicWindDirection = config.getValue("GeostrophicWindDirection", c0o1);
     const real coriolisParameter = config.getValue("CoriolisParameter", 1e-4F);
+
+    const bool useForest = config.getValue("UseForest", false);
+    const real forestHeight = config.getValue("ForestHeight", c21o1);
+    const real forestDragCoefficient = config.getValue("ForestDragCoefficient", c0o1);
+    const real plantAreaIndex = config.getValue("PlantAreaIndex", c3o1);
+
+    std::string plantAreaDensityFunctionMap = config.getValue<std::string>("PlantAreaDensityFunction", "Flat");
+
+    PlantAreaDensityFunction plantAreaDensityFunction;
+
+    if (plantAreaDensityFunctionMap == "BottomHeavy") {
+        plantAreaDensityFunction = PlantAreaDensityFunction::BottomHeavy;
+    }
+    else if (plantAreaDensityFunctionMap == "TopHeavy") {
+        plantAreaDensityFunction = PlantAreaDensityFunction::TopHeavy;
+    }
+    else {
+        plantAreaDensityFunction = PlantAreaDensityFunction::Flat;
+    }
 
     const bool useDistributionsForPrecursor = config.getValue<bool>("UseDistributions", false);
     std::string precursorDirectory = config.getValue<std::string>("PrecursorDirectory", "precursor/");
@@ -117,7 +140,7 @@ void run(const vf::basics::ConfigurationFile& config)
     const bool usePrecursorInflow = config.getValue("ReadPrecursor", false);
     const int timestepsBetweenReadsPrecursor = config.getValue<int>("nTimestepsReadPrecursor", 10);
 
-    const bool useRefinement = config.getValue<bool>("Refinement", false);
+    const bool useRefinement = config.getValue<bool>("UseRefinement", false);
 
     // all in s
     const float timeStartOut = config.getValue<real>("tStartOut");
@@ -140,7 +163,7 @@ void run(const vf::basics::ConfigurationFile& config)
     };
     const real velocity = c1o2 * velocityProfile(boundaryLayerHeight);
 
-    const real deltaX = boundaryLayerHeight / real(nodesPerBoundaryLyerHeight);
+    const real deltaX = boundaryLayerHeight / real(nodesPerBoundaryLayerHeight);
 
     const real deltaT = c1oSqrt3 * deltaX * machNumber / velocity;
 
@@ -206,7 +229,7 @@ void run(const vf::basics::ConfigurationFile& config)
     para->setViscosityLB(viscosityLB);
     para->setVelocityRatio(deltaX / deltaT);
     para->setViscosityRatio(deltaX * deltaX / deltaT);
-    para->setDensityRatio(c1o1);
+    para->setDensityRatio(density);
 
     para->setUseStreams(numberOfProcesses > 1);
     para->configureMainKernel(vf::collision_kernel::compressible::K17CompressibleNavierStokes);
@@ -258,7 +281,7 @@ void run(const vf::basics::ConfigurationFile& config)
     }
 
     gridBuilderFacade->setStressBoundaryCondition(SideType::MZ, c0o1, c0o1, c1o1, samplingOffsetWallModel, vonKarmanConstant,
-                                            roughnessLength, deltaX);
+                                                  roughnessLength, deltaX);
 
     gridBuilderFacade->setSlipBoundaryCondition(SideType::PZ, c0o1, c0o1, -c1o1);
 
@@ -283,6 +306,16 @@ void run(const vf::basics::ConfigurationFile& config)
         para->addInteractor(coriolisForce);
     }
 
+    if (useForest) {
+        para->setIsBodyForce(true);
+        SPtr<Forest> forest = std::make_shared<Forest>(para, cudaMemoryManager, forestHeight, forestDragCoefficient, plantAreaIndex, 0, plantAreaDensityFunction);
+        para->addInteractor(forest);
+        if (useRefinement) {
+            SPtr<Forest> forestOne = std::make_shared<Forest>(para, cudaMemoryManager, forestHeight, forestDragCoefficient, plantAreaIndex, 1, plantAreaDensityFunction);
+            para->addInteractor(forestOne);
+
+        }
+    }
     //////////////////////////////////////////////////////////////////////////
     // add probes
     //////////////////////////////////////////////////////////////////////////
@@ -291,7 +324,7 @@ void run(const vf::basics::ConfigurationFile& config)
         const auto planarAverageProbe =
             std::make_shared<PlanarAverageProbe>(para, cudaMemoryManager, para->getOutputPath(), "planarAverageProbe",
                                                  timeStepStartAveraging, timeStepStartTemporalAveraging, timeStepAveraging,
-                                                 timeStepStartOutProbe, timeStepOutProbe, Axis::z, true, false);
+                                                 timeStepStartOutProbe, timeStepOutProbe, Axis::z, true, false, true);
         planarAverageProbe->addAllAvailableStatistics();
         planarAverageProbe->setFileNameToNOut();
         para->addSampler(planarAverageProbe);

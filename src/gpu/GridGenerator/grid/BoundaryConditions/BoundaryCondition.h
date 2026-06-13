@@ -36,12 +36,17 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <vector>
 #include <functional>
 
 #include "gpu/GridGenerator/global.h"
 
+#include <basics/geometry3d/GbSpatialData3D.h>
+
 #include "gpu/GridGenerator/grid/NodeValues.h"
+
+namespace vf::gpu {
 
 class Grid;
 
@@ -151,21 +156,30 @@ public:
 class StressBoundaryCondition : public grid_generator::BoundaryCondition
 {
 public:
-    static SPtr<StressBoundaryCondition> make(real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant, real roughnessLength)
+    static SPtr<StressBoundaryCondition> make(real normalX, real normalY, real normalZ, uint samplingOffset,
+                                              real vonKarmanConstant, real roughnessLength,
+                                              std::shared_ptr<GbSpatialData3D<real>> roughnessMap)
     {
-        return SPtr<StressBoundaryCondition>(new StressBoundaryCondition(normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength));
+        return SPtr<StressBoundaryCondition>(new StressBoundaryCondition(
+            normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, std::move(roughnessMap)));
     }
 
     const real normalX, normalY, normalZ;
     const uint samplingOffset;
     const real vonKarmanConstant, roughnessLength;
+    std::shared_ptr<GbSpatialData3D<real>> roughnessMap;
     std::vector<real> normalXList, normalYList, normalZList;
     std::vector<real> samplingDistanceList;
     std::vector<real> roughnessLengthList;
     std::vector<uint> samplingIndices;
 
 protected:
-    StressBoundaryCondition(real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant, real roughnessLength) : normalX(normalX), normalY(normalY), normalZ(normalZ), samplingOffset(samplingOffset), vonKarmanConstant(vonKarmanConstant), roughnessLength(roughnessLength){ }
+    StressBoundaryCondition(real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
+                            real roughnessLength, std::shared_ptr<GbSpatialData3D<real>> roughnessMap)
+        : normalX(normalX), normalY(normalY), normalZ(normalZ), samplingOffset(samplingOffset),
+          vonKarmanConstant(vonKarmanConstant), roughnessLength(roughnessLength), roughnessMap(std::move(roughnessMap))
+    {
+    }
 
 public:
     char getType() const override
@@ -178,7 +192,8 @@ public:
         std::fill_n(std::back_inserter(this->normalXList), this->indices.size(), normalX);
         std::fill_n(std::back_inserter(this->normalYList), this->indices.size(), normalY);
         std::fill_n(std::back_inserter(this->normalZList), this->indices.size(), normalZ);
-        std::fill_n(std::back_inserter(this->roughnessLengthList), this->indices.size(), roughnessLength);
+        if(roughnessMap == nullptr)
+            std::fill_n(std::back_inserter(this->roughnessLengthList), this->indices.size(), roughnessLength);
     }
 
     real getNormalx() const { return this->normalX; }
@@ -205,11 +220,13 @@ class SurfaceLayerBoundaryCondition : public StressBoundaryCondition
 public:
     static SPtr<SurfaceLayerBoundaryCondition> make(real normalX, real normalY, real normalZ, uint samplingOffset,
                                                     real vonKarmanConstant, real roughnessLength,
-                                                    real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate)
+                                                    real roughnessLengthTemperature, real surfaceHeatFlux,
+                                                    real surfaceTemperature, real heatingRate,
+                                                    std::shared_ptr<GbSpatialData3D<real>> roughnessMap)
     {
-        return SPtr<SurfaceLayerBoundaryCondition>(
-            new SurfaceLayerBoundaryCondition(normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength,
-                                              roughnessLengthTemperature, surfaceHeatFlux, surfaceTemperature, heatingRate));
+        return SPtr<SurfaceLayerBoundaryCondition>(new SurfaceLayerBoundaryCondition(
+            normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, roughnessLengthTemperature,
+            surfaceHeatFlux, surfaceTemperature, heatingRate, std::move(roughnessMap)));
     }
 
     real roughnessLengthTemperature, surfaceHeatFlux, surfaceTemperature, heatingRate;
@@ -217,10 +234,13 @@ public:
 
 protected:
     SurfaceLayerBoundaryCondition(real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
-                                  real roughnessLength, real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature,
-                                  real heatingRate)
-        : StressBoundaryCondition(normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength),
-          roughnessLengthTemperature(roughnessLengthTemperature), surfaceHeatFlux(surfaceHeatFlux), surfaceTemperature(surfaceTemperature), heatingRate(heatingRate)
+                                  real roughnessLength, real roughnessLengthTemperature, real surfaceHeatFlux,
+                                  real surfaceTemperature, real heatingRate,
+                                  std::shared_ptr<GbSpatialData3D<real>> roughnessMap)
+        : StressBoundaryCondition(normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength,
+                                  std::move(roughnessMap)),
+          roughnessLengthTemperature(roughnessLengthTemperature), surfaceHeatFlux(surfaceHeatFlux),
+          surfaceTemperature(surfaceTemperature), heatingRate(heatingRate)
     {
     }
 
@@ -228,7 +248,10 @@ public:
     void fillLists()
     {
         StressBoundaryCondition::fillLists();
-        std::fill_n(std::back_inserter(roughnessLengthTemperatureList), indices.size(), roughnessLengthTemperature);
+        if(roughnessMap)
+            roughnessLengthTemperatureList = roughnessLengthList;
+        else
+            std::fill_n(std::back_inserter(roughnessLengthTemperatureList), indices.size(), roughnessLengthTemperature);
         std::fill_n(std::back_inserter(surfaceHeatFluxList), indices.size(), surfaceHeatFlux);
         std::fill_n(std::back_inserter(surfaceTemperatureList), indices.size(), surfaceTemperature);
         std::fill_n(std::back_inserter(heatingRateList), indices.size(), heatingRate);
@@ -515,6 +538,30 @@ private:
     std::vector<real> BCvalueList, vxList, vyList, vzList;
 };
 
+class ADOutflowBoundaryCondition : public grid_generator::BoundaryCondition
+{
+public:
+    static SPtr<ADOutflowBoundaryCondition> make()
+    {
+        return SPtr<ADOutflowBoundaryCondition>(new ADOutflowBoundaryCondition());
+    }
+
+    // matrix indices of the neighbor node in the outflow direction (kN)
+    std::vector<uint> neighborIndices;
+
+protected:
+    ADOutflowBoundaryCondition() = default;
+
+public:
+    char getType() const override
+    {
+        return vf::gpu::BC_AD;
+    }
+
+    void setAdditionalIndices(const SPtr<Grid>& grid, uint index) override;
+};
+
+
 class ADNeumannBoundaryCondition : public grid_generator::BoundaryCondition
 {
 public:
@@ -551,7 +598,7 @@ public:
     real getVz(uint index)  { return this->vzList[index]; }
 };
 
-
+}
 
 #endif
 //! \}

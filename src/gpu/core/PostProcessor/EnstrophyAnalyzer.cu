@@ -55,6 +55,8 @@
 
 using namespace vf::basics::constant;
 
+namespace vf::gpu {
+
 __global__                 void enstrophyKernel  ( real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint* isFluid, unsigned long long numberOfLBnodes );
 
 __host__ __device__ inline void enstrophyFunction( real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint* isFluid, uint index );
@@ -363,6 +365,6 @@ void EnstrophyAnalyzer::writeToFile( std::string filename )
     std::cout << "done!\n";
 }
 
-
+}
 
 //! \}

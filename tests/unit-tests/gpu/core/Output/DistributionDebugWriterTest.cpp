@@ -38,6 +38,8 @@
 
 #include "../testUtilitiesGPU.h"
 
+using namespace vf::gpu;
+
 TEST(DistributionDebugWriterTest, DistributionsAreNotAllocated_CopyDistributions_ShouldThrow)
 {
     const auto para = testing::vf::createParameterForLevel(0);

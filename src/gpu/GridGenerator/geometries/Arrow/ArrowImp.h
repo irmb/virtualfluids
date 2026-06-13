@@ -40,6 +40,8 @@
 
 #include "Arrow.h"
 
+namespace vf::gpu {
+
 struct Vertex;
 
 class ArrowImp : public Arrow 
@@ -59,7 +61,7 @@ private:
     std::shared_ptr<Vertex> end;
 };
 
-
+}
 
 #endif
 

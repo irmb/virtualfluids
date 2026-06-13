@@ -40,6 +40,8 @@
 #include <gpu/core/BoundaryConditions/BoundaryConditionFactory.h>
 #include <gpu/core/Parameter/Parameter.h>
 
+using namespace vf::gpu;
+
 class BoundaryConditionKernelManagerTest_BCsNotSpecified : public testing::Test
 {
 protected:

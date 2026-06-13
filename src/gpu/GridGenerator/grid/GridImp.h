@@ -38,11 +38,16 @@
 #include <vector>
 
 #include "gpu/GridGenerator/global.h"
+#include <basics/geometry3d/winding/GridWindingSubgridDistances.h>
 
 #include "gpu/GridGenerator/grid/distributions/Distribution.h"
 #include "gpu/GridGenerator/grid/Grid.h"
 #include "gpu/GridGenerator/grid/Cell.h"
 #include "gpu/GridGenerator/grid/Field.h" 
+
+class GbTriFaceMesh3D;
+
+namespace vf::gpu {
 
 class TriangularMesh;
 struct Vertex;
@@ -118,8 +123,11 @@ private:
     uint numberOfLayers;
 
     SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy;
+    SPtr<GbTriFaceMesh3D> activeWindingSurface;
+    std::vector<SPtr<GbTriFaceMesh3D>> qSourceSurfaces;
 
     uint numberOfSolidBoundaryNodes = 0;
+    uint qCapacity = 0;
 
     bool enableFixRefinementIntoTheWall;
 
@@ -173,11 +181,22 @@ public:
     void setTriangularMeshDiscretizationStrategy(SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy);
     SPtr<TriangularMeshDiscretizationStrategy> getTriangularMeshDiscretizationStrategy();
 
+    void setActiveWindingSurface(SPtr<GbTriFaceMesh3D> surface);
+    SPtr<GbTriFaceMesh3D> getActiveWindingSurface() const;
+
     uint getNumberOfSolidBoundaryNodes() const override;
     void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
 
     real getQValue(const uint index, const uint dir) const override;
     uint getQPatch(const uint index) const override;
+    bool hasQIndex(uint index) const;
+    uint getQIndex(uint index) const;
+    void setQValue(uint index, int dir, real value);
+    void setQPatch(uint index, uint patch);
+    void clearQForIndex(uint index);
+    void fillMissingQsWithDefault(real defaultValue = static_cast<real>(vf::grid_winding::defaultMissingQ()));
+    void rebuildBoundaryQIndices();
+    void ensureQStorageAllocated();
 
     void setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid) override;
 
@@ -289,13 +308,16 @@ public:
     void setNeighborIndices(uint index);
     real getFirstFluidNode(real coords[3], int direction, real startCoord) const override;
     real getLastFluidNode(real coords[3], int direction, real startCoord) const override;
-protected:
-    virtual void setStopperNeighborCoords(uint index);
 private:
-    int getNeighborIndex(real x, real y, real z, int direction, bool periodicity) const;
+    bool isPeriodic(int direction) const { const bool p[3] {periodicityX, periodicityY, periodicityZ}; return p[direction]; };
+    real getStart(int direction) const { const real d[3] {getStartX(), getStartY(), getStartZ()}; return d[direction]; };
+    real getEnd(int direction) const { const real d[3] {getEndX(), getEndY(), getEndZ()}; return d[direction]; };
+    int getNeighborIndex(real x, real y, real z, int direction) const;
     void getPeriodicNeighborCoords(real x, real y, real z, real* neighborCoords, int direction) const;
     int getNegativeNeighborIndex(real x, real y, real z) const;
     void getNegativePeriodicNeighborCoords(real x, real y, real z, real* neighborCoords) const;
+    int getStopperNeighborIndex(real x, real y, real z, int direction) const;
+    int getNegativeStopperNeighborIndex(real x, real y, real z) const ;
     
     virtual int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
 
@@ -316,7 +338,11 @@ public:
     void closeNeedleCellsThinWall() override;
     bool closeCellIfNeedleThinWall(uint index);
 
+    void fillMissingQsAlongSolidNeighbours(real defaultValue = static_cast<real>(vf::grid_winding::defaultMissingQ()));
+
+    void beginQComputation() override;
     void findQs(Object *object) override;
+    void finalizeQComputation() override;
     void findQs(TriangularMesh &triangularMesh);
     void findQs(Triangle &triangle);
 
@@ -398,6 +424,8 @@ public:
     std::array<CommunicationIndices, 6> communicationIndices;
 
 };
+
+}
 
 #endif
 

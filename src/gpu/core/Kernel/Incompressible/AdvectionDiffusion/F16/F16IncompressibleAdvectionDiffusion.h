@@ -36,6 +36,8 @@
 #include "Kernel/AdvectionDiffusionKernel.h"
 #include <lbm/advectionDiffusion/TurbulentDiffusivity.h>
 
+namespace vf::gpu {
+
 template <vf::lbm::advection_diffusion::TurbulenceModel turbulenceModel>
 class F16IncompressibleAdvectionDiffusion : public AdvectionDiffusionKernel
 {
@@ -48,5 +50,8 @@ private:
     F16IncompressibleAdvectionDiffusion() = default;
     F16IncompressibleAdvectionDiffusion(std::shared_ptr<Parameter> para, int level);
 };
+
+}
+
 #endif
 //! \}

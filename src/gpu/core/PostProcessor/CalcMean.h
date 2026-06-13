@@ -34,6 +34,8 @@
 #ifndef CalcMean_H
 #define CalcMean_H
 
+namespace vf::gpu {
+
 class Parameter;
 class CudaMemoryManager;
 
@@ -41,6 +43,8 @@ void allocMean(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 void allocMeanAD(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 void calcMean(Parameter* para, unsigned int tdiff);
 void resetMean(Parameter* para);
+
+}
 
 #endif
 

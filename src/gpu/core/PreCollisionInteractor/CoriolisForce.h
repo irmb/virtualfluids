@@ -43,6 +43,8 @@
 #include <logger/Logger.h>
 #include <stdexcept>
 
+namespace vf::gpu {
+
 //!\brief Interactor to compute Coriolis force. All parameters in SI units.
 class CoriolisForce : public PreCollisionInteractor
 {
@@ -69,5 +71,7 @@ public:
 private:
     const real geostrophicWindX, geostrophicWindY, coriolisParameter;
 };
+
+}
 
 #endif //! \}

@@ -42,12 +42,15 @@
 #include <memory>
 #include <stdexcept>
 
+struct CUstream_st;
+
+namespace vf::gpu {
+
 class Parameter;
 class CudaMemoryManager;
 class GridScalingFactory;
 enum class CudaStreamIndex;
 struct LBMSimulationParameter;
-struct CUstream_st;
 
 using gridScaling =
     std::function<void(LBMSimulationParameter *, LBMSimulationParameter *, ICells *, ICellNeigh &, CUstream_st *stream)>;
@@ -87,7 +90,12 @@ private:
 
     gridScaling scalingFineToCoarse = nullptr;
     gridScaling scalingCoarseToFine = nullptr;
+    gridScaling scalingFineToCoarseAD = nullptr;
+    gridScaling scalingCoarseToFineAD = nullptr;
 };
+
+}
+
 #endif
 
 //! \}

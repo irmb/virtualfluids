@@ -37,6 +37,8 @@
 
 #include <logger/Logger.h>
 
+namespace vf::gpu {
+
 void TimeStepTimer::startTotalTimer             (uint t){ if(t%this->tActivate==0) this->totalTimer.start();              }
 void TimeStepTimer::stopTotalTimer              (uint t){ if(t%this->tActivate==0) this->totalTimer.end();               }
 void TimeStepTimer::startCollisionTimer         (uint t){ if(t%this->tActivate==0) this->collisionTimer.start();          }
@@ -74,6 +76,8 @@ void TimeStepTimer::outputPerformance(uint t)
         VF_LOG_INFO(" --- Probes \t\t {}%",           (tProbe/tTotal)*100 );
         VF_LOG_INFO(" --- Data exchange \t {}%",    (tExchange/tTotal)*100 );
     }
+}
+
 }
 
 //! \}

@@ -160,7 +160,7 @@ void TestSimulationImp::startPostProcessing()
     timeTracking->setAnalyticalResultWriteEndTime();
 }
 
-void TestSimulationImp::setParameter(std::shared_ptr<Parameter> para)
+void TestSimulationImp::setParameter(std::shared_ptr<vf::gpu::Parameter> para)
 {
     this->para = para;
 }

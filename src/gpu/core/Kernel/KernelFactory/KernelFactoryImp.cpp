@@ -59,6 +59,8 @@
 
 using namespace vf;
 
+namespace vf::gpu {
+
 std::vector<std::shared_ptr<Kernel>> KernelFactoryImp::makeKernels(std::shared_ptr<Parameter> para)
 {
     std::vector< std::shared_ptr< Kernel>> kernels;
@@ -167,6 +169,8 @@ std::shared_ptr<AdvectionDiffusionKernel> KernelFactoryImp::makeAdvectionDiffusi
 
     
     throw std::runtime_error("KernelFactory does not know the  AD KernelType.");
+}
+
 }
 
 //! \}

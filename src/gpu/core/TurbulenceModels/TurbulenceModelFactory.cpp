@@ -46,6 +46,8 @@
 using ADTurbulenceModel = vf::lbm::advection_diffusion::TurbulenceModel;
 using namespace vf::basics::constant;
 
+namespace vf::gpu {
+
 void TurbulenceModelFactory::setTurbulenceModel(std::string turbulenceModel)
 {
     if (turbulenceModel == "None")
@@ -77,14 +79,14 @@ void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(std::string tu
     else
         throw std::runtime_error("TurbulenceModelFactory: Invalid advection diffusion turbulence model! Model name found: " + turbulenceModel);
 
-    VF_LOG_INFO("Turbulence Model Advection Diffuision {}", turbulenceModel);
+    VF_LOG_INFO("Turbulence Model Advection Diffusion {}", turbulenceModel);
 }
 
 void TurbulenceModelFactory::setTurbulenceModel(vf::lbm::TurbulenceModel turbulenceModel)
 {
     para->setTurbulenceModel(turbulenceModel);
 
-    if (turbulenceModel != vf::lbm::TurbulenceModel::None && para->getSGSConstant() == c0o1)
+    if (turbulenceModel != vf::lbm::TurbulenceModel::None && para->getSGSConstant() == vf::basics::constant::c0o1)
         throw std::runtime_error("Turbulence Model requires SGS constant!");
 
     if (turbulenceModel != vf::lbm::TurbulenceModel::None)
@@ -104,6 +106,8 @@ void TurbulenceModelFactory::setModelConstant(real modelConstant)
 
 void TurbulenceModelFactory::setAdvectionDiffusionTurbulenceModel(ADTurbulenceModel turbulenceModel)
 {
+    using namespace ::vf::basics::constant;
+
     if (!para->getUseTurbulentViscosity() && turbulenceModel != ADTurbulenceModel::None)
         throw std::runtime_error("TurbulenceModelFactory: Turbulent viscosity must be enabled to use an advection diffusion turbulence model!");
 
@@ -142,6 +146,8 @@ void TurbulenceModelFactory::readConfigFile(const vf::basics::ConfigurationFile&
         const std::string config = configData.getValue<std::string>(ADTurbulenceModelKey);
         setAdvectionDiffusionTurbulenceModel(config);
     }
+}
+
 }
 
 //! \}

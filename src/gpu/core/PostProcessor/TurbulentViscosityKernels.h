@@ -35,11 +35,15 @@
 #ifndef TURBULENT_VISCOSITY_KERNELS_H_
 #define TURBULENT_VISCOSITY_KERNELS_H_
 
+namespace vf::gpu {
+
 class Parameter;
 
 void calculateTurbulentViscosityAMD(Parameter* para, int level);
 void calculateTurbulentDiffusivityMoeng(Parameter* para, int level);
 void calculateTurbulentViscosityAndDiffusivityAMDStratified(Parameter* para, int level);
+
+}
 
 #endif // TURBULENT_VISCOSITY_H_e
 

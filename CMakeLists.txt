@@ -27,12 +27,11 @@
 #  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
 #
 # #################################################################################
-
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 project(
     VirtualFluids
-    VERSION 0.2.1
+    VERSION 0.3.0
     DESCRIPTION "CFD code based on the Lattice Boltzmann Method"
     HOMEPAGE_URL "https://git.rz.tu-bs.de/irmb/VirtualFluids"
     LANGUAGES CXX)
@@ -92,7 +91,7 @@ if(VF_ENABLE_GPU)
 endif()
 
 if(VF_ENABLE_PYTHON_BINDINGS)
-    add_subdirectory(pythonbindings)
+    add_subdirectory(pythonbindings/src)
 endif()
 
 vf_load_user_apps()

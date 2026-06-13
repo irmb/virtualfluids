@@ -52,34 +52,39 @@ struct real3
     real x, y, z;
 };
 
-constexpr real3 operator+(real3 a, real3 b)
+constexpr real3 operator+(const real3& a, const real3& b)
 {
     return { a.x + b.x, a.y + b.y, a.z + b.z };
 }
 
-constexpr void operator+=(real3 a, real3 b)
+constexpr void operator+=(real3& a, const real3& b)
 {
     a.x += b.x; a.y += b.y; a.z += b.z;
 }
 
-constexpr real3 operator-(real3 a, real3 b)
+constexpr real3 operator-(const real3& a, const real3& b)
 {
     return { a.x - b.x, a.y - b.y, a.z - b.z };
 }
 
-constexpr real3 operator*(real3 a, real b)
+constexpr real3 operator*(const real3& a, real b)
 {
     return { a.x * b, a.y * b, a.z * b };
 }
 
-constexpr real3 operator*(real a, real3 b)
+constexpr real3 operator*(real a, const real3& b)
 {
     return { a * b.x, a * b.y, a * b.z };
 }
 
-constexpr real3 operator/(real3 a, real b)
+constexpr real3 operator/(const real3& a, real b)
 {
     return { a.x / b, a.y / b, a.z / b };
+}
+
+constexpr real3 operator/(const real3& a, const real3& b)
+{
+    return { a.x / b.x, a.y / b.y, a.z / b.z };
 }
 
 constexpr void operator/=(real3& a, real b)
@@ -89,14 +94,19 @@ constexpr void operator/=(real3& a, real b)
     a.z /= b;
 }
 
-constexpr real dot(real3 a, real3 b)
+constexpr real dot(const real3& a, const real3& b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-constexpr real square(real3 a)
+constexpr real square(const real3& a)
 {
     return a.x * a.x + a.y * a.y + a.z * a.z;
+}
+
+constexpr bool operator==(const real3& a, const real3& b)
+{
+    return a.x == b.x && a.y == b.y && a.z == b.z;
 }
 
 #endif

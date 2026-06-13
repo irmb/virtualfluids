@@ -42,6 +42,8 @@
 #include "utilities/transformator/Transformator.h"
 #include "utilities/transformator/ArrowTransformator.h"
 
+namespace vf::gpu {
+
 class BoundingBox;
 struct Triangle;
 class TriangularMesh;
@@ -99,6 +101,7 @@ private:
     void verifyDelta(real delta) const;
 };
 
+}
 
 #endif
 

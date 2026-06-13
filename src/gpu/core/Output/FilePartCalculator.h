@@ -36,6 +36,8 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 //! \brief calculations needed for writing the simulation's output into multiple file parts
 //! \details To prevent output files from becoming to large, they are split into multiple part files. For this process some
 //! calculations are needed.
@@ -52,6 +54,8 @@ public:
     //! \brief limits how many grid nodes are written into a single vtk file
     static const uint limitOfNodesForVTK = 30e6; // max 30 million nodes per VTK file
 };
+
+}
 
 #endif
 

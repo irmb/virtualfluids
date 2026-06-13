@@ -60,7 +60,7 @@ public:
     static void initializeLogger();
 
     // changing the path of the log files
-    static void changeLogPath(const std::string& path);
+    static void changeLogPath(std::string path);
 
 private:
     static void updateDefaultLogger();

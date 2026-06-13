@@ -37,6 +37,8 @@
 #include "global.h"
 #include <vector>
 
+namespace vf::gpu {
+
 struct IDS {
     enum IDs { vertexID = 0, firstVertexID = 1, coordinateID = 2, uniqueCoordID = 3, x = 3, y = 4, z = 5 };
 };
@@ -84,6 +86,8 @@ public:
     real **sortedToTriangles;
     real **sortedInSpace;
 };
+
+}
 
 #endif
 

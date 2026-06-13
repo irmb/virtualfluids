@@ -36,6 +36,8 @@
 #include "Calculation/Calculation.h"
 #include "logger/Logger.h"
 
+namespace vf::gpu {
+
 void KernelImp::runOnIndices(const unsigned int *indices, unsigned int sizeIndices, CollisionTemplate collisionTemplate, CudaStreamIndex streamIndex)
 {
     printf("Method not implemented for this Kernel \n");
@@ -154,6 +156,8 @@ KernelImp::KernelImp(std::shared_ptr<Parameter> para, int level, real viscosityM
 KernelImp::KernelImp(std::shared_ptr<Parameter> para, int level, real viscosityMaximumRecommended)
     : para(std::move(para)), level(level), viscosityMaximumRecommended(viscosityMaximumRecommended)
 {
+}
+
 }
 
 //! \}

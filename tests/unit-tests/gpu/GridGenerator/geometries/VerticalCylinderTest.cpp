@@ -34,6 +34,8 @@
 
 #include <gpu/GridGenerator/geometries/VerticalCylinder/VerticalCylinder.h>
 
+using namespace vf::gpu;
+
 class VerticalCylinderTest : public testing::Test
 {
 protected:

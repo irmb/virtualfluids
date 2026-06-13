@@ -51,6 +51,8 @@
 #include "lbm/constants/D3Q27.h"
 #include "wallModelMoninObukhov.h"
 
+namespace vf::gpu {
+
 template <BoundaryConditionFactory::StressBC stressBCType, bool delayed>
 __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions boundaryParams,
                                WallModelParameters wallModelParams)
@@ -71,16 +73,16 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
     //////////////////////////////////////////////////////////////////////////
 
     Distributions27 populationReferences =
-        vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes, gridParams.isEvenTimestep);
+        getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes, gridParams.isEvenTimestep);
 
     SubgridDistances27 subgridDistances;
-    vf::gpu::getPointersToSubgridDistances(subgridDistances, boundaryParams.q27[0], boundaryParams.numberOfBCnodes);
+    getPointersToSubgridDistances(subgridDistances, boundaryParams.q27[0], boundaryParams.numberOfBCnodes);
 
     const uint k_000 = boundaryParams.k[nodeIndex];
-    const vf::gpu::ListIndices listIndices(k_000, gridParams.neighborX, gridParams.neighborY, gridParams.neighborZ);
+    const ListIndices listIndices(k_000, gridParams.neighborX, gridParams.neighborY, gridParams.neighborZ);
 
     real populations[NUMBER_Of_DIRECTIONS];
-    vf::gpu::getPostCollisionDistribution(populations, populationReferences, listIndices);
+    getPostCollisionDistribution(populations, populationReferences, listIndices);
 
     const real drho = vf::lbm::getDensity(populations);
     const real3 velocityNode = { vf::lbm::getCompressibleVelocityX1(populations, drho),
@@ -150,7 +152,7 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
     const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocitySample, wallShearStress, density,
                                                            interpolationFactor, wallArea, wallMomentum);
     if (!delayed) {
-        populationReferences = vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes,
+        populationReferences = getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes,
                                                                     !gridParams.isEvenTimestep);
     };
 
@@ -168,6 +170,9 @@ __global__ void StressDevice27(GridParameter gridParams, QforBoundaryConditions 
     wallModelParams.forceZ[nodeIndex] = wallMomentum.z;
     
 }
+
+}
+
 #endif
 
 //! \}

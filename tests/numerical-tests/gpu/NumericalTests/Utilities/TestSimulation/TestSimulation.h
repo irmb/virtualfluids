@@ -37,12 +37,15 @@
 #include <string>
 
 class InitialCondition;
-class DataWriter;
 class SimulationParameter;
 class SimulationResults;
 class SimulationObserver;
 class TimeTracking;
+
+namespace vf::gpu{
 class Parameter;
+class DataWriter;
+}
 
 class TestSimulation
 {
@@ -54,7 +57,7 @@ public:
 
     virtual std::shared_ptr<SimulationParameter> getSimulationParameter() = 0;
     virtual std::shared_ptr<TimeTracking> getTimeTracking() = 0;
-    virtual void setParameter(std::shared_ptr<Parameter> para) = 0;
+    virtual void setParameter(std::shared_ptr<vf::gpu::Parameter> para) = 0;
 };
 #endif
 //! \}

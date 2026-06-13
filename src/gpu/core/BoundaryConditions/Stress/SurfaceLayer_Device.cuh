@@ -51,6 +51,8 @@
 #include "inverseMomentumExchange.cuh"
 #include "wallModelMoninObukhov.h"
 
+namespace vf::gpu {
+
 template <BoundaryConditionFactory::StressBC stressBCType, BoundaryConditionFactory::SurfaceLayerBC heatFluxBCtype,
           bool useDelayedBounceBack>
 __global__ void
@@ -59,7 +61,6 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
 {
     using namespace vf::basics::constant;
     using namespace vf::lbm::dir;
-    using namespace vf::gpu;
     using namespace vf::lbm::advection_diffusion;
     
     constexpr real filterFrequency = 1e-3F;
@@ -118,7 +119,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     // Load and compute temperature inputs
     ///////////////////////////////////////////////////////////
 
-    auto populationReferencesTemperature = vf::gpu::getDistributionReferences27(
+    auto populationReferencesTemperature = getDistributionReferences27(
         temperatureParams.distributionsTemperature, gridParams.numberOfNodes, gridParams.isEvenTimestep);
     real populationsTemperature[NUMBER_Of_DIRECTIONS];
     getPostCollisionDistribution(populationsTemperature, populationReferencesTemperature, listIndices);
@@ -208,7 +209,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     const real3 fakeWallVelocity = computeFakeWallVelocity(wallNormal, velocitySample, wallShearStress, density,
                                                            interpolationFactor, wallArea, wallMomentum);
     if (!useDelayedBounceBack)
-        populationReferences = vf::gpu::getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes,
+        populationReferences = getDistributionReferences27(gridParams.distributions, gridParams.numberOfNodes,
                                                                     !gridParams.isEvenTimestep);
     wallMomentum += writeDistributionsBB(populationReferences, linkIsCut, populationsBouncedBack, fakeWallVelocity, density,
                                          listIndices);
@@ -229,7 +230,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
     const real3 wallFlux = diffusiveFlux + wallNormal * (surfaceHeatFlux - normalDiffusiveFlux);
 
     if (!useDelayedBounceBack)
-        populationReferencesTemperature = vf::gpu::getDistributionReferences27(
+        populationReferencesTemperature = getDistributionReferences27(
             temperatureParams.distributionsTemperature, gridParams.numberOfNodes, !gridParams.isEvenTimestep);
 
     switch (stressBCType) {
@@ -258,4 +259,7 @@ SurfaceLayerDevice27(GridParameter gridParams, QforBoundaryConditions boundaryPa
             break;
     }
 }
+
+}
+
 #endif

@@ -49,6 +49,7 @@
 #include "BoundaryConditions/Outflow/Outflow.h"
 #include "BoundaryConditions/Pressure/Pressure.h"
 
+namespace vf::gpu {
 
 BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> parameter, const BoundaryConditionFactory *bcFactory) : para(parameter)
 {
@@ -63,6 +64,7 @@ BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> p
     this->ADFluxBoundaryConditionPost = bcFactory->getAdvectionDiffusionFluxBoundaryConditionPost();
     this->ADDirichletBoundaryConditionPost = bcFactory->getAdvectionDiffusionDirichletBoundaryConditionPost();
     this->ADNeumannBoundaryConditionPost = bcFactory->getAdvectionDiffusionNeumannBoundaryConditionPost();
+    this->ADDirectionalBoundaryConditionPost = bcFactory->getAdvectionDiffusionDirectionalBoundaryConditionPost();
 
     this->surfaceLayerBoundaryConditionPost = bcFactory->getSurfaceLayerBoundaryConditionPost();
 
@@ -97,6 +99,8 @@ BoundaryConditionKernelManager::BoundaryConditionKernelManager(SPtr<Parameter> p
                            "AdvectionDiffusionDirichletBoundaryConditionPost");
     checkBoundaryCondition(this->ADNeumannBoundaryConditionPost, this->para->getParD(0)->AdvectionDiffusionNeumannBC,
                            "AdvectionDiffusionNeumannBoundaryConditionPost");
+    checkBoundaryCondition(this->ADDirectionalBoundaryConditionPost, this->para->getParD(0)->concentrationBCDirectional,
+                        "AdvectionDiffusionDirectionalBoundaryConditionPost");
     checkBoundaryCondition(this->surfaceLayerBoundaryConditionPost, this->para->getParD(0)->surfaceLayerBC,
                            "surfaceLayerBoundaryConditionPost");
 }
@@ -434,6 +438,15 @@ void BoundaryConditionKernelManager::runADNeumannBCKernel(int level) const
     if (parD->AdvectionDiffusionNeumannBC.numberOfBCnodes == 0)
         return;
     ADNeumannBoundaryConditionPost(parD, parD->AdvectionDiffusionNeumannBC);
+}
+
+void BoundaryConditionKernelManager::runADDirectionalBCKernel(int level) const
+{
+    for (auto boundaryConditionStruct : para->getParD(level)->concentrationBCDirectional) {
+        this->ADDirectionalBoundaryConditionPost(para->getParD(level).get(), &boundaryConditionStruct);
+    }
+}
+
 }
 
 //! \}

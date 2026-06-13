@@ -38,6 +38,8 @@
 
 #include "CoordNeighborGeoV.h"
 
+namespace vf::gpu {
+
 class MeasuredPoints 
     : public CoordNeighborGeoV 
 {
@@ -52,6 +54,8 @@ public:
     void init();
 
 };
+
+}
 
 #endif
 

@@ -37,7 +37,6 @@
 #define MULTIGPUGRIDHELPER_H
 
 #include <array>
-#include <cmath>
 #include <optional>
 #include <stdexcept>
 #include <vector>
@@ -46,8 +45,11 @@
 #include <basics/constants/NumericConstants.h>
 #include <basics/geometry3d/Axis.h>
 
+#include "GbSpatialData3D.h"
 #include "grid/BoundaryConditions/Side.h"
 #include "utilities/communication.h"
+
+namespace vf::gpu {
 
 struct GridDimensions;
 class MultipleGridBuilder;
@@ -114,10 +116,10 @@ public:
     // Boundary conditions, call after createGrids()
     void setSlipBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ) const;
     void setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
-                                    real roughnessLength, real deltaX) const;
+                                    real roughnessLength, real deltaX, std::shared_ptr<GbSpatialData3D<real>> roughnessMap=nullptr) const;
     void setSurfaceLayerBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
                                           real roughnessLength, real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate,
-                                          real deltaX, real deltaT) const;
+                                          real deltaX, real deltaT, std::shared_ptr<GbSpatialData3D<real>> roughnessMap=nullptr) const;
     void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz) const;
     void setPressureBoundaryCondition(SideType sideType, real rho) const;
     void setNoSlipBoundaryCondition(SideType sideType) const;
@@ -130,6 +132,7 @@ public:
     void setADFluxBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, real gradient, real deltaX);
     void setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz);
     void setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx);
+    void setADOutflowBoundaryCondition(SideType sideType);
     void setPeriodicShiftOnXBoundaryInYDirection(real shift);
     void setPeriodicShiftOnXBoundaryInZDirection(real shift);
     void setPeriodicShiftOnYBoundaryInXDirection(real shift);
@@ -240,6 +243,8 @@ private:
     bool createGridsHasBeenCalled = false;
     real shiftOnXInY{}, shiftOnXInZ{}, shiftOnYInX{}, shiftOnYInZ{}, shiftOnZInX{}, shiftOnZInY{};
 };
+
+}
 
 #endif
 //! \}

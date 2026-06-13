@@ -46,6 +46,8 @@
 
 using namespace vf::lbm::dir;
 
+namespace vf::gpu {
+
 GridReader::GridReader(FILEFORMAT format, std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaMemoryManager)
 {
     this->para = para;
@@ -853,6 +855,8 @@ void GridReader::setChannelBoundaryCondition()
         this->channelBoundaryConditions[i] = BC_Values[i]->getBoundaryCondition();
         VF_LOG_INFO("{} Boundary: {}", this->channelDirections[i], channelBoundaryConditions[i]);
     }
+}
+
 }
 
 //! \}

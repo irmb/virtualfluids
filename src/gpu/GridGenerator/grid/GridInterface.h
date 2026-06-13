@@ -36,6 +36,8 @@
 
 #include "gpu/GridGenerator/global.h"
 
+namespace vf::gpu {
+
 class GridImp;
 
 class GridInterface
@@ -80,6 +82,7 @@ private:
     uint findOffsetFC( const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex );
 };
 
+}
 
 #endif
 //! \}

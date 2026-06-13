@@ -34,6 +34,8 @@
 #include <helper_cuda.h>
 #include <iostream>
 
+namespace vf::gpu {
+
 int CudaStreamManager::registerAndLaunchStream(CudaStreamIndex streamIndex)
 {   
     if(streamIndex == CudaStreamIndex::Legacy) return 0;
@@ -85,6 +87,8 @@ void CudaStreamManager::triggerStartBulkKernel(CudaStreamIndex streamIndex, uint
 void CudaStreamManager::waitOnStartBulkKernelEvent(CudaStreamIndex streamIndex, uint multiStreamIndex)
 {
     checkCudaErrors(cudaStreamWaitEvent(getStream(streamIndex, multiStreamIndex), startBulkKernel));
+}
+
 }
 
 //! \}

@@ -37,6 +37,8 @@
 
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 std::shared_ptr<K15CompressibleNavierStokes> K15CompressibleNavierStokes::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
     return std::shared_ptr<K15CompressibleNavierStokes>(new K15CompressibleNavierStokes(para, level));
@@ -86,4 +88,7 @@ K15CompressibleNavierStokes::K15CompressibleNavierStokes(std::shared_ptr<Paramet
 
     
 }
+
+}
+
 //! \}

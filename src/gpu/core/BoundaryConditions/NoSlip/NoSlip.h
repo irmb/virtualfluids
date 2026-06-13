@@ -36,6 +36,8 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 struct LBMSimulationParameter;
 class Parameter;
 
@@ -44,6 +46,8 @@ void NoSlipBounceBack(LBMSimulationParameter* parameterDevice, QforBoundaryCondi
 void NoSlipInterpolatedIncompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void NoSlipInterpolatedCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+
+}
 
 #endif
 

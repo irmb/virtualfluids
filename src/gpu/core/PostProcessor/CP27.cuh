@@ -37,6 +37,8 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 void CalcCPtop27(real* DD, int* cpIndex, int nonCp, double* cpPress, unsigned int* neighborX, unsigned int* neighborY,
                  unsigned int* neighborZ, unsigned long long numberOfLBnodes, bool isEvenTimestep,
                  unsigned int numberOfThreads);
@@ -44,6 +46,8 @@ void CalcCPtop27(real* DD, int* cpIndex, int nonCp, double* cpPress, unsigned in
 void CalcCPbottom27(real* DD, int* cpIndex, int nonCp, double* cpPress, unsigned int* neighborX, unsigned int* neighborY,
                     unsigned int* neighborZ, unsigned long long numberOfLBnodes, bool isEvenTimestep,
                     unsigned int numberOfThreads);
+
+}
 
 #endif
 

@@ -47,6 +47,8 @@ class ConfigurationFile;
 #include <lbm/advectionDiffusion/TurbulentDiffusivity.h>
 #include <lbm/collision/TurbulentViscosity.h>
 
+namespace vf::gpu {
+
 class Parameter;
 
 class TurbulenceModelFactory
@@ -79,6 +81,8 @@ private:
     std::optional<std::function<void(Parameter*, int)>> turbulenceModelADKernel = std::nullopt;
     std::shared_ptr<Parameter> para;
 };
+
+}
 
 #endif
 

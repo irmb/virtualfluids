@@ -49,6 +49,8 @@ namespace vf::parallel
 class Communicator;
 }
 
+namespace vf::gpu {
+    
 class GridBuilder;
 class CudaMemoryManager;
 class Parameter;
@@ -137,6 +139,9 @@ private:
 
     vf::basics::MetaData metaData;
 };
+
+}
+
 #endif
 
 //! \}

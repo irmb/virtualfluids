@@ -38,6 +38,8 @@
 #include <cmath>
 #include <sstream>
 
+using namespace vf::gpu;
+
 std::shared_ptr<Y2dSliceToResults>
 Y2dSliceToResults::getNewInstance(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo,
                                   unsigned int timeStepLength, std::shared_ptr<SimulationResults> simResults,

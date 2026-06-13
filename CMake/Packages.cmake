@@ -78,7 +78,9 @@ if(VF_ENABLE_UNIT_TESTS)
 endif()
 
 if(VF_ENABLE_OPENMP)
-    find_package(OpenMP REQUIRED)
+    # Only require OpenMP for C++ to avoid attempting OpenMP offloading for CUDA,
+    # which is typically unsupported with NVCC on Windows.
+    find_package(OpenMP COMPONENTS CXX REQUIRED)
     target_compile_definitions(project_options INTERFACE VF_OPENMP)
 endif()
 
@@ -100,7 +102,7 @@ if(VF_ENABLE_BOOST)
 endif()
 
 if(VF_ENABLE_PYTHON_BINDINGS)
-    set(pybind_version "v2.13.6")
+    set(pybind_version "v3.0.2")
     set(pybind_url "https://github.com/pybind/pybind11")
     message(STATUS "Fetching pybind: ${pybind_version}")
     FetchContent_Declare(
@@ -113,7 +115,7 @@ if(VF_ENABLE_PYTHON_BINDINGS)
 endif()
 
 # YAML
-set(yaml_git_version "0.8.0")
+set(yaml_git_version "yaml-cpp-0.9.0")
 set(yaml_url "https://github.com/jbeder/yaml-cpp")
 message(STATUS "Fetching yaml-cpp: ${yaml_git_version}")
 FetchContent_Declare(yaml-cpp
@@ -122,10 +124,42 @@ FetchContent_Declare(yaml-cpp
   GIT_SHALLOW 1) 
 FetchContent_GetProperties(yaml-cpp)
 if(NOT yaml-cpp_POPULATED)
-  FetchContent_Populate(yaml-cpp)
-  add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
+  FetchContent_MakeAvailable(yaml-cpp)
 endif()
 
 # Metis
 add_subdirectory(${VF_THIRD_DIR}/metis/metis-5.1.0)
 target_compile_definitions(project_options INTERFACE VF_METIS)
+
+# Fast Winding (libigl)
+set(VF_FAST_WINDING_ROOT "" CACHE PATH "Path to fast-winding-number-soups checkout")
+if(NOT VF_FAST_WINDING_ROOT)
+    set(_vf_fast_default "${CMAKE_SOURCE_DIR}/3rdParty/fast-winding-number-soups")
+    if(EXISTS "${_vf_fast_default}/libigl/include/igl/FastWindingNumberForSoups.h")
+        set(VF_FAST_WINDING_ROOT "${_vf_fast_default}" CACHE PATH "Path to fast-winding-number-soups checkout" FORCE)
+    endif()
+endif()
+
+function(vf_enable_fast_winding target_name)
+    set(oneValueArgs VISIBILITY)
+    cmake_parse_arguments(ARG "" "${oneValueArgs}" "" ${ARGN})
+
+    if(NOT ARG_VISIBILITY)
+        set(ARG_VISIBILITY PUBLIC)
+    endif()
+
+    if(NOT VF_FAST_WINDING_ROOT)
+        return()
+    endif()
+
+    if(NOT EXISTS "${VF_FAST_WINDING_ROOT}/libigl/include/igl/FastWindingNumberForSoups.h")
+        message(WARNING "VF_FAST_WINDING_ROOT does not contain libigl FastWindingNumberForSoups.h: ${VF_FAST_WINDING_ROOT}")
+        return()
+    endif()
+
+    target_include_directories(${target_name} SYSTEM ${ARG_VISIBILITY}
+        ${VF_FAST_WINDING_ROOT}/include
+        ${VF_FAST_WINDING_ROOT}/libigl/include
+    )
+    target_compile_definitions(${target_name} ${ARG_VISIBILITY} VF_HAS_FAST_WINDING=1)
+endfunction()

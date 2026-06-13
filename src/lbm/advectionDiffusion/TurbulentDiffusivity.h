@@ -67,7 +67,7 @@ constexpr real calcTurbulentDiffusivityMoeng(real temperatureGradient, real turb
     real lengthScale = c1o1;
     const real bruntVaisalaFrequencySquared = buoyancyParameter * temperatureGradient;
     const real subgridTurbulentKineticEnergy = turbulentViscosity * turbulentViscosity;
-    const real limit = c76o10 * c76o10 * subgridTurbulentKineticEnergy;
+    const real limit = c76o100 * c76o100 * subgridTurbulentKineticEnergy;
     if (bruntVaisalaFrequencySquared > limit) { // for numerical stability & clips to minimum of 1
         lengthScale = sqrtf((float)limit / (float)bruntVaisalaFrequencySquared);
     }

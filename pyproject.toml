@@ -33,18 +33,17 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "pyfluids"
-version = "0.2.1"
+version = "0.3.0"
 description = "Python bindings for VirtualFluids"
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.10"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.6",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 
 [project.urls]
@@ -54,7 +53,6 @@ url = "https://git.rz.tu-bs.de/irmb/virtualfluids"
 build-dir = "build"
 strict-config = true
 logging.level = "INFO"
-build.tool-args = ["-j12"]
 build.targets = ["python_bindings"]
 
 [tool.scikit-build.wheel]

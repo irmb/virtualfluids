@@ -42,6 +42,8 @@ using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 using namespace vf::lbm::advection_diffusion;
 
+namespace vf::gpu {
+
 __global__ void InitAdvectionDiffusionIncompressible_Device(
     const uint* neighborX,
     const uint* neighborY,
@@ -62,14 +64,14 @@ __global__ void InitAdvectionDiffusionIncompressible_Device(
     if ((nodeIndex >= numberOfLBnodes) || (typeOfGridNode[nodeIndex] != GEO_FLUID))
         return;
     
-    Distributions27 distAD = vf::gpu::getDistributionReferences27(distributionsAD, numberOfLBnodes, isEvenTimestep);
+    Distributions27 distAD = getDistributionReferences27(distributionsAD, numberOfLBnodes, isEvenTimestep);
 
     const real conc = concentration[nodeIndex];
     const real  vx1 = velocityX[nodeIndex];
     const real  vx2 = velocityY[nodeIndex];
     const real  vx3 = velocityZ[nodeIndex];
 
-    const vf::gpu::ListIndices indices(nodeIndex, neighborX, neighborY, neighborZ);
+    const ListIndices indices(nodeIndex, neighborX, neighborY, neighborZ);
 
     //////////////////////////////////////////////////////////////////////////
     //! - Calculate the equilibrium and set the distributions
@@ -103,6 +105,8 @@ __global__ void InitAdvectionDiffusionIncompressible_Device(
     (distAD.f[dMPM])[indices.k_M0M] = equilibrium(c1o216,conc, -vx1 + vx2 - vx3, cu_sq);
     (distAD.f[dPMM])[indices.k_0MM] = equilibrium(c1o216,conc,  vx1 - vx2 - vx3, cu_sq);
     (distAD.f[dMPP])[indices.k_M00] = equilibrium(c1o216,conc, -vx1 + vx2 + vx3, cu_sq);
+}
+
 }
 
 //! \}

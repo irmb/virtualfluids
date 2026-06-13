@@ -38,6 +38,8 @@
 
 #include "global.h"
 
+namespace vf::gpu {
+
 class BoundingBox;
 struct Triangle;
 class TriangularMesh;
@@ -66,6 +68,7 @@ public:
 
 };
 
+}
 
 #endif
 

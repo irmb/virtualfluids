@@ -46,6 +46,9 @@
 #include "grid/GridDimensions.h"
 
 using namespace vf::basics::constant;
+
+namespace vf::gpu {
+
 using namespace communication_directions;
 
 MultipleGridBuilderFacade::MultipleGridBuilderFacade(SPtr<MultipleGridBuilder> gridBuilder,
@@ -359,20 +362,20 @@ void MultipleGridBuilderFacade::setSlipBoundaryCondition(SideType sideType, real
 }
 
 void MultipleGridBuilderFacade::setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ,
-                                                           uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX) const
+                                                           uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX, std::shared_ptr<GbSpatialData3D<real>> roughnessMap) const
 {
     setBoundaryCondition(sideType, [&]() {
-        gridBuilder->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, deltaX);
+        gridBuilder->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, deltaX, std::move(roughnessMap));
     });
 }
 void MultipleGridBuilderFacade::setSurfaceLayerBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ,
                                                                  uint samplingOffset, real vonKarmanConstant, real roughnessLength,
                                                                  real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate,
-                                                                 real deltaX, real deltaT) const
+                                                                 real deltaX, real deltaT, std::shared_ptr<GbSpatialData3D<real>> roughnessMap) const
 {
     setBoundaryCondition(sideType, [&]() {
         gridBuilder->setSurfaceLayerBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength,
-                                                      roughnessLengthTemperature, surfaceHeatFlux, surfaceTemperature, heatingRate, deltaX, deltaT);
+                                                      roughnessLengthTemperature, surfaceHeatFlux, surfaceTemperature, heatingRate, deltaX, deltaT, roughnessMap);
     });
 }
 void MultipleGridBuilderFacade::setPrecursorBoundaryCondition(SideType sideType, SPtr<FileCollection> fileCollection,
@@ -415,6 +418,10 @@ void MultipleGridBuilderFacade::setADDirichletBoundaryCondition(SideType sideTyp
 
 void MultipleGridBuilderFacade::setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx){
     setBoundaryCondition(sideType, [&]{gridBuilder->setADNeumannBoundaryCondition(sideType, gradient, vx, vy, vz, dx); });
+}
+
+void MultipleGridBuilderFacade::setADOutflowBoundaryCondition(SideType sideType){
+    setBoundaryCondition(sideType, [&]{gridBuilder->setADOutflowBoundaryCondition(sideType); });
 }
 
 bool MultipleGridBuilderFacade::isFinalSubdomainInDirection(CommunicationDirection direction) const
@@ -530,4 +537,7 @@ SPtr<MultipleGridBuilder> MultipleGridBuilderFacade::getGridBuilder() const
 {
     return gridBuilder;
 }
+
+}
+
 //! \}

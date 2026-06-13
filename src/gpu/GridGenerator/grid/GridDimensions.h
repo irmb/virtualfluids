@@ -34,6 +34,8 @@
 
 #include "DataTypes.h"
 
+namespace vf::gpu {
+
 struct GridDimensions {
 public:
     real minX;
@@ -48,6 +50,8 @@ public:
     GridDimensions(real minX, real maxX, real minY, real maxY, real minZ, real maxZ, real delta)
         : minX(minX), maxX(maxX), minY(minY), maxY(maxY), minZ(minZ), maxZ(maxZ), delta(delta){};
 };
+
+}
 
 #endif
 //! \}

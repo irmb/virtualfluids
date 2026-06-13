@@ -39,7 +39,7 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+namespace vf::gpu {
 
 __global__ void NoSlipInterpolatedIncompressible_Device(
     real* distributions, 
@@ -383,5 +383,6 @@ __global__ void NoSlipInterpolatedIncompressible_Device(
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+}
 
 //! \}

@@ -299,9 +299,9 @@ void run(const vf::basics::ConfigurationFile& config)
                                                          SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
     // OpenMP threads control
-#ifdef _OPENMP
-    omp_set_num_threads(numOfThreads);
-#endif
+//#ifdef _OPENMP
+ //   omp_set_num_threads(numOfThreads);
+//#endif
     // Create simulation
     SPtr<Simulation> simulation(new Simulation(grid, visSch, endTime));
     simulation->addSimulationObserver(npr);

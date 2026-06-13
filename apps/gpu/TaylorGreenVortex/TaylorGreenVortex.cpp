@@ -54,6 +54,8 @@
 #include "gpu/core/Calculation/Simulation.h"
 #include "gpu/core/Parameter/Parameter.h"
 
+using namespace vf::gpu;
+
 void run(const vf::basics::ConfigurationFile& config)
 {
     //////////////////////////////////////////////////////////////////////////

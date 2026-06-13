@@ -40,6 +40,8 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 class Parameter;
 
 class BoundaryValues
@@ -90,6 +92,8 @@ private:
 
 
 };
+
+}
 
 #endif
 

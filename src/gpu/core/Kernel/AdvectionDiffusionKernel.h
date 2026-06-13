@@ -34,12 +34,16 @@
 
 #include "Kernel/KernelImp.h"
 
+namespace vf::gpu {
+
 class AdvectionDiffusionKernel : public KernelImp
 {
 public:
     virtual ~AdvectionDiffusionKernel() = default;
     virtual void run() = 0;
 };
+
+}
 #endif
 
 //! \}

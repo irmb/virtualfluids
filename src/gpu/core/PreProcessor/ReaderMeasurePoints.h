@@ -34,6 +34,8 @@
 #ifndef POSITION_READER_H
 #define POSITION_READER_H
 
+namespace vf::gpu {
+
 class Parameter;
 class CudaMemoryManager;
 
@@ -45,6 +47,8 @@ private:
 public:
     static void readMeasurePoints(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 };
+
+}
 
 #endif
 //! \}

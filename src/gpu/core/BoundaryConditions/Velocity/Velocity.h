@@ -39,6 +39,8 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
+namespace vf::gpu {
+
 struct LBMSimulationParameter;
 class Parameter;
 
@@ -49,6 +51,8 @@ void VelocityInterpolatedIncompressible(LBMSimulationParameter* parameterDevice,
 void VelocityInterpolatedCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
 
 void VelocityWithPressureInterpolatedCompressible(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition);
+
+}
 
 #endif
 

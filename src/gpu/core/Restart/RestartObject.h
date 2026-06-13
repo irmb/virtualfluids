@@ -40,6 +40,8 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 class Parameter;
 
 class RestartObject
@@ -77,6 +79,8 @@ private:
     void deserialize_internal(const std::string& filename) override;
     std::string getFileExtension() const override;
 };
+
+}
 
 #endif
 

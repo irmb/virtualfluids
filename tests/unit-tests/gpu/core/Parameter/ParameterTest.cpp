@@ -50,6 +50,8 @@
 
 #include <parallel/Communicator.h>
 
+using namespace vf::gpu;
+
 TEST(ParameterTest, passingEmptyFileWithoutPath_ShouldNotThrow)
 {
     // assuming that the config files is stored parallel to this file.

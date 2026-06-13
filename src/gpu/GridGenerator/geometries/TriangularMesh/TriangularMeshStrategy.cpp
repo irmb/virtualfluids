@@ -43,13 +43,20 @@
 #include "grid/GridImp.h"
 #include "grid/NodeValues.h"
 
-using namespace vf::gpu;
+#include "utilities/GridWindingBoundaryGpuCore.h"
+#include "utilities/GridWindingSolidMarkerGpu.h"
+#include <logger/Logger.h>
 
-void TriangularMeshDiscretizationStrategy::removeOddBoundaryCellNodes(GridImp* grid)
+namespace vf::gpu {
+
+void TriangularMeshDiscretizationStrategy::appendFastWindingQSurfaces(
+    GridImp* /*grid*/, std::vector<SPtr<GbTriFaceMesh3D>>& /*surfaces*/) const
 {
-#pragma omp parallel for
-    for (int index = 0; index < (int)grid->getSize(); index++)
-        grid->fixOddCell(index);
+}
+
+void TriangularMeshDiscretizationStrategy::computeFastWindingQs(
+    GridImp* /*grid*/, const std::vector<SPtr<GbTriFaceMesh3D>>& /*surfaces*/) const
+{
 }
 
 
@@ -262,9 +269,9 @@ void PointUnderTriangleStrategy::meshReverse(Triangle& triangle, GridImp* grid, 
 
                 const char pointValue = triangle.isUnderFace(point);
 
-                if (pointValue == NEGATIVE_DIRECTION_BORDER)
-                    grid->setNodeTo(index, NEGATIVE_DIRECTION_BORDER);
-                else if (pointValue == INSIDE)
+                if (pointValue == vf::gpu::NEGATIVE_DIRECTION_BORDER)
+                    grid->setNodeTo(index, vf::gpu::NEGATIVE_DIRECTION_BORDER);
+                else if (pointValue == vf::gpu::INSIDE)
                     grid->setNodeTo(index, innerType);
             }
         }
@@ -284,7 +291,7 @@ void PointUnderTriangleStrategy::findInsideNodes(GridImp* grid, char innerType)
 
 void PointUnderTriangleStrategy::setInsideNode(GridImp* grid, const uint &index, bool &insideNodeFound, char innerType)
 {
-    if (grid->isNode(index, NEGATIVE_DIRECTION_BORDER))
+    if (grid->isNode(index, vf::gpu::NEGATIVE_DIRECTION_BORDER))
         return;
 
     if (!grid->isNode(index, innerType) && grid->nodeInNextCellIs(index, innerType))
@@ -296,7 +303,174 @@ void PointUnderTriangleStrategy::setInsideNode(GridImp* grid, const uint &index,
 
 void PointUnderTriangleStrategy::setNegativeDirBorderTo(GridImp* grid, const uint &index, char innerType)
 {
-    if (grid->isNode(index, NEGATIVE_DIRECTION_BORDER))
+    if (grid->isNode(index, vf::gpu::NEGATIVE_DIRECTION_BORDER))
         grid->setNodeTo(index, innerType);
 }
+
 //! \}
+#if defined(VF_HAS_FAST_WINDING)
+namespace
+{
+SPtr<GbTriFaceMesh3D> mergeWindingSurfaces(const std::vector<GbTriFaceMesh3D*>& surfaces)
+{
+    std::size_t totalNodes = 0;
+    std::size_t totalTriangles = 0;
+    std::vector<GbTriFaceMesh3D*> validSurfaces;
+    validSurfaces.reserve(surfaces.size());
+
+    for (const auto& surface : surfaces) {
+        if (!surface)
+            continue;
+
+        auto* nodes = surface->getNodes();
+        auto* tris  = surface->getTriangles();
+        if (!nodes || !tris || nodes->empty() || tris->empty())
+            continue;
+
+        totalNodes += nodes->size();
+        totalTriangles += tris->size();
+        validSurfaces.push_back(surface);
+    }
+
+    if (validSurfaces.empty())
+        return nullptr;
+
+    auto* mergedNodes = new std::vector<GbTriFaceMesh3D::Vertex>();
+    auto* mergedTriangles = new std::vector<GbTriFaceMesh3D::TriFace>();
+    mergedNodes->reserve(totalNodes);
+    mergedTriangles->reserve(totalTriangles);
+
+    int nodeOffset = 0;
+    for (auto* surface : validSurfaces) {
+        auto* nodes = surface->getNodes();
+        auto* tris  = surface->getTriangles();
+        if (!nodes || !tris)
+            continue;
+
+        mergedNodes->insert(mergedNodes->end(), nodes->begin(), nodes->end());
+        for (const auto& tri : *tris) {
+            mergedTriangles->emplace_back(
+                tri.getIndexVertex1() + nodeOffset,
+                tri.getIndexVertex2() + nodeOffset,
+                tri.getIndexVertex3() + nodeOffset);
+        }
+
+        nodeOffset += static_cast<int>(nodes->size());
+    }
+
+    if (mergedTriangles->empty()) {
+        delete mergedNodes;
+        delete mergedTriangles;
+        return nullptr;
+    }
+
+    return std::make_shared<GbTriFaceMesh3D>(
+        "fast_winding_merged_surface",
+        mergedNodes,
+        mergedTriangles,
+        GbTriFaceMesh3D::KDTREE_SAHPLIT,
+        false);
+}
+}
+
+void FastWindingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char /*innerType*/, char /*outerType*/)
+{
+    if (!triangularMesh || !grid)
+        return;
+
+    triangularMesh->generateGbTriFaceMesh3D();
+    auto surface = triangularMesh->VF_GbTriFaceMesh3D;
+    if (!surface) {
+        VF_LOG_WARNING("Fast winding strategy requested but no GbTriFaceMesh3D is available.");
+        grid->setActiveWindingSurface(nullptr);
+        return;
+    }
+
+    grid->setActiveWindingSurface(surface);
+
+    vf::gpu::grid_winding::markSolidsWithFastWinding(*grid, *surface, accuracyScale, threshold, tolerance);
+}
+
+void FastWindingDiscretizationStrategy::appendFastWindingQSurfaces(
+    GridImp* grid, std::vector<SPtr<GbTriFaceMesh3D>>& surfaces) const
+{
+    if (!grid)
+        return;
+
+    auto surface = grid->getActiveWindingSurface();
+    if (surface) {
+        VF_LOG_TRACE("FWN Qs: solid BC nodes = {}", grid->getNumberOfSolidBoundaryNodes());
+        surfaces.push_back(surface);
+    }
+}
+
+void FastWindingDiscretizationStrategy::computeFastWindingQs(
+    GridImp* grid, const std::vector<SPtr<GbTriFaceMesh3D>>& surfaces) const
+{
+    if (!grid || surfaces.empty())
+        return;
+
+    // Keep only valid triangle surfaces for the final Q pass
+    std::vector<GbTriFaceMesh3D*> surfacePtrs;
+    surfacePtrs.reserve(surfaces.size());
+    for (const auto& surface : surfaces) {
+        if (!surface)
+            continue;
+
+        auto* nodes = surface->getNodes();
+        auto* tris  = surface->getTriangles();
+        if (!nodes || !tris || tris->empty())
+            continue;
+
+        surfacePtrs.push_back(surface.get());
+    }
+
+    if (surfacePtrs.empty())
+        return;
+
+    // Try to merge surfaces into one helper mesh to reduce kd tree work
+    const std::size_t sourceSurfaceCount = surfacePtrs.size();
+    auto mergedSurface = mergeWindingSurfaces(surfacePtrs);
+    if (mergedSurface) {
+        surfacePtrs.assign(1, mergedSurface.get());
+        auto* mergedTris = mergedSurface->getTriangles();
+        const std::size_t mergedTriangleCount = mergedTris ? mergedTris->size() : 0;
+        VF_LOG_TRACE("FWN helper: merged {} surfaces into one kd-tree surface (triangles={})",
+                     sourceSurfaceCount,
+                     mergedTriangleCount);
+    } else {
+        VF_LOG_TRACE("FWN helper: using {} individual surfaces for Q computation", sourceSurfaceCount);
+    }
+
+    // Update BC_SOLID boundary nodes and rebuild qIndices before we compute Q values
+    grid->rebuildBoundaryQIndices();
+    // Allocate and reset Q storage for the current boundary node set
+    grid->ensureQStorageAllocated();
+
+    vf::gpu::grid_winding::BoundaryProcessingConfig boundaryConfig;
+    vf::basics::Timer passTimer;
+    passTimer.start();
+    vf::grid_winding::SubgridDistanceStats stats;
+    // Compute Q values from boundary links and triangle intersections using the helper
+    vf::gpu::grid_winding::processSolidBoundaryLinksMultithreaded(
+        *grid,
+        surfacePtrs,
+        &stats,
+        boundaryConfig.parallelize,
+        boundaryConfig.parallelThreshold,
+        &surfacePtrs);
+    const double passDuration = passTimer.getCurrentRuntimeInSeconds();
+    VF_LOG_TRACE("FWN helper: finished Q computation (surfaces={}, hits={}, missing={}, time={} sec)",
+                 surfacePtrs.size(),
+                 stats.hitLinks,
+                 stats.missingLinks.size(),
+                 passDuration);
+
+    // Fill remaining missing Q values with a fallback near solid neighbours
+    grid->fillMissingQsAlongSolidNeighbours(static_cast<real>(vf::grid_winding::defaultMissingQ()));
+    VF_LOG_TRACE("FWN Qs (post-pass): solid BC nodes = {}", grid->getNumberOfSolidBoundaryNodes());
+}
+
+}
+
+#endif

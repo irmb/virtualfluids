@@ -35,6 +35,8 @@
 
 #include <GridGenerator/geometries/Triangle/Triangle.h>
 
+namespace vf::gpu {
+
 TriangleRefinement::TriangleRefinement(std::vector<Triangle> *triangles)
 {
     this->triangles = triangles;
@@ -247,6 +249,8 @@ Vertex TriangleRefinement::getHalfVertex(const Vertex &v, const Vertex &w)
     r.y = (v.y + w.y) / 2.0f;
     r.z = (v.z + w.z) / 2.0f;
     return r;
+}
+
 }
 
 //! \}

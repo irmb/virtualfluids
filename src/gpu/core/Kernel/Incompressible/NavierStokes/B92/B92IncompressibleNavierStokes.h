@@ -34,6 +34,8 @@
 
 #include "Kernel/KernelImp.h"
 
+namespace vf::gpu {
+
 
 class B92IncompressibleNavierStokes : public KernelImp
 {
@@ -45,5 +47,8 @@ private:
     B92IncompressibleNavierStokes();
     B92IncompressibleNavierStokes(std::shared_ptr< Parameter> para, int level);
 };
+
+}
+
 #endif 
 //! \}

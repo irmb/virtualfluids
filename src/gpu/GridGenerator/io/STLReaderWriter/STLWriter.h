@@ -41,6 +41,8 @@
 
 #include "global.h"
 
+namespace vf::gpu {
+
 class Transformator;
 struct Triangle;
 
@@ -57,6 +59,8 @@ private:
     static void writeAsciiSTL(std::ofstream &ofstream, std::vector<Triangle> &vec);
     static void writeBinarySTL(std::ofstream &ofstream, std::vector<Triangle> &vec);
 };
+
+}
 
 #endif
 

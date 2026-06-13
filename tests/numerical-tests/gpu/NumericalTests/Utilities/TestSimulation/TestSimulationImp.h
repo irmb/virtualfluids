@@ -69,7 +69,7 @@ public:
     void makeSimulationHeadOutput() override;
     void startPostProcessing() override;
 
-    void setParameter(std::shared_ptr<Parameter> para) override;
+    void setParameter(std::shared_ptr<vf::gpu::Parameter> para) override;
 
     std::shared_ptr<SimulationResults> getSimulationResults();
     std::shared_ptr<AnalyticalResults> getAnalyticalResults();
@@ -93,7 +93,7 @@ private:
 
     std::shared_ptr<ColorConsoleOutput> colorOutput;
     std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter;
-    std::shared_ptr<Parameter> para;
+    std::shared_ptr<vf::gpu::Parameter> para;
     std::vector<std::shared_ptr<SimulationObserver>> simObserver;
 
     std::vector<std::string> dataToCalcTests;

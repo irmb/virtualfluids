@@ -1,0 +1,56 @@
+//=======================================================================================
+// ____          ____    __    ______     __________   __      __       __        __
+// \    \       |    |  |  |  |   _   \  |___    ___| |  |    |  |     /  \      |  |
+//  \    \      |    |  |  |  |  |_)   |     |  |     |  |    |  |    /    \     |  |
+//   \    \     |    |  |  |  |   _   /      |  |     |  |    |  |   /  /\  \    |  |
+//    \    \    |    |  |  |  |  | \  \      |  |     |   \__/   |  /  ____  \   |  |____
+//     \    \   |    |  |__|  |__|  \__\     |__|      \________/  /__/    \__\  |_______|
+//      \    \  |    |   ________________________________________________________________
+//       \    \ |    |  |  ______________________________________________________________|
+//        \    \|    |  |  |         __          __     __     __     ______      _______
+//         \         |  |  |_____   |  |        |  |   |  |   |  |   |   _  \    /  _____)
+//          \        |  |   _____|  |  |        |  |   |  |   |  |   |  | \  \   \_______
+//           \       |  |  |        |  |_____   |   \_/   |   |  |   |  |_/  /    _____  |
+//            \ _____|  |__|        |________|   \_______/    |__|   |______/    (_______/
+//
+//  This file is part of VirtualFluids. VirtualFluids is free software: you can
+//  redistribute it and/or modify it under the terms of the GNU General Public
+//  License as published by the Free Software Foundation, either version 3 of
+//  the License, or (at your option) any later version.
+//
+//  VirtualFluids is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+//  for more details.
+//
+//  SPDX-License-Identifier: GPL-3.0-or-later
+//  SPDX-FileCopyrightText: Copyright © VirtualFluids Project contributors, see AUTHORS.md in root folder
+//
+//! \author Henry Korb
+//=======================================================================================
+#include <pybind11/pybind11.h>
+#include <gpu/core/GridScaling/GridScalingFactory.h>
+
+namespace gpu_bindings::grid_scaling_factory
+{
+    namespace py = pybind11;
+    using namespace vf::gpu;
+
+    inline void makeModule(py::module_ &parentModule)
+    {
+        py::enum_<GridScalingFactory::GridScaling>(parentModule, "GridScaling")
+            .value("ScaleCompressible", GridScalingFactory::GridScaling::ScaleCompressible)
+            .value("NotSpecified", GridScalingFactory::GridScaling::NotSpecified);
+
+        py::enum_<GridScalingFactory::GridScalingAdvectionDiffusion>(parentModule, "GridScalingAdvectionDiffusion")
+            .value("ScaleAdvectionDiffusionCompressible",
+                   GridScalingFactory::GridScalingAdvectionDiffusion::ScaleAdvectionDiffusionCompressible)
+            .value("NotSpecified", GridScalingFactory::GridScalingAdvectionDiffusion::NotSpecified);
+        
+        py::class_<GridScalingFactory, std::shared_ptr<GridScalingFactory>>(parentModule, "GridScalingFactory")
+        .def(py::init<>())
+            .def("set_scaling_factory", &GridScalingFactory::setScalingFactory, py::arg("scaling_type"),
+                 py::arg("scaling_type_advection_diffusion") =
+                     GridScalingFactory::GridScalingAdvectionDiffusion::NotSpecified);
+    }
+}

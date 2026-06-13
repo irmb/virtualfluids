@@ -35,9 +35,12 @@
 #include "GridScalingFactory.h"
 #include "Scaling.cuh"
 
-void GridScalingFactory::setScalingFactory(const GridScalingFactory::GridScaling gridScalingType)
+namespace vf::gpu{
+
+void GridScalingFactory::setScalingFactory(const GridScalingFactory::GridScaling gridScalingType, const GridScalingFactory::GridScalingAdvectionDiffusion gridScalingTypeAdvectionDiffusion)
 {
     this->gridScalingType = gridScalingType;
+    this->gridScalingTypeAdvectionDiffusion = gridScalingTypeAdvectionDiffusion;
 }
 
 gridScaling GridScalingFactory::getGridScalingFC(bool hasTurbulentViscosity) const
@@ -67,4 +70,34 @@ gridScaling GridScalingFactory::getGridScalingCF(bool hasTurbulentViscosity) con
             return nullptr;
     }
 }
+
+gridScalingAdvectionDiffusion GridScalingFactory::getGridScalingAdvectionDiffusionFC(bool hasTurbulentDiffusivity) const
+{
+    // for descriptions of the scaling types refer to the header
+    switch (gridScalingTypeAdvectionDiffusion) {
+        case GridScalingAdvectionDiffusion::ScaleAdvectionDiffusionCompressible:
+            if (hasTurbulentDiffusivity)    return scaleFineToCoarseAdvectionDiffusionCompressible<true>;
+            else                            return scaleFineToCoarseAdvectionDiffusionCompressible<false>;
+            break;
+        default:
+            return nullptr;
+    }
+}
+
+gridScalingAdvectionDiffusion GridScalingFactory::getGridScalingAdvectionDiffusionCF(bool hasTurbulentDiffusivity) const
+{
+    // for descriptions of the scaling types refer to the header
+    switch (gridScalingTypeAdvectionDiffusion) {
+        case GridScalingAdvectionDiffusion::ScaleAdvectionDiffusionCompressible: {
+            if (hasTurbulentDiffusivity)    return scaleCoarseToFineAdvectionDiffusionCompressible<true>;
+            else                            return scaleCoarseToFineAdvectionDiffusionCompressible<false>;
+            break;
+        }
+        default:
+            return nullptr;
+    }
+}
+
+}
+
 //! \}

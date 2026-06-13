@@ -44,7 +44,8 @@
 #include "lbm/constants/D3Q27.h"
 
 using namespace vf::lbm;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 GridInterface::GridInterface()
 {
@@ -420,6 +421,8 @@ uint GridInterface::findOffsetFC(const uint& indexOnFineGrid, GridImp* fineGrid,
 void GridInterface::print() const
 {
     printf("Grid Interface - CF nodes: %d, FC nodes: %d\n", cf.numberOfEntries, fc.numberOfEntries);
+}
+
 }
 
 //! \}

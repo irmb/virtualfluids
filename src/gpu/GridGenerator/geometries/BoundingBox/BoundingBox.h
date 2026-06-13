@@ -38,6 +38,8 @@
 
 #include "global.h"
 
+namespace vf::gpu {
+
 struct Vertex;
 struct Triangle;
 
@@ -77,6 +79,8 @@ private:
     void getPoints(Vertex v[8]) const;
 
 };
+
+}
 
 #endif
 

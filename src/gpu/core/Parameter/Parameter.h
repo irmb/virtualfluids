@@ -54,13 +54,19 @@
 
 struct curandStateXORWOW;
 using curandState = struct curandStateXORWOW;
+
 namespace vf::basics
 {
 class ConfigurationFile;
 }
+
+
+namespace vf::gpu {
+    
 class CudaStreamManager;
 
 class TransientBCInputFileReader;
+
 
 //! \struct LBMSimulationParameter
 //! \brief struct holds and manages the LB-parameter of the simulation
@@ -141,6 +147,9 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the data for a directional pressure boundary condition
     std::vector<QforDirectionalBoundaryCondition> pressureBCDirectional;
+    //////////////////////////////////////////////////////////////////////////
+    //! \brief stores the data for directional advection-diffusion (temperature) boundary conditions
+    std::vector<QforDirectionalADBoundaryCondition> concentrationBCDirectional;
     //////////////////////////////////////////////////////////////////////////
     //! \brief stores the advection diffusion noFlux boundary condition data
     AdvectionDiffusionNoFluxBoundaryConditions AdvectionDiffusionNoFluxBC;
@@ -323,8 +332,8 @@ struct LBMSimulationParameter {
     //////////////////////////////////////////////////////////////////////////
     // Turbulent Viscosity/Intensity
     //////////////////////////////////////////////////////////////////////////
-    //! \brief store the turbulent viscosity
-    real* turbulentViscosity, *turbulentDiffusivity;
+    //! \brief store the turbulent viscosity and diffusivity
+    real* turbulentViscosity = nullptr, *turbulentDiffusivity = nullptr;
     //! \brief store the turbulent intensity and related values
     real *vx_mean, *vy_mean, *vz_mean;       // means
     real *vxx, *vyy, *vzz, *vxy, *vxz, *vyz; // fluctuations
@@ -904,6 +913,7 @@ public:
 
     real worldLength { 0 }; // needed for meta data output
 };
+}
 
 #endif
 

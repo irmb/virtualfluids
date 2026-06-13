@@ -35,6 +35,8 @@
 #include "PointerDefinitions.h"
 #include "utilities/math/Math.h"
 
+namespace vf::gpu {
+
 Cuboid::Cuboid(const double& x1a,const double& x2a, const double& x3a, const double& x1b,const double& x2b, const double& x3b)
     : minX1(x1a), minX2(x2a), minX3(x3a), maxX1(x1b), maxX2(x2b), maxX3(x3b)
 {
@@ -140,6 +142,8 @@ void Cuboid::changeSizeByDelta(double delta)
     this->maxX1 += delta;
     this->maxX2 += delta;
     this->maxX3 += delta;
+}
+
 }
 
 //! \}

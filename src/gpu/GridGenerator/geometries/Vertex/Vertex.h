@@ -39,6 +39,8 @@
 
 #include "gpu/GridGenerator/global.h"
 
+namespace vf::gpu {
+
 struct Vertex
 {
 public:
@@ -76,7 +78,7 @@ public:
 
 };
 
-
+}
 
 #endif
 

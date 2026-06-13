@@ -36,6 +36,8 @@
 
 #include <gpu/core/Restart/RestartObject.h>
 
+using namespace vf::gpu;
+
 template <typename Type>
 void saveAndLoad()
 {

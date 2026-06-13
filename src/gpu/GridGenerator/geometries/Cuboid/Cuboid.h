@@ -38,6 +38,8 @@
 
 #include "geometries/Object.h"
 
+namespace vf::gpu {
+
 class Cuboid : public Object
 {
 public:              
@@ -75,7 +77,7 @@ protected:
     double maxX3;
 };
 
-
+}
 
 #endif   
 

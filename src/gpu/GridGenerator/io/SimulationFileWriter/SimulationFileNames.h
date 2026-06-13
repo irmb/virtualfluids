@@ -38,6 +38,8 @@
 
 #include "global.h"
 
+namespace vf::gpu {
+
 struct simulationFileNames
 {
     static const std::string coordX;
@@ -82,6 +84,7 @@ struct simulationFileNames
     static const std::string LBMvsSI;
 };
 
+}
 
 #endif
 

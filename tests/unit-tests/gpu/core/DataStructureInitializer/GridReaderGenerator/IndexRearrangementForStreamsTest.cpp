@@ -49,8 +49,11 @@
 
 #include <parallel/NullCommunicator.h>
 
+namespace vf::gpu {
+    
 namespace index_rearrangement_tests
 {
+
 template <typename T>
 bool vectorsAreEqual(const T *vector1, const std::vector<T>& vectorExpected)
 {
@@ -433,6 +436,8 @@ TEST_F(IndexRearrangementForStreamsTest_reorderRecvIndices, allIndicesAreSendInd
 
     EXPECT_THAT(ri.numberOfRecvNodesAfterFtoC, testing::Eq(numberOfRecvNodesAfterFtoC_expected));
     EXPECT_THAT(ri.recvIndices, testing::Eq(recvIndices_expected));
+}
+
 }
 
 //! \}

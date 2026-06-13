@@ -37,7 +37,10 @@
 #include <sstream>
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <vector>
+
+#include <basics/geometry3d/winding/GridWindingSubgridDistances.h>
 #include <stdexcept>
 #include "global.h"
 
@@ -53,6 +56,8 @@
 #include "grid/GridInterface.h"
 #include "grid/NodeValues.h"
 
+#include <logger/Logger.h>
+
 #include "io/GridVTKWriter/GridVTKWriter.h"
 
 #include "utilities/communication.h"
@@ -62,8 +67,9 @@
 
 int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
-using namespace vf::gpu;
 using namespace vf::basics::constant;
+
+namespace vf::gpu {
 
 GridImp::GridImp(SPtr<Object> object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution distribution, uint level)
             : object(object),
@@ -874,6 +880,21 @@ SPtr<TriangularMeshDiscretizationStrategy> GridImp::getTriangularMeshDiscretizat
     return this->triangularMeshDiscretizationStrategy;
 }
 
+void GridImp::setActiveWindingSurface(SPtr<GbTriFaceMesh3D> surface)
+{
+    this->activeWindingSurface = surface;
+}
+
+SPtr<GbTriFaceMesh3D> GridImp::getActiveWindingSurface() const
+{
+    return this->activeWindingSurface;
+}
+
+void GridImp::beginQComputation()
+{
+    this->qSourceSurfaces.clear();
+}
+
 uint GridImp::getNumberOfSolidBoundaryNodes() const
 {
     return this->numberOfSolidBoundaryNodes;
@@ -897,6 +918,218 @@ uint GridImp::getQPatch(const uint index) const
     return this->qPatches[ this->qIndices[index] ];
 }
 
+bool GridImp::hasQIndex(uint index) const
+{
+    if (!this->qIndices)
+        return false;
+    if (index >= this->size)
+        return false;
+    return this->qIndices[index] != INVALID_INDEX;
+}
+
+uint GridImp::getQIndex(uint index) const
+{
+    if (!hasQIndex(index))
+        return INVALID_INDEX;
+    return this->qIndices[index];
+}
+
+void GridImp::setQValue(uint index, int dir, real value)
+{
+    if (!hasQIndex(index) || !this->qValues)
+        return;
+
+    if (dir < this->distribution.dir_start || dir > this->distribution.dir_end)
+        return;
+
+    const uint qIndex   = this->qIndices[index];
+    const uint dirIndex = static_cast<uint>(dir);
+    const uint totalDir = static_cast<uint>(this->distribution.dir_end + 1);
+    const uint offset   = dirIndex * this->numberOfSolidBoundaryNodes + qIndex;
+    const uint maxSize  = this->numberOfSolidBoundaryNodes * totalDir;
+    if (offset >= maxSize)
+        return;
+
+    this->qValues[offset] = value;
+}
+
+void GridImp::setQPatch(uint index, uint patch)
+{
+    if (!hasQIndex(index) || !this->qPatches)
+        return;
+
+    this->qPatches[this->qIndices[index]] = patch;
+}
+
+void GridImp::clearQForIndex(uint index)
+{
+    if (!hasQIndex(index) || !this->qValues)
+        return;
+
+    const uint qIndex  = this->qIndices[index];
+    const uint totalDir = static_cast<uint>(this->distribution.dir_end + 1);
+    for (uint dir = 0; dir < totalDir; ++dir) {
+        const uint offset = dir * this->numberOfSolidBoundaryNodes + qIndex;
+        if (offset < this->numberOfSolidBoundaryNodes * totalDir)
+            this->qValues[offset] = -1.0;
+    }
+
+    if (this->qPatches)
+        this->qPatches[qIndex] = INVALID_INDEX;
+
+    this->qIndices[index] = INVALID_INDEX;
+}
+
+void GridImp::fillMissingQsWithDefault(real defaultValue)
+{
+    if (!this->qValues || this->numberOfSolidBoundaryNodes == 0)
+        return;
+
+    const uint totalDir = static_cast<uint>(this->distribution.dir_end + 1);
+    const uint totalEntries = this->numberOfSolidBoundaryNodes * totalDir;
+
+#pragma omp parallel for
+    for (int idx = 0; idx < static_cast<int>(totalEntries); ++idx) {
+        if (this->qValues[idx] < real(0.0))
+            this->qValues[idx] = defaultValue;
+    }
+}
+
+void GridImp::fillMissingQsAlongSolidNeighbours(real defaultValue)
+{
+    if (!this->qIndices || !this->qValues || this->numberOfSolidBoundaryNodes == 0)
+        return;
+
+    const uint totalDir = static_cast<uint>(this->distribution.dir_end + 1);
+    const uint totalEntries = this->numberOfSolidBoundaryNodes * totalDir;
+
+    for (uint index = 0; index < this->size; ++index) {
+        if (!this->field.is(index, BC_SOLID))
+            continue;
+        if (!hasQIndex(index))
+            continue;
+
+        real ox = 0.0;
+        real oy = 0.0;
+        real oz = 0.0;
+        this->transIndexToCoords(index, ox, oy, oz);
+
+        const uint boundaryIndex = this->qIndices[index];
+
+        for (int dir = this->distribution.dir_start; dir <= this->distribution.dir_end; ++dir) {
+            const auto &direction = this->distribution.directions[dir];
+            if (direction[0] == 0 && direction[1] == 0 && direction[2] == 0)
+                continue;
+
+            const uint dirIndex = static_cast<uint>(dir);
+            const uint offset   = dirIndex * this->numberOfSolidBoundaryNodes + boundaryIndex;
+            if (offset >= totalEntries)
+                continue;
+            if (this->qValues[offset] >= static_cast<real>(0.0))
+                continue;
+
+            const real nx = static_cast<real>(ox) + static_cast<real>(direction[0]) * this->delta;
+            const real ny = static_cast<real>(oy) + static_cast<real>(direction[1]) * this->delta;
+            const real nz = static_cast<real>(oz) + static_cast<real>(direction[2]) * this->delta;
+            const uint neighbourIndex = this->transCoordToIndex(nx, ny, nz);
+            if (neighbourIndex == INVALID_INDEX)
+                continue;
+
+            const char neighbourType = this->getFieldEntry(neighbourIndex);
+            if (neighbourType != STOPPER_SOLID && neighbourType != INVALID_SOLID)
+                continue;
+
+            this->qValues[offset] = defaultValue;
+        }
+    }
+}
+
+void GridImp::rebuildBoundaryQIndices()
+{
+    if (!this->qIndices)
+        return;
+
+    uint nextIndex = 0;
+    for (uint index = 0; index < this->size; ++index) {
+        if (this->field.is(index, BC_SOLID)) {
+            this->qIndices[index] = nextIndex++;
+        } else {
+            this->qIndices[index] = INVALID_INDEX;
+        }
+    }
+
+    const int dirStart = this->distribution.dir_start;
+    const int dirEnd   = this->distribution.dir_end;
+    const real dx      = this->delta;
+
+    for (uint index = 0; index < this->size; ++index) {
+        if (!this->field.is(index, FLUID))
+            continue;
+
+        real ox = 0.0;
+        real oy = 0.0;
+        real oz = 0.0;
+        this->transIndexToCoords(index, ox, oy, oz);
+
+        bool touchesSolid = false;
+        for (int dir = dirStart; dir <= dirEnd; ++dir) {
+            const auto &direction = this->distribution.directions[dir];
+            const int cx = direction[0];
+            const int cy = direction[1];
+            const int cz = direction[2];
+            if (cx == 0 && cy == 0 && cz == 0)
+                continue;
+
+            const uint neighbourIndex = this->transCoordToIndex(
+                ox + static_cast<real>(cx) * dx,
+                oy + static_cast<real>(cy) * dx,
+                oz + static_cast<real>(cz) * dx);
+            if (neighbourIndex == INVALID_INDEX)
+                continue;
+
+            const char neighbourType = this->getFieldEntry(neighbourIndex);
+            if (neighbourType == STOPPER_SOLID || neighbourType == INVALID_SOLID) {
+                touchesSolid = true;
+                break;
+            }
+        }
+
+        if (touchesSolid) {
+            this->setFieldEntry(index, BC_SOLID);
+            this->qIndices[index] = nextIndex++;
+        }
+    }
+
+    this->numberOfSolidBoundaryNodes = nextIndex;
+}
+
+void GridImp::ensureQStorageAllocated()
+{
+    const bool capacityMismatch = (this->qCapacity != this->numberOfSolidBoundaryNodes);
+
+    if (capacityMismatch) {
+        delete[] this->qValues;
+        delete[] this->qPatches;
+        this->qValues  = nullptr;
+        this->qPatches = nullptr;
+        this->qCapacity = 0;
+    }
+
+    if (!this->qValues)
+        allocateQs();
+
+    const uint totalDir = static_cast<uint>(this->distribution.dir_end + 1);
+    const uint totalEntries = this->numberOfSolidBoundaryNodes * totalDir;
+#pragma omp parallel for
+    for (int idx = 0; idx < static_cast<int>(totalEntries); ++idx)
+        this->qValues[idx] = -1.0;
+
+    if (this->qPatches) {
+#pragma omp parallel for
+        for (int idx = 0; idx < static_cast<int>(this->numberOfSolidBoundaryNodes); ++idx)
+            this->qPatches[idx] = INVALID_INDEX;
+    }
+}
 void GridImp::setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid)
 {
     this->innerRegionFromFinerGrid = innerRegionFromFinerGrid;
@@ -1014,47 +1247,26 @@ void GridImp::setNeighborIndices(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    this->neighborIndexX[index]        = -1;
-    this->neighborIndexY[index]        = -1;
-    this->neighborIndexZ[index]        = -1;
-    this->neighborIndexNegative[index] = -1;
-
-    if (this->field.isStopper(index) || this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY))
-    {
-        this->setStopperNeighborCoords(index);
+    if (this->sparseIndices[index] == -1) {    
+        this->neighborIndexX[index]        = -1;
+        this->neighborIndexY[index]        = -1;
+        this->neighborIndexZ[index]        = -1;
+        this->neighborIndexNegative[index] = -1;
         return;
     }
 
-    if (this->sparseIndices[index] == -1)
+    if (this->field.isStopper(index) || this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY)) {
+        this->neighborIndexX[index] = getStopperNeighborIndex(x, y, z, 0);
+        this->neighborIndexY[index] = getStopperNeighborIndex(x, y, z, 1);
+        this->neighborIndexZ[index] = getStopperNeighborIndex(x, y, z, 2);
+        this->neighborIndexNegative[index] = this->getNegativeStopperNeighborIndex(x, y, z);
         return;
-    
-    this->neighborIndexX[index] = this->getNeighborIndex(x, y, z, 0, periodicityX);
-    this->neighborIndexY[index] = this->getNeighborIndex(x, y, z, 1, periodicityY);
-    this->neighborIndexZ[index] = this->getNeighborIndex(x, y, z, 2, periodicityZ);
+    }
+
+    this->neighborIndexX[index] = this->getNeighborIndex(x, y, z, 0);
+    this->neighborIndexY[index] = this->getNeighborIndex(x, y, z, 1);
+    this->neighborIndexZ[index] = this->getNeighborIndex(x, y, z, 2);
     this->neighborIndexNegative[index] = this->getNegativeNeighborIndex(x, y, z);
-}
-
-void GridImp::setStopperNeighborCoords(uint index)
-{
-    real x, y, z;
-    this->transIndexToCoords(index, x, y, z);
-
-    if (vf::Math::lessEqual(x + delta, endX + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
-        neighborIndexX[index] = getSparseIndex(x + delta, y, z);
-
-    if (vf::Math::lessEqual(y + delta, endY + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
-        neighborIndexY[index] = getSparseIndex(x, y + delta, z);
-
-    if (vf::Math::lessEqual(z + delta, endZ + (0.5 * delta)) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
-        neighborIndexZ[index] = getSparseIndex(x, y, z + delta);
-
-    if (vf::Math::greaterEqual(x - delta, endX) &&
-        vf::Math::greaterEqual(y - delta, endY) &&
-        vf::Math::greaterEqual(z - delta, endZ) &&
-        !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x - delta, y - delta, z - delta)))
-    {
-        neighborIndexNegative[index] = getSparseIndex(x - delta, y - delta, z - delta);
-    }
 }
 
 inline real wrapCoord(real coord, real start, real end)
@@ -1067,12 +1279,63 @@ inline real wrapCoord(real coord, real start, real end)
     return coord;
 }
 
+int GridImp::getStopperNeighborIndex(real x, real y, real z, int direction) const
+{
+    real neighborCoords[3] { x, y, z };
+    neighborCoords[direction] += delta;
 
-int GridImp::getNeighborIndex(real x, real y, real z, int direction, bool periodicity) const
+    if(neighborCoords[direction] > getEnd(direction) + c1o2 * delta)
+        return -1;
+
+    if (isPeriodic(direction) && neighborCoords[direction] > getEnd(direction) - c1o2 * delta)
+    {
+        neighborCoords[direction] -= getEnd(direction) - getStart(direction) - delta;
+        switch(direction)
+        {
+            case 0:
+            neighborCoords[1] = isPeriodic(1) ? wrapCoord(neighborCoords[1] + periodicShiftOnXinY, startY + c1o2*delta, endY - c1o2*delta) : neighborCoords[1];
+            neighborCoords[2] = isPeriodic(2) ? wrapCoord(neighborCoords[2] + periodicShiftOnXinZ, startZ + c1o2*delta, endZ - c1o2*delta) : neighborCoords[2];
+            break;
+            case 1:            
+            neighborCoords[0] = isPeriodic(0) ? wrapCoord(neighborCoords[0] + periodicShiftOnYinX, startX + c1o2*delta, endX - c1o2*delta) : neighborCoords[0];
+            neighborCoords[2] = isPeriodic(2) ? wrapCoord(neighborCoords[2] + periodicShiftOnYinZ, startZ + c1o2*delta, endZ - c1o2*delta) : neighborCoords[2];
+            break;
+            case 2:
+            neighborCoords[0] = isPeriodic(0) ? wrapCoord(neighborCoords[0] + periodicShiftOnZinX, startX + c1o2*delta, endX - c1o2*delta) : neighborCoords[0];
+            neighborCoords[1] = isPeriodic(1) ? wrapCoord(neighborCoords[1] + periodicShiftOnZinY, startY + c1o2*delta, endY - c1o2*delta) : neighborCoords[1];
+            break;
+            default:
+            throw std::runtime_error("GridImp::getStopperNeighborIndex() -> direction must be 0, 1 or 2.");
+            break;
+        } 
+    }
+
+    const uint index = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+    if(this->field.isInvalidOutOfGrid(index))
+        return -1;
+
+    return getSparseIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+}
+
+
+int GridImp::getNegativeStopperNeighborIndex(real x, real y, real z) const
+{
+    real neighborCoords[3] { x-delta, y-delta, z-delta };
+    const uint index = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+
+    if (neighborCoords[0] < getEndX() || neighborCoords[1] < getEndY() || neighborCoords[2] < getEndZ() || index == INVALID_INDEX || this->field.isInvalidOutOfGrid(index))
+        return -1;
+
+    return getSparseIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+}
+
+
+
+int GridImp::getNeighborIndex(real x, real y, real z, int direction) const
 {
     real neighborCoords[3] = { x, y, z };
-    neighborCoords[direction] = neighborCoords[direction] + delta;
-    if(periodicity)
+    neighborCoords[direction] += delta;
+    if(isPeriodic(direction))
         getPeriodicNeighborCoords(x, y, z, neighborCoords, direction);
 
     return getSparseIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
@@ -1081,8 +1344,9 @@ int GridImp::getNeighborIndex(real x, real y, real z, int direction, bool period
 
 void GridImp::getPeriodicNeighborCoords(real x, real y, real z, real* neighborCoords, int direction) const
 {
-    const int neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
-    if( !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) ) return;
+    const uint neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+    if (neighborIndex == INVALID_INDEX || !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY))
+        return;
 
     real coords[3] = {x, y, z};
     switch(direction)
@@ -1132,8 +1396,10 @@ void GridImp::getNegativePeriodicNeighborCoords(real x, real y, real z, real* ne
         real neighborInThisDirection[3] = {x, y, z};
         neighborInThisDirection[direction] -= delta;
 
-        const int neighborIndex = getSparseIndex(neighborInThisDirection[0], neighborInThisDirection[1], neighborInThisDirection[2]);
-        if( !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) ) continue;
+        const uint neighborIndex = transCoordToIndex(
+            neighborInThisDirection[0], neighborInThisDirection[1], neighborInThisDirection[2]);
+        if (neighborIndex == INVALID_INDEX || !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY))
+            continue;
 
         onBoundary[direction] = true;
     }
@@ -1183,18 +1449,22 @@ real GridImp::getFirstFluidNode(real coords[3], int direction, real startCoord) 
 {
     coords[direction] = startCoord;
     uint index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
-    while (!field.isFluid(index))
+    while (index != INVALID_INDEX && !field.isFluid(index))
     {
         coords[direction] += delta;
         index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
     }
+    if (index == INVALID_INDEX)
+        return startCoord;
     return coords[direction];
 }
 
 
 int GridImp::getSparseIndex(const real &x, const real &y, const real &z) const
 {
-    const int matrixIndex = transCoordToIndex(x, y, z);
+    const uint matrixIndex = transCoordToIndex(x, y, z);
+    if (matrixIndex == INVALID_INDEX || matrixIndex >= this->size || this->sparseIndices == nullptr)
+        return -1;
     return sparseIndices[matrixIndex];
 }
 
@@ -1299,12 +1569,23 @@ void GridImp::findInvalidBoundaryNodes(uint index)
 // --------------------------------------------------------- //
 void GridImp::mesh(Object* object)
 {
+    this->setActiveWindingSurface(nullptr);
+
+    bool requiresGridFinalization = true;
+
     TriangularMesh *triangularMesh = dynamic_cast<TriangularMesh *>(object);
-    if (triangularMesh)
-        triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, INVALID_SOLID, FLUID);
-    else
+    if (triangularMesh && this->triangularMeshDiscretizationStrategy) {
+        this->triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, INVALID_SOLID, FLUID);
+        this->triangularMeshDiscretizationStrategy->appendFastWindingQSurfaces(this, this->qSourceSurfaces);
+        requiresGridFinalization = this->triangularMeshDiscretizationStrategy->requiresGridFinalization();
+    } else {
         //new method for geometric primitives (not cell based) to be implemented
         this->discretize(object, INVALID_SOLID, FLUID);
+    }
+
+    // Grid-generation finalization: close needle cells and derive stopper/boundary solid nodes.
+    if (!requiresGridFinalization)
+        return;
 
     this->closeNeedleCells();
 
@@ -1438,23 +1719,53 @@ bool GridImp::closeCellIfNeedleThinWall(uint index)
 void GridImp::findQs(Object* object) //TODO: enable qs for primitive objects
 {
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
+    if (triangularMesh &&
+        this->triangularMeshDiscretizationStrategy &&
+        this->triangularMeshDiscretizationStrategy->usesFastWindingQComputation() &&
+        this->qComputationStage == qComputationStageType::ComputeQs)
+    {
+        return;
+    }
+
     if (triangularMesh)
         findQs(*triangularMesh);
     else
         findQsPrimitive(object);
 }
 
+void GridImp::finalizeQComputation()
+{
+    // Paths with immediate Q computation finish during findQs(...). This hook is only
+    // used by strategies that defer Q computation until all surfaces/objects are collected.
+    if (!this->triangularMeshDiscretizationStrategy)
+        return;
+
+    if (!this->triangularMeshDiscretizationStrategy->usesFastWindingQComputation())
+        return;
+
+    this->triangularMeshDiscretizationStrategy->computeFastWindingQs(this, this->qSourceSurfaces);
+}
+
 void GridImp::allocateQs()
 {
-    this->qPatches = new uint[this->getNumberOfSolidBoundaryNodes()];
+    const uint boundaryCount = this->getNumberOfSolidBoundaryNodes();
+    this->qCapacity = boundaryCount;
 
-    for (uint i = 0; i < this->getNumberOfSolidBoundaryNodes(); i++)
+    if (boundaryCount == 0) {
+        this->qValues = nullptr;
+        this->qPatches = nullptr;
+        return;
+    }
+
+    this->qPatches = new uint[boundaryCount];
+
+    for (uint i = 0; i < boundaryCount; i++)
         this->qPatches[i] = INVALID_INDEX;
 
-    const uint numberOfQs = this->getNumberOfSolidBoundaryNodes() * (this->distribution.dir_end + 1);
+    const uint numberOfQs = boundaryCount * static_cast<uint>(this->distribution.dir_end + 1);
     this->qValues         = new real[numberOfQs];
 #pragma omp parallel for
-    for (int i = 0; i < (int)numberOfQs; i++)
+    for (int i = 0; i < static_cast<int>(numberOfQs); i++)
         this->qValues[i] = -1.0;
 }
 
@@ -1465,13 +1776,15 @@ void GridImp::findQs(TriangularMesh &triangularMesh)
     if( this->qComputationStage == qComputationStageType::ComputeQs )
         allocateQs();
 
-
 #pragma omp parallel for
     for (int i = 0; i < triangularMesh.size; i++)
         this->findQs(triangularMesh.triangles[i]);
 
+    // assign default values to missing links
+    this->fillMissingQsWithDefault();
+
     const clock_t end = clock();
-    const real time = (real)(real(end - begin) / CLOCKS_PER_SEC);
+    const real time   = (real)((end - begin) / (real)CLOCKS_PER_SEC);
 
     VF_LOG_TRACE("time finding qs: {}s", time);
 }
@@ -1488,9 +1801,6 @@ void GridImp::findQs(Triangle &triangle)
             for (real z = box.minZ; z <= box.maxZ; z += delta)
             {
                 const uint index = this->transCoordToIndex(x, y, z);
-                //if (!field.isFluid(index))
-                //    continue;
-
                 if( index == INVALID_INDEX ) continue;
 
                 const Vertex point(x, y, z);
@@ -1503,13 +1813,10 @@ void GridImp::findQs(Triangle &triangle)
                 }
                 else if( this->qComputationStage == qComputationStageType::FindSolidBoundaryNodes )
                 {
-                    //if( this->field.is(index, BC_SOLID) || this->field.is(index, STOPPER_SOLID ) ) continue;
-
                     if( !this->field.is(index, FLUID) ) continue;
 
                     if( checkIfAtLeastOneValidQ(index, point, triangle) )
                     {
-                        // similar as in void GridImp::findBoundarySolidNode(uint index)
                         this->field.setFieldEntry( index, BC_SOLID );
                         this->qIndices[index] = this->numberOfSolidBoundaryNodes++;
                     }
@@ -1556,6 +1863,9 @@ void GridImp::findQsPrimitive(Object * object)
         }
 
     }
+
+    if (this->qComputationStage == qComputationStageType::ComputeQs)
+        this->fillMissingQsWithDefault();
 }
 
 void GridImp::calculateQs(const uint index, const Vertex &point, Object* object) const
@@ -1798,17 +2108,12 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
     }
 }
 
-void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, int direction ){
-    // negative direction get a negative sign
-    real s = ( direction % 2 == 0 ) ? ( -1.0 ) : ( 1.0 );
-
-    // the following code adds an index to the communication indices, when the coordinate is around + or - 0.5 * delta from the limit (see unit tests for
-    // details)
-
-    if (std::abs(coordinate - (limit + s * 0.5 * this->delta)) < 0.1 * this->delta)
+void GridImp::findCommunicationIndex(uint index, real coordinate, real limit, int direction ){
+    // send nodes are outer most layer inside the domain, receive nodes are the inner most layer outside the domain
+    const real distance = direction % 2 == 1 ? coordinate - limit : limit - coordinate;
+    if(distance > 0 && std::abs(distance) <= delta)
         this->communicationIndices[direction].receiveIndices.push_back(index);
-
-    if (std::abs(coordinate - (limit - s * 0.5 * this->delta)) < 0.1 * this->delta)
+    else if(distance <= 0 && std::abs(distance) < delta)
         this->communicationIndices[direction].sendIndices.push_back(index);
 }
 
@@ -2406,6 +2711,8 @@ bool GridImp::isStopperForBC(uint index) const
     return (this->getFieldEntry(index) == vf::gpu::STOPPER_OUT_OF_GRID_BOUNDARY ||
             this->getFieldEntry(index) == vf::gpu::STOPPER_OUT_OF_GRID ||
             this->getFieldEntry(index) == vf::gpu::STOPPER_SOLID);
+}
+
 }
 
 //! \}

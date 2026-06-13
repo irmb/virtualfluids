@@ -38,6 +38,8 @@
 
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 class PositionWriter
 {
 public:
@@ -87,6 +89,9 @@ public:
         }
     }
 };
+
+}
+
 #endif
 
 //! \}

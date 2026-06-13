@@ -36,6 +36,9 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
+
 __global__ void NoSlipBounceBack_Device(
     real* distributions, 
     int* subgridDistanceIndices, 
@@ -70,6 +73,8 @@ __global__ void NoSlipInterpolatedCompressible_Device(
     unsigned int* neighborZ,
     unsigned long long numberOfLBnodes,
     bool isEvenTimestep);
+
+}
 
 #endif
 

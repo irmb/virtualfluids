@@ -35,22 +35,25 @@
 
 #include "gpu/core/Output/DataWriter.h"
 
+namespace vf::gpu {
 class Parameter;
 class FileWriter;
+}
+
 struct VectorWriterInformationStruct;
 
-class ToVectorWriter : public DataWriter
+class ToVectorWriter : public vf::gpu::DataWriter
 {
 public:
-    void writeInit(std::shared_ptr<Parameter> para, std::shared_ptr<CudaMemoryManager> cudaManager);
-    void writeTimestep(std::shared_ptr<Parameter> para, unsigned int t);
+    void writeInit(std::shared_ptr<vf::gpu::Parameter> para, std::shared_ptr<vf::gpu::CudaMemoryManager> cudaManager);
+    void writeTimestep(std::shared_ptr<vf::gpu::Parameter> para, unsigned int t);
     
 protected:
     ToVectorWriter();
     ToVectorWriter(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength);
-    virtual void writeTimestep(std::shared_ptr<Parameter> para, unsigned int t, int level) = 0;
+    virtual void writeTimestep(std::shared_ptr<vf::gpu::Parameter> para, unsigned int t, int level) = 0;
 
-    std::shared_ptr<FileWriter> vtkFileWriter;
+    std::shared_ptr<vf::gpu::FileWriter> vtkFileWriter;
     bool writeVTKFiles;
     unsigned int timeStepLength;
     unsigned int startTimeVectorWriter, startTimeVTKWriter;

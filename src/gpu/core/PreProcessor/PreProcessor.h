@@ -36,6 +36,8 @@
 
 #include <memory>
 
+namespace vf::gpu {
+
 class Parameter;
 
 class PreProcessor
@@ -46,5 +48,8 @@ public:
     virtual bool checkParameter() = 0;
     
 };
+
+}
+
 #endif
 //! \}

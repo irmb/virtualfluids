@@ -40,6 +40,8 @@
 
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 class MeasurePointWriter
 {
 public:
@@ -309,6 +311,8 @@ public:
         out.writeLine();
     }
 };
+
+}
 
 #endif
 

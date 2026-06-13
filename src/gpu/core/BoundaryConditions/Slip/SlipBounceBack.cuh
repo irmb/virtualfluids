@@ -40,7 +40,8 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 __global__ void SlipBounceBack_Device(real* populationsArray, QforBoundaryConditions bcParams,
                                       const uint* neighborX, const uint* neighborY,
@@ -82,6 +83,8 @@ __global__ void SlipBounceBack_Device(real* populationsArray, QforBoundaryCondit
         const real weight = getWeight<dir>();
         const real velocity = getVelocity<dir>(velocityTangential.x, velocityTangential.y, velocityTangential.z);
         const real population = getBounceBackDistributionForVeloBC(populations[dir], velocity, weight);
-        vf::gpu::writeInInverseDirection<dir>(population, listIndices, populationReferences);
+        writeInInverseDirection<dir>(population, listIndices, populationReferences);
     });
+}
+
 }

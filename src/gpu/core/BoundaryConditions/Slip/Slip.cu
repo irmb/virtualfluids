@@ -42,6 +42,8 @@
 #include "BoundaryConditions/Slip/SlipBounceBack.cuh"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 void SlipBounceBack(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
     vf::cuda::CudaGrid grid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
@@ -97,6 +99,8 @@ void SlipTurbulentViscosityCompressible(LBMSimulationParameter* parameterDevice,
         parameterDevice->numberOfNodes,
         parameterDevice->isEvenTimestep);
     getLastCudaError("SlipTurbulentViscosityCompressible_Device execution failed");
+}
+
 }
 
 //! \}

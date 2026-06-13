@@ -38,6 +38,8 @@
 #include <cuda_runtime.h>
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 enum class CudaStreamIndex
     {
         Legacy,
@@ -69,6 +71,8 @@ public:
     void triggerStartBulkKernel(CudaStreamIndex streamIndex, uint multiStreamIndex = 0);
     void waitOnStartBulkKernelEvent(CudaStreamIndex streamIndex, uint multiStreamIndex = 0);
 };
+
+}
 
 #endif
 

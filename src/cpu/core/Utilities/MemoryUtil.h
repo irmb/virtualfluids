@@ -42,6 +42,9 @@
 #pragma comment(lib, "psapi.lib")
 #elif defined __APPLE__
 #define MEMORYUTIL_APPLE
+#include <mach/mach.h>
+#include <mach/mach_host.h>
+#include <basics/utilities/UbException.h>
 #include "sys/sysctl.h"
 #include "sys/types.h"
 #include <cstdio>
@@ -116,7 +119,24 @@ static long long getPhysMemUsed()
     // Multiply in next statement to avoid int overflow on right hand side...
     physMemUsed *= memInfo.mem_unit;
 #elif defined(MEMORYUTIL_APPLE)
-    long long physMemUsed = 0;
+    mach_port_t host_port = mach_host_self();
+    vm_size_t page_size = 0;
+    if (host_page_size(host_port, &page_size) != KERN_SUCCESS)
+        UB_THROW(UbException(UB_EXARGS, "MemoryUtil::getPhysMemUsed - host_page_size failed on macOS"));
+
+    vm_statistics64_data_t vm_stats;
+    mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
+    if (host_statistics64(host_port, HOST_VM_INFO64,
+                          reinterpret_cast<host_info64_t>(&vm_stats), &count) != KERN_SUCCESS)
+        UB_THROW(UbException(UB_EXARGS, "MemoryUtil::getPhysMemUsed - host_statistics64 failed on macOS"));
+
+    const long long used_pages =
+        static_cast<long long>(vm_stats.active_count) +
+        static_cast<long long>(vm_stats.inactive_count) +
+        static_cast<long long>(vm_stats.wire_count) +
+        static_cast<long long>(vm_stats.speculative_count) +
+        static_cast<long long>(vm_stats.compressor_page_count);
+    long long physMemUsed = used_pages * static_cast<long long>(page_size);
 #else
 #error "MemoryUtil::getPhysMemUsed - UnknownMachine"
 #endif
@@ -124,7 +144,7 @@ static long long getPhysMemUsed()
     return (long long)physMemUsed;
 }
 //////////////////////////////////////////////////////////////////////////
-#if defined(MEMORYUTIL_LINUX) || defined(MEMORYUTIL_APPLE) || defined(MEMORYUTIL_CYGWIN)
+#if defined(MEMORYUTIL_LINUX) || defined(MEMORYUTIL_CYGWIN)
 static int parseLine(char *line)
 {
     int i = strlen(line);
@@ -138,6 +158,8 @@ static int parseLine(char *line)
 static int getValue()
 { // Note: this value is in KB!
     FILE *file = fopen("/proc/self/status", "r");
+    if (!file)
+        return 0;
     int result = -1;
     char line[128];
 
@@ -158,8 +180,16 @@ static long long getPhysMemUsedByMe()
     PROCESS_MEMORY_COUNTERS pmc;
     GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
     SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
-#elif defined(MEMORYUTIL_LINUX) || defined(MEMORYUTIL_APPLE) || defined(MEMORYUTIL_CYGWIN)
+#elif defined(MEMORYUTIL_LINUX) || defined(MEMORYUTIL_CYGWIN)
     long long physMemUsedByMe = (long long)getValue() * (long long)1024;
+#elif defined(MEMORYUTIL_APPLE)
+    mach_task_basic_info info;
+    mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
+    kern_return_t status = task_info(mach_task_self(), MACH_TASK_BASIC_INFO,
+                                     reinterpret_cast<task_info_t>(&info), &count);
+    if (status != KERN_SUCCESS)
+        UB_THROW(UbException(UB_EXARGS, "MemoryUtil::getPhysMemUsedByMe - task_info failed on macOS"));
+    long long physMemUsedByMe = static_cast<long long>(info.resident_size);
 #else
 #error "MemoryUtil::getPhysMemUsedByMe - UnknownMachine"
 #endif

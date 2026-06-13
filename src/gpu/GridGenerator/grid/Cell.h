@@ -36,6 +36,8 @@
 
 #include "gpu/GridGenerator/global.h"
 
+namespace vf::gpu {
+
 struct Point
 {
     Point() : x(0.0), y(0.0), z(0.0) {}
@@ -79,7 +81,7 @@ private:
 
 };
 
-
+}
 
 #endif
 

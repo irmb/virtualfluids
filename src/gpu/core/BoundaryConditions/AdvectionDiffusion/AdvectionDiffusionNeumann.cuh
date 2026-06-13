@@ -43,6 +43,8 @@
 #include "gpu/core/Calculation/Calculation.h"
 #include "gpu/core/Utilities/KernelUtilities.h"
 
+namespace vf::gpu {
+
 template <BoundaryConditionFactory::AdvectionDiffusionNeumannBC bcType>
 __global__ void
 AdvectionDiffusionNeumann_Device(real* populationArray, const AdvectionDiffusionNeumannBoundaryConditions bcParameters,
@@ -53,7 +55,6 @@ AdvectionDiffusionNeumann_Device(real* populationArray, const AdvectionDiffusion
     using namespace vf::basics::constant;
     using namespace vf::lbm::advection_diffusion;
     using namespace vf::lbm::dir;
-    using namespace vf::gpu;
 
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
     if (nodeIndex >= bcParameters.numberOfBCnodes)
@@ -124,6 +125,8 @@ AdvectionDiffusionNeumann_Device(real* populationArray, const AdvectionDiffusion
             });
         } break;
     }
+}
+
 }
 
 //! \}

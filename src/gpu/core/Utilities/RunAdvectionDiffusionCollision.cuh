@@ -42,7 +42,7 @@
 #include "gpu/cuda_helper/CudaIndexCalculation.h"
 #include "core/Parameter/Parameter.h"
 
-namespace vf::gpu::advection_diffusion
+namespace vf::gpu::ad
 {
 
 struct GPUCollisionParameters
@@ -101,7 +101,7 @@ __global__ void runCollisionAdvectionDiffusion(CollisionFunctor collision, GPUCo
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    Distributions27 distAD = vf::gpu::getDistributionReferences27(
+    Distributions27 distAD = getDistributionReferences27(
         collisionParameter.distributions, collisionParameter.numberOfLBnodes, collisionParameter.isEvenTimestep);
     const ListIndices listIndices(k_000, collisionParameter.neighborX, collisionParameter.neighborY,
                                   collisionParameter.neighborZ);

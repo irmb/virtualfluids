@@ -50,22 +50,23 @@
 
 #include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
+#include "FilePartCalculator.h"
 
-namespace unstructured_grid_writer
+namespace vf::gpu::unstructured_grid_writer
 {
 
 void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::string& filenameVec2)
 {
     std::vector< UbTupleFloat3 > nodes;
     std::vector< UbTupleUInt8 > cells;
-    std::vector< string > nodedatanames;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("rho");
     nodedatanames.push_back("vx1");
     nodedatanames.push_back("vx2");
     nodedatanames.push_back("vx3");
     nodedatanames.push_back("geo");
     //int number1,number2,number3,number4,number5,number6,number7,number8;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     bool neighborsFluid;
 
@@ -194,12 +195,12 @@ bool isPeriodicCell(Parameter* para, int level, unsigned int number2, unsigned i
 
 
 //////////////////////////////////////////////////////////////////////////
-void writeUnstrucuredGridLT(Parameter* para, int level, vector<string >& fname) 
+void writeUnstrucuredGridLT(Parameter* para, int level, std::vector<std::string >& fname) 
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
     //vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("press");
     nodedatanames.push_back("rho");
     nodedatanames.push_back("vx1");
@@ -213,7 +214,7 @@ void writeUnstrucuredGridLT(Parameter* para, int level, vector<string >& fname)
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
 
     //printf("\n test for if... \n");
@@ -223,7 +224,7 @@ void writeUnstrucuredGridLT(Parameter* para, int level, vector<string >& fname)
         // printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
 
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
 
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
@@ -331,12 +332,12 @@ void writeUnstrucuredGridLT(Parameter* para, int level, vector<string >& fname)
 
 
 //////////////////////////////////////////////////////////////////////////
-void writeUnstrucuredGridLTwithTurbulentViscosity(Parameter* para, int level, vector<string >& fname)
+void writeUnstrucuredGridLTwithTurbulentViscosity(Parameter* para, int level, std::vector<std::string >& fname)
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
     //vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("press");
     nodedatanames.push_back("rho");
     nodedatanames.push_back("vx1");
@@ -351,7 +352,7 @@ void writeUnstrucuredGridLTwithTurbulentViscosity(Parameter* para, int level, ve
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
 
     //printf("\n test for if... \n");
@@ -361,7 +362,7 @@ void writeUnstrucuredGridLTwithTurbulentViscosity(Parameter* para, int level, ve
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
 
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
 
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
@@ -454,12 +455,12 @@ void writeUnstrucuredGridLTwithTurbulentViscosity(Parameter* para, int level, ve
 
 
 //////////////////////////////////////////////////////////////////////////
-void writeUnstrucuredGridLTwithTurbulentViscosityDebug(Parameter* para, int level, vector<string >& fname)
+void writeUnstrucuredGridLTwithTurbulentViscosityDebug(Parameter* para, int level, std::vector<std::string >& fname)
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
     //vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("press");
     nodedatanames.push_back("rho");
     nodedatanames.push_back("vx1");
@@ -485,7 +486,7 @@ void writeUnstrucuredGridLTwithTurbulentViscosityDebug(Parameter* para, int leve
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
 
     //printf("\n test for if... \n");
@@ -494,7 +495,7 @@ void writeUnstrucuredGridLTwithTurbulentViscosityDebug(Parameter* para, int leve
         vxmax = 0;
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
         endpos = startpos + sizeOfNodes;
@@ -545,17 +546,17 @@ void writeUnstrucuredGridLTwithTurbulentViscosityDebug(Parameter* para, int leve
                 nodedata[4][dn1] = (double)para->getParH(level)->velocityZ[pos] * (double)para->getVelocityRatio();
                 nodedata[5][dn1] = (double)para->getParH(level)->typeOfGridNode[pos];
                 nodedata[6][dn1] = (double)para->getParH(level)->turbulentViscosity[pos] * (double)para->getViscosityRatio();
-                nodedata[7][dn1] = (double)para->getParH(level)->gSij[pos] * (double)para->getVelocityRatio();
-                nodedata[8][dn1] = (double)para->getParH(level)->gSDij[pos] * (double)para->getVelocityRatio();
-                nodedata[9][dn1] = (double)para->getParH(level)->gDxvx[pos] * (double)para->getVelocityRatio();
-                nodedata[10][dn1] = (double)para->getParH(level)->gDyvx[pos] * (double)para->getVelocityRatio();
-                nodedata[11][dn1] = (double)para->getParH(level)->gDzvx[pos] * (double)para->getVelocityRatio();
-                nodedata[12][dn1] = (double)para->getParH(level)->gDxvy[pos] * (double)para->getVelocityRatio();
-                nodedata[13][dn1] = (double)para->getParH(level)->gDyvy[pos] * (double)para->getVelocityRatio();
-                nodedata[14][dn1] = (double)para->getParH(level)->gDzvy[pos] * (double)para->getVelocityRatio();
-                nodedata[15][dn1] = (double)para->getParH(level)->gDxvz[pos] * (double)para->getVelocityRatio();
-                nodedata[16][dn1] = (double)para->getParH(level)->gDyvz[pos] * (double)para->getVelocityRatio();
-                nodedata[17][dn1] = (double)para->getParH(level)->gDzvz[pos] * (double)para->getVelocityRatio();
+                // nodedata[7][dn1] = (double)para->getParH(level)->gSij[pos] * (double)para->getVelocityRatio();
+                // nodedata[8][dn1] = (double)para->getParH(level)->gSDij[pos] * (double)para->getVelocityRatio();
+                // nodedata[9][dn1] = (double)para->getParH(level)->gDxvx[pos] * (double)para->getVelocityRatio();
+                // nodedata[10][dn1] = (double)para->getParH(level)->gDyvx[pos] * (double)para->getVelocityRatio();
+                // nodedata[11][dn1] = (double)para->getParH(level)->gDzvx[pos] * (double)para->getVelocityRatio();
+                // nodedata[12][dn1] = (double)para->getParH(level)->gDxvy[pos] * (double)para->getVelocityRatio();
+                // nodedata[13][dn1] = (double)para->getParH(level)->gDyvy[pos] * (double)para->getVelocityRatio();
+                // nodedata[14][dn1] = (double)para->getParH(level)->gDzvy[pos] * (double)para->getVelocityRatio();
+                // nodedata[15][dn1] = (double)para->getParH(level)->gDxvz[pos] * (double)para->getVelocityRatio();
+                // nodedata[16][dn1] = (double)para->getParH(level)->gDyvz[pos] * (double)para->getVelocityRatio();
+                // nodedata[17][dn1] = (double)para->getParH(level)->gDzvz[pos] * (double)para->getVelocityRatio();
                 //////////////////////////////////////////////////////////////////////////
                 number2 = para->getParH(level)->neighborX[number1];
                 number3 = para->getParH(level)->neighborY[number2];
@@ -608,12 +609,12 @@ void writeUnstrucuredGridLTwithTurbulentViscosityDebug(Parameter* para, int leve
 
 
 //////////////////////////////////////////////////////////////////////////
-void writeUnstrucuredGridPM(Parameter* para, int level, vector<string >& fname)
+void writeUnstrucuredGridPM(Parameter* para, int level, std::vector<std::string >& fname)
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
     //vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("press");
     nodedatanames.push_back("rho");
     nodedatanames.push_back("vx1");
@@ -627,7 +628,7 @@ void writeUnstrucuredGridPM(Parameter* para, int level, vector<string >& fname)
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
 
     //printf("\n test for if... \n");
@@ -636,7 +637,7 @@ void writeUnstrucuredGridPM(Parameter* para, int level, vector<string >& fname)
         vxmax = 0;
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
         endpos = startpos + sizeOfNodes;
@@ -744,12 +745,12 @@ void writeUnstrucuredGridPM(Parameter* para, int level, vector<string >& fname)
 
 
 //////////////////////////////////////////////////////////////////////////
-void writeUnstrucuredGridLTConc(Parameter* para, int level, vector<string >& fname) 
+void writeUnstrucuredGridLTConc(Parameter* para, int level, std::vector<std::string >& fname) 
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    //vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    //std::vector< UbTupleUInt8 > cells2;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("press");
     nodedatanames.push_back("rho");
     nodedatanames.push_back("vx1");
@@ -764,7 +765,7 @@ void writeUnstrucuredGridLTConc(Parameter* para, int level, vector<string >& fna
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     //printf("\n test for if... \n");
     for (unsigned int part=0; part < fname.size(); part++)
@@ -772,7 +773,7 @@ void writeUnstrucuredGridLTConc(Parameter* para, int level, vector<string >& fna
         vxmax = 0;
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
         endpos = startpos + sizeOfNodes;
@@ -872,10 +873,10 @@ void writeUnstrucuredGridLTConc(Parameter* para, int level, vector<string >& fna
 void writeUnstrucuredGridBig(Parameter* para, int level, std::string& fname, std::string& fname2) 
 {
     unsigned int limitOfNodes = 30000000; //27 Million
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    std::vector< UbTupleUInt8 > cells2;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("press");
     nodedatanames.push_back("rho");
     nodedatanames.push_back("vx1");
@@ -887,7 +888,7 @@ void writeUnstrucuredGridBig(Parameter* para, int level, std::string& fname, std
     bool neighborsFluid;
     //double posmax = 0;
     double vxmax = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     //printf("\n test for if... \n");
     if ((uint)para->getParH(level)->numberOfNodes > limitOfNodes)
@@ -1130,9 +1131,9 @@ void writeUnstrucuredGridBig(Parameter* para, int level, std::string& fname, std
 //////////////////////////////////////////////////////////////////////////
 void writeUnstrucuredGridEff(Parameter* para, int level, std::string& fname, std::string& filenameVec2) 
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("press");
     nodedatanames.push_back("rho");
     nodedatanames.push_back("vx1");
@@ -1142,7 +1143,7 @@ void writeUnstrucuredGridEff(Parameter* para, int level, std::string& fname, std
     unsigned int number1,number2,number3,number4,number5,number6,number7,number8;
     bool neighborsFluid;
     double vxmax = 0;
-    vector<vector<double>> nodedata(nodedatanames.size());
+    std::vector<std::vector<double>> nodedata(nodedatanames.size());
 
     nodes.resize(para->getParH(level)->numberOfNodes);
     nodedata[0].resize(para->getParH(level)->numberOfNodes);
@@ -1216,9 +1217,9 @@ void writeUnstrucuredGridEff(Parameter* para, int level, std::string& fname, std
 //////////////////////////////////////////////////////////////////////////
 void writeUnstrucuredGridAsciiEff(Parameter* para, int level, std::string& fname, std::string& filenameVec2) 
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("press");
     nodedatanames.push_back("rho");
     nodedatanames.push_back("vx1");
@@ -1228,7 +1229,7 @@ void writeUnstrucuredGridAsciiEff(Parameter* para, int level, std::string& fname
     unsigned int number1,number2,number3,number4,number5,number6,number7,number8;
     bool neighborsFluid;
     double posmax = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     nodes.resize(para->getParH(level)->numberOfNodes);
     nodedata[0].resize(para->getParH(level)->numberOfNodes);
@@ -1309,12 +1310,12 @@ void writeUnstrucuredGridAsciiEff(Parameter* para, int level, std::string& fname
 
 
 //////////////////////////////////////////////////////////////////////////
-void writeUnstrucuredGridMeanLT(Parameter* para, int level, vector<string >& fname) 
+void writeUnstrucuredGridMeanLT(Parameter* para, int level, std::vector<std::string >& fname) 
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    //vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    //std::vector< UbTupleUInt8 > cells2;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("pressMed");
     nodedatanames.push_back("rhoMed");
     nodedatanames.push_back("vx1Med");
@@ -1328,7 +1329,7 @@ void writeUnstrucuredGridMeanLT(Parameter* para, int level, vector<string >& fna
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     //printf("\n test for if... \n");
     for (unsigned int part=0; part < fname.size(); part++)
@@ -1337,7 +1338,7 @@ void writeUnstrucuredGridMeanLT(Parameter* para, int level, vector<string >& fna
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
 
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
 
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
@@ -1427,12 +1428,12 @@ void writeUnstrucuredGridMeanLT(Parameter* para, int level, vector<string >& fna
 
 
 //////////////////////////////////////////////////////////////////////////
-void writeUnstrucuredGridMeanLTConc(Parameter* para, int level, vector<string >& fname)
+void writeUnstrucuredGridMeanLTConc(Parameter* para, int level, std::vector<std::string >& fname)
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    //vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    //std::vector< UbTupleUInt8 > cells2;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("concMed");
     nodedatanames.push_back("pressMed");
     nodedatanames.push_back("rhoMed");
@@ -1447,7 +1448,7 @@ void writeUnstrucuredGridMeanLTConc(Parameter* para, int level, vector<string >&
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     //printf("\n test for if... \n");
     for (unsigned int part = 0; part < fname.size(); part++)
@@ -1455,7 +1456,7 @@ void writeUnstrucuredGridMeanLTConc(Parameter* para, int level, vector<string >&
         vxmax = 0;
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
         endpos = startpos + sizeOfNodes;
@@ -1544,12 +1545,12 @@ void writeUnstrucuredGridMeanLTConc(Parameter* para, int level, vector<string >&
 
 
 //////////////////////////////////////////////////////////////////////////
-void writeUnstrucuredGridMeanLTwithDerivationsAndSqaredVelos(Parameter* para, int level, vector<string >& fname)
+void writeUnstrucuredGridMeanLTwithDerivationsAndSqaredVelos(Parameter* para, int level, std::vector<std::string >& fname)
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    //vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    //std::vector< UbTupleUInt8 > cells2;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("pressMed");
     nodedatanames.push_back("rhoMed");
     nodedatanames.push_back("vx1Med");
@@ -1570,7 +1571,7 @@ void writeUnstrucuredGridMeanLTwithDerivationsAndSqaredVelos(Parameter* para, in
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     //printf("\n test for if... \n");
     for (unsigned int part = 0; part < fname.size(); part++)
@@ -1578,7 +1579,7 @@ void writeUnstrucuredGridMeanLTwithDerivationsAndSqaredVelos(Parameter* para, in
         vxmax = 0;
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
         endpos = startpos + sizeOfNodes;
@@ -1693,9 +1694,9 @@ void writeUnstrucuredGridMeanLTwithDerivationsAndSqaredVelos(Parameter* para, in
 //////////////////////////////////////////////////////////////////////////
 void writeUnstrucuredGridEffMean(Parameter* para, int level, std::string& fname) 
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("pressMed");
     nodedatanames.push_back("rhoMed");
     nodedatanames.push_back("vx1Med");
@@ -1704,7 +1705,7 @@ void writeUnstrucuredGridEffMean(Parameter* para, int level, std::string& fname)
     nodedatanames.push_back("geo");
     unsigned int number1,number2,number3,number4,number5,number6,number7,number8;
     bool neighborsFluid;
-    vector< vector<double>> nodedata(nodedatanames.size());
+    std::vector< std::vector<double>> nodedata(nodedatanames.size());
 
     nodes.resize(para->getParH(level)->numberOfNodes);
     nodedata[0].resize(para->getParH(level)->numberOfNodes);
@@ -1780,9 +1781,9 @@ void writeUnstrucuredGridEffMean(Parameter* para, int level, std::string& fname)
 //////////////////////////////////////////////////////////////////////////
 void writeUnstrucuredGridEff2ndMoments(Parameter* para, int level, std::string& fname) 
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("kxyFromfcNEQ");
     nodedatanames.push_back("kyzFromfcNEQ");
     nodedatanames.push_back("kxzFromfcNEQ");
@@ -1791,7 +1792,7 @@ void writeUnstrucuredGridEff2ndMoments(Parameter* para, int level, std::string& 
     nodedatanames.push_back("geo");
     unsigned int number1,number2,number3,number4,number5,number6,number7,number8;
     bool neighborsFluid;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     nodes.resize(para->getParH(level)->numberOfNodes);
     nodedata[0].resize(para->getParH(level)->numberOfNodes);
@@ -1860,12 +1861,12 @@ void writeUnstrucuredGridEff2ndMoments(Parameter* para, int level, std::string& 
 
 
 //////////////////////////////////////////////////////////////////////////
-void writeUnstrucuredGridEff2ndMomentsLT(Parameter* para, int level, vector<string >& fname) 
+void writeUnstrucuredGridEff2ndMomentsLT(Parameter* para, int level, std::vector<std::string >& fname) 
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    //vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    //std::vector< UbTupleUInt8 > cells2;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("kxyFromfcNEQ");
     nodedatanames.push_back("kyzFromfcNEQ");
     nodedatanames.push_back("kxzFromfcNEQ");
@@ -1879,7 +1880,7 @@ void writeUnstrucuredGridEff2ndMomentsLT(Parameter* para, int level, vector<stri
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     //printf("\n test for if... \n");
     for (unsigned int part=0; part < fname.size(); part++)
@@ -1887,7 +1888,7 @@ void writeUnstrucuredGridEff2ndMomentsLT(Parameter* para, int level, vector<stri
         vxmax = 0;
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
         endpos = startpos + sizeOfNodes;
@@ -1956,12 +1957,12 @@ void writeUnstrucuredGridEff2ndMomentsLT(Parameter* para, int level, vector<stri
 
 
 //////////////////////////////////////////////////////////////////////////
-void writeUnstrucuredGridEff3rdMomentsLT(Parameter* para, int level, vector<string >& fname) 
+void writeUnstrucuredGridEff3rdMomentsLT(Parameter* para, int level, std::vector<std::string >& fname) 
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    //vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    //std::vector< UbTupleUInt8 > cells2;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("CUMbbb");
     nodedatanames.push_back("CUMabc");
     nodedatanames.push_back("CUMbac");
@@ -1977,7 +1978,7 @@ void writeUnstrucuredGridEff3rdMomentsLT(Parameter* para, int level, vector<stri
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     //printf("\n test for if... \n");
     for (unsigned int part=0; part < fname.size(); part++)
@@ -1985,7 +1986,7 @@ void writeUnstrucuredGridEff3rdMomentsLT(Parameter* para, int level, vector<stri
         vxmax = 0;
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
         endpos = startpos + sizeOfNodes;
@@ -2058,12 +2059,12 @@ void writeUnstrucuredGridEff3rdMomentsLT(Parameter* para, int level, vector<stri
 
 
 //////////////////////////////////////////////////////////////////////////
-void writeUnstrucuredGridEffHigherMomentsLT(Parameter* para, int level, vector<string >& fname) 
+void writeUnstrucuredGridEffHigherMomentsLT(Parameter* para, int level, std::vector<std::string >& fname) 
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleUInt8 > cells;
-    //vector< UbTupleUInt8 > cells2;
-    vector< string > nodedatanames;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleUInt8 > cells;
+    //std::vector< UbTupleUInt8 > cells2;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("CUMcbb");
     nodedatanames.push_back("CUMbcb");
     nodedatanames.push_back("CUMbbc");
@@ -2082,7 +2083,7 @@ void writeUnstrucuredGridEffHigherMomentsLT(Parameter* para, int level, vector<s
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
 
     //printf("\n test for if... \n");
     for (unsigned int part=0; part < fname.size(); part++)
@@ -2090,7 +2091,7 @@ void writeUnstrucuredGridEffHigherMomentsLT(Parameter* para, int level, vector<s
         vxmax = 0;
         //printf("\n test in if I... \n");
         //////////////////////////////////////////////////////////////////////////
-        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes);
+        sizeOfNodes = FilePartCalculator::calculateNumberOfNodesInPart(para->getParH(level)->numberOfNodes, part);
         //////////////////////////////////////////////////////////////////////////
         startpos = FilePartCalculator::calculateStartingPostionOfPart(part);
         endpos = startpos + sizeOfNodes;
@@ -2171,8 +2172,9 @@ void writeUnstrucuredGridEffHigherMomentsLT(Parameter* para, int level, vector<s
 //////////////////////////////////////////////////////////////////////////
 void writeQs(Parameter* para, int level, std::string& fname)
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleInt2 > qs;
+    using namespace vf::lbm::dir;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleInt2 > qs;
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
@@ -2194,9 +2196,9 @@ void writeQs(Parameter* para, int level, std::string& fname)
     qs.resize(numberOfLines);
     nodes.resize(numberOfNodes);
     //////////////////////////////////////////////////////////////////////////
-    vector< string > nodedatanames;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("sizeQ");
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
     nodedata[0].resize(numberOfNodes);
     //////////////////////////////////////////////////////////////////////////
     for (unsigned int pos = startpos; pos < endpos; pos++)
@@ -2218,33 +2220,33 @@ void writeQs(Parameter* para, int level, std::string& fname)
             //////////////////////////////////////////////////////////////////////////
             switch (typeOfQ)
             {
-                case E:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-                case N:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-                case W:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-                case S:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-                case NE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-                case NW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-                case SW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-                case SE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-                case T:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-                case TE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-                case TN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-                case TW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-                case TS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-                case B:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-                case BE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-                case BN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-                case BW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-                case BS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-                case TNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-                case BSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-                case BNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-                case TSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-                case TSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-                case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-                case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-                case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-                case REST:wallX1 = nodeX1;        wallX2 = nodeX2;         wallX3 = nodeX3;        break;
+                case dP00: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+                case d0P0: wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+                case dM00: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+                case d0M0: wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+                case dPP0: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+                case dMP0: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+                case dMM0: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+                case dPM0: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+                case d00P: wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+                case dP0P: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+                case d0PP: wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dM0P: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+                case d0MP: wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+                case d00M: wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+                case dP0M: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+                case d0PM: wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dM0M: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+                case d0MM: wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dPPP: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dMMM: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dPPM: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dMMP: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dPMP: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dMPM: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dPMM: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dMPP: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+                case d000: wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3;        break;
                 default: throw UbException(UB_EXARGS, "unknown direction");
             }
             //////////////////////////////////////////////////////////////////////////
@@ -2275,8 +2277,9 @@ void writeQs(Parameter* para, int level, std::string& fname)
 //////////////////////////////////////////////////////////////////////////
 void writeQsInflow(Parameter* para, int level, std::string& fname)
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleInt2 > qs;
+    using namespace vf::lbm::dir;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleInt2 > qs;
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
@@ -2298,9 +2301,9 @@ void writeQsInflow(Parameter* para, int level, std::string& fname)
     qs.resize(numberOfLines);
     nodes.resize(numberOfNodes);
     //////////////////////////////////////////////////////////////////////////
-    vector< string > nodedatanames;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("sizeQ");
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
     nodedata[0].resize(numberOfNodes);
     //////////////////////////////////////////////////////////////////////////
     for (unsigned int pos = startpos; pos < endpos; pos++)
@@ -2323,33 +2326,33 @@ void writeQsInflow(Parameter* para, int level, std::string& fname)
             //////////////////////////////////////////////////////////////////////////
             switch (typeOfQ)
             {
-                case E:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-                case N:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-                case W:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-                case S:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-                case NE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-                case NW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-                case SW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-                case SE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-                case T:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-                case TE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-                case TN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-                case TW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-                case TS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-                case B:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-                case BE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-                case BN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-                case BW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-                case BS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-                case TNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-                case BSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-                case BNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-                case TSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-                case TSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-                case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-                case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-                case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-                case REST:wallX1 = nodeX1;        wallX2 = nodeX2;         wallX3 = nodeX3;        break;
+                case dP00: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+                case d0P0: wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+                case dM00: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+                case d0M0: wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+                case dPP0: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+                case dMP0: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+                case dMM0: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+                case dPM0: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+                case d00P: wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+                case dP0P: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+                case d0PP: wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dM0P: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+                case d0MP: wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+                case d00M: wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+                case dP0M: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+                case d0PM: wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dM0M: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+                case d0MM: wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dPPP: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dMMM: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dPPM: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dMMP: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dPMP: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dMPM: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dPMM: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dMPP: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+                case d000: wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3;        break;
                 default: throw UbException(UB_EXARGS, "unknown direction");
             }
             //////////////////////////////////////////////////////////////////////////
@@ -2380,8 +2383,9 @@ void writeQsInflow(Parameter* para, int level, std::string& fname)
 //////////////////////////////////////////////////////////////////////////
 void writeQsPressure(Parameter* para, int level, std::string& fname)
 {
-    vector< UbTupleFloat3 > nodes;
-    vector< UbTupleInt2 > qs;
+    using namespace vf::lbm::dir;
+    std::vector< UbTupleFloat3 > nodes;
+    std::vector< UbTupleInt2 > qs;
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
@@ -2403,9 +2407,9 @@ void writeQsPressure(Parameter* para, int level, std::string& fname)
     qs.resize(numberOfLines);
     nodes.resize(numberOfNodes);
     //////////////////////////////////////////////////////////////////////////
-    vector< string > nodedatanames;
+    std::vector< std::string > nodedatanames;
     nodedatanames.push_back("sizeQ");
-    vector< vector< double > > nodedata(nodedatanames.size());
+    std::vector< std::vector< double > > nodedata(nodedatanames.size());
     nodedata[0].resize(numberOfNodes);
     //////////////////////////////////////////////////////////////////////////
     for (unsigned int pos = startpos; pos < endpos; pos++)
@@ -2428,33 +2432,33 @@ void writeQsPressure(Parameter* para, int level, std::string& fname)
             //////////////////////////////////////////////////////////////////////////
             switch (typeOfQ)
             {
-                case E:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-                case N:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-                case W:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
-                case S:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-                case NE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-                case NW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
-                case SW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-                case SE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
-                case T:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-                case TE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-                case TN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-                case TW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
-                case TS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-                case B:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-                case BE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-                case BN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-                case BW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
-                case BS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-                case TNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-                case BSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-                case BNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-                case TSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-                case TSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
-                case BNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
-                case BSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
-                case TNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
-                case REST:wallX1 = nodeX1;        wallX2 = nodeX2;         wallX3 = nodeX3;        break;
+                case dP00: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+                case d0P0: wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+                case dM00: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+                case d0M0: wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+                case dPP0: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+                case dMP0: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+                case dMM0: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+                case dPM0: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+                case d00P: wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+                case dP0P: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+                case d0PP: wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dM0P: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+                case d0MP: wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+                case d00M: wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+                case dP0M: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+                case d0PM: wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dM0M: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+                case d0MM: wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dPPP: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dMMM: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dPPM: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dMMP: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dPMP: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+                case dMPM: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dPMM: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+                case dMPP: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+                case d000: wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3;        break; 
                 default: throw UbException(UB_EXARGS, "unknown direction");
             }
             //////////////////////////////////////////////////////////////////////////

@@ -73,6 +73,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using namespace vf::basics::constant;
+using namespace vf::gpu;
+
 using temperatureProfileFunc = std::function<real(real)>;
 using velocityProfileFunc = std::function<std::tuple<real, real, real, real>(real, real, real)>;
 
@@ -372,7 +374,7 @@ void run(const vf::basics::ConfigurationFile& config)
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     auto planarAverageProbe = std::make_shared<PlanarAverageProbe>(
         para, cudaMemoryManager, para->getOutputPath(), "planeProbe", tStartSampling / deltaT, tStartTmpAveraging / deltaT,
-        tSampling / deltaT, tStartOutProbe / deltaT, tOutProbe / deltaT, Axis::z, true, true);
+        tSampling / deltaT, tStartOutProbe / deltaT, tOutProbe / deltaT, Axis::z, true, true, true);
     planarAverageProbe->addAllAvailableStatistics();
     planarAverageProbe->setFileNameToNOut();
     para->addSampler(planarAverageProbe);

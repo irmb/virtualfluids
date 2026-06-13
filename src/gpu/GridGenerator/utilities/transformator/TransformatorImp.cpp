@@ -41,6 +41,8 @@
 #include "geometries/Vertex/Vertex.h"
 #include "geometries/Arrow/Arrow.h"
 
+namespace vf::gpu {
+
 TransformatorImp::TransformatorImp() 
 {
     this->translater = std::shared_ptr<Vertex>(new Vertex());
@@ -188,6 +190,8 @@ bool TransformatorImp::operator==(const TransformatorImp& trafo) const
         && this->translater->x == trafo.translater->x
         && this->translater->y == trafo.translater->y
         && this->translater->z == trafo.translater->z);
+}
+
 }
 
 //! \}

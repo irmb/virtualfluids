@@ -38,6 +38,8 @@
 #include <memory>
 #include "TurbulenceModelFactory.h"
 
+namespace vf::gpu {
+
 class Parameter;
 class TurbulenceModelFactory;
 
@@ -59,5 +61,8 @@ private:
     std::optional<std::function<void(Parameter*, int)>> turbulenceModelKernel;
     std::optional<std::function<void(Parameter*, int)>> turbulenceModelADKernel;
 };
+
+}
+
 #endif
 //! \}

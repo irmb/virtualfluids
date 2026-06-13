@@ -51,6 +51,7 @@
 #include <string>
 #include <vector>
 
+namespace vf::gpu {
 
 //! \brief An enumeration for selecting a template of the collision kernel (CumulantK17)
 enum class CollisionTemplate {
@@ -124,6 +125,16 @@ struct QforDirectionalBoundaryCondition
    real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
    uint numberOfBCnodes = 0;
    real *RhoBC;
+   size_t direction;
+};
+
+struct QforDirectionalADBoundaryCondition
+{
+   int* k;
+   int* kN;
+   real* q27[vf::lbm::dir::NUMBER_Of_DIRECTIONS];
+   uint numberOfBCnodes = 0;
+   real *concentration;
    size_t direction;
 };
 
@@ -235,6 +246,7 @@ struct ProcessNeighbor27
    {}
 };
 
+}
 
 #endif
 

@@ -41,6 +41,7 @@
 #include "D3Q27System.h"
 #include "Grid3D.h"
 #include "UbScheduler.h"
+#include "basics/utilities/UbSystem.h"
 
 WriteBlocksSimulationObserver::WriteBlocksSimulationObserver(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
                                                WbWriter *const writer, std::shared_ptr<vf::parallel::Communicator> comm)
@@ -170,9 +171,10 @@ void WriteBlocksSimulationObserver::collectData(real step)
             }
         }
 
-        filenames.push_back(writer->writeOctsWithCellData(
+        const std::string outputFile = writer->writeOctsWithCellData(
             path + "/blocks/blocks_" + ub_system::toString(grid->getRank()) + "_" + ub_system::toString(istep), nodes,
-            cells, celldatanames, celldata));
+            cells, celldatanames, celldata);
+        filenames.push_back(ub_system::getFilenameFromString(outputFile));
 
         if (istep == SimulationObserver::scheduler->getMinBegin()) {
             WbWriterVtkXmlASCII::getInstance()->writeCollection(path + "/blocks/blocks_collection", filenames, istep,

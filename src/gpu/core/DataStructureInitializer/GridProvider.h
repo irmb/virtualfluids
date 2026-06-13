@@ -42,15 +42,18 @@
 
 #include "gpu/GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h"
 
-class Parameter;
-class GridBuilder;
-class CudaMemoryManager;
-class BoundaryConditionFactory;
-
 namespace vf::parallel
 {
 class Communicator;
 }
+
+
+namespace vf::gpu {
+    
+class Parameter;
+class GridBuilder;
+class CudaMemoryManager;
+class BoundaryConditionFactory;
 
 class GridProvider
 {
@@ -92,6 +95,8 @@ protected:
     std::shared_ptr<Parameter> para;
     std::shared_ptr<CudaMemoryManager> cudaMemoryManager;
 };
+
+}
 
 #endif
 

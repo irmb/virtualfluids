@@ -47,6 +47,8 @@
 #include "Parameter/Parameter.h"
 #include "lbm/constants/D3Q27.h"
 
+namespace vf::gpu {
+
 bool indexInArray(const uint* array, uint numberOfElements, uint index)
 {
     return std::find(array, array + numberOfElements, index) != array + numberOfElements;
@@ -245,5 +247,6 @@ std::vector<uint> IndexRearrangementForStreams::findIndicesNotInCommAfterFtoC(co
     return otherIndices;
 }
 
+}
 
 //! \}

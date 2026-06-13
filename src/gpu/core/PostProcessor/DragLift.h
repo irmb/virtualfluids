@@ -35,12 +35,16 @@
 #ifndef DragLift_H
 #define DragLift_H
 
+namespace vf::gpu {
+
 class Parameter;
 class CudaMemoryManager;
 
 void calcDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
 void allocDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager);
 void printDragLift(Parameter* para, CudaMemoryManager* cudaMemoryManager, int timestep);
+
+}
 
 #endif
 

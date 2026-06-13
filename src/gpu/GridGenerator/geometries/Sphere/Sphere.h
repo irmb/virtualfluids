@@ -38,6 +38,8 @@
 #include "global.h"
 #include "geometries/Object.h"
 
+namespace vf::gpu {
+
 class Sphere : public Object
 {
 public:
@@ -73,7 +75,7 @@ protected:
     double radius;
 };
 
-
+}
 
 #endif   
 

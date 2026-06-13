@@ -42,6 +42,8 @@
 #include "gpu/core/Calculation/Calculation.h"
 #include "gpu/core/Utilities/KernelUtilities.h"
 
+namespace vf::gpu {
+
 template <BoundaryConditionFactory::AdvectionDiffusionDirichletBC bcType>
 __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
                                                    const AdvectionDiffusionDirichletBoundaryConditions bcParameters,
@@ -53,7 +55,6 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
     using namespace vf::basics::constant;
     using namespace vf::lbm::advection_diffusion;
     using namespace vf::lbm::dir;
-    using namespace vf::gpu;
 
     const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
     if (nodeIndex >= bcParameters.numberOfBCnodes)
@@ -125,3 +126,7 @@ __global__ void AdvectionDiffusionDirichlet_Device(real* populationsArray,
         } break;
     }
 }
+
+}
+
+//! \}

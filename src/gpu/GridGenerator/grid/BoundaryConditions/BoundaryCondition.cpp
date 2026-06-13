@@ -36,9 +36,12 @@
 #include <stdexcept>
 
 #include "DataTypes.h"
+#include "constants/NumericConstants.h"
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/Grid.h"
 #include "GridGenerator/TransientBCSetter/TransientBCSetter.h"
+
+namespace vf::gpu {
 
 bool grid_generator::BoundaryCondition::isSide( SideType side ) const
 {
@@ -154,11 +157,38 @@ void StressBoundaryCondition::setAdditionalIndices(const SPtr<Grid>& grid, const
     const real samplingDistance =
         std::hypot(samplingX - nodeX, samplingY - nodeY, samplingZ - nodeZ) / grid->getDelta() + distanceNodeToWall;
     samplingDistanceList.push_back(samplingDistance);
+    if (roughnessMap) {
+        const real wallX = nodeX + normal[0] * vf::basics::constant::c1o2 * grid->getDelta();
+        const real wallY = nodeY + normal[1] * vf::basics::constant::c1o2 * grid->getDelta();
+        const real wallZ = nodeZ + normal[2] * vf::basics::constant::c1o2 * grid->getDelta();
+        const real roughnessLength = roughnessMap->interpolateToPoint({ wallX, wallY, wallZ });
+        roughnessLengthList.push_back(roughnessLength / grid->getDelta());
+    }
 }
 
 void PressureBoundaryCondition::setAdditionalIndices(const SPtr<Grid> &grid, uint index)
 {
 
+    real x, y, z;
+    grid->transIndexToCoords(index, x, y, z);
+
+    real nx = x;
+    real ny = y;
+    real nz = z;
+
+    if (side->getCoordinate() == X_INDEX)
+        nx = -side->getDirection() * grid->getDelta() + x;
+    if (side->getCoordinate() == Y_INDEX)
+        ny = -side->getDirection() * grid->getDelta() + y;
+    if (side->getCoordinate() == Z_INDEX)
+        nz = -side->getDirection() * grid->getDelta() + z;
+
+    uint neighborIndex = grid->transCoordToIndex(nx, ny, nz);
+    neighborIndices.push_back(neighborIndex);
+}
+
+void ADOutflowBoundaryCondition::setAdditionalIndices(const SPtr<Grid>& grid, uint index)
+{
     real x, y, z;
     grid->transIndexToCoords(index, x, y, z);
 
@@ -194,4 +224,7 @@ void ADFluxBoundaryCondition::fillBoundaryValueLists()
     std::fill_n(std::back_inserter(this->normalZList), this->indices.size(), normalZ);
     std::fill_n(std::back_inserter(this->gradientList), this->indices.size(), gradient);
 }
+
+}
+
 //! \}

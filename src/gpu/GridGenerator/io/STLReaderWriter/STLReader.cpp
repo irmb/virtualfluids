@@ -48,6 +48,7 @@
 #include "geometries/Triangle/Triangle.h"
 #include "geometries/BoundingBox/BoundingBox.h"
 
+namespace vf::gpu {
 
 std::vector<Triangle> STLReader::readSTL(const std::string& name)
 {
@@ -387,6 +388,8 @@ Vertex STLReader::getVertexFromChar(const char* facet)
     float zz = *((float*)f3);
 
     return Vertex((real)(xx), (real)(yy), (real)(zz));
+}
+
 }
 
 //! \}

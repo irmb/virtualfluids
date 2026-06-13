@@ -38,12 +38,14 @@
 #include <vector>
 #include <memory>
 
+namespace vf::gpu {
 class Parameter;
+}
 
 class InitialConditionImp : public InitialCondition
 {
 public:
-    void setParameter(std::shared_ptr<Parameter> para);
+    void setParameter(std::shared_ptr<vf::gpu::Parameter> para);
     void init(const int level);
     virtual real getInitVX(int i, int level) = 0;
     virtual real getInitVY(int i, int level) = 0;
@@ -57,7 +59,7 @@ protected:
     real getYCoord(int i, int level);
     real getZCoord(int i, int level);
 
-    std::shared_ptr<Parameter> para;
+    std::shared_ptr<vf::gpu::Parameter> para;
     real XCoordStopNode, YCoordStopNode, ZCoordStopNode;
 
 };

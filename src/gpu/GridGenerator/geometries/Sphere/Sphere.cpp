@@ -39,6 +39,8 @@
 
 #include "geometries/Vertex/Vertex.h"
 
+namespace vf::gpu {
+
 Sphere::Sphere(const double& centerX, const double& centerY, const double& centerZ, const double& radius)
     : centerX(centerX), centerY(centerY), centerZ(centerZ), radius(radius)
 {
@@ -167,6 +169,8 @@ int Sphere::getIntersection(const Vertex & point, const Vertex & direction, Vert
     qVal = t;
 
     return 0;
+}
+
 }
 
 //! \}

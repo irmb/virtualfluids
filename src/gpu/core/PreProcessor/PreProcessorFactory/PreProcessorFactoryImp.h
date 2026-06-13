@@ -36,6 +36,8 @@
 
 #include "PreProcessorFactory.h"
 
+namespace vf::gpu {
+
 class PreProcessorStrategy;
 
 class PreProcessorFactoryImp : public PreProcessorFactory
@@ -46,5 +48,8 @@ public:
     std::shared_ptr<PreProcessorStrategy> makePreProcessorStrategy(PreProcessorType preProcessorTyp, std::shared_ptr<Parameter> para);
 
 };
+
+}
+
 #endif
 //! \}

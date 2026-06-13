@@ -37,6 +37,8 @@
 #include <DataTypes.h>
 #include <curand.h>
 
+namespace vf::gpu {
+
 __global__ void InitAdvectionDiffusionIncompressible_Device(
     const uint* neighborX,
     const uint* neighborY,
@@ -49,6 +51,8 @@ __global__ void InitAdvectionDiffusionIncompressible_Device(
     unsigned long long numberOfLBnodes,
     real* distributionsAD,
     bool isEvenTimestep);
+
+}
 
 #endif
 //! \}

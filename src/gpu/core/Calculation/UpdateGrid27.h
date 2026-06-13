@@ -48,6 +48,8 @@ namespace vf::parallel
 class Communicator;
 }
 
+namespace vf::gpu {
+
 class BoundaryConditionKernelManager;
 class GridScalingKernelManager;
 class Kernel;
@@ -121,6 +123,8 @@ private:
     //! \property tmFactory is a shared pointer to an object of TurbulenceModelFactory
     std::shared_ptr<TurbulenceModelManager> tmManager;
 };
+
+}
 
 #endif
 

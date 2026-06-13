@@ -37,6 +37,8 @@
 #include "Parameter/Parameter.h"
 #include <cuda_helper/CudaGrid.h>
 
+namespace vf::gpu {
+
 std::shared_ptr<PreProcessorStrategy> InitNavierStokesIncompressible::getNewInstance(std::shared_ptr<Parameter> para)
 {
     return std::shared_ptr<PreProcessorStrategy>(new InitNavierStokesIncompressible(para));
@@ -73,6 +75,8 @@ InitNavierStokesIncompressible::InitNavierStokesIncompressible(std::shared_ptr<P
 
 InitNavierStokesIncompressible::InitNavierStokesIncompressible()
 {
+}
+
 }
 
 //! \}

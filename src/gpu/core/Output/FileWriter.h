@@ -41,6 +41,8 @@
 
 #include "DataWriter.h"
 
+namespace vf::gpu {
+
 class Parameter;
 class CudaMemoryManager;
 
@@ -72,6 +74,9 @@ private:
     std::map<uint, std::vector<std::string>>
         fileNamesForCollectionFileTimeSeries; // key: timeStep, value: fileNames for timeStep
 };
+
+}
+
 #endif
 
 //! \}

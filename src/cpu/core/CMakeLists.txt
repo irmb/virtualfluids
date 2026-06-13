@@ -51,6 +51,9 @@ set(library_name cpu_core)
 
 vf_add_library(NAME ${library_name} PUBLIC_LINK basics muparser ${VF_LIBRARIES} parallel project_options PRIVATE_LINK lbm logger project_warnings)
 
+# Optional fast-winding support (libigl-based).
+vf_enable_fast_winding(${library_name} VISIBILITY PUBLIC)
+
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/BoundaryConditions)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Connectors)
 target_include_directories(${library_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Data)

@@ -46,6 +46,8 @@
 
 using namespace vf::basics::constant;
 
+namespace vf::gpu {
+
 SPtr<FileCollection> createFileCollection(const std::string& path, const std::string& prefix, TransientBCFileType type)
 {
     switch(type)
@@ -120,8 +122,12 @@ void VTKFile::readHeader()
     //TODO make this more flexible
     std::ifstream file(this->fileName);
 
-    const std::string firstTag = getTag(file); // VTKFile
-    if(firstTag[1]=='?') getTag(file); // ignore first line if xml version
+    std::string firstTag = getTag(file); // VTKFile
+    const std::string vtkLine = firstTag[1]=='?' ? getTag(file) : firstTag; // ignore first line if xml version
+
+    uint headerSize = 4;
+    if (readAttribute(vtkLine, "version")[0] >= 1 && readAttribute(vtkLine, "header_type") == "UInt64")
+        headerSize = 8;
 
     const std::string imageData = getTag(file); // ImageData
     std::vector<int> wholeExtent = readStringToVector<int>(readAttribute(imageData, "WholeExtent"));
@@ -145,14 +151,16 @@ void VTKFile::readHeader()
     getTag(file); // </ImageData
     getTag(file); // AppendedData
     while(file.get()!='_'){} // go until underscore
-    const int offset = int(file.tellg())+8; // and bytesPerVal
+    const int binaryDataStart = int(file.tellg()); // position right after underscore
     file.close();
 
+    // Convert relative offsets (from XML) to absolute file positions.
+    // Each quantity's XML offset is relative to the underscore and already accounts
+    // for the headers of all preceding data blocks.
     for(auto& quantity: this->quantities)
     {
-        quantity.offset += offset;
+        quantity.offset = binaryDataStart + quantity.offset + headerSize;
     }
-
 
     this->deltaX = spacing[0];
     this->deltaY = spacing[1];
@@ -311,7 +319,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
 {
     this->nPoints = (uint)coordsY.size();
     this->initializeIndexVectors();
-    const real max_diff = 1e-4; // maximum distance between point on grid and precursor plane to count as exact match
+    const real max_diff = 1e-3; // maximum distance between point on grid and precursor plane to count as exact match
     const real eps = 1e-7; // small number to avoid division by zero
     bool perfect_match = true;
 
@@ -400,7 +408,7 @@ void VTKReader::fillArrays(std::vector<real>& coordsY, std::vector<real>& coords
                     const real dy = file.getX(index)-posY;
                     const real dz = file.getY(index)-posZ;
                     this->weights0PM.emplace_back(1.f/(dy*dy+dz*dz+eps));
-                    this->planeNeighbor0PP.emplace_back(getWriteIndex(level, fileId, index));
+                    this->planeNeighbor0PM.emplace_back(getWriteIndex(level, fileId, index)); 
                 }
             }
 
@@ -496,6 +504,8 @@ void VTKReader::getNextData(real* data, uint numberOfNodes, real time)
         file->getData(data, numberOfNodes, this->readIndices[level][id], this->writeIndices[level][id], off, this->writingOffset);
         this->nFile[level][id] = numberOfFiles;
     }
+}
+
 }
 
 //! \}

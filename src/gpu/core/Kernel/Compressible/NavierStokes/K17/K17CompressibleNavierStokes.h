@@ -36,6 +36,8 @@
 
 #include <lbm/collision/TurbulentViscosity.h>
 
+namespace vf::gpu {
+
 class Parameter;
 
 template <vf::lbm::TurbulenceModel turbulenceModel>
@@ -51,6 +53,8 @@ public:
 private:
     K17CompressibleNavierStokes(std::shared_ptr<Parameter> para, int level);
 };
+
+}
 
 #endif
 

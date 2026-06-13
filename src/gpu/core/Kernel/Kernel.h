@@ -41,6 +41,8 @@
 
 #include <helper_cuda.h>
 
+namespace vf::gpu {
+
 class Kernel
 {
 public:
@@ -54,6 +56,9 @@ public:
 
     virtual std::vector<PreProcessorType> getPreProcessorTypes() = 0;
 };
+
+}
+
 #endif
 
 //! \}

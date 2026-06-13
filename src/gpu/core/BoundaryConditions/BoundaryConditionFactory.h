@@ -44,6 +44,8 @@
 #include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 struct LBMSimulationParameter;
 class Parameter;
 
@@ -57,6 +59,7 @@ using AdvectionDiffusionNoFluxBoundaryConditionKernel = std::function<void(LBMSi
 using AdvectionDiffusionFluxBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionFluxBoundaryConditions)>;
 using AdvectionDiffusionDirichletBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionDirichletBoundaryConditions)>;
 using AdvectionDiffusionNeumannBoundaryConditionKernel = std::function<void(LBMSimulationParameter *, AdvectionDiffusionNeumannBoundaryConditions)>;
+using DirectionalADBoundaryConditionKernel = std::function<void(LBMSimulationParameter*, QforDirectionalADBoundaryCondition*)>;
 
 class BoundaryConditionFactory
 {
@@ -135,6 +138,7 @@ public:
         PrecursorNonReflectiveCompressible,
         //! - DistributionsPrecursor
         PrecursorDistributions,
+        PrecursorVelTemperatureDistributions,
         //! - NotSpecified =  the user did not set a boundary condition
         NotSpecified
     };
@@ -188,6 +192,16 @@ public:
         SurfaceTemperature,
         NotSpecified
     };
+    //! \brief Directional non-reflecting outflow for the advection-diffusion (temperature) field.
+    //! \details Analogous to OutflowNonReflective for the fluid field, but operates on distributionsAD
+    //!          and is applied in the postCollisionBC stage. The face direction (dM00, dP00, etc.)
+    //!          is stored per boundary and selects which 9 AD populations are updated.
+    enum class AdvectionDiffusionDirectionalBC {
+        //! - DirectionalOutflowNonReflecting: advective (non-reflecting) outflow for the AD field
+        DirectionalOutflowNonReflecting,
+        //! - NotSpecified: the user did not set a boundary condition
+        NotSpecified
+    };
 
     void setVelocityBoundaryCondition(BoundaryConditionFactory::VelocityBC boundaryConditionType);
     void setNoSlipBoundaryCondition(BoundaryConditionFactory::NoSlipBC boundaryConditionType);
@@ -210,6 +224,7 @@ public:
     void setAdvectionDiffusionDirichletBoundaryCondition(AdvectionDiffusionDirichletBC boundaryConditionType);
     void setAdvectionDiffusionNeumannBoundaryCondition(AdvectionDiffusionNeumannBC boundaryConditionType);
     void setSurfaceLayerBoundaryCondition(StressBC momentumBoundaryConditionType, SurfaceLayerBC surfaceLayerBoundaryConditionType);
+    void setAdvectionDiffusionDirectionalBoundaryCondition(AdvectionDiffusionDirectionalBC boundaryConditionType);
     // void setOutflowBoundaryCondition(...); // TODO:
     // https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 
@@ -224,6 +239,7 @@ public:
     [[nodiscard]] AdvectionDiffusionFluxBoundaryConditionKernel getAdvectionDiffusionFluxBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionDirichletBoundaryConditionKernel getAdvectionDiffusionDirichletBoundaryConditionPost() const;
     [[nodiscard]] AdvectionDiffusionNeumannBoundaryConditionKernel getAdvectionDiffusionNeumannBoundaryConditionPost() const;
+    [[nodiscard]] DirectionalADBoundaryConditionKernel getAdvectionDiffusionDirectionalBoundaryConditionPost() const;
     [[nodiscard]] BoundaryConditionKernel getSurfaceLayerBoundaryConditionPost() const;
     [[nodiscard]] virtual bool hasDirectionalPressureBoundaryCondition() const;
 
@@ -239,10 +255,13 @@ private:
     AdvectionDiffusionFluxBC advectionDiffusionFluxBoundaryCondition = AdvectionDiffusionFluxBC::NotSpecified;
     AdvectionDiffusionDirichletBC advectionDiffusionDirichletBoundaryCondition = AdvectionDiffusionDirichletBC::NotSpecified;
     AdvectionDiffusionNeumannBC advectionDiffusionNeumannBoundaryCondition = AdvectionDiffusionNeumannBC::NotSpecified;
+    AdvectionDiffusionDirectionalBC advectionDiffusionDirectionalBoundaryCondition = AdvectionDiffusionDirectionalBC::NotSpecified;
     std::pair<StressBC, SurfaceLayerBC> surfaceLayerBoundaryCondition = {StressBC::NotSpecified, SurfaceLayerBC::NotSpecified};
 
     // OutflowBoundaryConditon outflowBC // TODO: https://git.rz.tu-bs.de/m.schoenherr/VirtualFluids_dev/-/issues/16
 };
+
+}
 
 #endif
 

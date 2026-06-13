@@ -34,6 +34,8 @@
 #ifndef PRE_PROCESSOR_TYPE_H
 #define PRE_PROCESSOR_TYPE_H
 
+namespace vf::gpu {
+
 enum PreProcessorType
 {
     InitNavierStokesIncompressible,
@@ -41,5 +43,8 @@ enum PreProcessorType
     InitAdvectionDiffusionIncompressible,
     InitAdvectionDiffusionCompressible
 };
+
+}
+
 #endif
 //! \}

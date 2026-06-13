@@ -38,6 +38,8 @@
 
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 class OffsetWriter
 {
 public:
@@ -73,6 +75,8 @@ public:
         }
     }
 };
+
+}
 
 #endif
 

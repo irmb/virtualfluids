@@ -46,6 +46,8 @@
 //using namespace std;
 //////////////////////////////////////////////////////////////////////////
 
+namespace vf::gpu {
+
 ForceCalculations::ForceCalculations(Parameter* para)
 {
     Ta = 10.0;        // number of time steps between adjusting
@@ -157,6 +159,8 @@ void ForceCalculations::printForcing(Parameter* para)
     //close file
     ostr.close();
     //////////////////////////////////////////////////////////////////////////
+}
+
 }
 
 //! \}

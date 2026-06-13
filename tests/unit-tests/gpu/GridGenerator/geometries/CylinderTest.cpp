@@ -33,6 +33,7 @@
 #include <gmock/gmock.h>
 
 #include <gpu/GridGenerator/geometries/Cylinder/Cylinder.h>
+using namespace vf::gpu;
 
 void testChangeSizeByDelta(Cylinder &cylinder)
 {

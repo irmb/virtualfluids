@@ -44,6 +44,8 @@
 
 using namespace vf::basics::constant;
 
+namespace vf::gpu {
+
 template <bool hasTurbulentViscosity> __device__ void interpolate(
     vf::lbm::InterpolationCoefficients& coefficients,
     const unsigned int nodeIndex,
@@ -57,7 +59,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
     real* turbulentViscosityFine)
 {
     Distributions27 distFine;
-    vf::gpu::getPointersToDistributions(distFine, distributionsFine, numberOfLBnodesFine, true);
+    getPointersToDistributions(distFine, distributionsFine, numberOfLBnodesFine, true);
 
      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -79,7 +81,7 @@ template <bool hasTurbulentViscosity> __device__ void interpolate(
     unsigned int k_base_MMM = neighborZfine [k_base_MM0];
     //////////////////////////////////////////////////////////////////////////
     // Set neighbor indices
-    vf::gpu::ListIndices indices;
+    ListIndices indices;
     indices.k_000 = k_base_000;
     indices.k_M00 = k_base_M00;
     indices.k_0M0 = k_base_0M0;
@@ -338,9 +340,9 @@ template<bool hasTurbulentViscosity> __global__ void scaleCoarseToFineCompressib
     //       However, this leads to a very small deviation in the results (~10e-6).
     real omegaC  = omegaCoarse;
     Distributions27 distCoarse;
-    vf::gpu::getPointersToDistributions(distCoarse, distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
+    getPointersToDistributions(distCoarse, distributionsCoarse, numberOfLBnodesCoarse, isEvenTimestep);
 
-    vf::gpu::ListIndices indices;
+    ListIndices indices;
     ////////////////////////////////////////////////////////////////////////////////
     //! - Calculate moments for each source node 
     //!
@@ -531,4 +533,7 @@ template<bool hasTurbulentViscosity> __global__ void scaleCoarseToFineCompressib
 template __global__ void scaleCoarseToFineCompressible_Device<true>( real* distributionsCoarse, real* distributionsFine, unsigned int* neighborXcoarse, unsigned int* neighborYcoarse, unsigned int* neighborZcoarse, unsigned int* neighborXfine, unsigned int* neighborYfine, unsigned int* neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int* indicesCoarseMMM, unsigned int* indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, ICellNeigh offsetCF);
 
 template __global__ void scaleCoarseToFineCompressible_Device<false>( real* distributionsCoarse, real* distributionsFine, unsigned int* neighborXcoarse, unsigned int* neighborYcoarse, unsigned int* neighborZcoarse, unsigned int* neighborXfine, unsigned int* neighborYfine, unsigned int* neighborZfine, unsigned long long numberOfLBnodesCoarse, unsigned long long numberOfLBnodesFine, bool isEvenTimestep, unsigned int* indicesCoarseMMM, unsigned int* indicesFineMMM, unsigned int numberOfInterfaceNodes, real omegaCoarse, real omegaFine, real* turbulentViscosityCoarse, real* turbulentViscosityFine, ICellNeigh offsetCF);
+
+}
+
 //! \}

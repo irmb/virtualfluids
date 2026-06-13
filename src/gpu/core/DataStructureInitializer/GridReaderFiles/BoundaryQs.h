@@ -40,6 +40,8 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 class Parameter;
 
 class BoundaryQs
@@ -82,6 +84,8 @@ private:
     std::vector<unsigned int> levelSizes;
 
 };
+
+}
 
 #endif
 //! \}

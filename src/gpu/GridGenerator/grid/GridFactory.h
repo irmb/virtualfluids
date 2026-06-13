@@ -41,9 +41,14 @@
 
 #include "grid/GridImp.h"
 
+namespace vf::gpu {
+
 enum class TriangularMeshDiscretizationMethod
 {
     RAYCASTING, POINT_IN_OBJECT, POINT_UNDER_TRIANGLE
+#if defined(VF_HAS_FAST_WINDING)
+    , FAST_WINDING
+#endif
 };
 
 class GridFactory
@@ -60,7 +65,10 @@ public:
         
         grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, d3Qxx, level);
 
-        grid->setTriangularMeshDiscretizationStrategy(std::make_shared<PointInObjectDiscretizationStrategy>()); // Probably a bug, as this->triangularMeshDiscretizationStrategy is never used. Until ad5efd332a1d6808fccdf8e54fa547630eff401b this line was ``grid->setTriangularMeshDiscretizationStrategy(this->triangularMeshDiscretizationStrategy);``
+        if (triangularMeshDiscretizationStrategy)
+            grid->setTriangularMeshDiscretizationStrategy(triangularMeshDiscretizationStrategy);
+        else
+            grid->setTriangularMeshDiscretizationStrategy(std::make_shared<PointInObjectDiscretizationStrategy>());
 
         return grid;
     }
@@ -78,13 +86,25 @@ public:
         case TriangularMeshDiscretizationMethod::POINT_IN_OBJECT:
             triangularMeshDiscretizationStrategy = std::make_shared<PointInObjectDiscretizationStrategy>();
             break;
+#if defined(VF_HAS_FAST_WINDING)
+        case TriangularMeshDiscretizationMethod::FAST_WINDING:
+            triangularMeshDiscretizationStrategy = std::make_shared<FastWindingDiscretizationStrategy>();
+            break;
+#endif
         }
+    }
+
+    void setTriangularMeshDiscretizationStrategy(
+        SPtr<TriangularMeshDiscretizationStrategy> strategy)
+    {
+        triangularMeshDiscretizationStrategy = strategy;
     }
 
 private:
     SPtr<TriangularMeshDiscretizationStrategy> triangularMeshDiscretizationStrategy;
 };
 
+}
 
 #endif
 

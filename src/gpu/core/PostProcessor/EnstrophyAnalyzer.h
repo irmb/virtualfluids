@@ -41,6 +41,8 @@
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
 
+namespace vf::gpu {
+
 class Parameter;
 
 class EnstrophyAnalyzer
@@ -55,6 +57,8 @@ private:
     uint analyzeIter;
     std::vector<real> enstrophyTimeSeries;
 };
+
+}
 
 #endif
 

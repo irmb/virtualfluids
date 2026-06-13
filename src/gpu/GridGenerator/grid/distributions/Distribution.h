@@ -41,6 +41,7 @@
 
 #define DIR_END_MAX 27
 
+namespace vf::gpu {
 
 struct Direction
 {
@@ -107,6 +108,8 @@ public:
     static std::vector<std::vector<real> > getVectorWithoutRowsWithOnlyZeroValues(std::vector<std::vector<real> > qs);
     static void printQs(std::vector<std::vector<real> > qs, int decimalPlaces);
 };
+
+}
 
 #endif
 

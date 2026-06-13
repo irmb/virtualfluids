@@ -38,6 +38,8 @@
 
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 class PositionVectorIntegerWriter
 {
 public:
@@ -87,5 +89,8 @@ public:
         }
     }
 };
+
+}
+
 #endif
 //! \}

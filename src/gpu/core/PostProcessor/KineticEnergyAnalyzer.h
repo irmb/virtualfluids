@@ -41,6 +41,8 @@
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
 
+namespace vf::gpu {
+
 class Parameter;
 
 class KineticEnergyAnalyzer
@@ -56,6 +58,8 @@ private:
     uint analyzeIter;
     std::vector<real> kineticEnergyTimeSeries;
 };
+
+}
 
 #endif
 

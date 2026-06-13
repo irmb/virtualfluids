@@ -1,0 +1,25 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: VirtualFluids
+Upstream-Contact: VirtualFluids Project contributors
+Source: https://git.rz.tu-bs.de/irmb/VirtualFluids
+Files-Excluded:
+  3rdParty/fast-winding-number-soups/**
+
+# Additional fast-winding-number-soups files (non-header/code)
+Files: 3rdParty/fast-winding-number-soups/CMakeLists.txt
+       3rdParty/fast-winding-number-soups/README.md
+       3rdParty/fast-winding-number-soups/WindingNumber/README.md
+       3rdParty/fast-winding-number-soups/cmake/FindLIBIGL.cmake
+       THIRD_PARTY_NOTICES.md
+Copyright: Copyright (c) libigl contributors
+License: MPL-2.0
+
+# libigl subtree (fast-winding-number-soups)
+Files: 3rdParty/fast-winding-number-soups/libigl/**
+Copyright: Copyright (c) libigl contributors
+License: MPL-2.0
+
+# WindingNumber sources (fast-winding-number-soups)
+Files: 3rdParty/fast-winding-number-soups/WindingNumber/*
+Copyright: Copyright (c) libigl contributors
+License: MPL-2.0

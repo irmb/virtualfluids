@@ -34,6 +34,8 @@
 
 #include "Kernel/KernelImp.h"
 
+namespace vf::gpu {
+
 class B15IncompressibleNavierStokesBGKplus : public KernelImp
 {
 public:
@@ -45,5 +47,7 @@ private:
     B15IncompressibleNavierStokesBGKplus(std::shared_ptr< Parameter> para, int level);
 
 };
+
+}
 #endif 
 //! \}

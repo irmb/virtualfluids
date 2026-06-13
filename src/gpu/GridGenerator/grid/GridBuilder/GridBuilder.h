@@ -50,6 +50,8 @@
 
 #define QFILES 7
 
+namespace vf::gpu {
+
 struct Vertex;
 class GridWrapper;
 class Transformator;
@@ -150,6 +152,13 @@ public:
     virtual void getADNeumannValues(real* gradients, real* vx, real* vy, real* vz, int* indices, int level) const = 0;
     virtual void getADNeumannQs(real* qs[27], int level) const = 0;
 
+    virtual size_t getNumberOfADOutflowBoundaryConditions(uint level) const = 0;
+    virtual size_t getSizeOfADOutflowBoundaryCondition(uint level, uint indexInBoundaryConditionVector) const = 0;
+    virtual void getADOutflowValues(int* indices, int* neighborIndices, uint level,
+                                    uint indexInBoundaryConditionVector) const = 0;
+    virtual void getADOutflowQs(real* qs[27], uint level, uint indexInBoundaryConditionVector) const = 0;
+    virtual size_t getADOutflowBoundaryConditionDirection(uint level, uint indexInBoundaryConditionVector) const = 0;
+
     virtual uint getGeometrySize(int level) const                                 = 0;
     virtual void getGeometryIndices(int *indices, int level) const                = 0;
     virtual void getGeometryQs(real *qs[27], int level) const                     = 0;
@@ -190,6 +199,8 @@ public:
 
 
 };
+
+}
 
 #endif
 

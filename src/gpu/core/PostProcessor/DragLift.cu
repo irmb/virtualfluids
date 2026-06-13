@@ -47,6 +47,8 @@
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
 
+namespace vf::gpu {
+
 __global__ void DragLiftPost27(  real* DD, 
                                             int* k_Q, 
                                             real* QQ,
@@ -575,6 +577,8 @@ void DragLiftPreD27(real* DD, int* k_Q, real* QQ, int numberOfBCnodes, double* D
     DragLiftPre27<<<grid.grid, grid.threads>>>(DD, k_Q, QQ, numberOfBCnodes, DragX, DragY, DragZ, neighborX, neighborY,
                                                neighborZ, numberOfLBnodes, isEvenTimestep);
     getLastCudaError("DragLiftPre27 execution failed");
+}
+
 }
 
 //! \}

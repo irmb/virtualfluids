@@ -38,6 +38,8 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 class Parameter;
 struct LBMSimulationParameter;
 
@@ -68,6 +70,8 @@ public:
     //! \brief create the ending of the file name for a file part
     static std::string makePartFileNameEnding(uint level, int processID, int part, int timestep);
 };
+
+}
 
 #endif
 

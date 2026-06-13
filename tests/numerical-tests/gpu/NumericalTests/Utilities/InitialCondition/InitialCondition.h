@@ -38,13 +38,15 @@
 #include <vector>
 #include <memory>
 
+namespace vf::gpu{    
 class Parameter;
+}
 
 class InitialCondition
 {
 public:
     virtual ~InitialCondition() = default;
-    virtual void setParameter(std::shared_ptr<Parameter> para) = 0;
+    virtual void setParameter(std::shared_ptr<vf::gpu::Parameter> para) = 0;
     virtual void init(const int level) = 0;
     virtual real getInitVX(int i, int level) = 0;
     virtual real getInitVY(int i, int level) = 0;

@@ -41,6 +41,8 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 class Parameter;
 class BoundaryValues;
 class BoundaryQs;
@@ -122,6 +124,8 @@ private:
 public:
     void initalGridInformations() override;
 };
+
+}
 
 #endif
 

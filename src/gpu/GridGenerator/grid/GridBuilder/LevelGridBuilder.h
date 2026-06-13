@@ -41,6 +41,7 @@
 
 #include <basics/constants/NumericConstants.h>
 
+#include <basics/geometry3d/GbSpatialData3D.h>
 #include "gpu/GridGenerator/global.h"
 
 #include "gpu/GridGenerator/grid/GridBuilder/GridBuilder.h"
@@ -48,6 +49,8 @@
 #include "gpu/GridGenerator/grid/GridInterface.h"
 #include "gpu/GridGenerator/grid/NodeValues.h"
 #include "grid/BoundaryConditions/BoundaryCondition.h"
+
+namespace vf::gpu {
 
 struct Vertex;
 class Grid;
@@ -67,6 +70,7 @@ class ADNoFluxBoundaryCondition;
 class ADFluxBoundaryCondition;
 class ADDirichletBoundaryCondition;
 class ADNeumannBoundaryCondition;
+class ADOutflowBoundaryCondition;
 class SurfaceLayerBoundaryCondition;
 enum class SideType;
 
@@ -87,10 +91,10 @@ public:
 
     virtual void setSlipBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ);
     virtual void setStressBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset,
-                                            real vonKarmanConstant, real roughnessLength, real deltaX);
+                                            real vonKarmanConstant, real roughnessLength, real deltaX, std::shared_ptr<GbSpatialData3D<real>> roughnessMap=nullptr);
     void setSurfaceLayerBoundaryCondition(SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant,
                                           real roughnessLength, real roughnessLengthTemperature, real surfaceHeatFlux, real surfaceTemperature, real heatingRate,
-                                          real deltaX, real deltaT);
+                                          real deltaX, real deltaT, std::shared_ptr<GbSpatialData3D<real>> roughnessMap=nullptr);
     virtual void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
     virtual void setPressureBoundaryCondition(SideType sideType, real rho);
     virtual void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
@@ -109,6 +113,7 @@ public:
     void setADFluxBoundaryCondition(SideType sideType,real normalX, real normalY, real normalZ, real gradient, real deltaX);
     void setADDirichletBoundaryCondition(SideType sideType, real value, real vx, real vy, real vz);
     void setADNeumannBoundaryCondition(SideType sideType, real gradient, real vx, real vy, real vz, real dx);
+    void setADOutflowBoundaryCondition(SideType sideType);
                                                                     
     void setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall);
 
@@ -185,6 +190,13 @@ public:
     void getADNeumannValues(real* gradients, real* vx, real* vy, real* vz, int* indices, int level) const override;
     void getADNeumannQs(real* qs[27], int level) const override;
 
+    size_t getNumberOfADOutflowBoundaryConditions(uint level) const override;
+    size_t getSizeOfADOutflowBoundaryCondition(uint level, uint indexInBoundaryConditionVector) const override;
+    void getADOutflowValues(int* indices, int* neighborIndices, uint level,
+                            uint indexInBoundaryConditionVector) const override;
+    void getADOutflowQs(real* qs[27], uint level, uint indexInBoundaryConditionVector) const override;
+    size_t getADOutflowBoundaryConditionDirection(uint level, uint indexInBoundaryConditionVector) const override;
+
     void getGeometryQs(real *qs[27], int level) const override;
     uint getGeometrySize(int level) const override;
     void getGeometryIndices(int *indices, int level) const override;
@@ -221,6 +233,7 @@ protected:
         std::vector<SPtr<ADFluxBoundaryCondition>> adFluxBoundaryConditions;
         std::vector<SPtr<ADDirichletBoundaryCondition>> adDirichletBoundaryConditions;
         std::vector<SPtr<ADNeumannBoundaryCondition>> adNeumannBoundaryConditions;
+        std::vector<SPtr<ADOutflowBoundaryCondition>> adOutflowBoundaryConditions;
 
         SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
     };
@@ -284,6 +297,8 @@ public:
     uint getNumberOfFluidNodesAllFeatures(unsigned int level) const override;
     void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures, const int level) const override;
 };
+
+}
 
 #endif
 

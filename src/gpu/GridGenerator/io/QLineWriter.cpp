@@ -36,8 +36,11 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <cmath>
+#include <algorithm>
 
 #include "basics/utilities/UbTuple.h"
+#include "basics/writer/WbWriterVtkXmlBinary.h"
 
 #include "geometries/Vertex/Vertex.h"
 
@@ -45,6 +48,9 @@
 #include "grid/Grid.h"
 
 using namespace std;
+
+namespace vf::gpu {
+
 void writeLines(std::string filename, std::vector<UbTupleFloat3> nodes, std::vector<UbTupleInt2> lines);
 
 void QLineWriter::writeArrows(std::string fileName, SPtr<GeometryBoundaryCondition> geometryBoundaryCondition, SPtr<Grid> grid)
@@ -56,6 +62,9 @@ void QLineWriter::writeArrows(std::string fileName, SPtr<GeometryBoundaryConditi
     }
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleInt2> cells;
+    std::vector<UbTupleFloat3> degeneratePoints;
+    std::vector<double> degenerateQ;
+    std::vector<double> degenerateKind; // 0 -> q≈0, 1 -> q≈1
 
     int actualNodeNumber = 0;
     for (std::size_t index = 0; index < geometryBoundaryCondition->indices.size(); index++)
@@ -63,21 +72,51 @@ void QLineWriter::writeArrows(std::string fileName, SPtr<GeometryBoundaryConditi
         Vertex startNode = getVertex(geometryBoundaryCondition->indices[index], grid);
         for (int qi = 0; qi <= 26; qi++)
         {
-            real qval = geometryBoundaryCondition->qs[index][qi];
-            if (qval > 0.0f)
-            {
-                Vertex dir((real)grid->getDirection()[qi * DIMENSION + 0], (real)grid->getDirection()[qi * DIMENSION + 1], (real)grid->getDirection()[qi * DIMENSION + 2]);
-                Vertex nodeOnGeometry(startNode + (dir * qval)*grid->getDelta());
+            real rawQ = geometryBoundaryCondition->qs[index][qi];
 
-                nodes.push_back(makeUbTuple(float(startNode.x), float(startNode.y), float(startNode.z)));
-                nodes.push_back(makeUbTuple(float(nodeOnGeometry.x), float(nodeOnGeometry.y), float(nodeOnGeometry.z)));
-                actualNodeNumber += 2;
-                cells.push_back(makeUbTuple(actualNodeNumber - 2, actualNodeNumber - 1));
+            constexpr real lowerClampTol = static_cast<real>(1.0e-3);
+            constexpr real upperClampTol = static_cast<real>(1.0 + 1.0e-3);
+            if (rawQ < -lowerClampTol || rawQ > upperClampTol)
+                continue;
+
+            real qval = rawQ;
+            if (rawQ <= lowerClampTol)
+                qval = real(0.0);
+            else if (rawQ >= real(1.0) - lowerClampTol)
+                qval = real(1.0);
+            else
+                qval = std::clamp(rawQ, real(0.0), real(1.0));
+
+            Vertex dir((real)grid->getDirection()[qi * DIMENSION + 0], (real)grid->getDirection()[qi * DIMENSION + 1], (real)grid->getDirection()[qi * DIMENSION + 2]);
+            Vertex nodeOnGeometry(startNode + (dir * qval)*grid->getDelta());
+
+            nodes.push_back(makeUbTuple(float(startNode.x), float(startNode.y), float(startNode.z)));
+            nodes.push_back(makeUbTuple(float(nodeOnGeometry.x), float(nodeOnGeometry.y), float(nodeOnGeometry.z)));
+            actualNodeNumber += 2;
+            cells.push_back(makeUbTuple(actualNodeNumber - 2, actualNodeNumber - 1));
+
+            const bool isZero = rawQ <= lowerClampTol;
+            const bool isUnity = rawQ >= real(1.0) - lowerClampTol;
+            if (isZero || isUnity) {
+                degeneratePoints.push_back(makeUbTuple(float(nodeOnGeometry.x), float(nodeOnGeometry.y), float(nodeOnGeometry.z)));
+                degenerateQ.push_back(static_cast<double>(qval));
+                degenerateKind.push_back(isZero ? 0.0 : 1.0);
             }
         }
     }
 
     writeLines(fileName, nodes, cells);
+
+    if (!degeneratePoints.empty()) {
+        std::vector<std::vector<double>> data(2);
+        data[0] = degenerateQ;
+        data[1] = degenerateKind;
+        std::vector<std::string> dataNames{ "q", "degenerate_kind" };
+        WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(
+            fileName + "_degenerate_points", degeneratePoints, dataNames, data);
+        VF_LOG_INFO("QLineWriter: wrote {} degenerate boundary points to {}",
+                    degeneratePoints.size(), fileName + "_degenerate_points");
+    }
 }
 
 Vertex QLineWriter::getVertex(int matrixIndex, SPtr<Grid> grid)
@@ -172,6 +211,8 @@ void writeLines(std::string filename, std::vector<UbTupleFloat3> nodes, std::vec
     out << "</VTKFile>";
     out << endl;
     out.close();
+}
+
 }
 
 //! \}

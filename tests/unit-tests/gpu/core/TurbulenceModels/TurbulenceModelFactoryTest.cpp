@@ -49,6 +49,7 @@
 #include "lbm/collision/TurbulentViscosity.h"
 
 using namespace vf::basics::constant;
+using namespace vf::gpu;
 
 class TurbulenceModelFactoryTest_Initialization : public testing::Test
 {

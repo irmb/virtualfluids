@@ -35,11 +35,12 @@
 #include "gpu/core/Output/FileWriter.h"
 #include "gpu/core/Parameter/Parameter.h"
 #include "gpu/core/Cuda/CudaMemoryManager.h"
-#include "gpu/core/Output/FileWriter.h"
 
 #include "Utilities/Structs/VectorWriterInformationStruct.h"
 
 #include "Cuda/CudaMemoryManager.h"
+
+using namespace vf::gpu;
 
 ToVectorWriter::ToVectorWriter(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength)
 {

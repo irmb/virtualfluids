@@ -34,6 +34,8 @@
 
 #include "KernelFactory.h"
 
+namespace vf::gpu {
+
 class PorousMedia;
 
 class KernelFactoryImp : public KernelFactory
@@ -50,5 +52,8 @@ public:
 
     std::vector<std::shared_ptr<PorousMedia>> pm;
 };
+
+}
+
 #endif
 //! \}

@@ -41,6 +41,8 @@
 #include <basics/DataTypes.h>
 #include <basics/PointerDefinitions.h>
 
+namespace vf::gpu {
+
 class GridProvider;
 
 inline std::string fixOutputPath(const std::string path)
@@ -70,6 +72,8 @@ protected:
     std::string outputPath;
     std::string probeName;
 };
+
+}
 
 #endif
 

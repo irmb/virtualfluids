@@ -37,7 +37,7 @@
 #include <string>
 #include <vector>
 
-
+namespace vf::gpu {
 
 class Kernel;
 class AdvectionDiffusionKernel;
@@ -53,5 +53,8 @@ public:
     
     virtual void setPorousMedia(std::vector<std::shared_ptr<PorousMedia>> pm) = 0;
 };
+
+}
+
 #endif
 //! \}

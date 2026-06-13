@@ -40,7 +40,8 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 template <typename MacroscopicQuantityFunctor>
 __global__ void PressureNonEquilibrium_Device(
@@ -74,12 +75,12 @@ __global__ void PressureNonEquilibrium_Device(
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing) for current node
       //!
-      vf::gpu::ListIndices neighborIndices(bcNodeIndices[nodeIndex], neighborX, neighborY, neighborZ);
+      ListIndices neighborIndices(bcNodeIndices[nodeIndex], neighborX, neighborY, neighborZ);
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Set neighbor indices (necessary for indirect addressing) for neighboring node
       //!
-      vf::gpu::ListIndices neighborIndicesOfNeighbor(bcNeighborIndices[nodeIndex], neighborX, neighborY, neighborZ);
+      ListIndices neighborIndicesOfNeighbor(bcNeighborIndices[nodeIndex], neighborX, neighborY, neighborZ);
 
       //////////////////////////////////////////////////////////////////////////
       //! - Read distributions: style of reading and writing the distributions from/to stored arrays dependent on timestep is based on the esoteric twist algorithm \ref
@@ -92,7 +93,7 @@ __global__ void PressureNonEquilibrium_Device(
       //! - Set local distributions for neighboring node
       //!
       real f_Neighbor[27];
-      vf::gpu::getPreCollisionDistribution(f_Neighbor, dist, neighborIndicesOfNeighbor);
+      getPreCollisionDistribution(f_Neighbor, dist, neighborIndicesOfNeighbor);
 
       ////////////////////////////////////////////////////////////////////////////////
       //! - Calculate macroscopic quantities (for neighboring node)
@@ -312,5 +313,6 @@ __global__ void PressureNonEquilibrium_Device(
    }
 }
 
+}
 
 //! \}

@@ -40,6 +40,8 @@
 #include "basics/utilities/UbMath.h"
 #include "logger/Logger.h"
 
+namespace vf::gpu {
+
 void RestartObject::deserialize(const std::string &filename, std::shared_ptr<Parameter>& para)
 {
     deserialize_internal(filename);
@@ -205,6 +207,8 @@ void BinaryRestartObject::deserialize_internal(const std::string &filename)
     }
 
     stream.close();
+}
+
 }
 
 //! \}

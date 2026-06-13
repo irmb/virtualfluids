@@ -36,6 +36,8 @@
 
 #include <functional>
 
+namespace vf::gpu {
+
 class UpdateGrid27;
 class Parameter;
 
@@ -88,6 +90,8 @@ class NoRefinement
 public:
     void operator()(UpdateGrid27 *updateGrid, Parameter *para, int level);
 };
+
+}
 
 #endif
 

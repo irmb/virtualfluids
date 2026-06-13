@@ -53,6 +53,8 @@
 
 using namespace vf::basics::constant;
 
+namespace vf::gpu {
+
 constexpr uint getPlaneIndex(uint nodeIndex, const uint* referenceIndices)
 {
     const uint index = nodeIndex + 1;
@@ -217,7 +219,7 @@ void BuoyancyProviderPlanarAverage::interact(int level, uint /**/)
     vf::cuda::CudaGrid grid(parD.numberofthreads, uint(parD.numberOfNodes));
     computeBuoyancyPlanarAverage<<<grid.grid, grid.threads, 0, stream>>>(
         profileParameters[level], parD.concentration, parD.localReferenceTemperature,
-        reductionParams.numberOfNodesPerPlaneDevice, para->getBuoyancyFactor(), parD.forceZ_SP, parD.numberOfNodes);
+        reductionParams.numberOfNodesPerPlaneDevice, para->getScaledBuoyancyFactor(level), parD.forceZ_SP, parD.numberOfNodes);
     cudaStreamSynchronize(stream);
     getLastCudaError("computeBuoyancyPlanarAverage kernel failed");
 }
@@ -228,4 +230,6 @@ BuoyancyProviderPlanarAverage::~BuoyancyProviderPlanarAverage()
         cudaMemoryManager->cudaFreeBuoyancyProviderProfileParameters(this, level);
         cudaMemoryManager->cudaFreeBuoyancyProviderReductionParameters(this, level);
     }
+}
+
 }

@@ -39,6 +39,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+using namespace vf::gpu;
 
 std::shared_ptr<NumericalTestGridReader> NumericalTestGridReader::getNewInstance(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<CudaMemoryManager> cudaManager)
 {

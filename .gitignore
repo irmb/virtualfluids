@@ -57,3 +57,12 @@ CMakeUserPresets.json
 
 # Linux nohup output
 nohup.out
+
+# vawt postprocess
+/Python/actuator_line_vawt/data/post
+/Python/actuator_line_vawt/data/raw
+/Python/actuator_line_disk/data/post
+/Python/actuator_line_disk/data/raw
+
+# temporary: ignore virtualfluidspostprocessing. 
+/virtualfluidspostprocessing

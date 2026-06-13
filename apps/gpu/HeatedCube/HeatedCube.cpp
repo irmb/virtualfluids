@@ -69,6 +69,8 @@ const std::string simulationName("HeatedCube");
 const std::string defaultConfigFile("heated_cube.cfg");
 
 using namespace vf::basics::constant;
+using namespace vf::gpu;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void run(const vf::basics::ConfigurationFile& config)

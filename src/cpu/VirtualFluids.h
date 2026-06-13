@@ -148,6 +148,7 @@
 #include <cpu/core/Simulation/Simulation.h>
 
 #include <cpu/core/Interactors/D3Q27Interactor.h>
+#include <cpu/core/Interactors/D3Q27GridWindingInteractor.h>
 #include <cpu/core/Interactors/D3Q27TriFaceMeshInteractor.h>
 #include <cpu/core/Interactors/Interactor3D.h>
 #include <cpu/core/Interactors/InteractorsHelper.h>
@@ -157,6 +158,7 @@
 #include <cpu/core/SimulationObservers/CalculateForcesSimulationObserver.h>
 #include <cpu/core/SimulationObservers/DecreaseViscositySimulationObserver.h>
 #include <cpu/core/SimulationObservers/EmergencyExitSimulationObserver.h>
+#include <cpu/core/SimulationObservers/GridWindingDiagnosticsSimulationObserver.h>
 #include <cpu/core/SimulationObservers/InSituCatalystSimulationObserver.h>
 #include <cpu/core/SimulationObservers/InSituVTKSimulationObserver.h>
 #include <cpu/core/SimulationObservers/IntegrateValuesHelper.h>
@@ -196,6 +198,7 @@
 #include <geometry3d/CoordinateTransformation3D.h>
 #include <geometry3d/GbCuboid3D.h>
 #include <geometry3d/GbCylinder3D.h>
+#include <geometry3d/GbCylinderImplicit.h>
 #include <geometry3d/GbHalfSpace3D.h>
 #include <geometry3d/GbHalfSpaceKrischan3D.h>
 #include <geometry3d/GbGyroidThirdOrder.h>

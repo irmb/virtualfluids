@@ -41,6 +41,8 @@
 #include "BoundaryConditions/Precursor/Precursor_Device.cuh"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 void PrecursorNonReflectiveCompressible(
     LBMSimulationParameter* parameterDevice,
     QforPrecursorBoundaryConditions* boundaryCondition,
@@ -113,5 +115,38 @@ void PrecursorDistributions(
 
 }
 
+void PrecursorTemperatureDistributions(
+    LBMSimulationParameter* parameterDevice,
+    QforPrecursorBoundaryConditions* boundaryCondition,
+    real timeRatio,
+    real velocityRatio)
+{
+    vf::cuda::CudaGrid grid = vf::cuda::CudaGrid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+    PrecursorTemperatureDistributions_Device<<< grid.grid, grid.threads >>>(
+        boundaryCondition->k,
+        boundaryCondition->numberOfBCnodes,
+        boundaryCondition->numberOfPrecursorNodes,
+        parameterDevice->distributions.f[0],
+        parameterDevice->distributionsAD.f[0],
+        parameterDevice->neighborX,
+        parameterDevice->neighborY,
+        parameterDevice->neighborZ,
+        boundaryCondition->planeNeighbor0PP,
+        boundaryCondition->planeNeighbor0PM,
+        boundaryCondition->planeNeighbor0MP,
+        boundaryCondition->planeNeighbor0MM,
+        boundaryCondition->weights0PP,
+        boundaryCondition->weights0PM,
+        boundaryCondition->weights0MP,
+        boundaryCondition->weights0MM,
+        boundaryCondition->last,
+        boundaryCondition->current,
+        timeRatio,
+        parameterDevice->numberOfNodes,
+        parameterDevice->isEvenTimestep);
+    getLastCudaError("PrecursorDistributions_Device execution failed");
+}
+
+}
 
 //! \}

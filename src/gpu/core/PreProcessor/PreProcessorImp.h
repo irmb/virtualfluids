@@ -39,6 +39,8 @@
 #include <memory>
 #include <vector>
 
+namespace vf::gpu {
+
 class PreProcessorStrategy;
 
 class PreProcessorImp : public PreProcessor
@@ -56,5 +58,8 @@ private:
     std::vector< std::shared_ptr<PreProcessorStrategy>> strategies;
     
 };
+
+}
+
 #endif
 //! \}

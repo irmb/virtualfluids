@@ -39,6 +39,8 @@
 
 #include <parallel/Communicator.h>
 
+namespace vf::gpu {
+
 class Parameter;
 
 class PerformanceMeasurement
@@ -59,6 +61,8 @@ private:
     double nups { 0. };
     bool firstOutput { true };
 };
+
+}
 
 #endif
 

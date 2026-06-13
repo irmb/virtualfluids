@@ -38,6 +38,8 @@
 #include "Cuda/CudaMemoryManager.h"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 void calcCp(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
 void printCpTopIntermediateStep(Parameter* para, unsigned int t, int lev);
 void printCpTop(Parameter* para, CudaMemoryManager* cudaMemoryManager, int lev);
@@ -56,6 +58,8 @@ void printScalars(Parameter* para, bool fileFormat);
 void writeIntToFile(const int &i, std::ofstream &ofile);
 void writeFloatToFile(const float &f, std::ofstream &ofile);
 void writeStringToFile(const std::string &s, std::ofstream &ofile);
+
+}
 
 #endif
 

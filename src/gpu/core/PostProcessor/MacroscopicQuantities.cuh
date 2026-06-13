@@ -37,13 +37,24 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 void calculateMacroscopicQuantities(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                  unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
                  unsigned int numberOfThreads, real* DD, bool isEvenTimestep);
 
-void calculateMacroscopicQuantitiesCompressible(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
-                     unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
-                     unsigned int numberOfThreads, real* DD, bool isEvenTimestep);
+void calculateMacroscopicQuantitiesCompressible(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, const uint* geoD, const uint* neighborX,
+                     const uint* neighborY, const uint* neighborZ, unsigned long long numberOfLBnodes,
+                     uint numberOfThreads, real* DD, bool isEvenTimestep);
+
+void calculateSubGridScaleFluxesCompressible(const uint* indices, uint numberOfIndices, real* vxvx, real* vxvy, real* vxvz, real* vyvy, real* vyvz, real* vzvz,
+                                             real* phix, real* phiy, real* phiz, const uint* geoD, const real* vx,
+                                             const real* vy, const real* vz, const real* scalars,
+                                             const real* turbulenceViscosities, const real* turbulenceDiffusivities,
+                                             const uint* neighborX, const uint* neighborY, const uint* neighborZ,
+                                             unsigned long long numberOfLBnodes, real* distributions,
+                                             real* distributionsScalar, real omega, real omegaDiffusive, uint numberOfThreads,
+                                             bool isEvenTimestep, bool computeSubgridScaleFluxesScalar);
 
 void calculateMean(real* vxD, real* vyD, real* vzD, real* rhoD, real* pressD, unsigned int* geoD, unsigned int* neighborX,
                  unsigned int* neighborY, unsigned int* neighborZ, unsigned long long numberOfLBnodes,
@@ -72,6 +83,8 @@ void calculateMeasurePoints(real* vxMP, real* vyMP, real* vzMP, real* rhoMP, uns
                            unsigned int numberOfPointskMP, unsigned int MPClockCycle, unsigned int t, unsigned int* geoD,
                            unsigned int* neighborX, unsigned int* neighborY, unsigned int* neighborZ,
                            unsigned long long numberOfLBnodes, real* DD, unsigned int numberOfThreads, bool isEvenTimestep);
+
+}
 
 #endif
 

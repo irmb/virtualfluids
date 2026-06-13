@@ -56,8 +56,11 @@ void Logger::initializeLogger()
     spdlog::flush_on(spdlog::level::info);
 }
 
-void Logger::changeLogPath(const std::string& path)
+void Logger::changeLogPath(std::string path)
 {
+    if(path.back() != '/')
+        path.append("/");
+
     logPath = path;
 
     updateDefaultLogger();

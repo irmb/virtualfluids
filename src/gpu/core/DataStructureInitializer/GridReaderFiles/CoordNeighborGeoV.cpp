@@ -37,6 +37,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+namespace vf::gpu {
+
 CoordNeighborGeoV::CoordNeighborGeoV()
 {
 
@@ -192,6 +194,8 @@ void CoordNeighborGeoV::skipSpace()
 {
     char c;
     file.get(c);
+}
+
 }
 
 //! \}

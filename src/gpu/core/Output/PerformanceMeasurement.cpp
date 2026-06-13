@@ -37,6 +37,8 @@
 
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 PerformanceMeasurement::PerformanceMeasurement(const Parameter& para) : timestepStart(para.getTimestepStart())
 {
     for (int level = para.getCoarse(); level <= para.getFine(); level++) {
@@ -80,6 +82,8 @@ void PerformanceMeasurement::log(vf::basics::Timer& timer, uint timestep, vf::pa
         if (communicator.isRoot())
             VF_LOG_INFO("Sum of all {} processes: Nups in Mio: {:.1f}", communicator.getNumberOfProcesses(), nupsSum*1e-6);
     }
+}
+
 }
 
 //! \}

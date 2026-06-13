@@ -41,6 +41,8 @@
 #include <string>
 #include <vector>
 
+namespace vf::gpu {
+
 template <typename T>
 inline std::string nameComponent(const std::string& name, T value)
 {
@@ -64,9 +66,9 @@ inline std::string makeTimeseriesFileName(const std::string& probeName, int leve
 }
 
 template <typename T>
-constexpr inline T computeNewTimeAverage(T oldAverage, T newValue, real inverseNumberOfTimesteps)
+constexpr inline T computeNewTimeAverage(T oldAverage, T newValue, uint numberOfTimesteps)
 {
-    return oldAverage + (newValue - oldAverage) * inverseNumberOfTimesteps;
+    return oldAverage + (newValue - oldAverage) / numberOfTimesteps;
 }
 
 inline void writeTimeseriesFileHeader(const std::string& fileName, int numberOfPoints,
@@ -110,6 +112,8 @@ inline void appendDataToTimeseriesFile(const std::string& fileName, std::vector<
         out.write((char*)timestepData.data(), sizeof(real) * timestepData.size());
     }
     out.close();
+}
+
 }
 
 #endif

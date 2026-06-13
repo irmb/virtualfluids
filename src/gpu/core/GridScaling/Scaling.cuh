@@ -39,6 +39,8 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 struct LBMSimulationParameter;
 
 template <bool hasTurbulentViscosity>
@@ -57,6 +59,25 @@ void scaleFineToCoarseCompressible(
     ICellNeigh& neighborFineToCoarse,
     CUstream_st* stream);
 
+///////////////////////////////////////////////////////
+// Advection Diffusion
+template <bool hasTurbulentDiffusivity>
+void scaleCoarseToFineAdvectionDiffusionCompressible(
+    LBMSimulationParameter* parameterDeviceC,
+    LBMSimulationParameter* parameterDeviceF,
+    ICells* interpolationCellsCoarseToFine,
+    ICellNeigh& neighborCoarseToFine,
+    CUstream_st* stream);
+
+template <bool hasTurbulentDiffusivity>
+void scaleFineToCoarseAdvectionDiffusionCompressible(
+    LBMSimulationParameter* parameterDeviceC,
+    LBMSimulationParameter* parameterDeviceF,
+    ICells* icellFC,
+    ICellNeigh& neighborFineToCoarse,
+    CUstream_st* stream);
+
+}
 #endif
 
 //! \}

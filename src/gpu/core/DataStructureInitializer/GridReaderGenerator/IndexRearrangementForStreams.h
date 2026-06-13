@@ -41,12 +41,16 @@
 
 #include <basics/DataTypes.h>
 
-class Parameter;
-class GridBuilder;
 namespace vf::parallel
 {
 class Communicator;
 }
+
+namespace vf::gpu {
+
+class Parameter;
+class GridBuilder;
+
 
 //! \brief class that is used to rearrange the arrays of node indices for communication between gpus. The rearrangement is
 //! needed for communication hiding with cuda streams
@@ -123,6 +127,8 @@ private:
     friend class IndexRearrangementForStreamsTest_reorderRecvIndices;
     friend class IndexRearrangementForStreamsTest_exchangeIndicesForCommAfterFtoC;
 };
+
+}
 
 #endif
 

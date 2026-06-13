@@ -40,6 +40,8 @@
 
 #include "gpu/GridGenerator/grid/Cell.h"
 
+namespace vf::gpu {
+
 class TriangularMesh;
 struct Vertex;
 struct Triangle;
@@ -128,7 +130,13 @@ public:
     virtual void closeNeedleCells()         = 0;
     virtual void closeNeedleCellsThinWall() = 0;
 
+    virtual void beginQComputation() = 0;
     virtual void findQs(Object *object) = 0;
+    //! Finish the Q-computation phase after all solid objects were processed.
+    //! Deferred strategies (for example fast-winding) may do the actual Q pass here.
+    //! Strategies with immediate Q computation may already finish inside `findQs(...)`
+    //! and treat this as a no-op.
+    virtual void finalizeQComputation() = 0;
 
     virtual void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) = 0;
     virtual void setPeriodicityX(bool periodicity) = 0;
@@ -211,6 +219,8 @@ public:
     virtual void getFluidNodeIndicesApplyBodyForce(uint *fluidNodeIndicesApplyBodyForce) const = 0;
     virtual void getFluidNodeIndicesAllFeatures(uint *fluidNodeIndicesAllFeatures) const = 0;
 };
+
+}
 
 #endif
 

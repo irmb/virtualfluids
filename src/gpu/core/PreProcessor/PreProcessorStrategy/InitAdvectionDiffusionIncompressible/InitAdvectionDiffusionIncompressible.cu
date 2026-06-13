@@ -37,6 +37,8 @@
 #include "Parameter/Parameter.h"
 #include <cuda_helper/CudaGrid.h>
 
+namespace vf::gpu {
+
 std::shared_ptr<PreProcessorStrategy> InitAdvectionDiffusionIncompressible::getNewInstance(std::shared_ptr<Parameter> para)
 {
     return std::shared_ptr<PreProcessorStrategy>(new InitAdvectionDiffusionIncompressible(para));
@@ -73,6 +75,8 @@ InitAdvectionDiffusionIncompressible::InitAdvectionDiffusionIncompressible(std::
 
 InitAdvectionDiffusionIncompressible::InitAdvectionDiffusionIncompressible()
 {
+}
+
 }
 
 //! \}

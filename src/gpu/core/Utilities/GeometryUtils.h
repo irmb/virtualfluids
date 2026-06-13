@@ -35,12 +35,15 @@
 #ifndef _GEOMETRYUTILS_H
 #define _GEOMETRYUTILS_H
 
+#include "UbMath.h"
 #include <algorithm>
 
 #include <cuda_runtime.h>
 
 #include <basics/DataTypes.h>
 #include <basics/constants/NumericConstants.h>
+
+namespace vf::gpu {
 
 constexpr void getNeighborIndicesOfBSW(uint k_MMM, uint& k_PMM, uint& k_MPM, uint& k_MMP, uint& k_PPM, uint& k_PMP,
                                        uint& k_MPP, uint& k_PPP, const uint* neighborX, const uint* neighborY,
@@ -82,12 +85,7 @@ constexpr uint findNearestCellBSW(const uint index, const real* coordsX, const r
 constexpr real trilinearInterpolation(real dXM, real dYM, real dZM, uint kMMM, uint kPMM, uint kMPM, uint kMMP, uint kPPM,
                                       uint kPMP, uint kMPP, uint kPPP, const real* quantity)
 {
-    const real dXP = vf::basics::constant::c1o1 - dXM;
-    const real dYP = vf::basics::constant::c1o1 - dYM;
-    const real dZP = vf::basics::constant::c1o1 - dZM;
-    return (dXP * dYP * dZP * quantity[kMMM] + dXM * dYP * dZP * quantity[kPMM] + dXP * dYM * dZP * quantity[kMPM] +
-            dXM * dYM * dZP * quantity[kPPM] + dXP * dYP * dZM * quantity[kMMP] + dXM * dYP * dZM * quantity[kPMP] +
-            dXP * dYM * dZM * quantity[kMPP] + dXM * dYM * dZM * quantity[kPPP]);
+    return ub_math::lerp3(quantity[kMMM], quantity[kPMM], quantity[kMPM], quantity[kPPM], quantity[kMMP], quantity[kPMP], quantity[kMPP], quantity[kPPP], dXM, dYM, dZM);
 }
 
 constexpr void translate2D(real posX, real posY, real& newPosX, real& newPosY, real translationX, real translationY)
@@ -241,6 +239,8 @@ __inline__ __host__ __device__ void invRotateAboutZ3D(real angle, real posX, rea
     invTranslate3D(posX, posY, posZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
     invRotateAboutZ3D(angle, newPosX, newPosY, newPosZ, tmpX, tmpY, tmpZ);
     translate3D(tmpX, tmpY, tmpZ, newPosX, newPosY, newPosZ, originX, originY, originZ);
+}
+
 }
 
 #endif

@@ -37,6 +37,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <cstdio>
 #include <sstream>
 #include <string>
 
@@ -219,7 +220,7 @@ inline std::string UbLogger<OutputPolicy>::logTimeString()
 
     char result[100]   = { 0 };
     static DWORD first = (DWORD)GetTickCount64();
-    std::sprintf(result, "%s.%03ld", buffer, (long)(GetTickCount64() - first) % 1000);
+    std::snprintf(result, sizeof(result), "%s.%03ld", buffer, (long)(GetTickCount64() - first) % 1000);
     return result;
 }
 #else
@@ -234,7 +235,7 @@ inline std::string UbLogger<OutputPolicy>::logTimeString()
     struct timeval tv;
     gettimeofday(&tv, 0);
     char result[100] = { 0 };
-    std::sprintf(result, "%s.%03ld", buffer, (long)tv.tv_usec / 1000);
+    std::snprintf(result, sizeof(result), "%s.%03ld", buffer, (long)tv.tv_usec / 1000);
     return result;
 }
 #endif

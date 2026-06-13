@@ -37,6 +37,8 @@
 #include <GridGenerator/grid/Grid.h>
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 
+namespace vf::gpu {
+
 InterpolationCellGrouper::InterpolationCellGrouper(const LBMSimulationParameters &parHs,
                                                    const LBMSimulationParameters &parDs, SPtr<GridBuilder> builder)
     : parHs(parHs), parDs(parDs), builder(builder)
@@ -212,6 +214,8 @@ void InterpolationCellGrouper::reorderCoarseToFineIntoBorderAndBulk(uint level) 
         parHs[level]->neighborCoarseToFineBulk.y[i] = neighborYBulk[i];
         parHs[level]->neighborCoarseToFineBulk.z[i] = neighborZBulk[i];
     }
+}
+
 }
 
 //! \}

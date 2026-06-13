@@ -30,3 +30,16 @@ r"""
 ! \author Henry Korb
 =======================================================================================
 """
+from pyfluids._pyfluids import basics as basics #type:ignore
+from pyfluids._pyfluids import logger as logger #type:ignore
+from pyfluids._pyfluids import parallel as parallel #type:ignore
+from pyfluids._pyfluids import lbm as lbm #type:ignore
+try:
+    from pyfluids._pyfluids import gpu as gpu #type:ignore
+except ImportError:
+    print("pyfluids installed without gpu bindings")
+
+try:
+    from pyfluids._pyfluids import cpu as cpu #type:ignore
+except ImportError:
+    print("pyfluids installed without cpu bindings")

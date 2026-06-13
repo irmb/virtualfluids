@@ -36,6 +36,8 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 __global__ void SlipCompressible_Device(
     real* DD,
     int* k_Q,
@@ -60,6 +62,8 @@ __global__ void SlipTurbulentViscosityCompressible_Device(
     real* turbViscosity,
     unsigned long long numberOfLBnodes,
     bool isEvenTimestep);
+
+}
 
 #endif
 

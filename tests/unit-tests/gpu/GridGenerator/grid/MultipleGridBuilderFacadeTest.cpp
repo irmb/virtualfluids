@@ -41,10 +41,12 @@
 #include "core/BoundaryConditions/BoundaryConditionKernelManager.h"
 #include "grid/BoundaryConditions/Side.h"
 #include "basics/constants/NumericConstants.h"
+#include <basics/geometry3d/GbSpatialData3D.h>
 #include "utilities/communication.h"
 #include "grid/GridBuilder/MultipleGridBuilder.h"
 
 using namespace vf::basics::constant;
+using namespace vf::gpu;
 
 class MultipleGridBuilderFacadeTest : public MultipleGridBuilderFacade
 {public:
@@ -98,7 +100,7 @@ public:
 
     MOCK_METHOD(void, setNoSlipBoundaryCondition, (SideType side), (override));
     MOCK_METHOD(void, setStressBoundaryCondition,
-                (SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX),
+                (SideType sideType, real normalX, real normalY, real normalZ, uint samplingOffset, real vonKarmanConstant, real roughnessLength, real deltaX, std::shared_ptr<GbSpatialData3D<real>> roughnessMap),
                 (override));
     MOCK_METHOD(void, setVelocityBoundaryCondition, (SideType sideType, real vx, real vy, real vz), (override));
     MOCK_METHOD(void, setPressureBoundaryCondition, (SideType sideType, real rho), (override));
@@ -461,39 +463,40 @@ TEST_F(MultipleGridBuilderFacadeTest_24subdomains, stressMX)
     const real roughnessLength = 0.5;
     const real vonKarmanConstant = 0.4;
     const real dx = 0.7;
+    const std::shared_ptr<GbSpatialData3D<real>> roughnessMap;
 
     // process index
     EXPECT_CALL(*mockGridBuilder,
-                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx));
+                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx, roughnessMap));
     sut->createGrids(0);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx, roughnessMap);
 
     // process index 9
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder, setStressBoundaryCondition).Times(0);
     sut->createGrids(9);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx, roughnessMap);
 
     // process index 18
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder,
-                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx));
+                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx, roughnessMap));
     sut->createGrids(18);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx,roughnessMap);
 
     // process index 23
     this->createNewSut();
     EXPECT_CALL(*mockGridBuilder, setStressBoundaryCondition).Times(0);
     sut->createGrids(23);
-    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
+    sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx,roughnessMap);
 
     EXPECT_CALL(*mockGridBuilder,
-                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx))
+                setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx,roughnessMap))
         .Times(12);
     for (int i = 0; i < 24; i++) {
         this->createNewSut();
         sut->createGrids(i);
-        sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx);
+        sut->setStressBoundaryCondition(sideType, normalX, normalY, normalZ, samplingOffset, vonKarmanConstant, roughnessLength, dx, roughnessMap);
     }
 }
 

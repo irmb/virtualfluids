@@ -41,6 +41,8 @@
 #include <string>
 #include <vector>
 
+namespace vf::gpu {
+
 class Parameter;
 class CudaMemoryManager;
 
@@ -53,6 +55,9 @@ public:
     virtual void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep) = 0;
     virtual void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level) = 0;
 };
+
+}
+
 #endif
 
 //! \}

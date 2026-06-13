@@ -41,6 +41,8 @@
 
 #include <basics/config/ConfigurationFile.h>
 
+using namespace vf::gpu;
+
 void setUpFsByCopyingF0(std::vector<real> &distributionVector, int numberOfNodes)
 {
     for (uint direction = 0; direction < vf::lbm::dir::ENDDIR; direction++) {

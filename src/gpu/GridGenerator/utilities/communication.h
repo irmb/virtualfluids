@@ -38,6 +38,8 @@
 
 #include "grid/BoundaryConditions/Side.h"
 
+namespace vf::gpu {
+
 // has to have the same order as SideType in Side.h
 namespace communication_directions
 {
@@ -61,6 +63,8 @@ CommunicationDirection getNegativeDirectionAlongAxis(Axis axis);
 CommunicationDirection getPositiveDirectionAlongAxis(Axis axis);
 
 } // namespace CommunicationDirections
+
+}
 
 #endif // Communication_H
 //! \}

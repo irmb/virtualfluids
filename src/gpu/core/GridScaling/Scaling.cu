@@ -47,8 +47,7 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
-
+namespace vf::gpu {
 
 //////////////////////////////////////////////////////////////////////////
 // coarse to fine
@@ -110,10 +109,9 @@ void scaleCoarseToFineCompressible(
     ICellNeigh& neighborCoarseToFine,
     CUstream_st* stream)
 {
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads, coarseToFine->numberOfCells);
-    dim3 threads(parameterDeviceC->numberofthreads, 1, 1);
+    vf::cuda::CudaGrid grid(parameterDeviceC->numberofthreads, coarseToFine->numberOfCells);
 
-    scaleCoarseToFineCompressible_Device<hasTurbulentViscosity><<<grid, threads, 0, stream>>>(
+    scaleCoarseToFineCompressible_Device<hasTurbulentViscosity><<<grid.grid, grid.threads, 0, stream>>>(
         parameterDeviceC->distributions.f[0],
         parameterDeviceF->distributions.f[0],
         parameterDeviceC->neighborX,
@@ -160,10 +158,9 @@ void scaleFineToCoarseCompressible(
     ICellNeigh& neighborFineToCoarse,
     CUstream_st* stream)
 {
-    dim3 grid = vf::cuda::getCudaGrid(parameterDeviceC->numberofthreads, fineToCoarse->numberOfCells);
-    dim3 threads(parameterDeviceC->numberofthreads, 1, 1);
+    vf::cuda::CudaGrid grid(parameterDeviceC->numberofthreads, fineToCoarse->numberOfCells);
 
-    scaleFineToCoarseCompressible_Device<hasTurbulentViscosity><<<grid, threads, 0, stream>>>(
+    scaleFineToCoarseCompressible_Device<hasTurbulentViscosity><<<grid.grid, grid.threads, 0, stream>>>(
         parameterDeviceC->distributions.f[0],
         parameterDeviceF->distributions.f[0],
         parameterDeviceC->neighborX,
@@ -186,6 +183,7 @@ void scaleFineToCoarseCompressible(
 
     getLastCudaError("scaleFineToCoarseCompressible_Device execution failed");
 }
+
 template void scaleFineToCoarseCompressible<true>(
     LBMSimulationParameter* parameterDeviceC,
     LBMSimulationParameter* parameterDeviceF,
@@ -199,4 +197,166 @@ template void scaleFineToCoarseCompressible<false>(
     ICellNeigh& neighborFineToCoarse,
     CUstream_st* stream);
 
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Advection Diffusion
+//////////////////////////////////////////////////////////////////////////
+// coarse to fine
+template <bool hasTurbulentDiffusivity>
+__global__ void scaleCoarseToFineAdvectionDiffusionCompressible_Device(
+    real* distributionsCoarse,
+    real* distributionsFine,
+    real* distributionsCoarseAD,
+    real* distributionsFineAD,
+    const uint* neighborXcoarse,
+    const uint* neighborYcoarse,
+    const uint* neighborZcoarse,
+    const uint* neighborXfine,
+    const uint* neighborYfine,
+    const uint* neighborZfine,
+    const unsigned long long numberOfLBnodesCoarse,
+    const unsigned long long numberOfLBnodesFine,
+    const bool isEvenTimestep,
+    const uint* indicesCoarseMMM,
+    const uint* indicesFineMMM,
+    const uint numberOfInterfaceNodes,
+    const real omegaDiffusivityCoarse,
+    const real omegaDiffusivityFine,
+    const real* turbulentDiffusivityCoarse,
+    const real* turbulentDiffusivityFine,
+    const ICellNeigh offsetCF);
+
+
+//////////////////////////////////////////////////////////////////////////
+// fine to coarse
+template <bool hasTurbulentDiffusivity>
+__global__ void scaleFineToCoarseAdvectionDiffusionCompressible_Device(
+    real* distributionsCoarse,
+    real* distributionsFine,
+    real* distributionsCoarseAD,
+    real* distributionsFineAD,
+    const uint* neighborXcoarse,
+    const uint* neighborYcoarse,
+    const uint* neighborZcoarse,
+    const uint* neighborXfine,
+    const uint* neighborYfine,
+    const uint* neighborZfine,
+    const unsigned long long numberOfLBnodesCoarse,
+    const unsigned long long numberOfLBnodesFine,
+    const bool isEvenTimestep,
+    const uint* indicesCoarse000,
+    const uint* indicesFineMMM,
+    const uint numberOfInterfaceNodes,
+    const real omegaDiffusivityCoarse,
+    const real omegaDiffusivityFine,
+    const real* turbulentDiffusivityCoarse,
+    const real* turbulentDiffusivityFine,
+    const ICellNeigh offsetFC);
+
+
+//////////////////////////////////////////////////////////////////////////
+// coarse to fine
+template <bool hasTurbulentDiffusivity>
+void scaleCoarseToFineAdvectionDiffusionCompressible(
+    LBMSimulationParameter* parameterDeviceC,
+    LBMSimulationParameter* parameterDeviceF,
+    ICells* coarseToFine,
+    ICellNeigh& neighborCoarseToFine,
+    CUstream_st* stream)
+{
+    vf::cuda::CudaGrid grid(parameterDeviceC->numberofthreads, coarseToFine->numberOfCells);
+
+    scaleCoarseToFineAdvectionDiffusionCompressible_Device<hasTurbulentDiffusivity><<<grid.grid, grid.threads, 0, stream>>>(
+        parameterDeviceC->distributions.f[0],
+        parameterDeviceF->distributions.f[0],
+        parameterDeviceC->distributionsAD.f[0],
+        parameterDeviceF->distributionsAD.f[0],
+        parameterDeviceC->neighborX,
+        parameterDeviceC->neighborY,
+        parameterDeviceC->neighborZ,
+        parameterDeviceF->neighborX,
+        parameterDeviceF->neighborY,
+        parameterDeviceF->neighborZ,
+        parameterDeviceC->numberOfNodes,
+        parameterDeviceF->numberOfNodes,
+        parameterDeviceC->isEvenTimestep,
+        coarseToFine->coarseCellIndices,
+        coarseToFine->fineCellIndices,
+        coarseToFine->numberOfCells,
+        parameterDeviceC->omegaDiffusivity,
+        parameterDeviceF->omegaDiffusivity,
+        parameterDeviceC->turbulentDiffusivity,
+        parameterDeviceF->turbulentDiffusivity,
+        neighborCoarseToFine);
+
+    getLastCudaError("scaleCoarseToFineAdvectionDiffusionCompressible_Device execution failed");
+}
+template void scaleCoarseToFineAdvectionDiffusionCompressible<true>(
+    LBMSimulationParameter* parameterDeviceC,
+    LBMSimulationParameter* parameterDeviceF,
+    ICells* coarseToFine,
+    ICellNeigh& neighborCoarseToFine,
+    CUstream_st* stream);
+template void scaleCoarseToFineAdvectionDiffusionCompressible<false>(
+    LBMSimulationParameter* parameterDeviceC,
+    LBMSimulationParameter* parameterDeviceF,
+    ICells* coarseToFine,
+    ICellNeigh& neighborCoarseToFine,
+    CUstream_st* stream);
+
+
+//////////////////////////////////////////////////////////////////////////
+// fine to coarse
+template <bool hasTurbulentDiffusivity>
+void scaleFineToCoarseAdvectionDiffusionCompressible(
+    LBMSimulationParameter* parameterDeviceC,
+    LBMSimulationParameter* parameterDeviceF,
+    ICells* fineToCoarse,
+    ICellNeigh& neighborFineToCoarse,
+    CUstream_st* stream)
+{
+    vf::cuda::CudaGrid grid(parameterDeviceC->numberofthreads, fineToCoarse->numberOfCells);
+
+    scaleFineToCoarseAdvectionDiffusionCompressible_Device<hasTurbulentDiffusivity><<<grid.grid, grid.threads, 0, stream>>>(
+        parameterDeviceC->distributions.f[0],
+        parameterDeviceF->distributions.f[0],
+        parameterDeviceC->distributionsAD.f[0],
+        parameterDeviceF->distributionsAD.f[0],
+        parameterDeviceC->neighborX,
+        parameterDeviceC->neighborY,
+        parameterDeviceC->neighborZ,
+        parameterDeviceF->neighborX,
+        parameterDeviceF->neighborY,
+        parameterDeviceF->neighborZ,
+        parameterDeviceC->numberOfNodes,
+        parameterDeviceF->numberOfNodes,
+        parameterDeviceC->isEvenTimestep,
+        fineToCoarse->coarseCellIndices,
+        fineToCoarse->fineCellIndices,
+        fineToCoarse->numberOfCells,
+        parameterDeviceC->omegaDiffusivity,
+        parameterDeviceF->omegaDiffusivity,
+        parameterDeviceC->turbulentDiffusivity,
+        parameterDeviceF->turbulentDiffusivity,
+        neighborFineToCoarse);
+
+    getLastCudaError("scaleFineToCoarseAdvectionDiffusionCompressible_Device execution failed");
+}
+template void scaleFineToCoarseAdvectionDiffusionCompressible<true>(
+    LBMSimulationParameter* parameterDeviceC,
+    LBMSimulationParameter* parameterDeviceF,
+    ICells* fineToCoarse,
+    ICellNeigh& neighborFineToCoarse,
+    CUstream_st* stream);
+template void scaleFineToCoarseAdvectionDiffusionCompressible<false>(
+    LBMSimulationParameter* parameterDeviceC,
+    LBMSimulationParameter* parameterDeviceF,
+    ICells* fineToCoarse,
+    ICellNeigh& neighborFineToCoarse,
+    CUstream_st* stream);
+
+}
 //! \}

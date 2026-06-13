@@ -43,7 +43,11 @@
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionFlux.cuh"
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionNeumann.cuh"
 #include "BoundaryConditions/AdvectionDiffusion/AdvectionDiffusionNoFlux.cuh"
+#include "BoundaryConditions/Outflow/OutflowNonReflecting.cuh"
 #include "Parameter/Parameter.h"
+#include <basics/constants/NumericConstants.h>
+
+namespace vf::gpu {
 
 void AdvectionDiffusionNoFluxBounceBack(LBMSimulationParameter* parameterDevice,
                                         AdvectionDiffusionNoFluxBoundaryConditions bcParameters)
@@ -200,6 +204,29 @@ void AdvectionDiffusionNeumannInterpolatedNoSlip(LBMSimulationParameter* paramet
                                       parameterDevice->velocityY, parameterDevice->velocityZ, parameterDevice->numberOfNodes,
                                       parameterDevice->omegaDiffusivity, parameterDevice->isEvenTimestep);
     getLastCudaError("AdvectionDiffusionNeumann_Device execution failed");
+}
+
+void AdvectionDiffusionDirectionalOutflowNonReflecting(LBMSimulationParameter* parameterDevice,
+                                                       QforDirectionalADBoundaryCondition* boundaryCondition)
+{
+    const vf::cuda::CudaGrid grid(parameterDevice->numberofthreads, boundaryCondition->numberOfBCnodes);
+
+    OutflowNonReflecting_Device<false><<<grid.grid, grid.threads>>>(
+        boundaryCondition->concentration,
+        parameterDevice->distributionsAD.f[0],
+        boundaryCondition->k,
+        boundaryCondition->kN,
+        boundaryCondition->numberOfBCnodes,
+        parameterDevice->neighborX,
+        parameterDevice->neighborY,
+        parameterDevice->neighborZ,
+        parameterDevice->numberOfNodes,
+        parameterDevice->isEvenTimestep,
+        boundaryCondition->direction,
+        vf::basics::constant::c0o1);
+    getLastCudaError("AdvectionDiffusionDirectionalOutflowNonReflecting_Device execution failed");
+}
+
 }
 
 //! \}

@@ -41,6 +41,8 @@
 #include "Kernel.h"
 #include "cuda_helper/CudaGrid.h"
 
+namespace vf::gpu {
+
 class Parameter;
 class CudaStreamManager;
 
@@ -95,6 +97,8 @@ private:
     static std::string composeInfoOnHardLimitForMaximumKernelParameter(const std::string& kernelParameterName,
                                                                        real maximumHard);
 };
+
+}
 
 #endif
 

@@ -37,6 +37,8 @@
 #include "grid/Cell.h"
 #include "global.h"
 
+namespace vf::gpu {
+
 class GridImp;
 struct Vertex;
 
@@ -79,6 +81,7 @@ public:
     virtual int getIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnObject, real &qVal);
 };
 
+}
 
 #endif
 

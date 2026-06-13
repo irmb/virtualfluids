@@ -43,16 +43,16 @@ class AnalyticalResults2DToVTKWriterImp : public AnalyticalResults2DToVTKWriter
 public:
     static std::shared_ptr<AnalyticalResults2DToVTKWriterImp> getInstance(bool writeAnalyticalResults);
 
-    void writeAnalyticalResult(std::shared_ptr<Parameter> para, std::shared_ptr<AnalyticalResults> analyticalResult);
+    void writeAnalyticalResult(std::shared_ptr<vf::gpu::Parameter> para, std::shared_ptr<AnalyticalResults> analyticalResult);
 
 private:
     AnalyticalResults2DToVTKWriterImp() {};
     AnalyticalResults2DToVTKWriterImp(bool writeAnalyticalResults);
 
-    void writeTimeStep(std::shared_ptr<Parameter> para, std::shared_ptr<AnalyticalResults> analyticalResult, int level, std::vector<std::string> & fname, int timeStep);
+    void writeTimeStep(std::shared_ptr<vf::gpu::Parameter> para, std::shared_ptr<AnalyticalResults> analyticalResult, int level, std::vector<std::string> & fname, int timeStep);
     int CoordResults2DTo1D(int x, int z);
 
-    std::shared_ptr<Parameter> para;
+    std::shared_ptr<vf::gpu::Parameter> para;
     int maxX, maxY, maxZ;
     bool writeAnalyticalResults;
 };

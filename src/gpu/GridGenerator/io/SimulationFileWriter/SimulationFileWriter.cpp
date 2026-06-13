@@ -51,9 +51,12 @@
 
 #include "io/SimulationFileWriter/SimulationFileNames.h"
 
-#include "utilities/communication.h"
+#include <logger/Logger.h>
 
-using namespace vf::gpu;
+#include "utilities/communication.h"
+#include "utilities/math/Math.h"
+
+namespace vf::gpu {
 
 /*#################################################################################*/
 /*---------------------------------public methods----------------------------------*/
@@ -476,7 +479,7 @@ void SimulationFileWriter::addShortQsToVector(int index, std::vector<std::vector
         /*int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
         real q = grid->getDistribution()[qIndex];*/
         real q = grid->getQValue(index, i);
-        if (q > 0) {
+        if (vf::Math::greaterEqual(q, 0.0)) {
             //printf("Q%d (old:%d, new:%d), : %2.8f \n", i, coordsVec[index].matrixIndex, index, grid.d.f[i * grid.size + coordsVec[index].matrixIndex]);
             qKey += (uint32_t)pow(2, 26 - i);
             qNode.push_back(q);
@@ -502,7 +505,7 @@ void SimulationFileWriter::addQsToVector(int index, std::vector<std::vector<std:
         //real q = grid->getDistribution()[qIndex];
         real q = grid->getQValue(index, i);
         qNode.push_back(q);
-        if (q > 0)
+        if (vf::Math::greaterEqual(q, 0.0))
             printf("Q= %f; Index = %d \n", q, index);
             //qNode.push_back(q);
   //      else
@@ -627,7 +630,11 @@ void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<grid_generat
             for (int dir = 26; dir >= 0; dir--)
             {
                 real q = boundaryCondition->getQ(index,dir);
-                if (q > 0) {
+                if (vf::Math::greaterEqual(q, 0.0)) {
+                    if (vf::Math::equal(q, 0.0))
+                        VF_LOG_DEBUG("Boundary Q writer: zero-length link at node {} (direction {})", boundaryCondition->indices[index], dir);
+                    else if (vf::Math::equal(q, 1.0))
+                        VF_LOG_DEBUG("Boundary Q writer: unity-length link at node {} (direction {})", boundaryCondition->indices[index], dir);
                     key += (uint32_t)pow(2, 26 - dir);
                 }
             }
@@ -637,7 +644,7 @@ void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<grid_generat
             for (int dir = 26; dir >= 0; dir--)
             {
                 real q = boundaryCondition->getQ(index,dir);
-                if (q > 0) {
+                if (vf::Math::greaterEqual(q, 0.0)) {
                     *qStreams[side] << std::fixed << std::setprecision(16) << q << " ";
                 }
             }
@@ -786,4 +793,7 @@ std::ofstream SimulationFileWriter::LBMvsSI_File;
 
 std::array<std::ofstream, 6> SimulationFileWriter::sendFiles;
 std::array<std::ofstream, 6> SimulationFileWriter::receiveFiles;
+
+}
+
 //! \}

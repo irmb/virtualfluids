@@ -52,7 +52,8 @@
 #include "helper_cuda.h"
 
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TODO check everything for multiple level
@@ -135,6 +136,78 @@ __global__ void fillArrayDistributions(uint numberOfPrecursorNodes,
     precursorData[linearIdx(PrecursorWriter::dPPM, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dPPM])[k_00M];
     precursorData[linearIdx(PrecursorWriter::dPMM, nodeIndex, numberOfPrecursorNodes)] = (dist.f[dPMM])[k_0MM];
 }
+__global__ void fillArrayVelocitiesTemperature(uint numberOfPrecursorNodes,
+                                    const uint* indices,
+                                    real* precursorData,
+                                    const real* vx,
+                                    const real* vy,
+                                    const real* vz,
+                                    const real* temperature,
+                                    real velocityRatio)
+{
+    const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
+
+    if (nodeIndex >= numberOfPrecursorNodes)
+        return;
+
+    precursorData[linearIdx(0U, nodeIndex, numberOfPrecursorNodes)] = vx[indices[nodeIndex]] * velocityRatio;
+    precursorData[linearIdx(1U, nodeIndex, numberOfPrecursorNodes)] = vy[indices[nodeIndex]] * velocityRatio;
+    precursorData[linearIdx(2U, nodeIndex, numberOfPrecursorNodes)] = vz[indices[nodeIndex]] * velocityRatio;
+    precursorData[linearIdx(3U, nodeIndex, numberOfPrecursorNodes)] = temperature[indices[nodeIndex]];
+}
+
+__global__ void fillArrayVelocityAndTemperatureDistributions(
+    uint numberOfPrecursorNodes,
+    const uint* indices,
+    real* precursorData,
+    real* velocityDistributions,
+    real* temperatureDistributions,
+    const uint* neighborX,
+    const uint* neighborY,
+    const uint* neighborZ,
+    bool isEvenTimeStep,
+    unsigned long numberOfLBnodes,
+    uint level)
+{
+    const uint nodeIndex = vf::cuda::get1DIndexFrom2DBlock();
+
+    if (nodeIndex >= numberOfPrecursorNodes)
+        return;
+
+    Distributions27 velDist, tempDist;
+    getPointersToDistributions(velDist, velocityDistributions, numberOfLBnodes, isEvenTimeStep);
+    getPointersToDistributions(tempDist, temperatureDistributions, numberOfLBnodes, isEvenTimeStep);
+
+    uint k_000 = indices[nodeIndex];
+    uint k_0M0 = neighborY[k_000];
+    uint k_00M = neighborZ[k_000];
+    uint k_0MM = neighborZ[k_0M0];  
+
+    // Velocity distributions (offset 0-8)
+    precursorData[linearIdx(0, nodeIndex, numberOfPrecursorNodes)] = (velDist.f[dP00])[k_000];
+    precursorData[linearIdx(1, nodeIndex, numberOfPrecursorNodes)] = (velDist.f[dPP0])[k_000];
+    precursorData[linearIdx(2, nodeIndex, numberOfPrecursorNodes)] = (velDist.f[dPM0])[k_0M0];
+    precursorData[linearIdx(3, nodeIndex, numberOfPrecursorNodes)] = (velDist.f[dP0P])[k_000];
+    precursorData[linearIdx(4, nodeIndex, numberOfPrecursorNodes)] = (velDist.f[dP0M])[k_00M];
+    precursorData[linearIdx(5, nodeIndex, numberOfPrecursorNodes)] = (velDist.f[dPPP])[k_000];
+    precursorData[linearIdx(6, nodeIndex, numberOfPrecursorNodes)] = (velDist.f[dPMP])[k_0M0];
+    precursorData[linearIdx(7, nodeIndex, numberOfPrecursorNodes)] = (velDist.f[dPPM])[k_00M];
+    precursorData[linearIdx(8, nodeIndex, numberOfPrecursorNodes)] = (velDist.f[dPMM])[k_0MM];
+
+
+    // real coff = (level == 0 ? 1 : level * 1.5);
+    real coff = 1.;
+    // Temperature distributions (offset 9-17)
+    precursorData[linearIdx(9, nodeIndex, numberOfPrecursorNodes)]  = (tempDist.f[dP00])[k_000] * coff;
+    precursorData[linearIdx(10, nodeIndex, numberOfPrecursorNodes)] = (tempDist.f[dPP0])[k_000] * coff;
+    precursorData[linearIdx(11, nodeIndex, numberOfPrecursorNodes)] = (tempDist.f[dPM0])[k_0M0] * coff;
+    precursorData[linearIdx(12, nodeIndex, numberOfPrecursorNodes)] = (tempDist.f[dP0P])[k_000] * coff;
+    precursorData[linearIdx(13, nodeIndex, numberOfPrecursorNodes)] = (tempDist.f[dP0M])[k_00M]  * coff;
+    precursorData[linearIdx(14, nodeIndex, numberOfPrecursorNodes)] = (tempDist.f[dPPP])[k_000]  * coff;
+    precursorData[linearIdx(15, nodeIndex, numberOfPrecursorNodes)] = (tempDist.f[dPMP])[k_0M0]  * coff;
+    precursorData[linearIdx(16, nodeIndex, numberOfPrecursorNodes)] = (tempDist.f[dPPM])[k_00M]  * coff;
+    precursorData[linearIdx(17, nodeIndex, numberOfPrecursorNodes)] = (tempDist.f[dPMM])[k_0MM]  * coff;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void PrecursorWriter::init()
@@ -181,14 +254,14 @@ void PrecursorWriter::init()
         if (indicesOnGrid.size() == 0)
             throw std::runtime_error("PrecursorWriter did not find any points on the grid");
 
-        const int ny = int((highestY - lowestY) / deltaX) + 1;
-        const int nz = int((highestZ - lowestZ) / deltaX) + 1;
+        const int ny = int(std::round((highestY - lowestY) / deltaX)) + 1;
+        const int nz = int(std::round((highestZ - lowestZ) / deltaX)) + 1;
 
         precursorStructs[level].indicesOnPlane.reserve(indicesOnGrid.size());
 
         for (uint i = 0; i < indicesOnGrid.size(); i++) {
-            const int idxY = int((coordY[i] - lowestY) / deltaX);
-            const int idxZ = int((coordZ[i] - lowestZ) / deltaX);
+            const int idxY = int(std::round((coordY[i] - lowestY) / deltaX));
+            const int idxZ = int(std::round((coordZ[i] - lowestZ) / deltaX));
             precursorStructs[level].indicesOnPlane.push_back(index1d(idxY, idxZ, ny, nz));
         }
 
@@ -214,6 +287,16 @@ void PrecursorWriter::init()
             default:
                 break;
         }
+        switch (tempOutputVariable) {
+            case OutputVariableTemperature::Temperature:
+                precursorStructs[level].numberOfQuantities += 1;
+                break;
+            case OutputVariableTemperature::Distributions:
+                precursorStructs[level].numberOfQuantities += 9;
+                break;
+            default:
+                break;
+        }
 
         cudaMemoryManager->cudaAllocPrecursorWriter(this, level);
 
@@ -235,18 +318,38 @@ void PrecursorWriter::sample(int level, uint t)
     if (t_level > tStartOut_level && ((t_level - tStartOut_level) % tSave) == 0) {
         vf::cuda::CudaGrid grid(para->getParH(level)->numberofthreads, levelStruct->numberOfPointsInBC);
 
-        if (this->outputVariable == OutputVariable::Velocities) {
+
+        if (outputVariable == OutputVariable::Velocities && 
+            tempOutputVariable == OutputVariableTemperature::Temperature) {
+            fillArrayVelocitiesTemperature<<<grid.grid, grid.threads>>>(levelStruct->numberOfPointsInBC, levelStruct->indicesD,
+                                                             levelStruct->bufferD, para->getParD(level)->velocityX,
+                                                             para->getParD(level)->velocityY,
+                                                             para->getParD(level)->velocityZ, para->getParD(level)->concentration,
+                                                             para->getVelocityRatio());
+        }
+        else if (outputVariable == OutputVariable::Distributions && 
+                tempOutputVariable == OutputVariableTemperature::Distributions) {
+            fillArrayVelocityAndTemperatureDistributions<<<grid.grid, grid.threads>>>(
+                levelStruct->numberOfPointsInBC, levelStruct->indicesD, levelStruct->bufferD, 
+                para->getParD(level)->distributions.f[0], para->getParD(level)->distributionsAD.f[0],
+                para->getParD(level)->neighborX, para->getParD(level)->neighborY,
+                para->getParD(level)->neighborZ, para->getEvenOrOdd(level),
+                para->getParD(level)->numberOfNodes, level);
+            getLastCudaError("In PrecursorWriter::interact fillArrayVelocityAndTemperatureDistributions execution failed");
+        }
+        else if (outputVariable == OutputVariable::Velocities) {
             fillArrayVelocities<<<grid.grid, grid.threads>>>(levelStruct->numberOfPointsInBC, levelStruct->indicesD,
                                                              levelStruct->bufferD, para->getParD(level)->velocityX,
                                                              para->getParD(level)->velocityY,
                                                              para->getParD(level)->velocityZ, para->getVelocityRatio());
             getLastCudaError("In PrecursorWriter::interact fillArrayVelocities execution failed");
-        } else if (this->outputVariable == OutputVariable::Distributions) {
+        } 
+        else if (outputVariable == OutputVariable::Distributions) {
             fillArrayDistributions<<<grid.grid, grid.threads>>>(
-                levelStruct->numberOfPointsInBC, levelStruct->indicesD, levelStruct->bufferD,
-                para->getParD(level)->distributions.f[0], para->getParD(level)->neighborX, para->getParD(level)->neighborY,
-                para->getParD(level)->neighborZ, para->getEvenOrOdd(level), para->getParD(level)->numberOfNodes);
-            getLastCudaError("In PrecursorWriter::interact fillArrayDistributions execution failed");
+            levelStruct->numberOfPointsInBC, levelStruct->indicesD, levelStruct->bufferD,
+            para->getParD(level)->distributions.f[0], para->getParD(level)->neighborX, para->getParD(level)->neighborY,
+            para->getParD(level)->neighborZ, para->getEvenOrOdd(level), para->getParD(level)->numberOfNodes);
+        getLastCudaError("In PrecursorWriter::interact fillArrayDistributions execution failed");
         }
         cudaMemoryManager->cudaCopyPrecursorWriterOutputVariablesDtoH(this, level);
 
@@ -331,11 +434,14 @@ std::string PrecursorWriter::makeFileName(int level, uint numberOfFilesWritten)
 void PrecursorWriter::getTaggedFluidNodes(GridProvider* gridProvider)
 {
     for (uint level = 0; level < (uint)para->getMaxLevel(); level++) {
-        if (outputVariable == OutputVariable::Velocities) {
+        if (outputVariable == OutputVariable::Velocities || tempOutputVariable == OutputVariableTemperature::Temperature) {
             std::vector<uint> indices(precursorStructs[level].indicesH,
                                       precursorStructs[level].indicesH + precursorStructs[level].numberOfPointsInBC);
             gridProvider->tagFluidNodeIndices(indices, CollisionTemplate::WriteMacroVars, level);
         }
     }
 }
+
+}
+
 //! \}

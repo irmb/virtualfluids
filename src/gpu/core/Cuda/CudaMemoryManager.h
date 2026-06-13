@@ -40,8 +40,11 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 class Parameter;
 class ActuatorFarm;
+class Forest;
 class Probe;
 class PlanarAverageProbe;
 class VelocitySetter;
@@ -100,7 +103,12 @@ public:
 
     void cudaAllocDirectionalBoundaryCondition(QforDirectionalBoundaryCondition& boundaryConditionHost, QforDirectionalBoundaryCondition& boundaryConditionDevice);
     void cudaCopyDirectionalBoundaryCondition(QforDirectionalBoundaryCondition& boundaryConditionHost, QforDirectionalBoundaryCondition& boundaryConditionDevice);
-    void cudaFreeDirectionalBoundaryCondition(QforDirectionalBoundaryCondition& boundaryConditionHost, QforDirectionalBoundaryCondition& boundaryConditionDevice);
+    void cudaFreeDirectionalBoundaryCondition(int level);
+
+
+    void cudaAllocDirectionalADBoundaryCondition(QforDirectionalADBoundaryCondition& boundaryConditionHost, QforDirectionalADBoundaryCondition& boundaryConditionDevice);
+    void cudaCopyDirectionalADBoundaryCondition(QforDirectionalADBoundaryCondition& boundaryConditionHost, QforDirectionalADBoundaryCondition& boundaryConditionDevice);
+    void cudaFreeDirectionalADBoundaryCondition(int level);
 
     void cudaAllocForcing();
     void cudaCopyForcingToDevice();
@@ -291,28 +299,44 @@ public:
     void cudaCopyBladeOrientationsDtoH(ActuatorFarm* actuatorFarm);
     void cudaFreeBladeOrientations(ActuatorFarm* actuatorFarm);
 
-    void cudaAllocBladeCoords(ActuatorFarm* actuatorFarm);
-    void cudaCopyBladeCoordsHtoD(ActuatorFarm* actuatorFarm);
-    void cudaCopyBladeCoordsDtoH(ActuatorFarm* actuatorFarm);
-    void cudaFreeBladeCoords(ActuatorFarm* actuatorFarm);
+    void cudaAllocCoords(ActuatorFarm* actuatorFarm);
+    void cudaCopyCoordsHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyCoordsDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeCoords(ActuatorFarm* actuatorFarm);
 
-    void cudaAllocBladeIndices(ActuatorFarm* actuatorFarm);
-    void cudaCopyBladeIndicesHtoD(ActuatorFarm* actuatorFarm);
-    void cudaFreeBladeIndices(ActuatorFarm* actuatorFarm);
+    void cudaAllocIndices(ActuatorFarm* actuatorFarm);
+    void cudaCopyIndicesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaFreeIndices(ActuatorFarm* actuatorFarm);
 
-    void cudaAllocBladeVelocities(ActuatorFarm* actuatorFarm);
-    void cudaCopyBladeVelocitiesHtoD(ActuatorFarm* actuatorFarm);
-    void cudaCopyBladeVelocitiesDtoH(ActuatorFarm* actuatorFarm);
-    void cudaFreeBladeVelocities(ActuatorFarm* actuatorFarm);
+    void cudaAllocVelocities(ActuatorFarm* actuatorFarm);
+    void cudaCopyVelocitiesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyVelocitiesDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeVelocities(ActuatorFarm* actuatorFarm);
 
-    void cudaAllocBladeForces(ActuatorFarm* actuatorFarm);
-    void cudaCopyBladeForcesHtoD(ActuatorFarm* actuatorFarm);
-    void cudaCopyBladeForcesDtoH(ActuatorFarm* actuatorFarm);
-    void cudaFreeBladeForces(ActuatorFarm* actuatorFarm);
+    void cudaAllocForces(ActuatorFarm* actuatorFarm);
+    void cudaCopyForcesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaCopyForcesDtoH(ActuatorFarm* actuatorFarm);
+    void cudaFreeForces(ActuatorFarm* actuatorFarm);
 
-    void cudaAllocSphereIndices(ActuatorFarm* actuatorFarm);
-    void cudaCopySphereIndicesHtoD(ActuatorFarm* actuatorFarm);
-    void cudaFreeSphereIndices(ActuatorFarm* actuatorFarm);
+    void cudaAllocBoundingVolumeIndices(ActuatorFarm* actuatorFarm);
+    void cudaCopyBoundingVolumeIndicesHtoD(ActuatorFarm* actuatorFarm);
+    void cudaFreeBoundingVolumeIndices(ActuatorFarm* actuatorFarm);
+
+    // Forest
+
+    void cudaAllocForestIndices(Forest* forest);
+    void cudaCopyForestIndicesHtoD(Forest* forest);
+    void cudaFreeForestIndices(Forest* forest);
+
+    void cudaAllocForestVelocities(Forest* forest);
+    void cudaCopyForestVelocitiesHtoD(Forest* forest, std::vector<real>& velocitiesX,
+                                     std::vector<real>& velocitiesY,
+                                     std::vector<real>& velocitiesZ);
+    void cudaFreeForestVelocities(Forest* forest);
+
+    void cudaAllocLeafAreaDensity(Forest* forest);
+    void cudaCopyLeafAreaDensityHtoD(Forest* forest);
+    void cudaFreeLeafAreaDensity(Forest* forest);
 
     // BuoyancyProvider
     void cudaAllocBuoyancyProviderProfileParameters(BuoyancyProviderPlanarAverage* buoyancyProvider, int level);
@@ -338,8 +362,9 @@ public:
     void cudaFreeProbeData(Probe* probe, int level);
 
     void cudaAllocPlanarAverageProbeIndices(PlanarAverageProbe* planarAverageProbe, int level);
-    void cudaCopyPlanarAverageProbeIndicesHtoD(PlanarAverageProbe* planarAverageProbe, int level);
     void cudaFreePlanarAverageProbeIndices(PlanarAverageProbe* planarAverageProbe, int level);
+    void cudaAllocPlanarAverageProbeSubgridScaleFluxes(PlanarAverageProbe* planarAverageProbe, int level);
+    void cudaFreePlanarAverageProbeSubgridScaleFluxes(PlanarAverageProbe* planarAverageProbe, int level);
 
     // Precursor Writer
     void cudaAllocPrecursorWriter(PrecursorWriter* writer, int level);
@@ -351,6 +376,8 @@ private:
     std::shared_ptr<Parameter> parameter;
     double memsizeGPU = 0.0;
 };
+
+}
 
 #endif
 

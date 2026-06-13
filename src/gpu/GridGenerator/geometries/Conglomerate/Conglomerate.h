@@ -43,6 +43,8 @@
 
 #define MAX_NUMBER_OF_OBJECTS 20
 
+namespace vf::gpu {
+
 class Conglomerate : public Object
 {
 public:
@@ -81,7 +83,7 @@ protected:
     uint numberOfSubtractObjects = 0;
 };
 
-
+}
 
 #endif   
 

@@ -40,6 +40,8 @@
 
 #include "global.h"
 
+namespace vf::gpu {
+
 struct Triangle;
 struct Vertex;
 class BoundingBox;
@@ -69,6 +71,8 @@ private:
     static Vertex parseLineToCoordinates(const std::string& file, const std::string format);
     static Vertex getVertexFromChar(const char* facet);
 };
+
+}
 
 #endif
 

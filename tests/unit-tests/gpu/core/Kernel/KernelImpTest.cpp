@@ -41,6 +41,7 @@
 #include "../testUtilitiesGPU.h"
 
 using namespace vf::collision_kernel;
+using namespace vf::gpu;
 
 class KernelImpTest : public testing::TestWithParam<std::string>
 {

@@ -36,6 +36,8 @@
 
 //using namespace std;
 
+namespace vf::gpu {
+
 MeasuredPoints::MeasuredPoints(void)
 {
 }
@@ -91,4 +93,7 @@ void MeasuredPoints::init() {
 
 
 }
+
+}
+
 //! \}

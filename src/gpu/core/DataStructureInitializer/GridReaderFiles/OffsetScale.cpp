@@ -37,6 +37,8 @@
 
 using namespace std;
 
+namespace vf::gpu {
+
 OffsetScale::OffsetScale(std::string ad, bool off)
 {
     file.open(ad.c_str(), std::ios::in);
@@ -170,5 +172,6 @@ void OffsetScale::initScale(unsigned int* data, unsigned int level)
         data[index] = scale[level][index];
 }
 
+}
 
 //! \}

@@ -44,7 +44,7 @@
 #include "StringUtilities/StringUtil.h"
 #include "Utilities/FindNeighbors.h"
 
-namespace neighbor_debug_writer
+namespace vf::gpu::neighbor_debug_writer
 {
 
 void writeNeighborLinkLinesForDirection(LBMSimulationParameter* parH, int direction, const std::string& filePath, WbWriter* writer)

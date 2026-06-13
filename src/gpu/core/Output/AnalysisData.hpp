@@ -40,6 +40,8 @@
 
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 class AnalysisData
 {
 public:
@@ -103,6 +105,9 @@ public:
         }
     }
 };
+
+}
+
 #endif
 
 //! \}

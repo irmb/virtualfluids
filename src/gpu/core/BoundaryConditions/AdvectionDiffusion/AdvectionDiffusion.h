@@ -40,6 +40,8 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
+namespace vf::gpu {
+
 struct LBMSimulationParameter;
 class Parameter;
 
@@ -68,6 +70,10 @@ void AdvectionDiffusionNeumannAntiBounceBackNoSlip(LBMSimulationParameter* param
 void AdvectionDiffusionNeumannInterpolatedNoSlip(LBMSimulationParameter* parameterDevice,
                                                  AdvectionDiffusionNeumannBoundaryConditions bcParameters);
 
+void AdvectionDiffusionDirectionalOutflowNonReflecting(LBMSimulationParameter* parameterDevice,
+                                                       QforDirectionalADBoundaryCondition* boundaryCondition);
+
+}
 #endif
 
 //! \}

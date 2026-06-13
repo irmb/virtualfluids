@@ -39,16 +39,16 @@
 
 class InitialCondition;
 
-class NumericalTestGridReader : public GridReader
+class NumericalTestGridReader : public vf::gpu::GridReader
 {
 public:
-    static std::shared_ptr<NumericalTestGridReader> getNewInstance(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<CudaMemoryManager> cudaManager);
+    static std::shared_ptr<NumericalTestGridReader> getNewInstance(std::shared_ptr<vf::gpu::Parameter> para, std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<vf::gpu::CudaMemoryManager> cudaManager);
 
 protected:
     virtual void setInitialNodeValues(uint numberOfNodes, int level) const override;
     
 private:
-    NumericalTestGridReader(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<CudaMemoryManager> cudaManager);
+    NumericalTestGridReader(std::shared_ptr<vf::gpu::Parameter> para, std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<vf::gpu::CudaMemoryManager> cudaManager);
 
     std::shared_ptr<InitialCondition> initialCondition;
     

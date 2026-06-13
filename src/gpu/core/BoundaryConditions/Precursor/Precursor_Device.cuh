@@ -36,6 +36,8 @@
 
 #include "Calculation/Calculation.h"
 
+namespace vf::gpu {
+
 __global__ void PrecursorNonReflectiveCompressible_Device(
     int* subgridDistanceIndices,
     int numberOfBCnodes,
@@ -87,6 +89,30 @@ __global__ void PrecursorDistributions_Device(
     unsigned long long numberOfLBnodes,
     bool isEvenTimestep);
 
+__global__ void PrecursorTemperatureDistributions_Device(
+    int *subgridDistanceIndices,
+    int numberOfBCnodes,
+    int numberOfPrecursorNodes,
+    real* Distributions,
+    real* temperatureDistributions,
+    uint* neighborX,
+    uint* neighborY,
+    uint* neighborZ,
+    uint* neighbors0PP,
+    uint* neighbors0PM,
+    uint* neighbors0MP,
+    uint* neighbors0MM,
+    real* weights0PP,
+    real* weights0PM,
+    real* weights0MP,
+    real* weights0MM,
+    real* Last,
+    real* current,
+    real timeRatio,
+    unsigned long long numberOfLBnodes,
+    bool isEvenTimestep);
+
+}
 #endif
 
 //! \}

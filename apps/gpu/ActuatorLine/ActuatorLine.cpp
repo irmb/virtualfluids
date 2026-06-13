@@ -37,6 +37,7 @@
 #include <basics/constants/NumericConstants.h>
 
 #include <logger/Logger.h>
+#include <optional>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -47,6 +48,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
+#include "PreCollisionInteractor/Actuator/ActuatorFarm.h"
 #include "gpu/core/BoundaryConditions/BoundaryConditionFactory.h"
 #include "gpu/core/Calculation/Simulation.h"
 #include "gpu/core/Cuda/CudaMemoryManager.h"
@@ -63,6 +65,7 @@
 //////////////////////////////////////////////////////////////////////////
 const std::string defaultConfigFile = "actuatorline.cfg";
 using namespace vf::basics::constant;
+using namespace vf::gpu;
 
 void run(const vf::basics::ConfigurationFile& config)
 {
@@ -77,7 +80,38 @@ void run(const vf::basics::ConfigurationFile& config)
     const uint timeStepAverageTimeSeriesProbe = 1;
     const real density = 1.225F;
 
+    //Turbine parameters
     const real rotorDiameter = config.getValue<real>("RotorDiameter");
+    const uint numberOfHubPointsPerTurbine = config.getValue<uint>("numberOfHubPoints");
+    const uint numberOfTowerPointsPerTurbine = config.getValue<uint>("numberOfTowerPoints");
+    
+    std::optional<ActuatorFarm::HubConfig> hubConfig = std::nullopt;
+    std::optional<ActuatorFarm::TowerConfig> towerConfig = std::nullopt;
+    std::optional<real> hubDragCoeff = std::nullopt;
+    std::optional<real> hubSkinFrictionCoeff = std::nullopt;
+    std::optional<real> towerDragCoeff = std::nullopt;
+    if (numberOfHubPointsPerTurbine > 0)
+    {
+        hubConfig = ActuatorFarm::HubConfig{
+            config.getValue<real>("hubLength"),
+            config.getValue<real>("hubRadius"),
+            config.getValue<real>("hubPositionOffset"),
+            numberOfHubPointsPerTurbine
+        };
+        hubDragCoeff = config.getValue<real>("hubDragCoeff");
+        hubSkinFrictionCoeff = config.getValue<real>("hubSkinFrictionCoeff");
+    }
+    if (numberOfTowerPointsPerTurbine > 0)
+    {
+        towerConfig = ActuatorFarm::TowerConfig{
+            config.getValue<real>("towerRadius"),
+            config.getValue<real>("towerOffset"),
+            config.getVector<real>("towerHeights"),
+            numberOfTowerPointsPerTurbine
+        };
+        towerDragCoeff = config.getValue<real>("towerDragCoeff");
+    }
+
     const uint nodesPerDiameter = config.getValue<uint>("NodesPerDiameter");
     const real velocity = config.getValue<real>("Velocity");
 
@@ -177,12 +211,12 @@ void run(const vf::basics::ConfigurationFile& config)
     gridBuilder->setVelocityBoundaryCondition(SideType::MZ, velocityLB, c0o1, c0o1);
     gridBuilder->setVelocityBoundaryCondition(SideType::PZ, velocityLB, c0o1, c0o1);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, c0o1);
-
+ 
     BoundaryConditionFactory bcFactory;
     bcFactory.setVelocityBoundaryCondition(
         BoundaryConditionFactory::VelocityBC::VelocityWithPressureInterpolatedCompressible);
     bcFactory.setPressureBoundaryCondition(BoundaryConditionFactory::PressureBC::OutflowNonReflective);
-
+    
     auto tmFactory = std::make_shared<TurbulenceModelFactory>(para);
     tmFactory->readConfigFile(config);
 
@@ -194,14 +228,16 @@ void run(const vf::basics::ConfigurationFile& config)
 
     const int level = 0; // grid level at which the turbine samples velocities and distributes forces
     const real smearingWidth = c2o1 * deltaX * std::exp2(-level);
-    const uint actuatorNodesPerBlade = 32;
+    const uint actuatorPointsPerBlade = 32;
     const real tipSpeedRatio = 7.5F; // tipspeed ratio = angular vel * radius / inflow vel
     const real rotorSpeed = c2o1 * tipSpeedRatio * velocity / rotorDiameter;
     const std::vector<real> rotorSpeeds = std::vector<real>(turbinePositionsX.size(), rotorSpeed);
 
+
     auto actuatorFarm = std::make_shared<ActuatorFarmStandalone>(
-        para, cudaMemoryManager, rotorDiameter, actuatorNodesPerBlade, turbinePositionsX, turbinePositionsY,
-        turbinePositionsZ, rotorSpeeds, smearingWidth, level);
+        para, cudaMemoryManager, rotorDiameter, actuatorPointsPerBlade, turbinePositionsX, turbinePositionsY,
+        turbinePositionsZ, rotorSpeeds, smearingWidth, level, hubConfig, towerConfig,
+        hubDragCoeff, hubSkinFrictionCoeff, towerDragCoeff);
     para->addInteractor(actuatorFarm);
 
     actuatorFarm->enableOutput("ActuatorLineForcesAndVelocities", timeStepStartOutProbe, timeStepOutProbe);
@@ -225,7 +261,7 @@ void run(const vf::basics::ConfigurationFile& config)
         para->addSampler(planeProbe);
     }
 
-auto planeProbeVertical = std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), "planeProbeVertical",
+    auto planeProbeVertical = std::make_shared<Probe>(para, cudaMemoryManager, para->getOutputPath(), "planeProbeVertical",
                                                       timeStepStartTemporalAveraging, numberOfAveragingTimeSteps,
                                                       timeStepStartOutProbe, timeStepOutProbe, false, false);
     planeProbeVertical->addProbePlane(c0o1, turbinePositionsY[0], -c1o2 * lengthZ, lengthX, deltaX, lengthZ);
@@ -263,7 +299,9 @@ auto planeProbeVertical = std::make_shared<Probe>(para, cudaMemoryManager, para-
     VF_LOG_INFO("--------------");
     VF_LOG_INFO("rotorDiameter [m]      = {}", rotorDiameter);
     VF_LOG_INFO("nodesPerDiameter       = {}", nodesPerDiameter);
-    VF_LOG_INFO("actuatorNodesPerBlade  = {}", actuatorNodesPerBlade);
+    VF_LOG_INFO("actuatorPointsPerBlade  = {}", actuatorPointsPerBlade);
+    VF_LOG_INFO("actuatorPointsPerHub  = {}", numberOfHubPointsPerTurbine);
+    VF_LOG_INFO("actuatorPointsPerTower  = {}", numberOfTowerPointsPerTurbine);
     VF_LOG_INFO("smearingWidth [m]      = {}", smearingWidth);
     VF_LOG_INFO("tipSpeedRatio          = {}", tipSpeedRatio);
 

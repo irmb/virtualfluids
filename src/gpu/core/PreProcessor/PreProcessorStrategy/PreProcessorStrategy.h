@@ -40,6 +40,8 @@
 #include <helper_cuda.h>
 #include <helper_functions.h>
 
+namespace vf::gpu {
+
 class PreProcessorStrategy
 {
 public:
@@ -47,6 +49,8 @@ public:
     virtual void init(int level) = 0;
     virtual bool checkParameter() = 0;
 };
+
+}
 
 #endif
 

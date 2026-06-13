@@ -40,6 +40,8 @@
 #include "Parameter/Parameter.h"
 #include <basics/PointerDefinitions.h>
 
+using namespace vf::gpu;
+
 class GridScalingKernelManagerTest_Initialization : public testing::Test
 {
 protected:

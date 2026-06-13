@@ -37,6 +37,8 @@
 
 #include "../testUtilitiesGPU.h"
 
+using namespace vf::gpu;
+
 TEST(FilePartCalculatorTest, calculateNumberOfParts)
 {
     EXPECT_THAT(FilePartCalculator::calculateNumberOfParts(FilePartCalculator::limitOfNodesForVTK * 2), testing::Eq(3));

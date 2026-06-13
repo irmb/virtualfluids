@@ -36,6 +36,8 @@
 #include <basics/constants/NumericConstants.h>
 #include <basics/tests/testUtilities.h>
 
+using namespace vf::gpu;
+
 TEST(GeometryUtilsTest, translate2D)
 {
     real newPositionX;

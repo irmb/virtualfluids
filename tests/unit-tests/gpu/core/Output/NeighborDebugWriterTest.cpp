@@ -38,6 +38,8 @@
 #include "../testUtilitiesGPU.h"
 #include "WbWriter.h"
 
+using namespace vf::gpu;
+
 class WbWriterVtkXmlBinarySpy : public WbWriter
 {
 public:

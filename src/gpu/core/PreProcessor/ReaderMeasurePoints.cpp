@@ -40,6 +40,8 @@
 
 using namespace vf::lbm::dir;
 
+namespace vf::gpu {
+
 //////////////////////////////////////////////////////////////////////////
 void ReaderMeasurePoints::readMeasurePoints( Parameter* para ) 
 {
@@ -111,5 +113,7 @@ void ReaderMeasurePoints::readMeasurePoints(Parameter* para, CudaMemoryManager* 
     }
 }
 ////////////////////////////////////////////////////////////////////////////////
+
+}
 
 //! \}

@@ -51,6 +51,8 @@
 #include "Parameter/Parameter.h"
 #include "WriterUtilities.h"
 
+namespace vf::gpu {
+
 std::string makeCollectionFileNameEnding(int ID, int timestep)
 {
     return "_ID_" + StringUtil::toString<int>(ID) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk";
@@ -429,6 +431,8 @@ std::vector<std::string> FileWriter::writeUnstructuredGridMeanLT(std::shared_ptr
         //////////////////////////////////////////////////////////////////////////
     }
     return outFNames;
+}
+
 }
 
 //! \}

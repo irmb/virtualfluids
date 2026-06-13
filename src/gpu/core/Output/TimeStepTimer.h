@@ -40,6 +40,7 @@
 
 #include <basics/Timer/Timer.h>
 
+namespace vf::gpu {
 class TimeStepTimer
 {
 public:
@@ -77,6 +78,8 @@ private:
     std::string name;
     uint tActivate;
 };
+
+}
 
 #endif 
 

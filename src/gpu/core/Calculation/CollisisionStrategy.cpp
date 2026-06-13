@@ -36,6 +36,8 @@
 #include "Parameter/Parameter.h"
 #include <logger/Logger.h>
 
+namespace vf::gpu {
+
 std::function<void(UpdateGrid27 *updateGrid, Parameter *para, int level, unsigned int t)>
 getFunctionForCollisionAndExchange(const bool useStreams, const int numberOfMpiProcesses,
                                    const bool kernelNeedsFluidNodeIndicesToRun)
@@ -130,6 +132,8 @@ void CollisionAndExchange_streams::operator()(UpdateGrid27 *updateGrid, Paramete
     }
     //! 4. exchange information between GPUs
     updateGrid->exchangeMultiGPU(level, CudaStreamIndex::SubDomainBorder);
+}
+
 }
 
 //! \}

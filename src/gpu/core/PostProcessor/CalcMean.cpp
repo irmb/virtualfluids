@@ -40,6 +40,8 @@
 #include "Parameter/Parameter.h"
 #include "PostProcessor/MacroscopicQuantities.cuh"
 
+namespace vf::gpu {
+
 void allocMean(Parameter* para, CudaMemoryManager* cudaMemoryManager)
 {
     for (int lev = para->getCoarse(); lev <= para->getFine(); lev++) {
@@ -117,6 +119,8 @@ void resetMeanAD(Parameter* para)
                             para->getParD(lev)->isEvenTimestep);
         getLastCudaError("ResetMeanValuesAD27 execution failed");
     }
+}
+
 }
 
 //! \}

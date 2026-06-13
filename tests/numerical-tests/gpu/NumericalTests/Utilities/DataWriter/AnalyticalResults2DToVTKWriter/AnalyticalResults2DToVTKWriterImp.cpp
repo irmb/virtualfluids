@@ -50,6 +50,8 @@
 #include <mpi.h>
 #include "core/Output/FilePartCalculator.h"
 
+using namespace vf::gpu;
+
 std::shared_ptr<AnalyticalResults2DToVTKWriterImp>
 AnalyticalResults2DToVTKWriterImp::getInstance(bool writeAnalyticalResults)
 {

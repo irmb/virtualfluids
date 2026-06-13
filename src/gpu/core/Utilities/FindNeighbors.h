@@ -40,6 +40,7 @@
 
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
 
 struct countersForPointerChasing
 {
@@ -105,6 +106,8 @@ inline uint getNeighborIndex(LBMSimulationParameter* parH, const uint position, 
     }
 
     return nodeIndex;
+}
+
 }
 
 #endif

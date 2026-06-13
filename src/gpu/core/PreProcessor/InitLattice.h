@@ -36,11 +36,15 @@
 
 #include <basics/PointerDefinitions.h>
 
+namespace vf::gpu {
+
 class Parameter;
 class PreProcessor;
 class CudaMemoryManager;
 
 void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<PreProcessor> preProcessorAD, SPtr<CudaMemoryManager> cudaMemoryManager);
+
+}
 
 #endif
 

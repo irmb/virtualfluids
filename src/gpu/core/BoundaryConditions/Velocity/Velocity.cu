@@ -41,6 +41,8 @@
 #include "BoundaryConditions/Velocity/Velocity_Device.cuh"
 #include "Parameter/Parameter.h"
 
+namespace vf::gpu {
+
 void VelocityBounceBack(LBMSimulationParameter* parameterDevice, QforBoundaryConditions* boundaryCondition)
 {
     dim3 grid = vf::cuda::getCudaGrid( parameterDevice->numberofthreads,  boundaryCondition->numberOfBCnodes);
@@ -126,6 +128,8 @@ void VelocityWithPressureInterpolatedCompressible(LBMSimulationParameter *parame
         parameterDevice->numberOfNodes,
         parameterDevice->isEvenTimestep);
     getLastCudaError("VelocityWithPressureInterpolatedCompressible_Device execution failed");
+}
+
 }
 
 //! \}

@@ -39,7 +39,8 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 __global__ void VelocityInterpolatedCompressible_Device(
     real* velocityX,
@@ -415,6 +416,8 @@ __global__ void VelocityInterpolatedCompressible_Device(
          (dist.f[dPMM])[kbse] = getInterpolatedDistributionForVeloBC(q, f_TNW, f_BSE, feq, omega, velocityBC, c1o216);
       }
    }
+}
+
 }
 
 //! \}

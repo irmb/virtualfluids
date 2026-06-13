@@ -147,7 +147,7 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
     real level   = (real)block->getLevel();
 
     // This data is written:
-    datanames.resize(0);
+    datanames.clear();
     datanames.push_back("Rho");
     datanames.push_back("Vx");
     datanames.push_back("Vy");
@@ -156,7 +156,7 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
 
     data.resize(datanames.size());
 
-    SPtr<LBMKernel> kernel                 = block->getKernel();
+    SPtr<LBMKernel> kernel                  = block->getKernel();
     SPtr<BCArray3D> bcArray                 = kernel->getBCSet()->getBCArray();
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
     real f[d3q27_system::ENDF + 1];
@@ -213,7 +213,6 @@ void WriteMacroscopicQuantitiesSimulationObserver::addDataMQ(SPtr<Block3D> block
                     data[index++].push_back(vx1);
                     data[index++].push_back(vx2);
                     data[index++].push_back(vx3);
-
                     data[index++].push_back(level);
                 }
             }

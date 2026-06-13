@@ -39,6 +39,8 @@
 #include "PostProcessor/MacroscopicQuantities.cuh"
 #include "PreProcessor/PreProcessor.h"
 
+namespace vf::gpu {
+
 void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<PreProcessor> preProcessorAD, SPtr<CudaMemoryManager> cudaMemoryManager)
 {
     for (int lev = para->getFine(); lev >= para->getCoarse(); lev--) {
@@ -81,6 +83,8 @@ void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor, SPtr<Pre
             preProcessorAD->init(para, lev);
 
     }
+}
+
 }
 
 //! \}

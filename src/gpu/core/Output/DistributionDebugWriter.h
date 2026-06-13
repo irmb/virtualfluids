@@ -36,6 +36,8 @@
 
 #include <basics/DataTypes.h>
 
+namespace vf::gpu {
+
 class Parameter;
 class CudaMemoryManager;
 
@@ -65,6 +67,8 @@ public:
     //! the current timestep
     static void writeDistributionsForLevel(const Parameter& para, uint level, uint timestep);
 };
+
+}
 
 #endif
 

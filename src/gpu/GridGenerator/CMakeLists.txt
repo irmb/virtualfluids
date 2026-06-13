@@ -33,6 +33,9 @@
 #=======================================================================================
 vf_add_library(NAME GridGenerator PUBLIC_LINK basics logger OpenMP::OpenMP_CXX PRIVATE_LINK project_options project_warnings)
 
+# Optional fast-winding support (libigl-based).
+vf_enable_fast_winding(GridGenerator VISIBILITY PUBLIC)
+
 target_include_directories(GridGenerator PRIVATE "${VF_ROOT_DIR}/src/gpu/GridGenerator/")
 
 

@@ -33,6 +33,8 @@
 //=======================================================================================
 #include "SimulationFileNames.h"
 
+namespace vf::gpu {
+
 const std::string fileEnding = ".dat";
 
 const std::string simulationFileNames::coordX = "coordX" + fileEnding;
@@ -76,5 +78,6 @@ const std::string simulationFileNames::outletBoundaryValues = "outletBoundaryVal
 const std::string simulationFileNames::numberNodes = "numberNodes" + fileEnding;
 const std::string simulationFileNames::LBMvsSI = "LBMvsSI" + fileEnding;
 
+}
 
 //! \}

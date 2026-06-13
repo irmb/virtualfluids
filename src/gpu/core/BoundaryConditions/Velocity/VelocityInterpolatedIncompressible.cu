@@ -38,7 +38,8 @@
 
 using namespace vf::basics::constant;
 using namespace vf::lbm::dir;
-using namespace vf::gpu;
+
+namespace vf::gpu {
 
 __global__ void VelocityInterpolatedIncompressible_Device(
     real* vx,
@@ -492,6 +493,8 @@ __global__ void VelocityInterpolatedIncompressible_Device(
          (D.f[dPMM])[kbse]=(c1o1-q)/(c1o1+q)*(f_TNW-f_BSE+(f_TNW+f_BSE-c2o1*feq*om1)/(c1o1-om1))*c1o2+(q*(f_TNW+f_BSE)-c6o1*c1o216*(-VeloX+VeloY+VeloZ))/(c1o1+q);
       }
    }
+}
+
 }
 
 //! \}

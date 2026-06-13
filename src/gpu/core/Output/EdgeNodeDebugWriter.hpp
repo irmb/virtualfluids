@@ -48,7 +48,7 @@
 #include "Calculation/Calculation.h"
 #include "Parameter/Parameter.h"
 
-namespace edge_node_debug_writer
+namespace vf::gpu::edge_node_debug_writer
 {
 
 void addCoordinatesToNodeVector(LBMSimulationParameter* parH, std::vector<UbTupleFloat3>& nodesVec, uint indexInNodesVector,
